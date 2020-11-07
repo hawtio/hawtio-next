@@ -1,7 +1,3 @@
-export default interface HawtioState {
-  config?: Config
-}
-
 export interface Config {
   branding?: Branding
   login?: Login
@@ -32,4 +28,8 @@ export interface About {
 export interface AboutProductInfo {
   name: string
   value: string
+}
+
+export default class HawtioState {
+  config?: Config
 }

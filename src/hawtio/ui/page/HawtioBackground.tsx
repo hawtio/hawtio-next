@@ -17,7 +17,7 @@ const images = {
   [BackgroundImageSrc.lg]: backgroundImageSrcLg
 }
 
-const HawtioBackground: React.SFC<HawtioBackgroundProps> = props =>
+const HawtioBackground: React.FunctionComponent<HawtioBackgroundProps> = props =>
   <BackgroundImage src={images} />
 
 export default HawtioBackground

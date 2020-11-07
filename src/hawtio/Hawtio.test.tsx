@@ -1,9 +1,14 @@
-import React from 'react';
-import { render } from '@testing-library/react';
-import Hawtio from './Hawtio';
+import { render, screen } from '@testing-library/react'
+import React from 'react'
+import { Provider } from 'react-redux'
+import Hawtio from './Hawtio'
+import store from './store'
 
 test('renders page', () => {
-  const { getByText } = render(<Hawtio />);
-  const hawtio = getByText(/Hello/i);
-  expect(hawtio).toBeInTheDocument();
-});
+  render(
+    <Provider store={store}>
+      <Hawtio />
+    </Provider>)
+  const example = screen.queryByText('Example 1')
+  expect(example).toBeInTheDocument()
+})

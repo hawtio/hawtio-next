@@ -7,7 +7,7 @@ type HawtioAboutProps = {
   onClose: () => void
 }
 
-const HawtioAbout: React.SFC<HawtioAboutProps> = props => {
+const HawtioAbout: React.FunctionComponent<HawtioAboutProps> = props => {
   return (
     <AboutModal
       isOpen={props.isOpen}

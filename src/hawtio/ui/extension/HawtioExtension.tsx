@@ -4,7 +4,7 @@ type HawtioExtensionProps = {
   name: string
 }
 
-const HawtioExtension: React.SFC<HawtioExtensionProps> = props =>
+const HawtioExtension: React.FunctionComponent<HawtioExtensionProps> = props =>
   <span></span>
 
 export default HawtioExtension
