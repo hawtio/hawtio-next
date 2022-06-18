@@ -1,39 +1,42 @@
-
-export interface HawtioPlugin {
-  name: string
-  context: string
-  domain: string
-  scripts: string[]
+export interface Plugin {
+  id: string
+  title: string
+  path: string
+  component: React.ComponentType<any>
 }
 
-type HawtioPlugins = {
-  [key: string]: HawtioPlugin
+type Plugins = {
+  [id: string]: Plugin
 }
 
-const log = console.log
+const log = {
+  info: console.log
+}
 
 /**
- * Plugin loader and discovery mechanism for Hawtio
+ * Plugin loader and discovery mechanism.
  */
 class PluginLoader {
 
   /**
-   * List of URLs that the plugin loader will try and discover
-   * plugins from
+   * List of URLs that the plugin loader will try and discover plugins from.
    */
   private urls: string[] = [];
 
   /**
-   * Holds all of the Hawtio plugins that need to be bootstrapped
+   * Holds all of the HC plugins that need to be bootstrapped.
    */
-  private plugins: string[] = [];
+  private plugins: Plugins = {};
 
   /**
-   * Add an angular module to the list of modules to bootstrap
+   * Add an angular module to the list of modules to bootstrap.
    */
-  addPlugin(plugin: string): PluginLoader {
-    log("Adding plugin:", plugin)
-    this.plugins.push(plugin)
+  addPlugin(plugin: Plugin): PluginLoader {
+    log.info("Add plugin:", plugin.id)
+    if (this.plugins[plugin.id]) {
+      throw new Error(`Plugin "${plugin.id}" already exists`)
+    }
+    this.plugins[plugin.id] = plugin
     return this
   };
 
@@ -41,7 +44,7 @@ class PluginLoader {
    * Add a URL for discovering plugins.
    */
   addUrl(url: string): PluginLoader {
-    log("Adding URL:", url)
+    log.info("Add URL:", url)
     this.urls.push(url)
     return this
   };
@@ -49,14 +52,22 @@ class PluginLoader {
   /**
    * Downloads plugins at any configured URLs and bootstraps the app.
    *
-   * It is invoked from HawtioCore's bootstrapping.
+   * It is invoked from HC's bootstrapping.
    */
-  loadPlugins(callback: () => void): void {
-    callback()
+  loadPlugins(callback: (plugins: Plugins) => void): void {
+    log.info("Bootstrapping HC...")
+    callback(this.plugins)
+  }
+
+  getPlugins(): Plugin[] {
+    return Object.entries(this.plugins).map(entry => entry[1])
   }
 
 }
 
-const pluginLoader = new PluginLoader()
+/**
+ * PluginLoader singleton instance.
+ */
+const hawtio = new PluginLoader()
 
-export default pluginLoader
+export default hawtio

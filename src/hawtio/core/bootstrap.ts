@@ -1,7 +1,7 @@
-import pluginLoader from './plugin-loader'
+import hawtio from './plugin-loader'
 
 const bootstrap = () => {
-  pluginLoader.loadPlugins(() => {
+  hawtio.loadPlugins(() => {
     console.log('Loaded plugins')
   })
   console.log('Bootstrapped Hawtio')

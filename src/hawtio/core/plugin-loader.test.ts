@@ -1,7 +1,7 @@
-import pluginLoader from './plugin-loader'
+import hawtio from './plugin-loader'
 
 describe('PluginLoader', () => {
   test('test', () => {
-    expect(pluginLoader).not.toBeNull()
+    expect(hawtio).not.toBeNull()
   })
 })

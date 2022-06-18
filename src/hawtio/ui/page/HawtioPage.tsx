@@ -1,10 +1,8 @@
+import hawtio from '@hawtio/core'
 import { EmptyState, EmptyStateIcon, EmptyStateVariant, Page, PageSection, PageSectionVariants, Title } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons'
 import React from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
-import Example1 from '../../../examples/example1/Example1'
-import Example2 from '../../../examples/example2/Example2'
-import Example3 from '../../../examples/example3/Example3'
 import HawtioBackground from './HawtioBackground'
 import HawtioHeader from './HawtioHeader'
 import HawtioSidebar from './HawtioSidebar'
@@ -32,9 +30,12 @@ class HawtioPage extends React.Component<HawtioPageProps, HawtioPageState> {
           isManagedSidebar
         >
           <Switch>
-            <Route path='/example1' component={Example1} />
-            <Route path='/example2' component={Example2} />
-            <Route path='/example3' component={Example3} />
+            {hawtio.getPlugins().map(plugin => (
+              <Route
+                key={plugin.id}
+                path={plugin.path}
+                component={plugin.component} />
+            ))}
             <Route path='/'>
               <PageSection variant={PageSectionVariants.light}>
                 <EmptyState variant={EmptyStateVariant.full}>

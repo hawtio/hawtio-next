@@ -4,12 +4,13 @@
   "private": true,
   "license": "Apache-2.0",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --watchAll",
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test --watchAll",
     "deploy": "cp build/index.html build/200.html && surge build/ hawtio-next.surge.sh"
   },
   "dependencies": {
+    "@craco/craco": "^6.4.3",
     "@patternfly/react-core": "^4.221.3",
     "@reduxjs/toolkit": "^1.8.2",
     "@testing-library/jest-dom": "^5.16.4",
