@@ -6,7 +6,7 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
-    "test": "craco test --watchAll",
+    "test": "craco test",
     "deploy": "cp build/index.html build/200.html && surge build/ hawtio-next.surge.sh"
   },
   "dependencies": {

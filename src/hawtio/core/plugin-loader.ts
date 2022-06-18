@@ -55,7 +55,7 @@ class PluginLoader {
    * It is invoked from HC's bootstrapping.
    */
   loadPlugins(callback: (plugins: Plugins) => void): void {
-    log.info("Bootstrapping HC...")
+    log.info("Bootstrapping Hawtio...")
     callback(this.plugins)
   }
 

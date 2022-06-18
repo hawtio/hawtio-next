@@ -6,4 +6,11 @@ module.exports = {
       '@hawtio': path.resolve(__dirname, 'src/hawtio'),
     },
   },
+  jest: {
+    configure: {
+      moduleNameMapper: {
+        '@hawtio/(.*)': '<rootDir>/src/hawtio/$1',
+      },
+    },
+  },
 }
