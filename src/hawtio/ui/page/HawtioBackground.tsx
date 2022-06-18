@@ -1,4 +1,4 @@
-import { BackgroundImage, BackgroundImageSrc } from '@patternfly/react-core'
+import { BackgroundImage, BackgroundImageSrcMap } from '@patternfly/react-core'
 import React from 'react'
 import backgroundImageSrcLg from '../../../img/pfbg_1200.jpg'
 import backgroundImageSrcXs from '../../../img/pfbg_576.jpg'
@@ -9,12 +9,12 @@ import backgroundImageSrcSm2x from '../../../img/pfbg_768@2x.jpg'
 type HawtioBackgroundProps = {
 }
 
-const images = {
-  [BackgroundImageSrc.xs]: backgroundImageSrcXs,
-  [BackgroundImageSrc.xs2x]: backgroundImageSrcXs2x,
-  [BackgroundImageSrc.sm]: backgroundImageSrcSm,
-  [BackgroundImageSrc.sm2x]: backgroundImageSrcSm2x,
-  [BackgroundImageSrc.lg]: backgroundImageSrcLg
+const images: BackgroundImageSrcMap = {
+  xs: backgroundImageSrcXs,
+  xs2x: backgroundImageSrcXs2x,
+  sm: backgroundImageSrcSm,
+  sm2x: backgroundImageSrcSm2x,
+  lg: backgroundImageSrcLg
 }
 
 const HawtioBackground: React.FunctionComponent<HawtioBackgroundProps> = props =>

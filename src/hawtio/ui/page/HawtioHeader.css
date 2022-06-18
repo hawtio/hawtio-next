@@ -1,0 +1,7 @@
+#hawtio-header-user-dropdown-toggle {
+  display: flex;
+}
+
+#hawtio-header-user-dropdown-toggle .pf-c-dropdown__toggle-text {
+  margin-left: 5px;
+}

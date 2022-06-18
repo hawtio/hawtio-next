@@ -6,7 +6,7 @@ import hawtioBootstrap from './hawtio/core/bootstrap'
 import Hawtio from './hawtio/Hawtio'
 import store from './hawtio/store'
 import './index.css'
-import * as serviceWorker from './serviceWorker'
+import reportWebVitals from './reportWebVitals'
 
 // TODO: debugging
 (window as any).store = store
@@ -15,12 +15,15 @@ import * as serviceWorker from './serviceWorker'
 hawtioBootstrap()
 
 ReactDOM.render(
-  <Provider store={store}>
-    <Hawtio />
-  </Provider>,
-  document.getElementById('root'))
+  <React.StrictMode>
+    <Provider store={store}>
+      <Hawtio />
+    </Provider>
+  </React.StrictMode>,
+  document.getElementById('root')
+)
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister()
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals()

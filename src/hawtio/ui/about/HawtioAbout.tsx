@@ -27,7 +27,8 @@ const HawtioAbout: React.FunctionComponent<HawtioAboutProps> = props => {
           <TextListItem component="dd">x.y.z</TextListItem>
         </TextList>
       </TextContent>
-    </AboutModal>)
+    </AboutModal>
+  )
 }
 
 export default HawtioAbout

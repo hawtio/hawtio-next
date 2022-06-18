@@ -1,11 +1,12 @@
-import { Avatar, Brand, Dropdown, DropdownItem, DropdownToggle, PageHeader, Toolbar, ToolbarGroup, ToolbarItem } from '@patternfly/react-core'
+import { Avatar, Brand, Dropdown, DropdownItem, DropdownToggle, PageHeader, PageHeaderTools, PageHeaderToolsGroup, PageHeaderToolsItem } from '@patternfly/react-core'
 import { HelpIcon } from '@patternfly/react-icons'
 import React from 'react'
+import { Link } from 'react-router-dom'
 import imgLogo from '../../../img/hawtio-logo.svg'
 import imgAvatar from '../../../img/img_avatar.svg'
-import HawtioExtension from '../extension/HawtioExtension'
 import HawtioAbout from '../about/HawtioAbout'
-import { Link } from 'react-router-dom'
+import HawtioExtension from '../extension/HawtioExtension'
+import './HawtioHeader.css'
 
 type HawtioHeaderProps = {
 }
@@ -27,19 +28,19 @@ class HawtioHeader extends React.Component<HawtioHeaderProps, HawtioHeaderState>
   }
 
   private onHelpToggle = (isHelpOpen: boolean) =>
-    this.setState({ isHelpOpen })
+    this.setState({ isHelpOpen });
 
   private onHelpSelect = (_event?: React.SyntheticEvent<HTMLDivElement>) =>
-    this.setState({ isHelpOpen: !this.state.isHelpOpen })
+    this.setState({ isHelpOpen: !this.state.isHelpOpen });
 
   private onUserToggle = (isUserOpen: boolean) =>
-    this.setState({ isUserOpen })
+    this.setState({ isUserOpen });
 
   private onUserSelect = (_event?: React.SyntheticEvent<HTMLDivElement>) =>
-    this.setState({ isUserOpen: !this.state.isUserOpen })
+    this.setState({ isUserOpen: !this.state.isUserOpen });
 
   private onAboutToggle = () =>
-    this.setState(({ isAboutOpen }) => ({ isAboutOpen: !isAboutOpen }))
+    this.setState(({ isAboutOpen }) => ({ isAboutOpen: !isAboutOpen }));
 
   render() {
     const { isUserOpen, isHelpOpen, isAboutOpen } = this.state
@@ -60,42 +61,48 @@ class HawtioHeader extends React.Component<HawtioHeaderProps, HawtioHeaderState>
       } />
     ]
 
-    const PageToolbar = (
-      <Toolbar>
-        <ToolbarGroup>
-          <ToolbarItem>
+    const HeaderTools = (
+      <PageHeaderTools>
+        <PageHeaderToolsGroup>
+          <PageHeaderToolsItem>
             <HawtioExtension name="header-tools" />
-          </ToolbarItem>
-          <ToolbarItem>
+          </PageHeaderToolsItem>
+          <PageHeaderToolsItem>
             <Dropdown
               isPlain
               position="right"
               onSelect={this.onHelpSelect}
               toggle={
-                <DropdownToggle onToggle={this.onHelpToggle} iconComponent={HelpIcon} />
+                <DropdownToggle toggleIndicator={null} onToggle={this.onHelpToggle}>
+                  <HelpIcon />
+                </DropdownToggle>
               }
               isOpen={isHelpOpen}
               dropdownItems={helpItems}
             />
-          </ToolbarItem>
-        </ToolbarGroup>
-        <ToolbarGroup>
-          <ToolbarItem>
+          </PageHeaderToolsItem>
+        </PageHeaderToolsGroup>
+        <PageHeaderToolsGroup>
+          <PageHeaderToolsItem>
             <Dropdown
               isPlain
               position="right"
               onSelect={this.onUserSelect}
               isOpen={isUserOpen}
               toggle={
-                <DropdownToggle onToggle={this.onUserToggle}>
+                <DropdownToggle
+                  id="hawtio-header-user-dropdown-toggle"
+                  onToggle={this.onUserToggle}
+                  icon={<Avatar src={imgAvatar} alt="user" />}
+                >
                   Hawtio User
                 </DropdownToggle>
               }
               dropdownItems={userItems}
             />
-          </ToolbarItem>
-        </ToolbarGroup>
-      </Toolbar>
+          </PageHeaderToolsItem>
+        </PageHeaderToolsGroup>
+      </PageHeaderTools>
     )
 
     return (
@@ -103,8 +110,7 @@ class HawtioHeader extends React.Component<HawtioHeaderProps, HawtioHeaderState>
         <PageHeader
           logo={<Brand src={imgLogo} alt="Hawtio Management Console" />}
           logoProps={{ href: '/' }}
-          toolbar={PageToolbar}
-          avatar={<Avatar src={imgAvatar} alt="user" />}
+          headerTools={HeaderTools}
           showNavToggle
         />
         <HawtioAbout isOpen={isAboutOpen} onClose={this.onAboutToggle} />
