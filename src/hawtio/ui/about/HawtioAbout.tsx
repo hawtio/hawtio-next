@@ -1,6 +1,6 @@
 import { AboutModal, TextContent, TextList, TextListItem } from '@patternfly/react-core'
 import React from 'react'
-import imgLogo from '../../../img/hawtio-logo.svg'
+import imgLogo from '@hawtio/img/hawtio-logo.svg'
 
 type HawtioAboutProps = {
   isOpen: boolean
