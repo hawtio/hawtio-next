@@ -1,4 +1,5 @@
 import hawtio from '@hawtio/core'
+import HawtioPreferences from '@hawtio/preferences/HawtioPreferences'
 import { EmptyState, EmptyStateIcon, EmptyStateVariant, Page, PageSection, PageSectionVariants, Title } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons'
 import React from 'react'
@@ -21,6 +22,14 @@ class HawtioPage extends React.Component<HawtioPageProps, HawtioPageState> {
   }
 
   render() {
+    const HawtioHome = () => (
+      <PageSection variant={PageSectionVariants.light}>
+        <EmptyState variant={EmptyStateVariant.full}>
+          <EmptyStateIcon icon={CubesIcon} />
+          <Title headingLevel="h1" size="lg">Hawtio</Title>
+        </EmptyState>
+      </PageSection>
+    )
     return (
       <BrowserRouter>
         <HawtioBackground />
@@ -30,19 +39,18 @@ class HawtioPage extends React.Component<HawtioPageProps, HawtioPageState> {
           isManagedSidebar
         >
           <Switch>
+            {/* plugins */}
             {hawtio.getPlugins().map(plugin => (
               <Route
                 key={plugin.id}
                 path={plugin.path}
                 component={plugin.component} />
             ))}
+            <Route path='/preferences'>
+              <HawtioPreferences />
+            </Route>
             <Route path='/'>
-              <PageSection variant={PageSectionVariants.light}>
-                <EmptyState variant={EmptyStateVariant.full}>
-                  <EmptyStateIcon icon={CubesIcon} />
-                  <Title headingLevel="h5" size="lg">Hawtio</Title>
-                </EmptyState>
-              </PageSection>
+              <HawtioHome />
             </Route>
           </Switch>
         </Page>
