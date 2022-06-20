@@ -7,10 +7,12 @@ module.exports = {
     },
   },
   jest: {
-    configure: {
-      moduleNameMapper: {
-        '@hawtio/(.*)': '<rootDir>/src/hawtio/$1',
-      },
-    },
+    configure: config => {
+      config.moduleNameMapper['@hawtio/(.*)'] = '<rootDir>/src/hawtio/$1'
+      config.transformIgnorePatterns = [
+        "node_modules/(?!@patternfly/react-icons/dist/esm/icons)/"
+      ]
+      return config
+    }
   },
 }
