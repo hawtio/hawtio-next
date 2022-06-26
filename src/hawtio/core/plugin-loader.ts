@@ -24,7 +24,7 @@ class PluginLoader {
   private urls: string[] = [];
 
   /**
-   * Holds all of the HC plugins that need to be bootstrapped.
+   * Holds all of the Hawtio plugins that need to be bootstrapped.
    */
   private plugins: Plugins = {};
 
@@ -52,7 +52,7 @@ class PluginLoader {
   /**
    * Downloads plugins at any configured URLs and bootstraps the app.
    *
-   * It is invoked from HC's bootstrapping.
+   * It is invoked from Hawtio's bootstrapping.
    */
   loadPlugins(callback: (plugins: Plugins) => void): void {
     log.info("Bootstrapping Hawtio...")

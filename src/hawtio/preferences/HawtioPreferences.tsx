@@ -3,6 +3,10 @@ import React from 'react'
 import { BrowserRouter, NavLink, Redirect, Route, Switch, useLocation } from 'react-router-dom'
 import HomePreferences from './HomePreferences'
 import LogsPreferences from './LogsPreferences'
+import help from './help.md'
+import helpRegistry from '@hawtio/help/registry'
+
+helpRegistry.add('preferences', 'Preferences', help, 2)
 
 type HawtioPreferencesProps = {
 }
@@ -28,7 +32,7 @@ const HawtioPreferences: React.FunctionComponent<HawtioPreferencesProps> = props
           </Nav>
         </PageNavigation>
       </PageGroup>
-      <PageSection isWidthLimited isCenterAligned>
+      <PageSection>
         <Card isFullHeight>
           <Switch>
             <Route path='/preferences/home'>

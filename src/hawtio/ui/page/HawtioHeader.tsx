@@ -1,7 +1,6 @@
 import imgLogo from '@hawtio/img/hawtio-logo.svg'
 import imgAvatar from '@hawtio/img/img_avatar.svg'
 import HawtioAbout from '@hawtio/ui/about/HawtioAbout'
-import HawtioExtension from '@hawtio/ui/extension/HawtioExtension'
 import { Avatar, Brand, Dropdown, DropdownItem, DropdownToggle, PageHeader, PageHeaderTools, PageHeaderToolsGroup, PageHeaderToolsItem } from '@patternfly/react-core'
 import { HelpIcon } from '@patternfly/react-icons'
 import React from 'react'
@@ -64,9 +63,6 @@ class HawtioHeader extends React.Component<HawtioHeaderProps, HawtioHeaderState>
     const HeaderTools = (
       <PageHeaderTools>
         <PageHeaderToolsGroup>
-          <PageHeaderToolsItem>
-            <HawtioExtension name="header-tools" />
-          </PageHeaderToolsItem>
           <PageHeaderToolsItem>
             <Dropdown
               isPlain

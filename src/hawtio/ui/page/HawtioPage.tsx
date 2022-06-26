@@ -1,5 +1,6 @@
 import hawtio from '@hawtio/core'
 import HawtioPreferences from '@hawtio/preferences/HawtioPreferences'
+import HawtioHelp from '@hawtio/help/HawtioHelp'
 import { EmptyState, EmptyStateIcon, EmptyStateVariant, Page, PageSection, PageSectionVariants, Title } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons'
 import React from 'react'
@@ -46,6 +47,9 @@ class HawtioPage extends React.Component<HawtioPageProps, HawtioPageState> {
                 path={plugin.path}
                 component={plugin.component} />
             ))}
+            <Route path='/help'>
+              <HawtioHelp />
+            </Route>
             <Route path='/preferences'>
               <HawtioPreferences />
             </Route>
