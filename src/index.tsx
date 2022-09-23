@@ -1,19 +1,21 @@
 import { bootstrap as hawtioBootstrap } from '@hawtio/core'
 import Hawtio from '@hawtio/Hawtio'
+import hawtioPlugins from '@hawtio/plugins'
 import store from '@hawtio/store'
 import '@patternfly/react-core/dist/styles/base.css'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
+import hawtioExamples from './examples'
 import './index.css'
 import reportWebVitals from './reportWebVitals'
-import registerExamples from './examples'
 
 // TODO: debugging
 (window as any).store = store
 
 // Bootstrap Hawtio
-registerExamples()
+hawtioPlugins()
+hawtioExamples()
 hawtioBootstrap()
 
 ReactDOM.render(

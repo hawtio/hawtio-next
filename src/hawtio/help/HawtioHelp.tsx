@@ -12,6 +12,7 @@ type HawtioHelpProps = {
 
 const HawtioHelp: React.FunctionComponent<HawtioHelpProps> = props => {
   const location = useLocation()
+  const path = (id: string) => `/help/${id}`
   return (
     <BrowserRouter>
       <PageSection variant={PageSectionVariants.light}>
@@ -22,8 +23,8 @@ const HawtioHelp: React.FunctionComponent<HawtioHelpProps> = props => {
           <Nav aria-label="Nav" variant="tertiary">
             <NavList>
               {helpRegistry.getHelps().map(help =>
-                <NavItem key="home" isActive={location.pathname === '/help/' + help.id}>
-                  <NavLink to={'/help/' + help.id}>{help.title}</NavLink>
+                <NavItem key={help.id} isActive={location.pathname === path(help.id)}>
+                  <NavLink to={path(help.id)}>{help.title}</NavLink>
                 </NavItem>
               )}
             </NavList>
@@ -34,7 +35,7 @@ const HawtioHelp: React.FunctionComponent<HawtioHelpProps> = props => {
         <Card isFullHeight>
           <Switch>
             {helpRegistry.getHelps().map(help =>
-              <Route path={'/help/' + help.id}>
+              <Route path={path(help.id)}>
                 <CardBody>
                   <TextContent>
                     <Markdown>{help.content}</Markdown>
@@ -42,7 +43,7 @@ const HawtioHelp: React.FunctionComponent<HawtioHelpProps> = props => {
                 </CardBody>
               </Route>
             )}
-            <Redirect exact from='/help' to='/help/home' />
+            <Redirect exact from='/help' to={path('home')} />
           </Switch>
         </Card >
       </PageSection>

@@ -1,18 +1,22 @@
+import helpRegistry from '@hawtio/help/registry'
 import { Card, Nav, NavItem, NavList, PageGroup, PageNavigation, PageSection, PageSectionVariants, Title } from '@patternfly/react-core'
 import React from 'react'
 import { BrowserRouter, NavLink, Redirect, Route, Switch, useLocation } from 'react-router-dom'
+import help from './help.md'
 import HomePreferences from './HomePreferences'
 import LogsPreferences from './LogsPreferences'
-import help from './help.md'
-import helpRegistry from '@hawtio/help/registry'
+import preferencesRegistry from './registry'
 
 helpRegistry.add('preferences', 'Preferences', help, 2)
+preferencesRegistry.add('home', 'Home', HomePreferences, 1)
+preferencesRegistry.add('logs', 'Logs', LogsPreferences, 2)
 
 type HawtioPreferencesProps = {
 }
 
 const HawtioPreferences: React.FunctionComponent<HawtioPreferencesProps> = props => {
   const location = useLocation()
+  const path = (id: string) => `/preferences/${id}`
   return (
     <BrowserRouter>
       <PageSection variant={PageSectionVariants.light}>
@@ -22,12 +26,11 @@ const HawtioPreferences: React.FunctionComponent<HawtioPreferencesProps> = props
         <PageNavigation>
           <Nav aria-label="Nav" variant="tertiary">
             <NavList>
-              <NavItem key="home" isActive={location.pathname === '/preferences/home'}>
-                <NavLink to='/preferences/home'>Home</NavLink>
-              </NavItem>
-              <NavItem key="logs" isActive={location.pathname === '/preferences/logs'}>
-                <NavLink to='/preferences/logs'>Console Logs</NavLink>
-              </NavItem>
+              {preferencesRegistry.getPreferences().map(prefs =>
+                <NavItem key={prefs.id} isActive={location.pathname === path(prefs.id)}>
+                  <NavLink to={path(prefs.id)}>{prefs.title}</NavLink>
+                </NavItem>
+              )}
             </NavList>
           </Nav>
         </PageNavigation>
@@ -35,13 +38,13 @@ const HawtioPreferences: React.FunctionComponent<HawtioPreferencesProps> = props
       <PageSection>
         <Card isFullHeight>
           <Switch>
-            <Route path='/preferences/home'>
-              <HomePreferences />
-            </Route>
-            <Route path='/preferences/logs'>
-              <LogsPreferences />
-            </Route>
-            <Redirect exact from='/preferences' to='/preferences/home' />
+            {preferencesRegistry.getPreferences().map(prefs => (
+              <Route
+                key={prefs.id}
+                path={path(prefs.id)}
+                component={prefs.component} />
+            ))}
+            <Redirect exact from='/preferences' to={path('home')} />
           </Switch>
         </Card >
       </PageSection>
