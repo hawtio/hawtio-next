@@ -1,4 +1,4 @@
-import hawtio from './plugin-loader'
+import { hawtio } from './plugin-loader'
 
 describe('PluginLoader', () => {
   test('test', () => {

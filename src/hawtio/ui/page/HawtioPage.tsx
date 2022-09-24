@@ -1,6 +1,6 @@
-import hawtio from '@hawtio/core'
-import HawtioPreferences from '@hawtio/preferences/HawtioPreferences'
+import { hawtio } from '@hawtio/core'
 import HawtioHelp from '@hawtio/help/HawtioHelp'
+import HawtioPreferences from '@hawtio/preferences/HawtioPreferences'
 import { EmptyState, EmptyStateIcon, EmptyStateVariant, Page, PageSection, PageSectionVariants, Title } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons'
 import React from 'react'

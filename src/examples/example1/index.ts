@@ -1,5 +1,5 @@
 import Example1 from './Example1'
-import hawtio from '@hawtio/core'
+import { hawtio } from '@hawtio/core'
 
 const registerExample1 = () => {
   hawtio.addPlugin({

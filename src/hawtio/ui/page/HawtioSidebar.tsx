@@ -1,4 +1,4 @@
-import hawtio from '@hawtio/core'
+import { hawtio } from '@hawtio/core'
 import { Nav, NavItem, NavList, PageSidebar } from '@patternfly/react-core'
 import React from 'react'
 import { NavLink, useLocation } from 'react-router-dom'

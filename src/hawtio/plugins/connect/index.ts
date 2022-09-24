@@ -1,4 +1,4 @@
-import hawtio from '@hawtio/core'
+import { hawtio } from '@hawtio/core'
 import helpRegistry from '@hawtio/help/registry'
 import preferencesRegistry from '@hawtio/preferences/registry'
 import Connect from './Connect'

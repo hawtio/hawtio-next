@@ -10,7 +10,8 @@ type Plugins = {
 }
 
 const log = {
-  info: console.log
+  info: console.log,
+  debug: console.debug,
 }
 
 /**
@@ -68,6 +69,4 @@ class PluginLoader {
 /**
  * PluginLoader singleton instance.
  */
-const hawtio = new PluginLoader()
-
-export default hawtio
+export const hawtio = new PluginLoader()
