@@ -11,6 +11,7 @@ import './index.css'
 import reportWebVitals from './reportWebVitals'
 
 // TODO: debugging
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (window as any).store = store
 
 // Bootstrap Hawtio

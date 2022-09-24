@@ -3,10 +3,7 @@ import { Nav, NavItem, NavList, PageSidebar } from '@patternfly/react-core'
 import React from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 
-type HawtioSidebarProps = {
-}
-
-const HawtioSidebar: React.FunctionComponent<HawtioSidebarProps> = props => {
+const HawtioSidebar: React.FunctionComponent = () => {
   const location = useLocation()
   const PageNav = (
     <Nav theme="dark">

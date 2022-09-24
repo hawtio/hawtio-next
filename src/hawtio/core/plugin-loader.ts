@@ -2,7 +2,7 @@ export interface Plugin {
   id: string
   title: string
   path: string
-  component: React.ComponentType<any>
+  component: React.ComponentType<unknown>
 }
 
 type Plugins = {
@@ -39,7 +39,7 @@ class PluginLoader {
     }
     this.plugins[plugin.id] = plugin
     return this
-  };
+  }
 
   /**
    * Add a URL for discovering plugins.
@@ -48,7 +48,7 @@ class PluginLoader {
     log.info("Add URL:", url)
     this.urls.push(url)
     return this
-  };
+  }
 
   /**
    * Downloads plugins at any configured URLs and bootstraps the app.

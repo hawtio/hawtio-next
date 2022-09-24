@@ -7,10 +7,7 @@ import helpRegistry from './registry'
 
 helpRegistry.add('home', 'Home', help, 1)
 
-type HawtioHelpProps = {
-}
-
-const HawtioHelp: React.FunctionComponent<HawtioHelpProps> = props => {
+const HawtioHelp: React.FunctionComponent = () => {
   const location = useLocation()
   const path = (id: string) => `/help/${id}`
   return (

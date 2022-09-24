@@ -9,7 +9,7 @@ class HelpRegistry {
 
   private helps: Help[] = []
 
-  async add(id: string, title: string, content: string, order: number = 100): Promise<void> {
+  async add(id: string, title: string, content: string, order = 100): Promise<void> {
     const res = await fetch(content)
     const text = await res.text()
     this.helps.push({ id, title, content: text, order })

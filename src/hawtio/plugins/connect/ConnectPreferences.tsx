@@ -1,14 +1,11 @@
 import { Button, CardBody, Form, FormGroup, FormSection, TextInput } from '@patternfly/react-core'
 import React, { useState } from 'react'
 
-type ConnectPreferencesProps = {
-}
-
 const DEFAULT_UPDATE_RATE = 5000
 const DEFAULT_MAX_DEPTH = 7
 const DEFAULT_MAX_COLLECTION_SIZE = 50000
 
-const ConnectPreferences: React.FunctionComponent<ConnectPreferencesProps> = props => {
+const ConnectPreferences: React.FunctionComponent = () => {
   const [updateRate, setUpdateRate] = useState(DEFAULT_UPDATE_RATE)
   const [maxDepth, setMaxDepth] = useState(DEFAULT_MAX_DEPTH)
   const [maxCollectionSize, setMaxCollectionSize] = useState(DEFAULT_MAX_COLLECTION_SIZE)

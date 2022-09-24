@@ -7,13 +7,13 @@ import actionCreatorFactory from 'typescript-fsa'
 const actionCreator = actionCreatorFactory('hawtio')
 
 export const actions = {
-  xxx: actionCreator<{}>('XXX'),
-  yyy: actionCreator<{}>('YYY'),
-  zzz: actionCreator<{}>('ZZZ')
+  xxx: actionCreator<unknown>('XXX'),
+  yyy: actionCreator<unknown>('YYY'),
+  zzz: actionCreator<unknown>('ZZZ')
 }
 
-export type HawtioThunkAction = ThunkAction<Promise<void>, HawtioState, any, Action<any>>
-export type HawtioThunkDispatch = ThunkDispatch<HawtioState, any, Action<any>>
+export type HawtioThunkAction = ThunkAction<Promise<void>, HawtioState, unknown, Action<unknown>>
+export type HawtioThunkDispatch = ThunkDispatch<HawtioState, unknown, Action<unknown>>
 
 const reducer = reducerWithInitialState({})
 

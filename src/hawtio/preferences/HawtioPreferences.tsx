@@ -11,10 +11,8 @@ helpRegistry.add('preferences', 'Preferences', help, 2)
 preferencesRegistry.add('home', 'Home', HomePreferences, 1)
 preferencesRegistry.add('logs', 'Logs', LogsPreferences, 2)
 
-type HawtioPreferencesProps = {
-}
 
-const HawtioPreferences: React.FunctionComponent<HawtioPreferencesProps> = props => {
+const HawtioPreferences: React.FunctionComponent = () => {
   const location = useLocation()
   const path = (id: string) => `/preferences/${id}`
   return (

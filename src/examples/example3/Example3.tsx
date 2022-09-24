@@ -1,10 +1,8 @@
 import { PageSection, PageSectionVariants, Text, TextContent } from '@patternfly/react-core'
 import React from 'react'
 
-type Example3Props = {
-}
 
-const Example3: React.FunctionComponent<Example3Props> = props =>
+const Example3: React.FunctionComponent = () =>
   <PageSection variant={PageSectionVariants.light}>
     <TextContent>
       <Text component="h1">Example 3</Text>

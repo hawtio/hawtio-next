@@ -7,6 +7,7 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
+    "lint": "yarn eslint src/",
     "deploy": "cp build/index.html build/200.html && surge build/ hawtio-next.surge.sh"
   },
   "dependencies": {
@@ -30,7 +31,7 @@
     "react-redux": "^8.0.2",
     "react-router-dom": "^5.3.3",
     "react-scripts": "5.0.1",
-    "typescript": "^4.7.3",
+    "typescript": "^4.8.3",
     "typescript-fsa": "^3.0.0",
     "typescript-fsa-reducers": "^1.2.2",
     "web-vitals": "^2.1.4"
@@ -55,5 +56,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.38.0",
+    "@typescript-eslint/parser": "^5.38.0",
+    "eslint": "^8.24.0",
+    "eslint-plugin-import": "^2.26.0"
   }
 }

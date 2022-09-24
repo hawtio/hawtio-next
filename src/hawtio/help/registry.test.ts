@@ -1,4 +1,4 @@
-import helpRegistry, { Help } from './registry'
+import helpRegistry from './registry'
 import { jest } from '@jest/globals'
 
 describe('helpRegistry', () => {
