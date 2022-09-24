@@ -30,6 +30,6 @@ export interface AboutProductInfo {
   value: string
 }
 
-export default class HawtioState {
+export class HawtioState {
   config?: Config
 }

@@ -1,8 +1,6 @@
 import React from 'react'
 import './Hawtio.css'
-import HawtioPage from './ui/page/HawtioPage'
+import { HawtioPage } from './ui/page/HawtioPage'
 
-const Hawtio: React.FunctionComponent = () =>
+export const Hawtio: React.FunctionComponent = () =>
   <HawtioPage />
-
-export default Hawtio

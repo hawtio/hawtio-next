@@ -5,7 +5,7 @@ const DEFAULT_UPDATE_RATE = 5000
 const DEFAULT_MAX_DEPTH = 7
 const DEFAULT_MAX_COLLECTION_SIZE = 50000
 
-const ConnectPreferences: React.FunctionComponent = () => {
+export const ConnectPreferences: React.FunctionComponent = () => {
   const [updateRate, setUpdateRate] = useState(DEFAULT_UPDATE_RATE)
   const [maxDepth, setMaxDepth] = useState(DEFAULT_MAX_DEPTH)
   const [maxCollectionSize, setMaxCollectionSize] = useState(DEFAULT_MAX_COLLECTION_SIZE)
@@ -98,5 +98,3 @@ const ConnectPreferences: React.FunctionComponent = () => {
     </CardBody>
   )
 }
-
-export default ConnectPreferences

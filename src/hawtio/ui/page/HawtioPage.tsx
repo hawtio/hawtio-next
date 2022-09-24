@@ -1,15 +1,15 @@
 import { hawtio } from '@hawtio/core'
-import HawtioHelp from '@hawtio/help/HawtioHelp'
-import HawtioPreferences from '@hawtio/preferences/HawtioPreferences'
+import { HawtioHelp } from '@hawtio/help/HawtioHelp'
+import { HawtioPreferences } from '@hawtio/preferences/HawtioPreferences'
 import { EmptyState, EmptyStateIcon, EmptyStateVariant, Page, PageSection, PageSectionVariants, Title } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons'
 import React from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
-import HawtioBackground from './HawtioBackground'
-import HawtioHeader from './HawtioHeader'
-import HawtioSidebar from './HawtioSidebar'
+import { HawtioBackground } from './HawtioBackground'
+import { HawtioHeader } from './HawtioHeader'
+import { HawtioSidebar } from './HawtioSidebar'
 
-const HawtioPage: React.FunctionComponent = () => {
+export const HawtioPage: React.FunctionComponent = () => {
   const HawtioHome = () => (
     <PageSection variant={PageSectionVariants.light}>
       <EmptyState variant={EmptyStateVariant.full}>
@@ -49,5 +49,3 @@ const HawtioPage: React.FunctionComponent = () => {
     </BrowserRouter>
   )
 }
-
-export default HawtioPage

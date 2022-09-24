@@ -1,13 +1,13 @@
 import imgLogo from '@hawtio/img/hawtio-logo.svg'
 import imgAvatar from '@hawtio/img/img_avatar.svg'
-import HawtioAbout from '@hawtio/ui/about/HawtioAbout'
 import { Avatar, Brand, Dropdown, DropdownItem, DropdownToggle, PageHeader, PageHeaderTools, PageHeaderToolsGroup, PageHeaderToolsItem } from '@patternfly/react-core'
 import { HelpIcon } from '@patternfly/react-icons'
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { HawtioAbout } from '../about/HawtioAbout'
 import './HawtioHeader.css'
 
-const HawtioHeader: React.FunctionComponent = () => {
+export const HawtioHeader: React.FunctionComponent = () => {
   const [helpOpen, setHelpOpen] = useState(false)
   const [userOpen, setUserOpen] = useState(false)
   const [aboutOpen, setAboutOpen] = useState(false)
@@ -85,5 +85,3 @@ const HawtioHeader: React.FunctionComponent = () => {
     </React.Fragment>
   )
 }
-
-export default HawtioHeader

@@ -1,7 +1,5 @@
-import connect from './connect'
+import { connect } from './connect'
 
-const register = () => {
+export const registerPlugins = () => {
   connect()
 }
-
-export default register

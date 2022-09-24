@@ -1,12 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit'
-import reducer from './reducer'
-import HawtioState from './state'
+import { reducer } from './reducer'
+import { HawtioState } from './state'
 
 const state = localStorage['hawtio-state'] ?
   JSON.parse(localStorage['hawtio-state']) : new HawtioState()
 
 //const store = createStore(reducer, state, applyMiddleware(thunk))
-const store = configureStore({
+export const store = configureStore({
   reducer: reducer,
   preloadedState: state,
 })
@@ -14,5 +14,3 @@ const store = configureStore({
 store.subscribe(() =>
   localStorage['hawtio-state'] = JSON.stringify(store.getState())
 )
-
-export default store

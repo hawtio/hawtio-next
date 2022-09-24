@@ -1,5 +1,6 @@
 import React from 'react'
-import preferencesRegistry from './registry'
+import { preferencesRegistry } from './registry'
+
 
 describe('helpRegistry', () => {
   beforeEach(() => preferencesRegistry.reset())

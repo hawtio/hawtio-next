@@ -1,7 +1,7 @@
 import { Button, CardBody, Form, FormGroup, FormSection, Switch } from '@patternfly/react-core'
 import React, { useState } from 'react'
 
-const HomePreferences: React.FunctionComponent = () => {
+export const HomePreferences: React.FunctionComponent = () => {
   const [defaultVerticalNavState, setDefaultVerticalNavState] = useState(true)
 
   const reset = () => {
@@ -47,5 +47,3 @@ const HomePreferences: React.FunctionComponent = () => {
     </CardBody>
   )
 }
-
-export default HomePreferences

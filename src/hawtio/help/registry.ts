@@ -24,6 +24,4 @@ class HelpRegistry {
   }
 }
 
-const helpRegistry = new HelpRegistry()
-
-export default helpRegistry
+export const helpRegistry = new HelpRegistry()

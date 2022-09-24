@@ -7,7 +7,7 @@ type HawtioAboutProps = {
   onClose: () => void
 }
 
-const HawtioAbout: React.FunctionComponent<HawtioAboutProps> = props => {
+export const HawtioAbout: React.FunctionComponent<HawtioAboutProps> = props => {
   return (
     <AboutModal
       isOpen={props.isOpen}
@@ -30,5 +30,3 @@ const HawtioAbout: React.FunctionComponent<HawtioAboutProps> = props => {
     </AboutModal>
   )
 }
-
-export default HawtioAbout

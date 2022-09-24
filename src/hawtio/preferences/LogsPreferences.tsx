@@ -3,7 +3,7 @@ import PlusIcon from '@patternfly/react-icons/dist/esm/icons/plus-icon'
 import TrashIcon from '@patternfly/react-icons/dist/esm/icons/trash-icon'
 import React, { useState } from 'react'
 
-const LogsPreferences: React.FunctionComponent = () => {
+export const LogsPreferences: React.FunctionComponent = () => {
   const [logBuffer, setLogBuffer] = useState('100')
   const [globalLogLevel, setGlobalLogLevel] = useState('INFO')
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -105,5 +105,3 @@ const LogsPreferences: React.FunctionComponent = () => {
     </CardBody>
   )
 }
-
-export default LogsPreferences

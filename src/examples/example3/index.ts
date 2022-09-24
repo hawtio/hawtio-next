@@ -1,7 +1,7 @@
-import Example3 from './Example3'
 import { hawtio } from '@hawtio/core'
+import { Example3 } from './Example3'
 
-const registerExample3 = () => {
+export const registerExample3 = () => {
   hawtio.addPlugin({
     id: 'example3',
     title: 'Example 3',
@@ -9,5 +9,3 @@ const registerExample3 = () => {
     component: Example3,
   })
 }
-
-export default registerExample3

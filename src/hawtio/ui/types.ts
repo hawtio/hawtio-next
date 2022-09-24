@@ -5,4 +5,4 @@ export type HawtioDispatchProps = {
   dispatch: HawtioThunkDispatch
 }
 
-export type HawtioRouteProps<T> = RouteComponentProps<T>
+export type HawtioRouteProps<T extends { [K in keyof T]?: string | undefined }> = RouteComponentProps<T>

@@ -1,5 +1,5 @@
-import helpRegistry from './registry'
 import { jest } from '@jest/globals'
+import { helpRegistry } from './registry'
 
 describe('helpRegistry', () => {
   beforeEach(() => helpRegistry.reset())

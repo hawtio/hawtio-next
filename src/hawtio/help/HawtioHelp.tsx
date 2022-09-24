@@ -3,11 +3,11 @@ import React from 'react'
 import Markdown from 'react-markdown'
 import { BrowserRouter, NavLink, Redirect, Route, Switch, useLocation } from 'react-router-dom'
 import help from './help.md'
-import helpRegistry from './registry'
+import { helpRegistry } from './registry'
 
 helpRegistry.add('home', 'Home', help, 1)
 
-const HawtioHelp: React.FunctionComponent = () => {
+export const HawtioHelp: React.FunctionComponent = () => {
   const location = useLocation()
   const path = (id: string) => `/help/${id}`
   return (
@@ -47,5 +47,3 @@ const HawtioHelp: React.FunctionComponent = () => {
     </BrowserRouter>
   )
 }
-
-export default HawtioHelp

@@ -24,6 +24,4 @@ class PreferencesRegistry {
   }
 }
 
-const preferencesRegistry = new PreferencesRegistry()
-
-export default preferencesRegistry
+export const preferencesRegistry = new PreferencesRegistry()
