@@ -1,11 +1,15 @@
 import { Button, CardBody, Form, FormGroup, FormSection, TextInput } from '@patternfly/react-core'
 import React, { useState } from 'react'
+import { RESET } from './connections'
+import { useConnections } from './context'
 
 const DEFAULT_UPDATE_RATE = 5000
 const DEFAULT_MAX_DEPTH = 7
 const DEFAULT_MAX_COLLECTION_SIZE = 50000
 
 export const ConnectPreferences: React.FunctionComponent = () => {
+  const { dispatch } = useConnections()
+
   const [updateRate, setUpdateRate] = useState(DEFAULT_UPDATE_RATE)
   const [maxDepth, setMaxDepth] = useState(DEFAULT_MAX_DEPTH)
   const [maxCollectionSize, setMaxCollectionSize] = useState(DEFAULT_MAX_COLLECTION_SIZE)
@@ -25,8 +29,8 @@ export const ConnectPreferences: React.FunctionComponent = () => {
   }
 
   const reset = () => {
-    // TODO: impl
-    console.log('TODO - Clear saved connections')
+    console.debug('Clear saved connections')
+    dispatch({ type: RESET })
   }
 
   const JolokiaForm = () => (

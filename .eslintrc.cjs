@@ -11,6 +11,12 @@ module.exports = {
   ],
   rules: {
     'import/no-default-export': 2,
+    '@typescript-eslint/no-empty-function': [
+      2,
+      {
+        'allow': ['constructors']
+      }
+    ],
   },
   root: true,
 }
