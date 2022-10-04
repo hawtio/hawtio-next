@@ -8,7 +8,7 @@
     "build": "craco build",
     "test": "craco test",
     "lint": "yarn eslint src/",
-    "deploy": "cp build/index.html build/200.html && surge build/ hawtio-next.surge.sh"
+    "deploy": "yarn build && cp build/index.html build/200.html && surge build/ hawtio-next.surge.sh"
   },
   "dependencies": {
     "@craco/craco": "^6.4.3",
