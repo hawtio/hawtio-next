@@ -1,4 +1,4 @@
-import { Button, ButtonVariant, DataList, DataListAction, DataListCell, DataListItem, DataListItemCells, DataListItemRow, Dropdown, DropdownItem, DropdownPosition, ExpandableSection, KebabToggle, PageSection, PageSectionVariants, Text, TextContent, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core'
+import { Button, ButtonVariant, DataList, DataListAction, DataListCell, DataListItem, DataListItemCells, DataListItemRow, Dropdown, DropdownItem, DropdownPosition, ExpandableSection, KebabToggle, Modal, ModalVariant, PageSection, PageSectionVariants, Text, TextContent, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core'
 import OutlinedQuestionCircleIcon from '@patternfly/react-icons/dist/esm/icons/outlined-question-circle-icon'
 import PlusIcon from '@patternfly/react-icons/dist/esm/icons/plus-icon'
 import React, { useContext, useState } from 'react'
@@ -69,7 +69,7 @@ export const Connect: React.FunctionComponent = () => {
 }
 
 const ConnectToolbar: React.FunctionComponent = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isAddOpen, setIsAddOpen] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   const initialConnection: Connection = {
@@ -80,13 +80,17 @@ const ConnectToolbar: React.FunctionComponent = () => {
     path: '/hawtio/jolokia'
   }
 
+  const handleAddToggle = () => {
+    setIsAddOpen(!isAddOpen)
+  }
+
   return (
     <Toolbar id="connect-toolbar">
       <ToolbarContent>
         <ToolbarItem>
           <Button
             variant={ButtonVariant.secondary}
-            onClick={() => setIsModalOpen(!isModalOpen)}
+            onClick={handleAddToggle}
           >
             <PlusIcon /> Add connection
           </Button>
@@ -110,8 +114,8 @@ const ConnectToolbar: React.FunctionComponent = () => {
       </ToolbarContent>
       <ConnectModal
         mode="add"
-        isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
+        isOpen={isAddOpen}
+        onClose={handleAddToggle}
         input={initialConnection}
       />
     </Toolbar>
@@ -126,15 +130,20 @@ type ConnectionItemProps = {
 const ConnectionItem: React.FunctionComponent<ConnectionItemProps> = props => {
   const { dispatch } = useContext(ConnectContext)
   const { name, connection } = props
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isEditOpen, setIsEditOpen] = useState(false)
+  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false)
 
   const handleDropdownToggle = () => {
     setIsDropdownOpen(!isDropdownOpen)
   }
 
-  const openModal = () => {
-    setIsModalOpen(true)
+  const handleEditToggle = () => {
+    setIsEditOpen(!isEditOpen)
+  }
+
+  const handleConfirmDeleteToggle = () => {
+    setIsConfirmDeleteOpen(!isConfirmDeleteOpen)
   }
 
   const connect = () => {
@@ -143,7 +152,27 @@ const ConnectionItem: React.FunctionComponent<ConnectionItemProps> = props => {
 
   const deleteConnection = () => {
     dispatch({ type: DELETE, name })
+    setIsConfirmDeleteOpen(false)
   }
+
+  const ConfirmDeleteModal = () => (
+    <Modal
+      variant={ModalVariant.small}
+      title="Delete Connection"
+      isOpen={isConfirmDeleteOpen}
+      onClose={handleConfirmDeleteToggle}
+      actions={[
+        <Button key="confirm" variant="danger" onClick={deleteConnection}>
+          Delete
+        </Button>,
+        <Button key="cancel" variant="link" onClick={handleConfirmDeleteToggle}>
+          Cancel
+        </Button>
+      ]}
+    >
+      You are about to delete the <b>{name}</b> connection.
+    </Modal>
+  )
 
   return (
     <DataListItem key={`connection-${name}`} aria-labelledby={`connection ${name}`}>
@@ -180,24 +209,25 @@ const ConnectionItem: React.FunctionComponent<ConnectionItemProps> = props => {
             dropdownItems={[
               <DropdownItem
                 key={`connection-action-edit-${name}`}
-                onClick={openModal}
+                onClick={handleEditToggle}
               >
                 Edit
               </DropdownItem>,
               <DropdownItem
                 key={`connection-action-delete-${name}`}
-                onClick={deleteConnection}
+                onClick={handleConfirmDeleteToggle}
               >
                 Delete
               </DropdownItem>,
             ]}
           />
+          <ConfirmDeleteModal />
         </DataListAction>
       </DataListItemRow>
       <ConnectModal
         mode="edit"
-        isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
+        isOpen={isEditOpen}
+        onClose={handleEditToggle}
         input={connection}
       />
     </DataListItem>

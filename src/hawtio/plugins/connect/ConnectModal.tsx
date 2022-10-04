@@ -8,8 +8,8 @@ import { ConnectContext } from './context'
 
 type ConnectModalProps = {
   mode: 'add' | 'edit'
-  isModalOpen: boolean
-  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>
+  isOpen: boolean
+  onClose: () => void
   input: Connection
 }
 
@@ -34,7 +34,7 @@ const emptyResult: Validations = {
 
 export const ConnectModal: React.FunctionComponent<ConnectModalProps> = props => {
   const { connections, dispatch } = useContext(ConnectContext)
-  const { mode, isModalOpen, setIsModalOpen, input } = props
+  const { mode, isOpen, onClose, input } = props
 
   const [connection, setConnection] = useState(input)
   const [validations, setValidations] = useState(emptyResult)
@@ -117,7 +117,7 @@ export const ConnectModal: React.FunctionComponent<ConnectModalProps> = props =>
   const clear = () => {
     setConnection(input)
     setValidations(emptyResult)
-    setIsModalOpen(false)
+    onClose()
   }
 
   const modalTitle = (mode === 'add' ? 'Add' : 'Edit') + ' Connection'
@@ -126,7 +126,7 @@ export const ConnectModal: React.FunctionComponent<ConnectModalProps> = props =>
     <Modal
       variant={ModalVariant.small}
       title={modalTitle}
-      isOpen={isModalOpen}
+      isOpen={isOpen}
       onClose={clear}
       actions={[
         <Button key="save" variant={ButtonVariant.primary} form="connection-form" onClick={save}>
