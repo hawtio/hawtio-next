@@ -1,4 +1,5 @@
 
+import { HawtioContextProvider } from '@hawtio/context'
 import { bootstrap } from '@hawtio/core'
 import { Hawtio } from '@hawtio/Hawtio'
 import { registerPlugins } from '@hawtio/plugins'
@@ -16,7 +17,9 @@ bootstrap()
 
 ReactDOM.render(
   <React.StrictMode>
-    <Hawtio />
+    <HawtioContextProvider>
+      <Hawtio />
+    </HawtioContextProvider>
   </React.StrictMode>,
   document.getElementById('root')
 )

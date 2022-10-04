@@ -1,10 +1,10 @@
 import imgLogo from '@hawtio/img/hawtio-logo.svg'
 import imgAvatar from '@hawtio/img/img_avatar.svg'
+import { HawtioAbout } from '@hawtio/ui/about/HawtioAbout'
 import { Avatar, Brand, Dropdown, DropdownItem, DropdownToggle, PageHeader, PageHeaderTools, PageHeaderToolsGroup, PageHeaderToolsItem } from '@patternfly/react-core'
 import { HelpIcon } from '@patternfly/react-icons'
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { HawtioAbout } from '../about/HawtioAbout'
 import './HawtioHeader.css'
 
 export const HawtioHeader: React.FunctionComponent = () => {
