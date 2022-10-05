@@ -37,6 +37,7 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.38.0",
     "@typescript-eslint/parser": "^5.38.0",
+    "cz-conventional-changelog": "3.3.0",
     "eslint": "^8.24.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-react-hooks": "^4.6.0"
@@ -66,5 +67,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
   }
 }
