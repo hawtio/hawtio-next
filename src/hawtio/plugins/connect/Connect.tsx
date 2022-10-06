@@ -148,6 +148,7 @@ const ConnectionItem: React.FunctionComponent<ConnectionItemProps> = props => {
 
   const connect = () => {
     // TODO: impl
+    console.log('Collecting:', connection)
   }
 
   const deleteConnection = () => {

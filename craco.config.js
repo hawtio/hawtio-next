@@ -1,4 +1,5 @@
 const path = require('path')
+const { hawtioBackend } = require('@hawtio/backend-middleware')
 
 module.exports = {
   webpack: {
@@ -15,4 +16,18 @@ module.exports = {
       return config
     }
   },
+  devServer: {
+    setupMiddlewares: (middlewares) => {
+      middlewares.push({
+        name: 'hawtio-backend',
+        path: '/proxy',
+        middleware: hawtioBackend({
+          // Uncomment it if you want to see debug log for Hawtio backend
+          logLevel: 'debug',
+        })
+      })
+
+      return middlewares
+    }
+  }
 }

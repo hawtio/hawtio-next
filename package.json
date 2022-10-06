@@ -35,6 +35,7 @@
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
+    "@hawtio/backend-middleware": "^1.0.1",
     "@typescript-eslint/eslint-plugin": "^5.38.0",
     "@typescript-eslint/parser": "^5.38.0",
     "cz-conventional-changelog": "3.3.0",
