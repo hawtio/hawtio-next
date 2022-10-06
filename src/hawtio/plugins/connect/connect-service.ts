@@ -30,6 +30,11 @@ class ConnectService {
     return url
   }
 
+  async checkReachable(connection: Connection): Promise<boolean> {
+    const result = await this.testConnection(connection)
+    return result.ok
+  }
+
   async testConnection(connection: Connection): Promise<ConnectionTestResult> {
     console.debug('Testing connection', toString(connection))
     return new Promise<ConnectionTestResult>((resolve, reject) => {

@@ -1,7 +1,9 @@
 import { Button, ButtonVariant, DataList, DataListAction, DataListCell, DataListItem, DataListItemCells, DataListItemRow, Dropdown, DropdownItem, DropdownPosition, ExpandableSection, KebabToggle, Modal, ModalVariant, PageSection, PageSectionVariants, Text, TextContent, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core'
 import OutlinedQuestionCircleIcon from '@patternfly/react-icons/dist/esm/icons/outlined-question-circle-icon'
+import PluggedIcon from '@patternfly/react-icons/dist/esm/icons/plugged-icon'
 import PlusIcon from '@patternfly/react-icons/dist/esm/icons/plus-icon'
-import React, { useContext, useState } from 'react'
+import UnpluggedIcon from '@patternfly/react-icons/dist/esm/icons/unplugged-icon'
+import React, { useContext, useEffect, useState } from 'react'
 import { connectService } from './connect-service'
 import { Connection, DELETE } from './connections'
 import { ConnectModal } from './ConnectModal'
@@ -130,9 +132,17 @@ type ConnectionItemProps = {
 const ConnectionItem: React.FunctionComponent<ConnectionItemProps> = props => {
   const { dispatch } = useContext(ConnectContext)
   const { name, connection } = props
+  const [reachable, setReachable] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false)
+
+  useEffect(() => {
+    connectService.checkReachable(connection)
+      .then(result => {
+        setReachable(result)
+      })
+  })
 
   const handleDropdownToggle = () => {
     setIsDropdownOpen(!isDropdownOpen)
@@ -180,6 +190,9 @@ const ConnectionItem: React.FunctionComponent<ConnectionItemProps> = props => {
       <DataListItemRow>
         <DataListItemCells
           dataListCells={[
+            <DataListCell key={`connection-cell-icon-${name}`} isIcon>
+              {reachable ? <PluggedIcon color="green" /> : <UnpluggedIcon color="red" />}
+            </DataListCell>,
             <DataListCell key={`connection-cell-name-${name}`}>
               <b>{name}</b>
             </DataListCell>,
