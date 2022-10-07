@@ -118,6 +118,18 @@ class ConnectService {
     // Otherwise expect a response header containing a forbidden reason
     return response.getResponseHeader("Hawtio-Forbidden-Reason") === reason
   }
+
+  export(connections: Connections) {
+    const content = JSON.stringify(Object.values(connections), null, '  ')
+    const url = URL.createObjectURL(new Blob([content], { type: 'application/json' }))
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `hawtio-connections-${Date.now()}.json`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
 }
 
 export const connectService = new ConnectService()

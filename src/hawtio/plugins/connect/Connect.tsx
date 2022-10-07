@@ -71,6 +71,7 @@ export const Connect: React.FunctionComponent = () => {
 }
 
 const ConnectToolbar: React.FunctionComponent = () => {
+  const { connections } = useContext(ConnectContext)
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
@@ -84,6 +85,10 @@ const ConnectToolbar: React.FunctionComponent = () => {
 
   const handleAddToggle = () => {
     setIsAddOpen(!isAddOpen)
+  }
+
+  const exportConnections = () => {
+    connectService.export(connections)
   }
 
   return (
@@ -107,7 +112,7 @@ const ConnectToolbar: React.FunctionComponent = () => {
               <DropdownItem key="connect-toolbar-dropdown-import" isDisabled>
                 Import connections
               </DropdownItem>,
-              <DropdownItem key="connect-toolbar-dropdown-export" isDisabled>
+              <DropdownItem key="connect-toolbar-dropdown-export" onClick={exportConnections}>
                 Export connections
               </DropdownItem>,
             ]}
