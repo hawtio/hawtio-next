@@ -8,11 +8,14 @@ export const HawtioSidebar: React.FunctionComponent = () => {
   const PageNav = (
     <Nav theme="dark">
       <NavList>
-        {hawtio.getPlugins().map(plugin => (
-          <NavItem key={plugin.id} isActive={plugin.path === location.pathname}>
-            <NavLink to={plugin.path}>{plugin.title}</NavLink>
-          </NavItem>
-        ))}
+        {hawtio.getPlugins()
+          .filter(plugin => plugin.isActive?.() !== false)
+          .map(plugin => (
+            <NavItem key={plugin.id} isActive={plugin.path === location.pathname}>
+              <NavLink to={plugin.path}>{plugin.title}</NavLink>
+            </NavItem>
+          ))
+        }
       </NavList>
     </Nav>
   )

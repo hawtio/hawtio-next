@@ -3,6 +3,7 @@ export interface Plugin {
   title: string
   path: string
   component: React.ComponentType<unknown>
+  isActive?: () => boolean
 }
 
 type Plugins = {

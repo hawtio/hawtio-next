@@ -246,8 +246,8 @@ class JolokiaService {
     ))
   }
 
-  getJolokiaUrl(): string {
-    return this.jolokiaUrl ? this.jolokiaUrl : ''
+  getJolokiaUrl(): string | null {
+    return this.jolokiaUrl
   }
 
   loadJolokiaParams(): IParams {
@@ -256,7 +256,9 @@ class JolokiaService {
     if (stored) {
       params = Object.assign(params, JSON.parse(stored))
     }
-    params.url = this.getJolokiaUrl()
+    if (this.jolokiaUrl) {
+      params.url = this.jolokiaUrl
+    }
     return params
   }
 

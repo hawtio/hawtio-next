@@ -29,12 +29,15 @@ export const HawtioPage: React.FunctionComponent = () => {
       >
         <Switch>
           {/* plugins */}
-          {hawtio.getPlugins().map(plugin => (
-            <Route
-              key={plugin.id}
-              path={plugin.path}
-              component={plugin.component} />
-          ))}
+          {hawtio.getPlugins()
+            .filter(plugin => plugin.isActive?.() !== false)
+            .map(plugin => (
+              <Route
+                key={plugin.id}
+                path={plugin.path}
+                component={plugin.component} />
+            ))
+          }
           <Route path='/help'>
             <HawtioHelp />
           </Route>

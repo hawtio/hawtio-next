@@ -11,7 +11,7 @@ import { ConnectContext, useConnections } from './context'
 
 export const Connect: React.FunctionComponent = () => {
   const { connections, dispatch } = useConnections()
-  console.debug(connections)
+  console.debug('Connections:', connections)
 
   const ConnectHint = () => (
     <ExpandableSection
