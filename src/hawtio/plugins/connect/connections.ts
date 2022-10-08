@@ -13,6 +13,7 @@ export interface Connection {
   jolokiaUrl?: string
   username?: string
   password?: string
+  token?: string
 }
 
 export const ADD = 'ADD'

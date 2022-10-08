@@ -8,17 +8,24 @@ export type ConnectionTestResult = {
   message: string
 }
 
-const KEY_CONNECTIONS = 'connections'
+const STORAGE_KEY_CONNECTIONS = 'connections'
+
+export const PARAM_KEY_CONNECTION = 'con'
 
 class ConnectService {
 
   loadConnections(): Connections {
-    const conns = localStorage.getItem(KEY_CONNECTIONS)
+    const conns = localStorage.getItem(STORAGE_KEY_CONNECTIONS)
     return conns ? JSON.parse(conns) : {}
   }
 
   saveConnections(connections: Connections) {
-    localStorage.setItem(KEY_CONNECTIONS, JSON.stringify(connections))
+    localStorage.setItem(STORAGE_KEY_CONNECTIONS, JSON.stringify(connections))
+  }
+
+  getConnection(name: string): Connection | null {
+    const connections = this.loadConnections()
+    return connections[name]
   }
 
   connectionToUrl(connection: Connection): string {
@@ -35,8 +42,8 @@ class ConnectService {
     return result.ok
   }
 
-  async testConnection(connection: Connection): Promise<ConnectionTestResult> {
-    console.debug('Testing connection', toString(connection))
+  testConnection(connection: Connection): Promise<ConnectionTestResult> {
+    console.debug('Testing connection:', toString(connection))
     return new Promise<ConnectionTestResult>((resolve, reject) => {
       try {
         this.createJolokia(connection).request(
@@ -71,7 +78,7 @@ class ConnectService {
 
   connect(connection: Connection) {
     console.log('Connecting with options:', toString(connection))
-    const url = `/?con=${connection.name}`
+    const url = `/?${PARAM_KEY_CONNECTION}=${connection.name}`
     window.open(url)
   }
 
@@ -99,10 +106,10 @@ class ConnectService {
   /**
    * Get the Jolokia URL for the given connection.
    */
-  private getJolokiaUrl(connection: Connection): string {
+  getJolokiaUrl(connection: Connection): string {
     console.debug("Connect to server with connection:", toString(connection))
     if (connection.jolokiaUrl) {
-      console.debug("Using URL:", connection.jolokiaUrl)
+      console.debug("Using provided URL:", connection.jolokiaUrl)
       return connection.jolokiaUrl
     }
 
@@ -114,6 +121,14 @@ class ConnectService {
       connection.path)
     console.debug("Using URL:", url)
     return url
+  }
+
+  /**
+   * Get the Jolokia URL for the given connection name.
+   */
+  getJolokiaUrlFromName(name: string): string | null {
+    const connection = this.getConnection(name)
+    return connection ? this.getJolokiaUrl(connection) : null
   }
 
   private forbiddenReasonMatches(response: JQueryXHR, reason: string): boolean {
