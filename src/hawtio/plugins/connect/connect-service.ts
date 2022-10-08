@@ -69,6 +69,12 @@ class ConnectService {
     })
   }
 
+  connect(connection: Connection) {
+    console.log('Connecting with options:', toString(connection))
+    const url = `/?con=${connection.name}`
+    window.open(url)
+  }
+
   /**
    * Create a Jolokia instance with the given connection.
    */

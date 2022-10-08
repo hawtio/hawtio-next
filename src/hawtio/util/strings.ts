@@ -25,7 +25,7 @@ export function toString(obj: unknown): string {
   const strs = Object.entries(obj).map(([key, value]) => {
     let obscured = value
     if (key.toLowerCase() === 'password') {
-      obscured = obfusicate(value)
+      obscured = obfuscate(value)
     } else if (typeof value === 'object') {
       obscured = toString(obscured)
     }
@@ -37,7 +37,7 @@ export function toString(obj: unknown): string {
 /**
  * Convert a string into a bunch of '*' of the same length.
  */
-export function obfusicate(str: string): string {
+export function obfuscate(str: string): string {
   if (typeof str !== 'string') {
     return ''
   }

@@ -162,23 +162,28 @@ const ConnectionItem: React.FunctionComponent<ConnectionItemProps> = props => {
   }
 
   const connect = () => {
-    // TODO: impl
+    if (!reachable) {
+      return
+    }
+
     console.log('Collecting:', connection)
+    connectService.connect(connection)
   }
 
   const deleteConnection = () => {
     dispatch({ type: DELETE, name })
-    setIsConfirmDeleteOpen(false)
+    handleConfirmDeleteToggle()
   }
 
   const ConfirmDeleteModal = () => (
     <Modal
       variant={ModalVariant.small}
       title="Delete Connection"
+      titleIconVariant="danger"
       isOpen={isConfirmDeleteOpen}
       onClose={handleConfirmDeleteToggle}
       actions={[
-        <Button key="confirm" variant="danger" onClick={deleteConnection}>
+        <Button key="delete" variant="danger" onClick={deleteConnection}>
           Delete
         </Button>,
         <Button key="cancel" variant="link" onClick={handleConfirmDeleteToggle}>
@@ -215,6 +220,7 @@ const ConnectionItem: React.FunctionComponent<ConnectionItemProps> = props => {
             key={`connection-action-connect-${name}`}
             variant="primary"
             onClick={connect}
+            isDisabled={!reachable}
             isSmall
           >
             Connect
