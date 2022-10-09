@@ -28,17 +28,12 @@ const JOLOKIA_PATHS = [
 ] as const
 
 enum JolokiaListMethod {
-  // constant meaning that general LIST+EXEC Jolokia operations should be used
-  LIST_GENERAL = "list",
-  // constant meaning that optimized hawtio:type=security,name=RBACRegistry may be used
-  LIST_OPTIMISED = "list_optimised",
-  // when we get this status, we have to try checking again after logging in
-  LIST_CANT_DETERMINE = "cant_determine"
-}
-
-export interface JolokiaStatus {
-  listMethod: JolokiaListMethod
-  listMBean: string
+  /** The default LIST+EXEC Jolokia operations. */
+  DEFAULT,
+  /** The optimised list operations provided by hawtio:type=security,name=RBACRegistry mbean. */
+  OPTIMISED,
+  /** Not determined. */
+  UNDETERMINED,
 }
 
 /**
@@ -47,21 +42,26 @@ export interface JolokiaStatus {
  */
 const OPTIMISED_JOLOKIA_LIST_MBEAN = "hawtio:type=security,name=RBACRegistry"
 
+export interface JolokiaList {
+  method: JolokiaListMethod
+  mbean: string
+}
+
 export const STORAGE_KEY_JOLOKIA_PARAMS = 'jolokiaParams'
 export const STORAGE_KEY_UPDATE_RATE = 'jolokiaUpdateRate'
 
 class JolokiaService {
   private jolokiaUrl: string | null = null
   private jolokia: IJolokia | null = null
-  private status: JolokiaStatus = {
-    listMethod: JolokiaListMethod.LIST_GENERAL,
-    listMBean: OPTIMISED_JOLOKIA_LIST_MBEAN,
+  private list: JolokiaList = {
+    method: JolokiaListMethod.DEFAULT,
+    mbean: OPTIMISED_JOLOKIA_LIST_MBEAN,
   }
 
   constructor() {
     const init = async () => {
       await this.initJolokiaUrl()
-      this.jolokia = this.createJolokia()
+      this.jolokia = await this.createJolokia()
     }
     init()
   }
@@ -127,7 +127,7 @@ class JolokiaService {
     })
   }
 
-  private createJolokia(): IJolokia {
+  private async createJolokia(): Promise<IJolokia> {
     if (!this.jolokiaUrl) {
       log.debug("Use dummy Jolokia")
       return new DummyJolokia()
@@ -148,7 +148,7 @@ class JolokiaService {
     jolokia.stop()
 
     // let's check if we can call faster jolokia.list()
-    this.checkJolokiaOptimisation(jolokia)
+    await this.checkListOptimisation(jolokia)
 
     return jolokia
   }
@@ -231,19 +231,23 @@ class JolokiaService {
    *
    * @param jolokia Jolokia instance to use
    */
-  private checkJolokiaOptimisation(jolokia: IJolokia) {
-    log.debug("Checking if we can call optimized jolokia.list() operation")
-    jolokia.list(escapeMBeanPath(this.status.listMBean), options(
-      (response: IResponse) => {
-        if (isObject(response?.value?.op)) {
-          this.status.listMethod = JolokiaListMethod.LIST_OPTIMISED
-        } else {
-          // we could get 403 error, mark the method as special case, equal in practice with LIST_GENERAL
-          this.status.listMethod = JolokiaListMethod.LIST_CANT_DETERMINE
+  private checkListOptimisation(jolokia: IJolokia) {
+    log.debug("Check if we can call optimised jolokia.list() operation")
+    return new Promise<void>((resolve) => {
+      jolokia.list(escapeMBeanPath(this.list.mbean), options(
+        (response: IResponse) => {
+          if (isObject(response?.value?.op)) {
+            this.list.method = JolokiaListMethod.OPTIMISED
+          } else {
+            // we could get 403 error, mark the method as special case,
+            // equal in practice with LIST=GENERAL
+            this.list.method = JolokiaListMethod.UNDETERMINED
+          }
+          log.debug("Jolokia list method:", this.list.method)
+          resolve()
         }
-        log.debug("Jolokia list method:", this.status.listMethod)
-      }
-    ))
+      ))
+    })
   }
 
   getJolokiaUrl(): string | null {

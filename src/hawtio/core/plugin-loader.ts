@@ -23,12 +23,12 @@ class PluginLoader {
   /**
    * List of URLs that the plugin loader will try and discover plugins from.
    */
-  private urls: string[] = [];
+  private urls: string[] = []
 
   /**
    * Holds all of the Hawtio plugins that need to be bootstrapped.
    */
-  private plugins: Plugins = {};
+  private plugins: Plugins = {}
 
   /**
    * Add an angular module to the list of modules to bootstrap.
