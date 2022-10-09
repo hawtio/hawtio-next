@@ -77,7 +77,8 @@ export const HawtioHeader: React.FunctionComponent = () => {
     <React.Fragment>
       <PageHeader
         logo={<Brand src={imgLogo} alt="Hawtio Management Console" />}
-        logoProps={{ href: '/' }}
+        logoComponent={Link}
+        logoProps={{ to: '/' }}
         headerTools={HeaderTools}
         showNavToggle
       />
