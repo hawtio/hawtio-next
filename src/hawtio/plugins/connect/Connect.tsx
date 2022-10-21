@@ -143,11 +143,14 @@ const ConnectionItem: React.FunctionComponent<ConnectionItemProps> = props => {
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false)
 
   useEffect(() => {
-    connectService.checkReachable(connection)
-      .then(result => {
-        setReachable(result)
-      })
-  })
+    const check = () => {
+      connectService.checkReachable(connection)
+        .then(result => setReachable(result))
+    }
+    check() // initial fire
+    const timer = setInterval(check, 20000)
+    return () => clearInterval(timer)
+  }, [connection])
 
   const handleDropdownToggle = () => {
     setIsDropdownOpen(!isDropdownOpen)
