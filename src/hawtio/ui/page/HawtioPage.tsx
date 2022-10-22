@@ -4,12 +4,16 @@ import { HawtioPreferences } from '@hawtio/preferences/HawtioPreferences'
 import { EmptyState, EmptyStateIcon, EmptyStateVariant, Page, PageSection, PageSectionVariants, Title } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons'
 import React from 'react'
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { Redirect, Route, Switch, useLocation } from 'react-router-dom'
 import { HawtioBackground } from './HawtioBackground'
 import { HawtioHeader } from './HawtioHeader'
 import { HawtioSidebar } from './HawtioSidebar'
 
+const log = console
+
 export const HawtioPage: React.FunctionComponent = () => {
+  const { search } = useLocation()
+
   const HawtioHome = () => (
     <PageSection variant={PageSectionVariants.light}>
       <EmptyState variant={EmptyStateVariant.full}>
@@ -19,8 +23,15 @@ export const HawtioPage: React.FunctionComponent = () => {
     </PageSection>
   )
 
+  log.debug('Plugins:', hawtio.getPlugins())
+
+  const defaultPlugin = hawtio.defaultPlugin()
+  const defaultPage = defaultPlugin ? <Redirect to={{
+    pathname: defaultPlugin.path, search
+  }} /> : <HawtioHome />
+
   return (
-    <BrowserRouter>
+    <React.Fragment>
       <HawtioBackground />
       <Page
         header={<HawtioHeader />}
@@ -38,17 +49,17 @@ export const HawtioPage: React.FunctionComponent = () => {
                 component={plugin.component} />
             ))
           }
-          <Route path='/help'>
+          <Route key='help' path='/help'>
             <HawtioHelp />
           </Route>
-          <Route path='/preferences'>
+          <Route key='preferences' path='/preferences'>
             <HawtioPreferences />
           </Route>
-          <Route path='/'>
-            <HawtioHome />
+          <Route key='root' path='/' >
+            {defaultPage}
           </Route>
         </Switch>
       </Page>
-    </BrowserRouter>
+    </React.Fragment>
   )
 }

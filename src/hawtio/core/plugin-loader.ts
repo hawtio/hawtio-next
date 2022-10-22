@@ -62,7 +62,11 @@ class PluginLoader {
   }
 
   getPlugins(): Plugin[] {
-    return Object.entries(this.plugins).map(entry => entry[1])
+    return Object.values(this.plugins)
+  }
+
+  defaultPlugin(): Plugin | null {
+    return this.getPlugins().filter(plugin => plugin.isActive?.() !== false)[0] || null
   }
 
 }
