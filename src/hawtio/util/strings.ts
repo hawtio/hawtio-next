@@ -1,3 +1,9 @@
+export function isString(value: unknown): boolean {
+  if (value != null && typeof value.valueOf() === 'string') {
+    return true
+  }
+  return false
+}
 
 /**
  * Return true if the string is either null or empty.

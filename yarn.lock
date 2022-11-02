@@ -2202,15 +2202,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hawtio/backend-middleware@npm:^1.0.1":
-  version: 1.0.2
-  resolution: "@hawtio/backend-middleware@npm:1.0.2"
+"@hawtio/backend-middleware@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "@hawtio/backend-middleware@npm:1.0.3"
   dependencies:
     "@bitauth/libauth": ^1.17.1
     axios: ^1.0.0
     express: ^4.18.1
     js-logger: ^1.6.1
-  checksum: 843de6a64ff5c945cfb6d206b01c8dc3e471dfe5bd15423c36a1fb24b18e1bd7c9e85702bc7034db1fbca0ec8f93cfa2d7c64152c0a2d0be0498cc1dd272e34a
+  checksum: 2042a7c6055e192d14adf0909a2d87e93c865b28f580f39fb1050f45bc40cb13fe7c430d7e2e3055dfa8b175ff278d86d740b4f5d91df84364b2c189ebc4911d
   languageName: node
   linkType: hard
 
@@ -5061,17 +5061,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001332":
-  version: 1.0.30001338
-  resolution: "caniuse-lite@npm:1.0.30001338"
-  checksum: 80ac481b20aac13d6168825762e2ad9b9895d36451088b921400c3cd818185e6d113c2d202e82cf3b88f4d2311b3064507f2e3f9fe9f0935fcaf42d9d4f15570
-  languageName: node
-  linkType: hard
-
-"caniuse-lite@npm:^1.0.30001335, caniuse-lite@npm:^1.0.30001349":
-  version: 1.0.30001352
-  resolution: "caniuse-lite@npm:1.0.30001352"
-  checksum: 575ad031349e56224471859decd100d0f90c804325bf1b543789b212d6126f6e18925766b325b1d96f75e48df0036e68f92af26d1fb175803fd6ad935bc807ac
+"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001332, caniuse-lite@npm:^1.0.30001335, caniuse-lite@npm:^1.0.30001349":
+  version: 1.0.30001429
+  resolution: "caniuse-lite@npm:1.0.30001429"
+  checksum: d1658080248ef5ef0f5157423b2766026e6aa45642ce3b2cc74859b6a54e39881dd902397a2368324ed30ed0cd40250f11a4a4f3773453cd57b88db5e5e5c76a
   languageName: node
   linkType: hard
 
@@ -7920,7 +7913,7 @@ __metadata:
   resolution: "hawtio-next@workspace:."
   dependencies:
     "@craco/craco": ^6.4.3
-    "@hawtio/backend-middleware": ^1.0.1
+    "@hawtio/backend-middleware": ^1.0.3
     "@patternfly/react-core": ^4.221.3
     "@testing-library/jest-dom": ^5.16.4
     "@testing-library/react": ^12.1.5
@@ -7937,7 +7930,7 @@ __metadata:
     eslint: ^8.24.0
     eslint-plugin-import: ^2.26.0
     eslint-plugin-react-hooks: ^4.6.0
-    jolokia.js: ^1.7.1
+    jolokia.js: 1.7.1-4
     jquery: ^3.6.1
     react: ^17.0.2
     react-dom: ^17.0.2
@@ -7945,6 +7938,7 @@ __metadata:
     react-redux: ^8.0.2
     react-router-dom: ^5.3.3
     react-scripts: 5.0.1
+    superstruct: ^0.16.5
     typescript: ^4.8.3
     web-vitals: ^2.1.4
   languageName: unknown
@@ -9340,12 +9334,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jolokia.js@npm:^1.7.1":
-  version: 1.7.1
-  resolution: "jolokia.js@npm:1.7.1"
+"jolokia.js@npm:1.7.1-4":
+  version: 1.7.1-4
+  resolution: "jolokia.js@npm:1.7.1-4"
   dependencies:
     "@types/jquery": ^3.5.14
-  checksum: 448e1328c154b35e099b98b803706e41dcfcefdaa6b13582552112602eff6ad6913c45f4e5d2102768a9d594f7af00f1f445908bc5e936b72ef1877f7519b0da
+  checksum: 5659c1211ed4e885baa52d1e718ae2e92cd8e4cff3d34e82e32b716c2bc6aa622e943dfa8aff566a5e62186a266f4b5c20f66efde54cd8739f73053a8bf67e95
   languageName: node
   linkType: hard
 
@@ -13621,6 +13615,13 @@ __metadata:
   peerDependencies:
     postcss: ^8.2.15
   checksum: 310b3452c11fd443b0d327aa2d5b43ae7479407339204b7ad11cf2e16d33b690c1cbf47a21b737ef112411e53563f0f996c5fa3642d135c896329950a008277f
+  languageName: node
+  linkType: hard
+
+"superstruct@npm:^0.16.5":
+  version: 0.16.7
+  resolution: "superstruct@npm:0.16.7"
+  checksum: c8c855ff6945da8a41048c6d236de7b1af5d4d9c31742b3ee54d65647c31597488620281f65e095d5efc9e2fbdaad529b8c8f2506c12569d428467c835a21477
   languageName: node
   linkType: hard
 

@@ -1,8 +1,10 @@
 import { userService } from '@hawtio/auth'
 import { getCookie } from '@hawtio/util/cookies'
-import { escapeMBeanPath, options } from '@hawtio/util/jolokia'
+import { escapeMBeanPath, onListSuccess } from '@hawtio/util/jolokia'
 import { isObject } from '@hawtio/util/objects'
-import Jolokia, { IJolokia, IParams, IResponse, IVersion } from 'jolokia.js'
+import Jolokia, { IAjaxErrorFn, IJmxDomain, IJmxDomains, IJmxMBean, IJolokia, IListOptions, IOptions, ISearchOptions, ISimpleOptions, IVersion, IVersionOptions } from 'jolokia.js'
+import $ from 'jquery'
+import { func, is, object } from 'superstruct'
 import { connectService, PARAM_KEY_CONNECTION } from './connect-service'
 import { Connection } from './connections'
 
@@ -10,7 +12,7 @@ const log = console
 
 const DEFAULT_MAX_DEPTH = 7
 const DEFAULT_MAX_COLLECTION_SIZE = 50000
-const DEFAULT_JOLOKIA_PARAMS: IParams = {
+const DEFAULT_JOLOKIA_OPTIONS: IOptions = {
   method: 'POST',
   mimeType: 'application/json',
   maxCollectionSize: DEFAULT_MAX_COLLECTION_SIZE,
@@ -30,7 +32,7 @@ const JOLOKIA_PATHS = [
 enum JolokiaListMethod {
   /** The default LIST+EXEC Jolokia operations. */
   DEFAULT,
-  /** The optimised list operations provided by hawtio:type=security,name=RBACRegistry mbean. */
+  /** The optimised list operations provided by Hawtio RBACRegistry MBean. */
   OPTIMISED,
   /** Not determined. */
   UNDETERMINED,
@@ -42,18 +44,18 @@ enum JolokiaListMethod {
  */
 const OPTIMISED_JOLOKIA_LIST_MBEAN = "hawtio:type=security,name=RBACRegistry"
 
-export interface JolokiaList {
+export interface JolokiaConfig {
   method: JolokiaListMethod
   mbean: string
 }
 
-export const STORAGE_KEY_JOLOKIA_PARAMS = 'jolokiaParams'
-export const STORAGE_KEY_UPDATE_RATE = 'jolokiaUpdateRate'
+export const STORAGE_KEY_JOLOKIA_OPTIONS = 'connect.jolokia.options'
+export const STORAGE_KEY_UPDATE_RATE = 'connect.jolokia.updateRate'
 
 class JolokiaService {
   private jolokiaUrl: string | null = null
   private jolokia: IJolokia | null = null
-  private list: JolokiaList = {
+  private config: JolokiaConfig = {
     method: JolokiaListMethod.DEFAULT,
     mbean: OPTIMISED_JOLOKIA_LIST_MBEAN,
   }
@@ -139,12 +141,12 @@ class JolokiaService {
       $.ajaxSetup({ beforeSend: this.beforeSend() })
     }
 
-    const jolokiaParams = this.loadJolokiaParams()
-    if (!jolokiaParams.ajaxError) {
-      jolokiaParams.ajaxError = this.ajaxError()
+    const options = this.loadJolokiaOptions()
+    if (!options.ajaxError) {
+      options.ajaxError = this.ajaxError()
     }
 
-    const jolokia = new Jolokia(jolokiaParams)
+    const jolokia = new Jolokia(options)
     jolokia.stop()
 
     // let's check if we can call faster jolokia.list()
@@ -185,7 +187,7 @@ class JolokiaService {
     }
   }
 
-  private ajaxError(): JQueryAjaxError {
+  private ajaxError(): IAjaxErrorFn {
     const errorThreshold = 2
     let errorCount = 0
     return (xhr: JQueryXHR) => {
@@ -231,19 +233,21 @@ class JolokiaService {
    *
    * @param jolokia Jolokia instance to use
    */
-  private checkListOptimisation(jolokia: IJolokia) {
+  private checkListOptimisation(jolokia: IJolokia): Promise<void> {
     log.debug("Check if we can call optimised jolokia.list() operation")
     return new Promise<void>((resolve) => {
-      jolokia.list(escapeMBeanPath(this.list.mbean), options(
-        (response: IResponse) => {
-          if (isObject(response?.value?.op)) {
-            this.list.method = JolokiaListMethod.OPTIMISED
+      jolokia.list(escapeMBeanPath(this.config.mbean), onListSuccess(
+        (value: IJmxDomains | IJmxDomain | IJmxMBean) => {
+          // check if the MBean exists by testing whether the returned value has
+          // the 'op' property
+          if (isObject(value?.op)) {
+            this.config.method = JolokiaListMethod.OPTIMISED
           } else {
             // we could get 403 error, mark the method as special case,
-            // equal in practice with LIST=GENERAL
-            this.list.method = JolokiaListMethod.UNDETERMINED
+            // which equals LIST=GENERAL in practice
+            this.config.method = JolokiaListMethod.UNDETERMINED
           }
-          log.debug("Jolokia list method:", this.list.method)
+          log.debug("Jolokia list method:", this.config.method)
           resolve()
         }
       ))
@@ -254,20 +258,20 @@ class JolokiaService {
     return this.jolokiaUrl
   }
 
-  loadJolokiaParams(): IParams {
-    let params = { ...DEFAULT_JOLOKIA_PARAMS }
-    const stored = localStorage.getItem(STORAGE_KEY_JOLOKIA_PARAMS)
+  loadJolokiaOptions(): IOptions {
+    let opts = { ...DEFAULT_JOLOKIA_OPTIONS }
+    const stored = localStorage.getItem(STORAGE_KEY_JOLOKIA_OPTIONS)
     if (stored) {
-      params = Object.assign(params, JSON.parse(stored))
+      opts = Object.assign(opts, JSON.parse(stored))
     }
     if (this.jolokiaUrl) {
-      params.url = this.jolokiaUrl
+      opts.url = this.jolokiaUrl
     }
-    return params
+    return opts
   }
 
-  saveJolokiaParams(params: IParams) {
-    localStorage.setItem(STORAGE_KEY_JOLOKIA_PARAMS, JSON.stringify(params))
+  saveJolokiaOptions(params: IOptions) {
+    localStorage.setItem(STORAGE_KEY_JOLOKIA_OPTIONS, JSON.stringify(params))
   }
 
   loadUpdateRate(): number {
@@ -280,7 +284,6 @@ class JolokiaService {
   }
 }
 
-type JQueryAjaxError = ((xhr: JQueryXHR, text: string, error: string) => void) | undefined
 type JQueryBeforeSend = (this: unknown, jqXHR: JQueryXHR, settings: unknown) => false | void
 
 /**
@@ -293,13 +296,20 @@ class DummyJolokia implements IJolokia {
 
   request(...args: unknown[]) { return null }
 
-  getAttribute(mbean: string, attribute: string, path?: string | IParams, opts?: IParams) { return null }
-  setAttribute(mbean: string, attribute: string, value: unknown, path?: string | IParams, opts?: IParams) { /* no-op */ }
+  getAttribute(mbean: string, attribute: string, path?: string | ISimpleOptions, opts?: ISimpleOptions) { return null }
+  setAttribute(mbean: string, attribute: string, value: unknown, path?: string | ISimpleOptions, opts?: ISimpleOptions) { /* no-op */ }
 
-  execute(mbean: string, operation: string, ...args: unknown[]) { return null }
-  search(mBeanPattern: string, opts?: IParams) { return null }
-  list(path: string, opts?: IParams) { return null }
-  version(opts?: IParams) { return ({} as IVersion) }
+  execute(mbean: string, operation: string, ...args: unknown[]) {
+    args?.forEach(arg =>
+      is(arg, object({ success: func() })) && arg.success?.(null))
+    return null
+  }
+  search(mBeanPattern: string, opts?: ISearchOptions) { return null }
+  list(path: string, opts?: IListOptions) {
+    opts?.success?.({})
+    return null
+  }
+  version(opts?: IVersionOptions) { return ({} as IVersion) }
 
   register(params: unknown, ...request: unknown[]) { return 0 }
   unregister(handle: number) { /* no-op */ }

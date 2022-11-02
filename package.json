@@ -22,7 +22,7 @@
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.11",
     "@types/react-router-dom": "^5.3.3",
-    "jolokia.js": "^1.7.1",
+    "jolokia.js": "1.7.1-4",
     "jquery": "^3.6.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -30,11 +30,12 @@
     "react-redux": "^8.0.2",
     "react-router-dom": "^5.3.3",
     "react-scripts": "5.0.1",
+    "superstruct": "^0.16.5",
     "typescript": "^4.8.3",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
-    "@hawtio/backend-middleware": "^1.0.1",
+    "@hawtio/backend-middleware": "^1.0.3",
     "@typescript-eslint/eslint-plugin": "^5.38.0",
     "@typescript-eslint/parser": "^5.38.0",
     "cz-conventional-changelog": "3.3.0",
