@@ -3,6 +3,7 @@ import React from 'react'
 export type Preferences = {
   id: string
   title: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component: React.ComponentType<any>
   order: number
 }
@@ -11,6 +12,7 @@ class PreferencesRegistry {
 
   private preferences: Preferences[] = []
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   add(id: string, title: string, component: React.ComponentType<any>, order = 100): void {
     this.preferences.push({ id, title, component, order })
   }
