@@ -1,12 +1,13 @@
+import '@patternfly/react-core/dist/styles/base.css'
+import './index.css'
+
 import { HawtioContextProvider } from '@hawtio/context'
 import { bootstrap } from '@hawtio/core'
 import { Hawtio } from '@hawtio/Hawtio'
 import { registerPlugins } from '@hawtio/plugins'
-import '@patternfly/react-core/dist/styles/base.css'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { registerExamples } from './examples'
-import './index.css'
 import { reportWebVitals } from './reportWebVitals'
 
 // Bootstrap Hawtio
