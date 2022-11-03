@@ -111,7 +111,7 @@ class JolokiaService {
               return
             }
           } catch (e) {
-            log.error('Error parsing returned data:', e)
+            // Parse error should mean redirect to html
             reject(e)
             return
           }
@@ -124,7 +124,7 @@ class JolokiaService {
             resolve(path)
             return
           }
-          reject()
+          reject(`${xhr.status} ${xhr.statusText}`)
         })
     })
   }
