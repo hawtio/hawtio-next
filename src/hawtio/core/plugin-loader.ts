@@ -2,7 +2,7 @@ export interface Plugin {
   id: string
   title: string
   path: string
-  component: React.ComponentType<unknown>
+  component: React.ComponentType<any>
   isActive?: () => boolean
 }
 

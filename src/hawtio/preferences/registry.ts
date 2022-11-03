@@ -3,7 +3,7 @@ import React from 'react'
 export type Preferences = {
   id: string
   title: string
-  component: React.ComponentType<unknown>
+  component: React.ComponentType<any>
   order: number
 }
 
@@ -11,7 +11,7 @@ class PreferencesRegistry {
 
   private preferences: Preferences[] = []
 
-  add(id: string, title: string, component: React.ComponentType<unknown>, order = 100): void {
+  add(id: string, title: string, component: React.ComponentType<any>, order = 100): void {
     this.preferences.push({ id, title, component, order })
   }
 
