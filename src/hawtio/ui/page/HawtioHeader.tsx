@@ -35,7 +35,7 @@ export const HawtioHeader: React.FunctionComponent = () => {
   ]
 
   const headerToolbar = (
-    <Toolbar id="header-toolbar">
+    <Toolbar id="hawtio-header-toolbar">
       <ToolbarContent>
         <ToolbarGroup>
           <ToolbarItem>

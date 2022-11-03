@@ -1,3 +1,7 @@
+#hawtio-header-toolbar .pf-c-toolbar__content-section {
+  justify-content: end;
+}
+
 #hawtio-header-user-dropdown-toggle {
   display: flex;
 }
