@@ -2681,45 +2681,45 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-core@npm:^4.221.3":
-  version: 4.221.3
-  resolution: "@patternfly/react-core@npm:4.221.3"
+"@patternfly/react-core@npm:^4.250.1":
+  version: 4.258.4
+  resolution: "@patternfly/react-core@npm:4.258.4"
   dependencies:
-    "@patternfly/react-icons": ^4.72.3
-    "@patternfly/react-styles": ^4.71.3
-    "@patternfly/react-tokens": ^4.73.3
+    "@patternfly/react-icons": ^4.92.10
+    "@patternfly/react-styles": ^4.91.10
+    "@patternfly/react-tokens": ^4.93.10
     focus-trap: 6.9.2
     react-dropzone: 9.0.0
     tippy.js: 5.1.2
     tslib: ^2.0.0
   peerDependencies:
-    react: ^16.8.0 || ^17.0.0
-    react-dom: ^16.8.0 || ^17.0.0
-  checksum: 25d1a20625bc53a829c814ec0102f41ff035788a6fff6bc33553e71be7f93450f92e73888d3674aadf7125d6f19d426486702dcb7079723ed82acaf956a0d932
+    react: ^16.8 || ^17 || ^18
+    react-dom: ^16.8 || ^17 || ^18
+  checksum: 6cae61d4f2eadd3f561df341394890787641c7844ba5d3c91e281af8aba97ae46a2b03125c5995f2e2896057d16a8b34074b6b8b0d9e48b936de111f4af95899
   languageName: node
   linkType: hard
 
-"@patternfly/react-icons@npm:^4.72.3":
-  version: 4.72.3
-  resolution: "@patternfly/react-icons@npm:4.72.3"
+"@patternfly/react-icons@npm:^4.92.10":
+  version: 4.92.10
+  resolution: "@patternfly/react-icons@npm:4.92.10"
   peerDependencies:
-    react: ^16.8.0 || ^17.0.0
-    react-dom: ^16.8.0 || ^17.0.0
-  checksum: af640fcd5095b2c369f26995f36e1a5c8e03055800cfe8efe4d3db10b4173dade479688fec95b945468a8238075f2ab64f3c416168994e40a2ad774e9b57cab9
+    react: ^16.8 || ^17 || ^18
+    react-dom: ^16.8 || ^17 || ^18
+  checksum: 7788b066b80d2098c1416c5d7446b0a687c976fae3da00d9c60a1957ab8cbdf2b981205cea26af8237a2f0ace161d90ea5ee3db85d0a759d4d999d80f838e6fc
   languageName: node
   linkType: hard
 
-"@patternfly/react-styles@npm:^4.71.3":
-  version: 4.71.3
-  resolution: "@patternfly/react-styles@npm:4.71.3"
-  checksum: e2b744a8f8ea8ddf41a0bd118a7de7b9ca2e361ed3381fe51d6e44cabbba8f3db2a920ac18941a2eaf6654305738e08dfbfc17b7b76bb72755c77285ebd04a60
+"@patternfly/react-styles@npm:^4.91.10":
+  version: 4.91.10
+  resolution: "@patternfly/react-styles@npm:4.91.10"
+  checksum: d6afd598958f715a28a76a7f7fb0a0cc076030de090251b8cd11b0e3d9150637164dc0ca79272731c6959459f744aaf6fc39aff05526dbc5daf2c103ef08dfe4
   languageName: node
   linkType: hard
 
-"@patternfly/react-tokens@npm:^4.73.3":
-  version: 4.73.3
-  resolution: "@patternfly/react-tokens@npm:4.73.3"
-  checksum: 236808ef8a08a1774e9109df8b00feefe43d041d0f76b93b102d143ccb5bc02386a6be27438254cfb168f57b4ea6d19a0412b4336c26711279d480207bf7b84a
+"@patternfly/react-tokens@npm:^4.93.10":
+  version: 4.93.10
+  resolution: "@patternfly/react-tokens@npm:4.93.10"
+  checksum: fdacb177a7b58387e68147fd000dbda831ef12346d785344621c5efa04145a798a3716f54cc05a710ef6184fa587822730e5bd2473392cbb5f74bd6e46f6ba3b
   languageName: node
   linkType: hard
 
@@ -7914,7 +7914,7 @@ __metadata:
   dependencies:
     "@craco/craco": ^6.4.3
     "@hawtio/backend-middleware": ^1.0.3
-    "@patternfly/react-core": ^4.221.3
+    "@patternfly/react-core": ^4.250.1
     "@testing-library/jest-dom": ^5.16.4
     "@testing-library/react": ^12.1.5
     "@testing-library/user-event": ^12.8.3

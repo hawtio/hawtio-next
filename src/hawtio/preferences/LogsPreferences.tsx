@@ -1,6 +1,5 @@
 import { Button, CardBody, Form, FormGroup, FormSection, FormSelect, FormSelectOption, InputGroup, TextInput } from '@patternfly/react-core'
-import PlusIcon from '@patternfly/react-icons/dist/esm/icons/plus-icon'
-import TrashIcon from '@patternfly/react-icons/dist/esm/icons/trash-icon'
+import { PlusIcon, TrashIcon } from '@patternfly/react-icons'
 import React, { useState } from 'react'
 
 export const LogsPreferences: React.FunctionComponent = () => {

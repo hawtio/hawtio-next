@@ -4,14 +4,14 @@ import React from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 
 export const HawtioSidebar: React.FunctionComponent = () => {
-  const location = useLocation()
-  const PageNav = (
+  const { pathname } = useLocation()
+  const pageNav = (
     <Nav theme="dark">
       <NavList>
         {hawtio.getPlugins()
           .filter(plugin => plugin.isActive?.() !== false)
           .map(plugin => (
-            <NavItem key={plugin.id} isActive={plugin.path === location.pathname}>
+            <NavItem key={plugin.id} isActive={plugin.path === pathname}>
               <NavLink to={plugin.path}>{plugin.title}</NavLink>
             </NavItem>
           ))
@@ -19,5 +19,5 @@ export const HawtioSidebar: React.FunctionComponent = () => {
       </NavList>
     </Nav>
   )
-  return <PageSidebar nav={PageNav} theme="dark" />
+  return <PageSidebar nav={pageNav} theme="dark" />
 }

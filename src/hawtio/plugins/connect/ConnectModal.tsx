@@ -1,6 +1,6 @@
 import { isBlank } from '@hawtio/util/strings'
 import { ActionGroup, Button, ButtonVariant, Form, FormGroup, HelperText, HelperTextItem, Modal, ModalVariant, Switch, TextInput } from '@patternfly/react-core'
-import ExclamationCircleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon'
+import { ExclamationCircleIcon } from '@patternfly/react-icons'
 import React, { useContext, useState } from 'react'
 import { ConnectionTestResult, connectService } from './connect-service'
 import { ADD, Connection, UPDATE } from './connections'

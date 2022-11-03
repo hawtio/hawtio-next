@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@craco/craco": "^6.4.3",
-    "@patternfly/react-core": "^4.221.3",
+    "@patternfly/react-core": "^4.250.1",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^12.1.5",
     "@testing-library/user-event": "^12.8.3",

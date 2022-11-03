@@ -1,4 +1,3 @@
-
 import { HawtioContextProvider } from '@hawtio/context'
 import { bootstrap } from '@hawtio/core'
 import { Hawtio } from '@hawtio/Hawtio'
