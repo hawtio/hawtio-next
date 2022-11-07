@@ -53,22 +53,23 @@ export const STORAGE_KEY_JOLOKIA_OPTIONS = 'connect.jolokia.options'
 export const STORAGE_KEY_UPDATE_RATE = 'connect.jolokia.updateRate'
 
 class JolokiaService {
-  private jolokiaUrl: string | null = null
-  private jolokia: IJolokia | null = null
+  private jolokiaUrl: Promise<string | null>
+  private jolokia: Promise<IJolokia>
   private config: JolokiaConfig = {
     method: JolokiaListMethod.DEFAULT,
     mbean: OPTIMISED_JOLOKIA_LIST_MBEAN,
   }
 
   constructor() {
-    const init = async () => {
-      await this.initJolokiaUrl()
-      this.jolokia = await this.createJolokia()
-    }
-    init()
+    this.jolokiaUrl = new Promise((resolve) => {
+      this.initJolokiaUrl().then(url => resolve(url))
+    })
+    this.jolokia = new Promise((resolve) => {
+      this.createJolokia().then(jolokia => resolve(jolokia))
+    })
   }
 
-  private async initJolokiaUrl() {
+  private async initJolokiaUrl(): Promise<string | null> {
     const url = new URL(window.location.href)
     const searchParams = url.searchParams
     log.debug("Checking search params:", searchParams.toString())
@@ -78,23 +79,23 @@ class JolokiaService {
     if (conn) {
       // Remote connection
       log.debug('Connection name', conn, 'provided, not discovering Jolokia')
-      this.jolokiaUrl = connectService.getJolokiaUrlFromName(conn)
-      return
+      return connectService.getJolokiaUrlFromName(conn)
     }
 
     // Discover Jolokia
     for (const path of JOLOKIA_PATHS) {
       log.debug("Checking Jolokia path:", path)
       try {
-        this.jolokiaUrl = await this.probe(path)
-        break
+        return await this.tryProbeJolokiaPath(path)
       } catch (e) {
         // ignore
       }
     }
+
+    return null
   }
 
-  private probe(path: string): Promise<string> {
+  private async tryProbeJolokiaPath(path: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       $.ajax(path)
         .done((data: string, textStatus: string, xhr: JQueryXHR) => {
@@ -130,7 +131,8 @@ class JolokiaService {
   }
 
   private async createJolokia(): Promise<IJolokia> {
-    if (!this.jolokiaUrl) {
+    const jolokiaUrl = await this.jolokiaUrl
+    if (!jolokiaUrl) {
       log.debug("Use dummy Jolokia")
       return new DummyJolokia()
     }
@@ -141,7 +143,7 @@ class JolokiaService {
       $.ajaxSetup({ beforeSend: this.beforeSend() })
     }
 
-    const options = this.loadJolokiaOptions()
+    const options = await this.loadJolokiaOptions()
     if (!options.ajaxError) {
       options.ajaxError = this.ajaxError()
     }
@@ -199,7 +201,7 @@ class JolokiaService {
           if (url.searchParams.has(PARAM_KEY_CONNECTION)) {
             // ... and not showing the login modal
             if (url.pathname !== '/connect/login') {
-              this.jolokia?.stop()
+              this.jolokia.then(jolokia => jolokia.stop())
               const redirectUrl = window.location.href
               url.pathname = '/connect/login'
               url.searchParams.append('redirect', redirectUrl)
@@ -233,7 +235,7 @@ class JolokiaService {
    *
    * @param jolokia Jolokia instance to use
    */
-  private checkListOptimisation(jolokia: IJolokia): Promise<void> {
+  private async checkListOptimisation(jolokia: IJolokia): Promise<void> {
     log.debug("Check if we can call optimised jolokia.list() operation")
     return new Promise<void>((resolve) => {
       jolokia.list(escapeMBeanPath(this.config.mbean), onListSuccess(
@@ -254,20 +256,21 @@ class JolokiaService {
     })
   }
 
-  getJolokiaUrl(): string | null {
-    return this.jolokiaUrl
-  }
-
-  loadJolokiaOptions(): IOptions {
+  private async loadJolokiaOptions(): Promise<IOptions> {
     let opts = { ...DEFAULT_JOLOKIA_OPTIONS }
     const stored = localStorage.getItem(STORAGE_KEY_JOLOKIA_OPTIONS)
     if (stored) {
       opts = Object.assign(opts, JSON.parse(stored))
     }
-    if (this.jolokiaUrl) {
-      opts.url = this.jolokiaUrl
+    const jolokiaUrl = await this.jolokiaUrl
+    if (jolokiaUrl) {
+      opts.url = jolokiaUrl
     }
     return opts
+  }
+
+  async getJolokiaUrl(): Promise<string | null> {
+    return this.jolokiaUrl
   }
 
   saveJolokiaOptions(params: IOptions) {
