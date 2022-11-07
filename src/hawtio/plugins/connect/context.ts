@@ -3,7 +3,7 @@ import { connectService } from './connect-service'
 import { Connections, ConnectionsAction, reducer } from './connections'
 
 /**
- * Custom Reack hook for using connections and their reducer.
+ * Custom React hook for using connections and their reducer.
  */
 export function useConnections() {
   const [connections, dispatch] = useReducer(reducer, connectService.loadConnections())

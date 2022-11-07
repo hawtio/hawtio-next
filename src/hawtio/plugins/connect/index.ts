@@ -12,7 +12,10 @@ export const connect = () => {
     title: 'Connect',
     path: '/connect',
     component: Connect,
-    isActive: () => jolokiaService.getJolokiaUrl() == null,
+    isActive: async () => {
+      const jolokiaUrl = await jolokiaService.getJolokiaUrl()
+      return jolokiaUrl === null
+    },
   })
   helpRegistry.add('connect', 'Connect', help, 11)
   preferencesRegistry.add('connect', 'Connect', ConnectPreferences, 11)

@@ -1,23 +1,27 @@
-import { hawtio } from '@hawtio/core'
 import { Nav, NavItem, NavList, PageSidebar } from '@patternfly/react-core'
-import React from 'react'
+import React, { useContext } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
+import { PageContext } from './context'
 
 export const HawtioSidebar: React.FunctionComponent = () => {
+  const { plugins, loaded } = useContext(PageContext)
   const { pathname } = useLocation()
+
+  if (!loaded) {
+    return null
+  }
+
   const pageNav = (
     <Nav theme="dark">
       <NavList>
-        {hawtio.getPlugins()
-          .filter(plugin => plugin.isActive?.() !== false)
-          .map(plugin => (
-            <NavItem key={plugin.id} isActive={plugin.path === pathname}>
-              <NavLink to={plugin.path}>{plugin.title}</NavLink>
-            </NavItem>
-          ))
-        }
+        {plugins.map(plugin => (
+          <NavItem key={plugin.id} isActive={plugin.path === pathname}>
+            <NavLink to={plugin.path}>{plugin.title}</NavLink>
+          </NavItem>
+        ))}
       </NavList>
     </Nav>
   )
+
   return <PageSidebar nav={pageNav} theme="dark" />
 }

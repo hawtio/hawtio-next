@@ -7,5 +7,6 @@ export const registerExample3 = () => {
     title: 'Example 3',
     path: '/example3',
     component: Example3,
+    isActive: async () => true
   })
 }

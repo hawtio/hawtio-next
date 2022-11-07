@@ -4,7 +4,13 @@ export interface Plugin {
   path: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component: React.ComponentType<any>
-  isActive?: () => boolean
+  /**
+   * Returns if this plugin should be activated.
+   * This method needs to return a promise as the process of resolving if a plugin
+   * should be activated may require information collected asynchronously such as
+   * the existence of some MBeans, etc.
+   */
+  isActive: () => Promise<boolean>
 }
 
 type Plugins = {
@@ -66,8 +72,16 @@ class PluginLoader {
     return Object.values(this.plugins)
   }
 
-  defaultPlugin(): Plugin | null {
-    return this.getPlugins().filter(plugin => plugin.isActive?.() !== false)[0] || null
+  async resolvePlugins(): Promise<Plugin[]> {
+    // load plugins sequentially to maintain the order
+    const resolved: Plugin[] = []
+    for (const plugin of this.getPlugins()) {
+      const active = await plugin.isActive()
+      if (active) {
+        resolved.push(plugin)
+      }
+    }
+    return resolved
   }
 
 }
