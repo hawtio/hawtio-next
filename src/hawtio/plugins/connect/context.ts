@@ -15,9 +15,12 @@ export function useConnections() {
   return { connections, dispatch }
 }
 
-export type ConnectContext = {
+type ConnectContext = {
   connections: Connections
   dispatch: React.Dispatch<ConnectionsAction>
 }
 
-export const ConnectContext = createContext<ConnectContext>({ connections: {}, dispatch: () => ({}) })
+export const ConnectContext = createContext<ConnectContext>({
+  connections: {},
+  dispatch: () => { /* no-op */ }
+})

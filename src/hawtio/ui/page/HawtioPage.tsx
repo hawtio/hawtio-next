@@ -15,9 +15,11 @@ export const HawtioPage: React.FunctionComponent = () => {
 
   if (!loaded) {
     return (
-      <PageSection>
-        <Spinner isSVG aria-label="Loading Hawtio" />
-      </PageSection>
+      <Page>
+        <PageSection>
+          <Spinner isSVG aria-label="Loading Hawtio" />
+        </PageSection>
+      </Page>
     )
   }
 

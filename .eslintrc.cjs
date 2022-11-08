@@ -10,13 +10,19 @@ module.exports = {
     'import',
   ],
   rules: {
-    'import/no-default-export': 2,
+    'import/no-default-export': 'error',
     '@typescript-eslint/no-empty-function': [
-      2,
+      'error',
       {
         'allow': ['constructors']
       }
     ],
+    '@typescript-eslint/explicit-member-accessibility': [
+      'warn',
+      {
+        accessibility: 'no-public'
+      }
+    ]
   },
   root: true,
 }

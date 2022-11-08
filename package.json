@@ -13,6 +13,7 @@
   "dependencies": {
     "@craco/craco": "^6.4.5",
     "@patternfly/react-core": "^4.250.1",
+    "@patternfly/react-table": "^4.111.33",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -28,6 +29,7 @@
     "react-markdown": "^8.0.3",
     "react-router-dom": "^5.3.4",
     "react-scripts": "5.0.1",
+    "react-split": "^2.0.14",
     "superstruct": "^0.16.5",
     "typescript": "^4.8.4",
     "web-vitals": "^2.1.4"
@@ -36,6 +38,7 @@
     "@hawtio/backend-middleware": "^1.0.3",
     "@typescript-eslint/eslint-plugin": "^5.38.0",
     "@typescript-eslint/parser": "^5.38.0",
+    "assert": "^2.0.0",
     "cz-conventional-changelog": "3.3.0",
     "eslint": "^8.24.0",
     "eslint-plugin-import": "^2.26.0",

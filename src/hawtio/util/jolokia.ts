@@ -105,6 +105,22 @@ function applyJolokiaEscapeRules(mbean: string): string {
     .replace(/"/g, '!"')
 }
 
+/**
+ * Escapes only tags ('<' and '>') as opposed to typical URL encodings.
+ *
+ * @param text string to be escaped
+*/
+export function escapeTags(text: string): string {
+  let escaped = text.replace('<', '&lt;')
+  escaped = escaped.replace('>', '&gt;')
+  return escaped
+}
+
+/**
+ * Escapes dots ('.') to '-'.
+ *
+ * @param text string to be escaped
+*/
 export function escapeDots(text: string): string {
   return text.replace(/\./g, '-')
 }

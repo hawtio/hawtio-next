@@ -1,4 +1,4 @@
-export function isString(value: unknown): boolean {
+export function isString(value: unknown): value is string {
   if (value != null && typeof value.valueOf() === 'string') {
     return true
   }
@@ -48,4 +48,27 @@ export function obfuscate(str: string): string {
     return ''
   }
   return str.split('').map(() => '*').join('')
+}
+
+/**
+ * Removes all quotes/apostrophes from the beginning and end of string.
+ *
+ * @param text
+ * @returns {string}
+ */
+export function trimQuotes(text: string): string {
+  if (text && text.length > 0) {
+    // Make sure only enclosing quotes are removed
+    const headTrimmed = text.replace(/^['"]+/g, '')
+    if (headTrimmed.length < text.length) {
+      return headTrimmed.replace(/['"]+$/g, '')
+    }
+  }
+  return text
+}
+
+export function stringSorter(a: string, b: string): number {
+  if (a < b) { return -1 }
+  if (a > b) { return 1 }
+  return 0
 }

@@ -1,8 +1,9 @@
 import { userService } from '@hawtio/auth'
 import { getCookie } from '@hawtio/util/cookies'
-import { escapeMBeanPath, onListSuccess } from '@hawtio/util/jolokia'
+import { escapeMBeanPath, onListSuccess, onSimpleSuccess } from '@hawtio/util/jolokia'
 import { isObject } from '@hawtio/util/objects'
 import Jolokia, { IAjaxErrorFn, IJmxDomain, IJmxDomains, IJmxMBean, IJolokia, IListOptions, IOptions, ISearchOptions, ISimpleOptions, IVersion, IVersionOptions } from 'jolokia.js'
+import 'jolokia.js/jolokia-simple'
 import $ from 'jquery'
 import { func, is, object } from 'superstruct'
 import { connectService, PARAM_KEY_CONNECTION } from './connect-service'
@@ -249,7 +250,7 @@ class JolokiaService {
             // which equals LIST=GENERAL in practice
             this.config.method = JolokiaListMethod.UNDETERMINED
           }
-          log.debug("Jolokia list method:", this.config.method)
+          log.debug("Jolokia list method:", JolokiaListMethod[this.config.method])
           resolve()
         }
       ))
@@ -271,6 +272,31 @@ class JolokiaService {
 
   async getJolokiaUrl(): Promise<string | null> {
     return this.jolokiaUrl
+  }
+
+  async list(options: ISimpleOptions): Promise<unknown> {
+    const jolokia = await this.jolokia
+    const { method, mbean } = this.config
+    return new Promise<unknown>((resolve) => {
+      switch (method) {
+        case JolokiaListMethod.OPTIMISED:
+          log.debug("Invoke Jolokia list MBean in optimised mode")
+          options.maxDepth = 9
+          jolokia.execute(mbean, "list()", onSimpleSuccess(
+            value => resolve(value),
+            options
+          ))
+          break
+        case JolokiaListMethod.DEFAULT:
+        case JolokiaListMethod.UNDETERMINED:
+        default:
+          log.debug("Invoke Jolokia list MBean in default mode")
+          jolokia.list(null, onListSuccess(
+            value => resolve(value),
+            options
+          ))
+      }
+    })
   }
 
   saveJolokiaOptions(params: IOptions) {
