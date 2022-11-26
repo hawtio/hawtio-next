@@ -10,19 +10,22 @@ export type Preferences = {
 
 class PreferencesRegistry {
 
-  private preferences: Preferences[] = []
+  private preferences: { [id: string]: Preferences } = {}
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  add(id: string, title: string, component: React.ComponentType<any>, order = 100): void {
-    this.preferences.push({ id, title, component, order })
+  add(id: string, title: string, component: React.ComponentType<any>, order = 100) {
+    if (this.preferences[id]) {
+      throw new Error(`Preferences '${id}' already registered`)
+    }
+    this.preferences[id] = { id, title, component, order }
   }
 
   getPreferences(): Preferences[] {
-    return this.preferences.sort((a, b) => a.order - b.order)
+    return Object.values(this.preferences).sort((a, b) => a.order - b.order)
   }
 
-  reset(): void {
-    this.preferences = []
+  reset() {
+    this.preferences = {}
   }
 }
 

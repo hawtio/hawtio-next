@@ -7,20 +7,23 @@ export type Help = {
 
 class HelpRegistry {
 
-  private helps: Help[] = []
+  private helps: { [id: string]: Help } = {}
 
-  async add(id: string, title: string, content: string, order = 100): Promise<void> {
+  async add(id: string, title: string, content: string, order = 100) {
+    if (this.helps[id]) {
+      throw new Error(`Help '${id}' already registered`)
+    }
     const res = await fetch(content)
     const text = await res.text()
-    this.helps.push({ id, title, content: text, order })
+    this.helps[id] = { id, title, content: text, order }
   }
 
   getHelps(): Help[] {
-    return this.helps.sort((a, b) => a.order - b.order)
+    return Object.values(this.helps).sort((a, b) => a.order - b.order)
   }
 
-  reset(): void {
-    this.helps = []
+  reset() {
+    this.helps = {}
   }
 }
 

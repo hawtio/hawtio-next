@@ -12,7 +12,7 @@ describe('helpRegistry', () => {
 
     expect(helpRegistry).not.toBeNull()
     expect(helpRegistry.getHelps()).toEqual([])
-    await helpRegistry.add('test', 'Test', './help.md', 1)
+    await helpRegistry.add('test', 'Test', './help.md')
     expect(helpRegistry.getHelps()).toHaveLength(1)
     expect(helpRegistry.getHelps()[0].id).toEqual('test')
     expect(helpRegistry.getHelps()[0].title).toEqual('Test')
@@ -20,6 +20,10 @@ describe('helpRegistry', () => {
       # Help Test
       Test help content.
     `)
+
+    // duplicate help not allowed
+    expect(() => helpRegistry.add('test', 'Test', './help.md'))
+      .rejects.toThrowError(/Help 'test' already registered/)
   })
 
   test('return helps in order', async () => {

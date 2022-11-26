@@ -1,17 +1,21 @@
 import React from 'react'
 import { preferencesRegistry } from './registry'
 
-describe('helpRegistry', () => {
+describe('preferencesRegistry', () => {
   beforeEach(() => preferencesRegistry.reset())
 
   test('add preferences', () => {
     expect(preferencesRegistry).not.toBeNull()
     expect(preferencesRegistry.getPreferences()).toEqual([])
-    preferencesRegistry.add('test', 'Test', () => <React.Fragment />, 1)
+    preferencesRegistry.add('test', 'Test', () => <React.Fragment />)
     expect(preferencesRegistry.getPreferences()).toHaveLength(1)
     expect(preferencesRegistry.getPreferences()[0].id).toEqual('test')
     expect(preferencesRegistry.getPreferences()[0].title).toEqual('Test')
     expect(preferencesRegistry.getPreferences()[0].component).not.toBeNull()
+
+    // duplicate preferences not allowed
+    expect(() => preferencesRegistry.add('test', 'Test', () => <React.Fragment />))
+      .toThrowError(/Preferences 'test' already registered/)
   })
 
   test('return preferences in order', () => {
