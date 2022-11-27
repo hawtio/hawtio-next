@@ -38,22 +38,16 @@ export const Attributes: React.FunctionComponent = () => {
       return
     }
 
-    const objectName = node.objectName
+    const mbean = node.objectName
+    attributeService.register(
+      { type: 'read', mbean },
+      (response: IResponse) => {
+        log.debug('Scheduler - Attributes:', response.value)
+        setAttributes(response.value as AttributeValues)
+      },
+    )
 
-    // TODO: better handling of 'handle' and unregistering
-    let handle: number | null = null
-    const updateAttributes = async () => {
-      handle = await attributeService.register(
-        { type: 'read', mbean: objectName },
-        (response: IResponse) => {
-          log.debug('Attributes:', response.value)
-          setAttributes(response.value as AttributeValues)
-        },
-      )
-    }
-    updateAttributes()
-
-    return () => { handle && attributeService.unregister(handle) }
+    return () => attributeService.unregisterAll()
   }, [node])
 
   if (!node || !node.mbean || !node.objectName) {
