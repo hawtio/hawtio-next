@@ -49,7 +49,7 @@ export const Operation: React.FunctionComponent<OperationProps> = props => {
     return readable
   }
 
-  const readableName = (method: string, args: IJmxOperationArgument[]) => {
+  const readableName = (method: string, args: IJmxOperationArgument[] = []) => {
     const readableArgs = args.map(arg => readableType(arg)).join(', ')
     return `${method}(${readableArgs})`
   }
@@ -139,12 +139,12 @@ export const Operation: React.FunctionComponent<OperationProps> = props => {
         aria-label={`operation execute ${name}`}
         isHidden={!isExpanded}
       >
-        {operation.args.length === 0 &&
+        {(!operation.args || operation.args.length === 0) &&
           <Text component="p">
             This JMX operation requires no arguments. Click the <code>Execute</code> button to invoke the operation.
           </Text>
         }
-        {operation.args.length > 0 &&
+        {(operation.args && operation.args.length > 0) &&
           <Text component="p">
             This JMX operation requires some parameters.
             Fill in the fields below and click the <code>Execute</code> button to invoke the operation.
