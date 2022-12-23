@@ -113,8 +113,9 @@ class ConnectService {
       return connection.jolokiaUrl
     }
 
+    // TODO: Better handling of doc base and proxy URL construction
     const url = joinPaths(
-      'proxy',
+      '/proxy',
       connection.scheme || 'http',
       connection.host || 'localhost',
       String(connection.port || 80),

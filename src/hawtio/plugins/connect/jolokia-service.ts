@@ -1,8 +1,8 @@
 import { userService } from '@hawtio/auth'
 import { getCookie } from '@hawtio/util/cookies'
-import { escapeMBeanPath, onListSuccess, onSimpleSuccess } from '@hawtio/util/jolokia'
+import { escapeMBeanPath, onListSuccess, onSimpleSuccess, onSimpleSuccessAndError, onSuccess } from '@hawtio/util/jolokia'
 import { isObject } from '@hawtio/util/objects'
-import Jolokia, { IAjaxErrorFn, IJmxDomain, IJmxDomains, IJmxMBean, IJolokia, IListOptions, IOptions, ISearchOptions, ISimpleOptions, IVersion, IVersionOptions } from 'jolokia.js'
+import Jolokia, { IAjaxErrorFn, IErrorResponse, IJmxDomain, IJmxDomains, IJmxMBean, IJolokia, IListOptions, IOptions, IRequest, IResponseFn, ISearchOptions, ISimpleOptions, IVersion, IVersionOptions } from 'jolokia.js'
 import 'jolokia.js/jolokia-simple'
 import $ from 'jquery'
 import { func, is, object } from 'superstruct'
@@ -67,6 +67,11 @@ class JolokiaService {
     })
     this.jolokia = new Promise((resolve) => {
       this.createJolokia().then(jolokia => resolve(jolokia))
+    })
+    this.jolokia.then(jolokia => {
+      const updateRate = this.loadUpdateRate()
+      jolokia.start(updateRate)
+      log.info('Jolokia started with update rate =', updateRate)
     })
   }
 
@@ -299,6 +304,37 @@ class JolokiaService {
     })
   }
 
+  async read(mbean: string): Promise<AttributeValues> {
+    const jolokia = await this.jolokia
+    return new Promise(resolve => {
+      jolokia.request(
+        { type: 'read', mbean },
+        onSuccess(response => resolve(response.value as AttributeValues))
+      )
+    })
+  }
+
+  async execute(mbean: string, operation: string, args: unknown[] = []): Promise<unknown> {
+    const jolokia = await this.jolokia
+    return new Promise((resolve, reject) => {
+      jolokia.execute(mbean, operation, ...args, onSimpleSuccessAndError(
+        (response: unknown) => resolve(response),
+        // TODO: move to OperationService
+        (response: IErrorResponse) => reject(response.stacktrace || response.error)
+      ))
+    })
+  }
+
+  async register(request: IRequest, callback: IResponseFn): Promise<number> {
+    const jolokia = await this.jolokia
+    return jolokia.register(callback, request)
+  }
+
+  async unregister(handle: number) {
+    const jolokia = await this.jolokia
+    jolokia.unregister(handle)
+  }
+
   saveJolokiaOptions(params: IOptions) {
     localStorage.setItem(STORAGE_KEY_JOLOKIA_OPTIONS, JSON.stringify(params))
   }
@@ -314,6 +350,8 @@ class JolokiaService {
 }
 
 type JQueryBeforeSend = (this: unknown, jqXHR: JQueryXHR, settings: unknown) => false | void
+
+export type AttributeValues = { [name: string]: unknown }
 
 /**
  * Dummy Jolokia implementation that does nothing.

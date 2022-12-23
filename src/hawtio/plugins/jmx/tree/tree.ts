@@ -74,6 +74,9 @@ export class MBeanNode implements TreeViewDataItem {
   icon: React.ReactNode
   expandedIcon?: React.ReactNode
   children?: MBeanNode[]
+
+  // MBean info
+  objectName?: string
   mbean?: IJmxMBean
 
   constructor(id: string, name: string, folder: boolean) {
@@ -91,25 +94,26 @@ export class MBeanNode implements TreeViewDataItem {
   populateMBean(propList: string, mbean: IJmxMBean) {
     logTree.debug("  JMX tree mbean:", propList)
     const props = new PropertyList(this, propList)
-    this.createMBeanNode(props.getPaths(), mbean)
+    this.createMBeanNode(props.getPaths(), props, mbean)
   }
 
-  private createMBeanNode(paths: string[], mbean: IJmxMBean) {
+  private createMBeanNode(paths: string[], props: PropertyList, mbean: IJmxMBean) {
     logTree.debug("    JMX tree property:", paths[0])
     if (paths.length === 1) {
       // final mbean node
       const mbeanNode = this.create(paths[0], false)
-      mbeanNode.configure(mbean)
+      mbeanNode.configureMBean(props, mbean)
       return
     }
 
     const path = paths.shift()
     assert(path)
     const child = this.getOrCreate(path, true)
-    child.createMBeanNode(paths, mbean)
+    child.createMBeanNode(paths, props, mbean)
   }
 
-  configure(mbean: IJmxMBean) {
+  configureMBean(propList: PropertyList, mbean: IJmxMBean) {
+    this.objectName = propList.objectName()
     this.mbean = mbean
   }
 
@@ -144,15 +148,17 @@ export class MBeanNode implements TreeViewDataItem {
 }
 
 class PropertyList {
-  private parent: MBeanNode
+  private domain: MBeanNode
+  private propList: string
   private paths: { key: string, value: string }[] = []
   typeName?: string
   serviceName?: string
 
   private readonly propRegex = new RegExp('(([^=,]+)=(\\\\"[^"]+\\\\"|\\\\\'[^\']+\\\\\'|"[^"]+"|\'[^\']+\'|[^,]+))|([^=,]+)', 'g')
 
-  constructor(parent: MBeanNode, propList: string) {
-    this.parent = parent
+  constructor(domain: MBeanNode, propList: string) {
+    this.domain = domain
+    this.propList = propList
     this.parse(propList)
   }
 
@@ -168,7 +174,7 @@ class PropertyList {
       switch (lowerKey) {
         case 'type':
           this.typeName = propValue
-          if (this.parent.get(propValue)) {
+          if (this.domain.get(propValue)) {
             // if the type name value already exists in the root node
             // of the domain then let's move this property around too
             index = 0
@@ -209,7 +215,7 @@ class PropertyList {
    * Reorders paths when they aren't in the correct order.
    */
   private maybeReorderPaths() {
-    switch (this.parent.name) {
+    switch (this.domain.name) {
       case 'osgi.compendium':
         reorderObjects(this.paths, 'key', ['service', 'version', 'framework'])
         break
@@ -221,6 +227,10 @@ class PropertyList {
 
   getPaths(): string[] {
     return this.paths.map(p => p.value)
+  }
+
+  objectName(): string {
+    return `${this.domain.name}:${this.propList}`
   }
 }
 

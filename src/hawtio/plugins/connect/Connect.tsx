@@ -206,7 +206,7 @@ const ConnectionItem: React.FunctionComponent<ConnectionItemProps> = props => {
             <DataListCell key={`connection-cell-name-${name}`}>
               <b>{name}</b>
             </DataListCell>,
-            <DataListCell key={`connection-cell-url-${name}`}>
+            <DataListCell key={`connection-cell-url-${name}`} width={3}>
               {connectService.connectionToUrl(connection)}
             </DataListCell>
           ]}

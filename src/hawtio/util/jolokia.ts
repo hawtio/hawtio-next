@@ -1,31 +1,43 @@
-import { IErrorResponse, IErrorResponseFn, IListOptions, IListResponseFn, IOptionsBase, ISearchOptions, ISearchResponseFn, ISimpleOptions, ISimpleResponseFn, IVersionOptions, IVersionResponseFn } from 'jolokia.js'
+import { IErrorResponse, IErrorResponseFn, IListOptions, IListResponseFn, IOptions, IOptionsBase, IResponseFn, ISearchOptions, ISearchResponseFn, ISimpleOptions, ISimpleResponseFn, IVersionOptions, IVersionResponseFn } from 'jolokia.js'
 
 const log = console
 
+export function onSuccess(successFn: IResponseFn, options: IOptions = {}): IOptions {
+  return onGenericSuccess(successFn, options)
+}
+
 export function onSimpleSuccess(successFn: ISimpleResponseFn, options: ISimpleOptions = {}): ISimpleOptions {
-  return onSuccess(successFn, options)
+  return onGenericSuccess(successFn, options)
+}
+
+export function onSimpleSuccessAndError(
+  successFn: ISimpleResponseFn,
+  errorFn: IErrorResponseFn,
+  options: ISimpleOptions = {},
+): ISimpleOptions {
+  return onGenericSuccessAndError(successFn, errorFn, options)
 }
 
 export function onSearchSuccess(successFn: ISearchResponseFn, options: ISearchOptions = {}): ISearchOptions {
-  return onSuccess(successFn, options)
+  return onGenericSuccess(successFn, options)
 }
 
 export function onListSuccess(successFn: IListResponseFn, options: IListOptions = {}): IListOptions {
-  return onSuccess(successFn, options)
+  return onGenericSuccess(successFn, options)
 }
 
 export function onVersionSuccess(successFn: IVersionResponseFn, options: IVersionOptions = {}): IVersionOptions {
-  return onSuccess(successFn, options)
+  return onGenericSuccess(successFn, options)
 }
 
-export function onSuccess<R, O extends IOptionsBase>(successFn: R, options?: O): O {
-  return onSuccessAndError(
+export function onGenericSuccess<R, O extends IOptionsBase>(successFn: R, options?: O): O {
+  return onGenericSuccessAndError(
     successFn,
     defaultErrorHandler(options),
     options)
 }
 
-export function onSuccessAndError<R, O extends IOptionsBase>(
+export function onGenericSuccessAndError<R, O extends IOptionsBase>(
   successFn: R,
   errorFn: IErrorResponseFn,
   options?: O
@@ -80,6 +92,15 @@ function isIgnorableException(response: IErrorResponse): boolean {
   const test = (e: string) => ignorables.some(i => e.indexOf(i) >= 0)
   return (response.stacktrace != null && test(response.stacktrace))
     || (response.error != null && test(response.error))
+}
+
+/**
+ * Escapes the mbean for Jolokia GET requests.
+ *
+ * @param mbean the MBean
+ */
+export function escapeMBean(mbean: string): string {
+  return encodeURI(applyJolokiaEscapeRules(mbean))
 }
 
 /**

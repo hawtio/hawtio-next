@@ -1,5 +1,5 @@
-import React, { createContext, useEffect, useState } from 'react'
-import { MBeanTree } from './tree'
+import { createContext, useEffect, useState } from 'react'
+import { MBeanNode, MBeanTree } from './tree'
 import { workspace } from './workspace'
 
 /**
@@ -8,6 +8,7 @@ import { workspace } from './workspace'
 export function useMBeanTree() {
   const [tree, setTree] = useState<MBeanTree>(new MBeanTree({}))
   const [loaded, setLoaded] = useState(false)
+  const [node, setNode] = useState<MBeanNode | null>(null)
 
   useEffect(() => {
     const loadTree = async () => {
@@ -18,15 +19,17 @@ export function useMBeanTree() {
     loadTree()
   }, [])
 
-  return { tree, loaded, setTree }
+  return { tree, loaded, node, setNode }
 }
 
 type MBeanTreeContext = {
   tree: MBeanTree
-  setTree: React.Dispatch<React.SetStateAction<MBeanTree>>
+  node: MBeanNode | null
+  setNode: (selected: MBeanNode) => void
 }
 
 export const MBeanTreeContext = createContext<MBeanTreeContext>({
   tree: new MBeanTree({}),
-  setTree: () => { /* no-op */ },
+  node: null,
+  setNode: () => { /* no-op */ }
 })

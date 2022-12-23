@@ -1,25 +1,4 @@
-#jmx-tree-view .pf-c-tree-view__list {
-  height: 100%;
-}
-
-#jmx-tree-view .pf-c-tree-view__node {
-  padding-top: 1px;
-  padding-bottom: 1px;
-}
-
-#jmx-tree-view .pf-c-tree-view__node-toggle {
-  padding-top: 0px;
-  padding-bottom: 0px;
-  padding-left: 6px;
-  padding-right: 6px;
-}
-
-#jmx-tree-view .pf-c-tree-view__node-text {
-  padding-top: 2px;
-  font-size: smaller;
-}
-
-.split {
+.jmx-split {
   display: flex;
   flex-direction: row;
 }

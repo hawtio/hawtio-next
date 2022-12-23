@@ -17,10 +17,7 @@ type Plugins = {
   [id: string]: Plugin
 }
 
-const log = {
-  info: console.log,
-  debug: console.debug,
-}
+const log = console
 
 /**
  * Plugin loader and discovery mechanism.

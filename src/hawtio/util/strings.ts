@@ -51,6 +51,20 @@ export function obfuscate(str: string): string {
 }
 
 /**
+ * Removes leading characters from a string.
+ */
+export function trimStart(text: string, chars: string): string {
+  return text.replace(new RegExp(`^[${chars}]+`, 'g'), '')
+}
+
+/**
+ * Removes trailing characters from a string.
+ */
+export function trimEnd(text: string, chars: string): string {
+  return text.replace(new RegExp(`[${chars}]+$`, 'g'), '')
+}
+
+/**
  * Removes all quotes/apostrophes from the beginning and end of string.
  *
  * @param text
@@ -59,9 +73,9 @@ export function obfuscate(str: string): string {
 export function trimQuotes(text: string): string {
   if (text && text.length > 0) {
     // Make sure only enclosing quotes are removed
-    const headTrimmed = text.replace(/^['"]+/g, '')
+    const headTrimmed = trimStart(text, '\'"')
     if (headTrimmed.length < text.length) {
-      return headTrimmed.replace(/['"]+$/g, '')
+      return trimEnd(headTrimmed, '\'"')
     }
   }
   return text
