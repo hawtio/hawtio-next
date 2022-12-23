@@ -1,9 +1,12 @@
 import { jolokiaService } from '@hawtio/plugins/connect/jolokia-service'
 
+const log = console
+
 class OperationService {
   constructor() {}
 
   async execute(mbean: string, operation: string, args: unknown[]): Promise<string> {
+    log.debug('Execute:', mbean, '-', operation, '-', args)
     const response = await jolokiaService.execute(mbean, operation, args)
     if (!response || response === 'null') {
       return 'Operation Succeeded!'

@@ -1,4 +1,4 @@
-import { Card, CardBody, EmptyState, EmptyStateIcon, EmptyStateVariant, Nav, NavItem, NavList, PageGroup, PageNavigation, PageSection, PageSectionVariants, Text, TextVariants, Title } from '@patternfly/react-core'
+import { Card, CardBody, EmptyState, EmptyStateIcon, EmptyStateVariant, Nav, NavItem, NavList, PageGroup, PageNavigation, PageSection, PageSectionVariants, Text, Title } from '@patternfly/react-core'
 import { CubesIcon, InfoCircleIcon } from '@patternfly/react-icons'
 import { OnRowClick, Table, TableBody, TableHeader, TableProps } from '@patternfly/react-table'
 import React, { useContext } from 'react'
@@ -52,7 +52,7 @@ export const JmxContent: React.FunctionComponent = () => {
       <PageGroup>
         <PageSection variant={PageSectionVariants.light}>
           <Title headingLevel="h1">{node.name}</Title>
-          <Text component={TextVariants.small}>{node.objectName}</Text>
+          <Text component="small">{node.objectName}</Text>
         </PageSection>
         {node.objectName &&
           <PageNavigation>

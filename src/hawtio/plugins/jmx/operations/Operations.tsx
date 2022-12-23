@@ -1,21 +1,23 @@
 import { isEmpty } from '@hawtio/util/objects'
-import { Card, CardBody, DataList, Text, TextVariants } from '@patternfly/react-core'
+import { Card, CardBody, DataList, Text } from '@patternfly/react-core'
+import { InfoCircleIcon } from '@patternfly/react-icons'
 import React, { useContext } from 'react'
 import { MBeanTreeContext } from '../context'
-import { Operation } from './Operation'
+import { createOperations } from './operation'
+import { OperationForm } from './OperationForm'
 import './Operations.css'
-import { InfoCircleIcon } from '@patternfly/react-icons'
 
 export const Operations: React.FunctionComponent = () => {
   const { node } = useContext(MBeanTreeContext)
 
-  if (!node || !node.mbean) {
+  if (!node || !node.objectName || !node.mbean) {
     return null
   }
 
-  const operations = node.mbean.op
+  const objectName = node.objectName
+  const mbean = node.mbean
 
-  if (isEmpty(operations)) {
+  if (isEmpty(mbean.op)) {
     return (
       <Card>
         <CardBody>
@@ -27,14 +29,16 @@ export const Operations: React.FunctionComponent = () => {
     )
   }
 
+  const operations = createOperations(objectName, mbean.op)
+
   const OperationList = () => (
     <DataList
       id="jmx-operation-list"
       aria-label="operation list"
       isCompact
     >
-      {Object.entries(operations).map(([name, operation]) => (
-        <Operation key={name} name={name} operation={operation} />
+      {operations.map(op => (
+        <OperationForm key={op.name} name={op.name} operation={op} />
       ))}
     </DataList>
   )
@@ -42,7 +46,7 @@ export const Operations: React.FunctionComponent = () => {
   return (
     <Card isFullHeight>
       <CardBody>
-        <Text component={TextVariants.p}>
+        <Text component="p">
           This MBean supports the following JMX operations. Expand an item in the list to invoke that operation.
         </Text>
       </CardBody>
