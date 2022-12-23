@@ -1,10 +1,9 @@
 import { ActionGroup, Button, Checkbox, ClipboardCopy, ClipboardCopyVariant, DataListAction, DataListCell, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Dropdown, DropdownItem, DropdownPosition, Form, FormGroup, KebabToggle, Text, TextInput, Title } from '@patternfly/react-core'
 import React, { useContext, useState } from 'react'
 import { MBeanTreeContext } from '../context'
-import { Operation, OperationArgument } from './operation'
+import { Operation } from './operation'
 import { operationService } from './operation-service'
-
-const log = console
+import './OperationForm.css'
 
 export type OperationFormProps = {
   name: string
@@ -233,6 +232,8 @@ const OperationFormContents: React.FunctionComponent<OperationFormContentsProps>
         isExpanded
         isCode
         isReadOnly
+        //removeFindDomNode
+        className={isFailed ? "jmx-operation-error" : ""}
       >
         {result}
       </ClipboardCopy>
