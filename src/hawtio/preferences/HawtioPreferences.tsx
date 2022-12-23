@@ -2,7 +2,7 @@
 import { helpRegistry } from '@hawtio/help/registry'
 import { Card, Nav, NavItem, NavList, PageGroup, PageNavigation, PageSection, PageSectionVariants, Title } from '@patternfly/react-core'
 import React from 'react'
-import { BrowserRouter, NavLink, Redirect, Route, Switch, useLocation } from 'react-router-dom'
+import { NavLink, Redirect, Route, Switch, useLocation } from 'react-router-dom'
 import help from './help.md'
 import { HomePreferences } from './HomePreferences'
 import { LogsPreferences } from './LogsPreferences'
@@ -17,7 +17,7 @@ export const HawtioPreferences: React.FunctionComponent = () => {
   const location = useLocation()
   const path = (id: string) => `/preferences/${id}`
   return (
-    <BrowserRouter>
+    <React.Fragment>
       <PageSection variant={PageSectionVariants.light}>
         <Title headingLevel="h1">Preferences</Title>
       </PageSection>
@@ -47,6 +47,6 @@ export const HawtioPreferences: React.FunctionComponent = () => {
           </Switch>
         </Card >
       </PageSection>
-    </BrowserRouter>
+    </React.Fragment>
   )
 }

@@ -1,7 +1,7 @@
 import { Card, CardBody, Nav, NavItem, NavList, PageGroup, PageNavigation, PageSection, PageSectionVariants, TextContent, Title } from '@patternfly/react-core'
 import React from 'react'
 import Markdown from 'react-markdown'
-import { BrowserRouter, NavLink, Redirect, Route, Switch, useLocation } from 'react-router-dom'
+import { NavLink, Redirect, Route, Switch, useLocation } from 'react-router-dom'
 import help from './help.md'
 import { helpRegistry } from './registry'
 
@@ -11,7 +11,7 @@ export const HawtioHelp: React.FunctionComponent = () => {
   const location = useLocation()
   const path = (id: string) => `/help/${id}`
   return (
-    <BrowserRouter>
+    <React.Fragment>
       <PageSection variant={PageSectionVariants.light}>
         <Title headingLevel="h1">Help</Title>
       </PageSection>
@@ -44,6 +44,6 @@ export const HawtioHelp: React.FunctionComponent = () => {
           </Switch>
         </Card >
       </PageSection>
-    </BrowserRouter>
+    </React.Fragment>
   )
 }
