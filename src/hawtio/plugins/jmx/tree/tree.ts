@@ -2,7 +2,6 @@ import { escapeDots, escapeTags } from '@hawtio/util/jolokia'
 import { stringSorter, trimQuotes } from '@hawtio/util/strings'
 import { TreeViewDataItem } from '@patternfly/react-core'
 import { CubeIcon, FolderIcon, FolderOpenIcon } from '@patternfly/react-icons'
-import assert from 'assert'
 import { IJmxDomain, IJmxDomains, IJmxMBean } from 'jolokia.js'
 import React from 'react'
 
@@ -107,7 +106,9 @@ export class MBeanNode implements TreeViewDataItem {
     }
 
     const path = paths.shift()
-    assert(path)
+    if (path === undefined) {
+      throw new Error("path should not be empty")
+    }
     const child = this.getOrCreate(path, true)
     child.createMBeanNode(paths, props, mbean)
   }
@@ -123,7 +124,13 @@ export class MBeanNode implements TreeViewDataItem {
 
   create(name: string, folder: boolean): MBeanNode {
     // this method should be invoked on a folder node
-    assert(this.children)
+    if (this.children === undefined) {
+      logTree.warn(`node "${this.name}" should be a folder`)
+      // re-init as folder
+      this.icon = Icons.folder
+      this.expandedIcon = Icons.folderOpen
+      this.children = []
+    }
 
     const id = escapeDots(name)
     const newChild = new MBeanNode(id, name, folder)

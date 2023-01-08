@@ -38,7 +38,6 @@
     "@hawtio/backend-middleware": "^1.0.3",
     "@typescript-eslint/eslint-plugin": "^5.38.0",
     "@typescript-eslint/parser": "^5.38.0",
-    "assert": "^2.0.0",
     "cz-conventional-changelog": "3.3.0",
     "eslint": "^8.24.0",
     "eslint-plugin-import": "^2.26.0",
