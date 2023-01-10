@@ -1,14 +1,25 @@
-import { jest } from '@jest/globals'
 import { helpRegistry } from './registry'
+import * as support from '@hawtio/test/support'
+
+let realFetch: typeof global.fetch;
 
 describe('helpRegistry', () => {
-  beforeEach(() => helpRegistry.reset())
+  beforeEach(() => {
+    helpRegistry.reset();
+    realFetch = global.fetch;
+  })
+
+  afterEach(() => {
+    global.fetch = realFetch;
+  })
 
   test('add a help', async () => {
-    global.fetch = jest.fn(() => Promise.resolve(new Response(`
+
+    const payload = `
       # Help Test
       Test help content.
-    `)))
+    `;
+    support.mockFetch(payload)
 
     expect(helpRegistry).not.toBeNull()
     expect(helpRegistry.getHelps()).toEqual([])
@@ -27,7 +38,7 @@ describe('helpRegistry', () => {
   })
 
   test('return helps in order', async () => {
-    global.fetch = jest.fn(() => Promise.resolve(new Response('')))
+    support.mockFetch('')
 
     expect(helpRegistry).not.toBeNull()
     expect(helpRegistry.getHelps()).toEqual([])
