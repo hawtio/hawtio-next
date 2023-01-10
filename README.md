@@ -14,6 +14,8 @@ This project reimplements the following Hawtio JS components in one project:
 
 This project was generated with [Create React App](https://create-react-app.dev/) and is managed through [CRACO](https://craco.js.org/) for customised Webpack configurations.
 
+See also [Developing Hawtio.next](.docs/developing.md) for the project styling, guidelines, and more details on development.
+
 ### Prerequisites
 
 You need to have installed the following tools before developing the project.
