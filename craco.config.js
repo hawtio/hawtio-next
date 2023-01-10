@@ -8,12 +8,32 @@ module.exports = {
     },
   },
   jest: {
-    configure: config => {
-      config.moduleNameMapper['@hawtio/(.*)'] = '<rootDir>/src/hawtio/$1'
-      config.transformIgnorePatterns = [
+    configure: {
+      // Automatically clear mock calls and instances between every test
+      clearMocks: true,
+
+      moduleDirectories: [
+        "<rootDir>/node_modules/",
+        "<rootDir>/src/hawtio/test/"
+      ],
+
+      moduleNameMapper: {
+        ['@hawtio/(.*)']: '<rootDir>/src/hawtio/$1',
+        'react-markdown': '<rootDir>/node_modules/react-markdown/react-markdown.min.js'
+      },
+
+      // The path to a module that runs some code to configure or set up the testing framework before each test
+      setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
+
+      testPathIgnorePatterns: [
+        "<rootDir>/node_modules/",
+        "<rootDir>/src/hawtio/test/"
+      ],
+
+      transformIgnorePatterns: [
         "node_modules/(?!@patternfly/react-icons/dist/esm/icons)/"
-      ]
-      return config
+      ],
+
     }
   },
   devServer: {
