@@ -31,11 +31,35 @@ In Hawtio.next, controllers and views are implemented as React components. Model
 
 Therefore, the migration from legacy Hawtio to Hawtio.next is basically a process of rewriting the AngularJS controllers and HTML to React components and AngularJS services to plain-TypeScript service classes.
 
-(More details will be added later)
+#### Mapping example
+
+To give one example, the Attributes feature of the JMX plugin is mapped as follows.
+
+- Controller & view
+  - Legacy:
+    - <https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/ts/attributes/attributes.controller.ts>
+    - <https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/html/attributes/attributes.html>
+  - Next:
+    - <https://github.com/hawtio/hawtio-next/blob/main/src/hawtio/plugins/jmx/attributes/Attributes.tsx>
+- Service
+  - Legacy:
+    - <https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/ts/attributes/attributes.service.ts>
+  - Next:
+    - <https://github.com/hawtio/hawtio-next/blob/main/src/hawtio/plugins/jmx/attributes/attribute-service.ts>
 
 ### Developing a React component
 
 Choose `FunctionalComponent` as much as possible for implementing a React component. Use [React hooks](https://reactjs.org/docs/hooks-intro.html) for managing view states and side effects.
+
+The current implementation guidelines are as follows:
+
+- Create one [React context](https://beta.reactjs.org/reference/react/useContext) per plugin and convey common states and setters from the context within the plugin instead of propagating properties across sub components.
+  - Example: [src/hawtio/plugins/jmx/context.ts](./src/hawtio/plugins/jmx/context.ts)
+- Don't use [React reducers](https://beta.reactjs.org/reference/react/useReducer) as I find it as a bit too much for Hawtio. Hawtio doesn't need to manage complex client-side states other than one huge JMX tree. (We can revisit this rule anytime if we find it the other way around.)
+
+## Testing
+
+TBD
 
 ## Supporting projects
 
