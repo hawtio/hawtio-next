@@ -35,17 +35,10 @@ Therefore, the migration from legacy Hawtio to Hawtio.next is basically a proces
 
 To give one example, the Attributes feature of the JMX plugin is mapped as follows.
 
-- Controller & view
-  - Legacy:
-    - <https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/ts/attributes/attributes.controller.ts>
-    - <https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/html/attributes/attributes.html>
-  - Next:
-    - <https://github.com/hawtio/hawtio-next/blob/main/src/hawtio/plugins/jmx/attributes/Attributes.tsx>
-- Service
-  - Legacy:
-    - <https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/ts/attributes/attributes.service.ts>
-  - Next:
-    - <https://github.com/hawtio/hawtio-next/blob/main/src/hawtio/plugins/jmx/attributes/attribute-service.ts>
+| MVC | Legacy Hawtio | Hawtio.next |
+| --- | ------------- | ----------- |
+| Controller & view | [attributes.controller.ts](https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/ts/attributes/attributes.controller.ts) <br/> [attributes.html](https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/html/attributes/attributes.html) | [Attributes.tsx](https://github.com/hawtio/hawtio-next/blob/main/src/hawtio/plugins/jmx/attributes/Attributes.tsx) |
+| Service | [attributes.service.ts](https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/ts/attributes/attributes.service.ts) | [attribute-service.ts](https://github.com/hawtio/hawtio-next/blob/main/src/hawtio/plugins/jmx/attributes/attribute-service.ts) |
 
 ### Developing a React component
 
