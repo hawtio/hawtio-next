@@ -1,3 +1,4 @@
+import './logging'
 import { hawtio } from './plugin-loader'
 
 export const bootstrap = () => {
