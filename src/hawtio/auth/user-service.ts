@@ -1,6 +1,8 @@
+import { Logger } from '@hawtio/core'
+
 export const DEFAULT_USER = 'public'
 
-const log = console
+const log = Logger.get('hawtio-auth')
 
 export class UserService {
   private username = DEFAULT_USER

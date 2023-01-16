@@ -1,12 +1,13 @@
 import { Button, CardBody, Form, FormGroup, FormSection, Switch } from '@patternfly/react-core'
 import React, { useState } from 'react'
+import { log } from './globals'
 
 export const HomePreferences: React.FunctionComponent = () => {
   const [defaultVerticalNavState, setDefaultVerticalNavState] = useState(true)
 
   const reset = () => {
     // TODO: impl
-    console.log('TODO - Reset settings')
+    log.info('TODO - Reset settings')
   }
 
   const UIForm = () => (

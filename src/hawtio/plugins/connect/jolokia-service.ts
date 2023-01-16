@@ -8,8 +8,7 @@ import $ from 'jquery'
 import { func, is, object } from 'superstruct'
 import { connectService, PARAM_KEY_CONNECTION } from './connect-service'
 import { Connection } from './connections'
-
-const log = console
+import { log } from './globals'
 
 const DEFAULT_MAX_DEPTH = 7
 const DEFAULT_MAX_COLLECTION_SIZE = 50000

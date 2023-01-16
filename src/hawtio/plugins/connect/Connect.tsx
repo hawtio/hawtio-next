@@ -5,10 +5,11 @@ import { connectService } from './connect-service'
 import { Connection, DELETE } from './connections'
 import { ConnectModal } from './ConnectModal'
 import { ConnectContext, useConnections } from './context'
+import { log } from './globals'
 
 export const Connect: React.FunctionComponent = () => {
   const { connections, dispatch } = useConnections()
-  console.debug('Connections:', connections)
+  log.debug('Connections:', connections)
 
   const ConnectHint = () => (
     <ExpandableSection
@@ -166,7 +167,7 @@ const ConnectionItem: React.FunctionComponent<ConnectionItemProps> = props => {
       return
     }
 
-    console.log('Collecting:', connection)
+    log.debug('Collecting:', connection)
     connectService.connect(connection)
   }
 

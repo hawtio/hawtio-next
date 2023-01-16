@@ -38,6 +38,9 @@ class HawtioLoggerImpl implements HawtioLogger {
   createDefaultHandler = jsLogger.createDefaultHandler
 
   get(name: string): ILogger {
+    if (this.loggers[name]) {
+      return this.loggers[name]
+    }
     const logger = jsLogger.get(name)
     this.loggers[name] = logger
     return logger
@@ -65,7 +68,7 @@ class HawtioLoggerImpl implements HawtioLogger {
 
   private loadLogLevel(): ILogLevel {
     const logLevel = localStorage.getItem(STORAGE_KEY_LOG_LEVEL)
-    return logLevel ? JSON.parse(logLevel) : Logger.INFO
+    return logLevel ? JSON.parse(logLevel) : this.INFO
   }
 
   private loadChildLoggers(): ChildLogger[] {

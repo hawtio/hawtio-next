@@ -2,6 +2,7 @@ import { toString } from '@hawtio/util/strings'
 import { joinPaths } from '@hawtio/util/urls'
 import Jolokia, { IJolokia } from 'jolokia.js'
 import { Connection, Connections } from './connections'
+import { log } from './globals'
 
 export type ConnectionTestResult = {
   ok: boolean
@@ -43,7 +44,7 @@ class ConnectService {
   }
 
   testConnection(connection: Connection): Promise<ConnectionTestResult> {
-    console.debug('Testing connection:', toString(connection))
+    log.debug('Testing connection:', toString(connection))
     return new Promise<ConnectionTestResult>((resolve, reject) => {
       try {
         this.createJolokia(connection).request(
@@ -70,14 +71,14 @@ class ConnectService {
             }
           })
       } catch (error) {
-        console.error(error)
+        log.error(error)
         reject(error)
       }
     })
   }
 
   connect(connection: Connection) {
-    console.log('Connecting with options:', toString(connection))
+    log.debug('Connecting with options:', toString(connection))
     const url = `/?${PARAM_KEY_CONNECTION}=${connection.name}`
     window.open(url)
   }
@@ -107,9 +108,9 @@ class ConnectService {
    * Get the Jolokia URL for the given connection.
    */
   getJolokiaUrl(connection: Connection): string {
-    console.debug("Connect to server with connection:", toString(connection))
+    log.debug("Connect to server with connection:", toString(connection))
     if (connection.jolokiaUrl) {
-      console.debug("Using provided URL:", connection.jolokiaUrl)
+      log.debug("Using provided URL:", connection.jolokiaUrl)
       return connection.jolokiaUrl
     }
 
@@ -120,7 +121,7 @@ class ConnectService {
       connection.host || 'localhost',
       String(connection.port || 80),
       connection.path)
-    console.debug("Using URL:", url)
+    log.debug("Using URL:", url)
     return url
   }
 

@@ -1,7 +1,6 @@
 import { hawtio, Plugin } from '@hawtio/core'
 import { createContext, useEffect, useState } from 'react'
-
-const log = console
+import { log } from './globals'
 
 /**
  * Custom React hook for using Hawtio plugins.

@@ -2,6 +2,7 @@ import { Button, CardBody, Form, FormGroup, FormSection, TextInput } from '@patt
 import React, { useState } from 'react'
 import { RESET } from './connections'
 import { useConnections } from './context'
+import { log } from './globals'
 
 const DEFAULT_UPDATE_RATE = 5000
 const DEFAULT_MAX_DEPTH = 7
@@ -25,11 +26,11 @@ export const ConnectPreferences: React.FunctionComponent = () => {
 
   const applyJolokia = () => {
     // TODO: impl
-    console.log('TODO - Apply Jolokia settings')
+    log.info('TODO - Apply Jolokia settings')
   }
 
   const reset = () => {
-    console.debug('Clear saved connections')
+    log.debug('Clear saved connections')
     dispatch({ type: RESET })
   }
 

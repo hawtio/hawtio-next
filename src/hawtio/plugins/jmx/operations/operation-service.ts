@@ -1,6 +1,5 @@
 import { jolokiaService } from '@hawtio/plugins/connect/jolokia-service'
-
-const log = console
+import { log } from '../globals'
 
 class OperationService {
   constructor() {}

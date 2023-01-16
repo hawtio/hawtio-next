@@ -1,6 +1,7 @@
+import { Logger } from '@hawtio/core'
 import { IErrorResponse, IErrorResponseFn, IListOptions, IListResponseFn, IOptions, IOptionsBase, IResponseFn, ISearchOptions, ISearchResponseFn, ISimpleOptions, ISimpleResponseFn, IVersionOptions, IVersionResponseFn } from 'jolokia.js'
 
-const log = console
+const log = Logger.get('hawtio-util')
 
 export function onSuccess(successFn: IResponseFn, options: IOptions = {}): IOptions {
   return onGenericSuccess(successFn, options)
