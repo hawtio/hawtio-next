@@ -1,10 +1,12 @@
+import { Logger } from '@hawtio/core'
 import { jolokiaService } from '@hawtio/plugins/connect/jolokia-service'
 import { isString } from '@hawtio/util/strings'
 import { IErrorResponse, IJmxDomain, IJmxDomains, IJmxMBean, ISimpleOptions } from 'jolokia.js'
 import { is, object } from 'superstruct'
+import { pluginName } from './globals'
 import { MBeanTree } from './tree'
 
-const log = console
+const log = Logger.get(`${pluginName}-workspace`)
 
 export type MBeanCache = { [propertyList: string]: string }
 

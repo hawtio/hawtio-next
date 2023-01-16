@@ -1,6 +1,7 @@
 import { Button, CardBody, Form, FormGroup, FormSection, FormSelect, FormSelectOption, InputGroup, TextInput } from '@patternfly/react-core'
 import { PlusIcon, TrashIcon } from '@patternfly/react-icons'
 import React, { useState } from 'react'
+import { log } from './globals'
 
 export const LogsPreferences: React.FunctionComponent = () => {
   const [logBuffer, setLogBuffer] = useState('100')
@@ -78,7 +79,7 @@ export const LogsPreferences: React.FunctionComponent = () => {
         <FormSelect
           id="logs-form-child-logger-hawtio-core-select"
           value={"INFO"}
-          onChange={value => { console.log('selected:', value) }}
+          onChange={value => { log.info('selected:', value) }}
         >
           {logLevelOptions}
         </FormSelect>

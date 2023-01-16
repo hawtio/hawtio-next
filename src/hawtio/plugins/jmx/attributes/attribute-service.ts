@@ -1,8 +1,7 @@
 import { AttributeValues, jolokiaService } from '@hawtio/plugins/connect/jolokia-service'
 import { escapeMBean } from '@hawtio/util/jolokia'
 import { IRequest, IResponseFn } from 'jolokia.js'
-
-const log = console
+import { log } from '../globals'
 
 class AttributeService {
   private handles: number[] = []

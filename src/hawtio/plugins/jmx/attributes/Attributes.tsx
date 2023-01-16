@@ -6,10 +6,9 @@ import { OnRowClick, Table, TableBody, TableHeader, TableProps } from '@patternf
 import { IResponse } from 'jolokia.js'
 import { useContext, useEffect, useState } from 'react'
 import { MBeanTreeContext } from '../context'
+import { log } from '../globals'
 import { attributeService } from './attribute-service'
 import { AttributeModal } from './AttributeModal'
-
-const log = console
 
 export const Attributes: React.FunctionComponent = () => {
   const { node } = useContext(MBeanTreeContext)

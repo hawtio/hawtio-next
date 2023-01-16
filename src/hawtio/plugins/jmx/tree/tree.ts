@@ -1,11 +1,13 @@
+import { Logger } from '@hawtio/core'
 import { escapeDots, escapeTags } from '@hawtio/util/jolokia'
 import { stringSorter, trimQuotes } from '@hawtio/util/strings'
 import { TreeViewDataItem } from '@patternfly/react-core'
 import { CubeIcon, FolderIcon, FolderOpenIcon } from '@patternfly/react-icons'
 import { IJmxDomain, IJmxDomains, IJmxMBean } from 'jolokia.js'
 import React from 'react'
+import { pluginName } from '../globals'
 
-const logTree = console
+const log = Logger.get(`${pluginName}-tree`)
 
 export class MBeanTree {
   private tree: MBeanNode[] = []
@@ -28,7 +30,7 @@ export class MBeanTree {
   }
 
   private populateDomain(name: string, domain: IJmxDomain) {
-    logTree.debug("JMX tree domain:", name)
+    log.debug("JMX tree domain:", name)
     const domainNode = this.getOrCreateNode(name)
     Object.entries(domain).forEach(([propList, mbean]) => {
       domainNode.populateMBean(propList, mbean)
@@ -91,13 +93,13 @@ export class MBeanNode implements TreeViewDataItem {
   }
 
   populateMBean(propList: string, mbean: IJmxMBean) {
-    logTree.debug("  JMX tree mbean:", propList)
+    log.debug("  JMX tree mbean:", propList)
     const props = new PropertyList(this, propList)
     this.createMBeanNode(props.getPaths(), props, mbean)
   }
 
   private createMBeanNode(paths: string[], props: PropertyList, mbean: IJmxMBean) {
-    logTree.debug("    JMX tree property:", paths[0])
+    log.debug("    JMX tree property:", paths[0])
     if (paths.length === 1) {
       // final mbean node
       const mbeanNode = this.create(paths[0], false)
@@ -125,7 +127,7 @@ export class MBeanNode implements TreeViewDataItem {
   create(name: string, folder: boolean): MBeanNode {
     // this method should be invoked on a folder node
     if (this.children === undefined) {
-      logTree.warn(`node "${this.name}" should be a folder`)
+      log.warn(`node "${this.name}" should be a folder`)
       // re-init as folder
       this.icon = Icons.folder
       this.expandedIcon = Icons.folderOpen

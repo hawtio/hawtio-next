@@ -1,3 +1,5 @@
+import { log } from './globals'
+
 export interface Plugin {
   id: string
   title: string
@@ -16,8 +18,6 @@ export interface Plugin {
 type Plugins = {
   [id: string]: Plugin
 }
-
-const log = console
 
 /**
  * Plugin loader and discovery mechanism.
