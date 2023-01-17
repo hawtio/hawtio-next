@@ -1,107 +1,179 @@
-import { Button, CardBody, Form, FormGroup, FormSection, FormSelect, FormSelectOption, InputGroup, TextInput } from '@patternfly/react-core'
+import { ChildLogger, Logger } from '@hawtio/core'
+import { Button, CardBody, DataList, DataListAction, DataListCell, DataListItem, DataListItemCells, DataListItemRow, Dropdown, DropdownItem, DropdownToggle, Form, FormGroup, FormSection, FormSelect, FormSelectOption, Select, SelectOption, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core'
 import { PlusIcon, TrashIcon } from '@patternfly/react-icons'
-import React, { useState } from 'react'
-import { log } from './globals'
+import React, { useContext, useState } from 'react'
+import { LogsContext, useChildLoggers } from './context'
 
 export const LogsPreferences: React.FunctionComponent = () => {
-  const [logBuffer, setLogBuffer] = useState('100')
-  const [globalLogLevel, setGlobalLogLevel] = useState('INFO')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [childLoggers, setChildLoggers] = useState({})
+  const { childLoggers, availableChildLoggers, reloadChildLoggers } = useChildLoggers()
 
-  const LogBufferForm = () => (
-    <FormGroup
-      label="Log buffer"
-      fieldId="logs-form-log-buffer"
-      helperText="Number of log statements to keep in the console"
+  const ChildLoggerList = () => (
+    <DataList
+      id="logs-child-logger-list"
+      aria-label="logs child logger list"
+      isCompact
     >
-      <TextInput
-        id="logs-form-log-buffer-input"
-        type="number"
-        value={logBuffer}
-        onChange={setLogBuffer}
-      />
-    </FormGroup>
+      {childLoggers.map(childLogger => (
+        <ChildLoggerItem key={childLogger.name} logger={childLogger} />
+      ))}
+    </DataList>
   )
-
-  const logLevelOptions = [
-    <FormSelectOption key={0} label="OFF" value="OFF" />,
-    <FormSelectOption key={1} label="ERROR" value="ERROR" />,
-    <FormSelectOption key={2} label="WARN" value="WARN" />,
-    <FormSelectOption key={3} label="INFO" value="INFO" />,
-    <FormSelectOption key={4} label="DEBUG" value="DEBUG" />,
-  ]
-
-  const GlobalLogLevelForm = () => (
-    <FormGroup
-      label="Log level"
-      fieldId="logs-form-global-log-level"
-    >
-      <FormSelect
-        id="logs-form-global-log-level-select"
-        value={globalLogLevel}
-        onChange={setGlobalLogLevel}
-      >
-        {logLevelOptions}
-      </FormSelect>
-    </FormGroup>
-  )
-
-  const childLoggerOptions = [
-    <FormSelectOption key={0} label="---" />,
-    <FormSelectOption key={1} label="hawtio-core" value="hawtio-core" />,
-  ]
-
-  const ChildLoggersForm = () => (
-    <FormGroup
-      label="Add logger"
-      fieldId="logs-form-child-loggers"
-    >
-      <InputGroup>
-        <FormSelect
-          id="logs-form-child-loggers-select"
-        >
-          {childLoggerOptions}
-        </FormSelect>
-        <Button variant="control">
-          <PlusIcon />
-        </Button>
-      </InputGroup>
-    </FormGroup>
-  )
-
-  const childLoggerForms = [
-    <FormGroup
-      label="hawtio-core"
-      fieldId="logs-form-child-logger-hawtio-core"
-    >
-      <InputGroup>
-        <FormSelect
-          id="logs-form-child-logger-hawtio-core-select"
-          value={"INFO"}
-          onChange={value => { log.info('selected:', value) }}
-        >
-          {logLevelOptions}
-        </FormSelect>
-        <Button variant="control">
-          <TrashIcon />
-        </Button>
-      </InputGroup>
-    </FormGroup>
-  ]
 
   return (
-    <CardBody>
-      <Form isHorizontal>
-        <FormSection title="Global" titleElement="h2">
-          <LogBufferForm />
-          <GlobalLogLevelForm />
-        </FormSection>
-        <FormSection title="Child loggers" titleElement="h2">
-          <ChildLoggersForm />
-          {childLoggerForms}
-        </FormSection>
-      </Form>
-    </CardBody>
+    <LogsContext.Provider value={{ childLoggers, availableChildLoggers, reloadChildLoggers }}>
+      <CardBody>
+        <Form isHorizontal>
+          <FormSection title="Global log settings" titleElement="h2">
+            <GlobalForms />
+          </FormSection>
+          <FormSection title="Child loggers" titleElement="h2">
+            <ChildLoggerToolbar />
+            <ChildLoggerList />
+          </FormSection>
+        </Form>
+      </CardBody>
+    </LogsContext.Provider>
+  )
+}
+
+const LOG_LEVEL_OPTIONS = [
+  'OFF',
+  'ERROR',
+  'WARN',
+  'INFO',
+  'DEBUG',
+] as const
+
+const GlobalForms: React.FunctionComponent = () => {
+  const [logLevel, setLogLevel] = useState(Logger.getLevel().name)
+
+  const handleLogLevelChange = (level: string) => {
+    setLogLevel(level)
+    Logger.setLevel(level)
+  }
+
+  return (
+    <React.Fragment>
+      <FormGroup
+        label="Log level"
+        fieldId="logs-global-form-log-level"
+      >
+        <FormSelect
+          id="logs-global-form-log-level-select"
+          value={logLevel}
+          onChange={handleLogLevelChange}
+        >
+          {LOG_LEVEL_OPTIONS.map((level, index) =>
+            <FormSelectOption key={index} label={level} value={level} />
+          )}
+        </FormSelect>
+      </FormGroup>
+    </React.Fragment>
+  )
+}
+
+const ChildLoggerToolbar: React.FunctionComponent = () => {
+  const { availableChildLoggers, reloadChildLoggers } = useContext(LogsContext)
+  const [isAddOpen, setIsAddOpen] = useState(false)
+
+  const handleAddToggle = () => {
+    setIsAddOpen(!isAddOpen)
+  }
+
+  const addChildLogger = (logger: ChildLogger) => () => {
+    Logger.addChildLogger(logger)
+    reloadChildLoggers()
+  }
+
+  const availableChildLoggerItems = availableChildLoggers.map(logger =>
+    <DropdownItem key={logger.name} onClick={addChildLogger(logger)}>
+      {logger.name}
+    </DropdownItem>
+  )
+
+  return (
+    <Toolbar id="connect-toolbar">
+      <ToolbarContent>
+        <ToolbarItem>
+          <Dropdown
+            onSelect={handleAddToggle}
+            toggle={
+              <DropdownToggle
+                id="logs-child-logger-toolbar-dropdown-toggle"
+                toggleVariant="secondary"
+                onToggle={handleAddToggle}
+              >
+                <PlusIcon /> Add
+              </DropdownToggle>
+            }
+            isOpen={isAddOpen}
+            dropdownItems={availableChildLoggerItems}
+          />
+        </ToolbarItem>
+      </ToolbarContent>
+    </Toolbar>
+  )
+}
+
+type ChildLoggerItemProps = {
+  logger: ChildLogger
+}
+
+const ChildLoggerItem: React.FunctionComponent<ChildLoggerItemProps> = props => {
+  const { logger } = props
+  const { reloadChildLoggers } = useContext(LogsContext)
+  const [isSelectOpen, setIsSelectOpen] = useState(false)
+
+  const name = logger.name
+
+  const onLogLevelSelect = (level: string) => {
+    Logger.updateChildLogger(logger.name, level)
+    reloadChildLoggers()
+    onLogLevelToggle()
+  }
+
+  const onLogLevelToggle = () => {
+    setIsSelectOpen(!isSelectOpen)
+  }
+
+  const deleteChildLogger = () => {
+    Logger.removeChildLogger(logger)
+    reloadChildLoggers()
+  }
+
+  return (
+    <DataListItem key={`logs-child-logger-${name}`} aria-labelledby={`logs child logger ${name}`}>
+      <DataListItemRow>
+        <DataListItemCells
+          dataListCells={[
+            <DataListCell key={`logs-child-logger-name-${name}`}>
+              <b>{name}</b>
+            </DataListCell>,
+            <DataListCell key={`logs-child-logger-log-level-${name}`}>
+              <Select
+                id="logs-child-logger-actions-log-level"
+                onToggle={onLogLevelToggle}
+                onSelect={(event, value) => onLogLevelSelect(String(value))}
+                selections={logger.filterLevel.name}
+                isOpen={isSelectOpen}
+              >
+                {LOG_LEVEL_OPTIONS.map((level, index) =>
+                  <SelectOption key={index} value={level} />
+                )}
+              </Select>
+            </DataListCell>
+          ]}
+        />
+        <DataListAction
+          id={`logs-child-logger-actions-${name}`}
+          aria-label={`logs child logger actions ${name}`}
+          aria-labelledby={`${name} logs-child-logger-actions-${name}`}
+        >
+          <Button variant="secondary" onClick={deleteChildLogger}>
+            <TrashIcon />
+          </Button>
+        </DataListAction>
+      </DataListItemRow>
+    </DataListItem>
   )
 }
