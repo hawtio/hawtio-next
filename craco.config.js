@@ -13,8 +13,8 @@ module.exports = {
       clearMocks: true,
 
       moduleDirectories: [
-        "<rootDir>/node_modules/",
-        "<rootDir>/src/hawtio/test/"
+        '<rootDir>/node_modules/',
+        '<rootDir>/src/hawtio/test/'
       ],
 
       moduleNameMapper: {
@@ -26,14 +26,20 @@ module.exports = {
       setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
 
       testPathIgnorePatterns: [
-        "<rootDir>/node_modules/",
-        "<rootDir>/src/hawtio/test/"
+        '<rootDir>/node_modules/',
+        '<rootDir>/src/hawtio/test/'
       ],
 
       transformIgnorePatterns: [
-        "node_modules/(?!@patternfly/react-icons/dist/esm/icons)/"
+        'node_modules/(?!@patternfly/react-icons/dist/esm/icons)/'
       ],
 
+      coveragePathIgnorePatterns: [
+        'node_modules/',
+        'src/examples/',
+        'src/index.tsx',
+        'src/reportWebVitals.ts',
+      ],
     }
   },
   devServer: {

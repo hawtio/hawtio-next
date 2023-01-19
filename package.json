@@ -7,7 +7,7 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
-    "test:coverage": "yarn run test --coverage src/**/*.ts",
+    "test:coverage": "craco test --coverage --watchAll=false",
     "lint": "yarn eslint src/",
     "deploy": "yarn build && cp build/index.html build/200.html && surge build/ hawtio-next.surge.sh"
   },
