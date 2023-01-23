@@ -9,6 +9,7 @@
     "test": "craco test",
     "test:coverage": "craco test --coverage --watchAll=false",
     "lint": "yarn eslint src/",
+    "lint:fix": "yarn eslint --fix src/",
     "deploy": "yarn build && cp build/index.html build/200.html && surge build/ hawtio-next.surge.sh"
   },
   "dependencies": {

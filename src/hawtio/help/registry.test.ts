@@ -1,16 +1,16 @@
 import { helpRegistry } from './registry'
 import * as support from '@hawtio/test/support'
 
-let realFetch: typeof global.fetch;
+let realFetch: typeof global.fetch
 
 describe('helpRegistry', () => {
   beforeEach(() => {
-    helpRegistry.reset();
-    realFetch = global.fetch;
+    helpRegistry.reset()
+    realFetch = global.fetch
   })
 
   afterEach(() => {
-    global.fetch = realFetch;
+    global.fetch = realFetch
   })
 
   test('add a help', async () => {
@@ -18,7 +18,7 @@ describe('helpRegistry', () => {
     const payload = `
       # Help Test
       Test help content.
-    `;
+    `
     support.mockFetch(payload)
 
     expect(helpRegistry).not.toBeNull()

@@ -11,6 +11,7 @@ module.exports = {
   ],
   rules: {
     'import/no-default-export': 'error',
+    'semi': ['error', 'never'],
     '@typescript-eslint/no-empty-function': [
       'error',
       {

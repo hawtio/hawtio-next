@@ -357,8 +357,8 @@ export type AttributeValues = { [name: string]: unknown }
  */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 class DummyJolokia implements IJolokia {
-  isDummy = true;
-  private running = false;
+  isDummy = true
+  private running = false
 
   request(...args: unknown[]) { return null }
 
