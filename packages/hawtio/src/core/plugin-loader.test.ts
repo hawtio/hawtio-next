@@ -1,7 +1,7 @@
 import { hawtio } from './plugin-loader'
 
 describe('PluginLoader', () => {
-  test('test', () => {
+  test('hawtio exists', () => {
     expect(hawtio).not.toBeNull()
   })
 })

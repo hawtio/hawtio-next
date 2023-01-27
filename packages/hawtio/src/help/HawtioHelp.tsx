@@ -32,7 +32,7 @@ export const HawtioHelp: React.FunctionComponent = () => {
         <Card isFullHeight>
           <Switch>
             {helpRegistry.getHelps().map(help =>
-              <Route path={path(help.id)}>
+              <Route key={help.id} path={path(help.id)}>
                 <CardBody>
                   <TextContent>
                     <Markdown>{help.content}</Markdown>

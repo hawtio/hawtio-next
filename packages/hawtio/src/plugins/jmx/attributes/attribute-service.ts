@@ -6,8 +6,6 @@ import { log } from '../globals'
 class AttributeService {
   private handles: number[] = []
 
-  constructor() {}
-
   async read(mbean: string): Promise<AttributeValues> {
     return await jolokiaService.read(mbean)
   }
