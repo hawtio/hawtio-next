@@ -1,10 +1,8 @@
+import '@hawtio/react/dist/index.css'
 import '@patternfly/react-core/dist/styles/base.css'
 import './index.css'
 
-import { HawtioContextProvider } from '@hawtio/context'
-import { bootstrap } from '@hawtio/core'
-import { Hawtio } from '@hawtio/Hawtio'
-import { registerPlugins } from '@hawtio/plugins'
+import { bootstrap, Hawtio, registerPlugins } from '@hawtio/react'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { registerExamples } from './examples'
@@ -20,9 +18,7 @@ const root = ReactDOM.createRoot(
 )
 root.render(
   <React.StrictMode>
-    <HawtioContextProvider>
-      <Hawtio />
-    </HawtioContextProvider>
+    <Hawtio />
   </React.StrictMode>
 )
 

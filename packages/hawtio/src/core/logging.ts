@@ -1,11 +1,11 @@
 import { stringSorter } from '@hawtio/util/strings'
-import jsLogger, { GlobalLogger, ILogger, ILogLevel } from 'js-logger'
+import jsLogger, { GlobalLogger, ILogger, ILogHandler, ILogLevel } from 'js-logger'
 import { is, object, type } from 'superstruct'
 
 export const STORAGE_KEY_LOG_LEVEL = 'core.logging.logLevel'
 export const STORAGE_KEY_CHILD_LOGGERS = 'core.logging.childLoggers'
 
-interface HawtioLogger extends GlobalLogger {
+export interface HawtioLogger extends GlobalLogger {
   getChildLoggers(): ChildLogger[]
   getAvailableChildLoggers(): ChildLogger[]
   addChildLogger(logger: ChildLogger): void
@@ -40,7 +40,8 @@ class LocalStorageHawtioLogger implements HawtioLogger {
 
   useDefaults = jsLogger.useDefaults
   setHandler = jsLogger.setHandler
-  createDefaultHandler = jsLogger.createDefaultHandler
+  // 'typeof jsLogger.createDefaultHandler' is a hack as otherwise tsc complains TS4029 error
+  createDefaultHandler: typeof jsLogger.createDefaultHandler = jsLogger.createDefaultHandler
 
   private readonly LOG_LEVEL_MAP: { [name: string]: ILogLevel } = {
     'TRACE': this.TRACE,

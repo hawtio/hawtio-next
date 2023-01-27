@@ -1,0 +1,56 @@
+{
+  "name": "@hawtio/react",
+  "version": "0.1.0",
+  "description": "A Hawtio reimplementation based on TypeScript + React.",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "author": "Hawtio developer team",
+  "license": "Apache-2.0",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@patternfly/react-core": "^4.250.1",
+    "@patternfly/react-table": "^4.111.33",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.18.3",
+    "@types/react": "^18.0.24",
+    "@types/react-dom": "^18.0.8",
+    "@types/react-router-dom": "^5.3.3",
+    "jolokia.js": "1.7.1-6",
+    "jquery": "^3.6.1",
+    "js-logger": "^1.6.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-markdown": "^8.0.3",
+    "react-router-dom": "^5.3.4",
+    "react-split": "^2.0.14",
+    "superstruct": "^1.0.3",
+    "typescript": "^4.8.4"
+  },
+  "devDependencies": {
+    "eslint-config-react-app": "^7.0.1",
+    "jest": "^29.4.0",
+    "tsup": "^6.5.0"
+  },
+  "peerDependencies": {
+    "@patternfly/react-core": "^4.250.1",
+    "@patternfly/react-table": "^4.111.33",
+    "react": "^16.8 || ^17 || ^18",
+    "react-dom": "^16.8 || ^17 || ^18"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "packageManager": "yarn@3.3.1"
+}

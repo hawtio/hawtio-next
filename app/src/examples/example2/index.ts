@@ -1,5 +1,5 @@
 
-import { hawtio } from '@hawtio/core'
+import { hawtio } from '@hawtio/react'
 import { Example2 } from './Example2'
 
 export const registerExample2 = () => {

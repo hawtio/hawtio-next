@@ -7,10 +7,11 @@
 .yarn/*
 
 # testing
-/coverage
+coverage/
 
 # production
-/build
+dist/
+build/
 
 # misc
 !.gitignore
