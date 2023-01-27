@@ -9,13 +9,11 @@ class HelpRegistry {
 
   private helps: { [id: string]: Help } = {}
 
-  async add(id: string, title: string, content: string, order = 100) {
+  add(id: string, title: string, content: string, order = 100) {
     if (this.helps[id]) {
       throw new Error(`Help '${id}' already registered`)
     }
-    const res = await fetch(content)
-    const text = await res.text()
-    this.helps[id] = { id, title, content: text, order }
+    this.helps[id] = { id, title, content, order }
   }
 
   getHelps(): Help[] {
