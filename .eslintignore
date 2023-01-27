@@ -2,3 +2,6 @@
 /*.cjs
 /app/*.js
 /app/*.cjs
+
+dist/
+build/
