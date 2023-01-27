@@ -1,5 +1,5 @@
 import { stringSorter } from '@hawtio/util/strings'
-import jsLogger, { GlobalLogger, ILogger, ILogHandler, ILogLevel } from 'js-logger'
+import jsLogger, { GlobalLogger, ILogger, ILogLevel } from 'js-logger'
 import { is, object, type } from 'superstruct'
 
 export const STORAGE_KEY_LOG_LEVEL = 'core.logging.logLevel'

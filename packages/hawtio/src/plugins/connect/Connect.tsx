@@ -22,17 +22,17 @@ export const Connect: React.FunctionComponent = () => {
     >
       <Text component="p">
         This page allows you to connect to remote processes which <strong>already have a
-          <a href="https://jolokia.org/agent.html" target="_blank">Jolokia agent</a> running inside them</strong>.
+          <a href="https://jolokia.org/agent.html" target="_blank" rel="noreferrer">Jolokia agent</a> running inside them</strong>.
         You will need to know the host name, port and path of the Jolokia agent to be able to connect.
       </Text>
       <Text component="p">
         If the process you wish to connect to does not have a Jolokia agent inside, please refer to the
-        <a href="http://jolokia.org/agent.html" target="_blank">Jolokia documentation</a> for how to add a JVM,
+        <a href="http://jolokia.org/agent.html" target="_blank" rel="noreferrer">Jolokia documentation</a> for how to add a JVM,
         servlet or OSGi based agent inside it.
       </Text>
       <Text component="p">
-        If you are using <a href="https://developers.redhat.com/products/fuse/overview/" target="_blank">Red Hat Fuse</a>
-        or <a href="http://activemq.apache.org/" target="_blank">Apache ActiveMQ</a>,
+        If you are using <a href="https://developers.redhat.com/products/fuse/overview/" target="_blank" rel="noreferrer">Red Hat Fuse</a>
+        or <a href="http://activemq.apache.org/" target="_blank" rel="noreferrer">Apache ActiveMQ</a>,
         then a Jolokia agent is included by default (use context path of Jolokia agent, usually
         <code>jolokia</code>). Or you can always just deploy hawtio inside the process (which includes the Jolokia agent,
         use Jolokia servlet mapping inside hawtio context path, usually <code>hawtio/jolokia</code>).

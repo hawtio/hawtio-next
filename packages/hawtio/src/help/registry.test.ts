@@ -33,7 +33,7 @@ describe('helpRegistry', () => {
     `)
 
     // duplicate help not allowed
-    expect(() => helpRegistry.add('test', 'Test', './help.md'))
+    await expect(() => helpRegistry.add('test', 'Test', './help.md'))
       .rejects.toThrowError(/Help 'test' already registered/)
   })
 
