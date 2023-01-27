@@ -6,8 +6,8 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   loader: {
-    '.svg': 'file',
-    '.jpg': 'file',
+    '.svg': 'dataurl',
+    '.jpg': 'dataurl',
     '.md': 'text'
   },
 })
