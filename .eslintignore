@@ -1,2 +1,4 @@
 /*.js
 /*.cjs
+/app/*.js
+/app/*.cjs

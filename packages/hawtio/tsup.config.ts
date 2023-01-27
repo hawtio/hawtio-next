@@ -8,6 +8,6 @@ export default defineConfig({
   loader: {
     '.svg': 'file',
     '.jpg': 'file',
-    '.md': 'file'
+    '.md': 'text'
   },
 })
