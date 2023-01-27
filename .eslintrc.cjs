@@ -1,8 +1,12 @@
 module.exports = {
   extends: [
+    'react-app',
+    'react-app/jest',
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:react/recommended',
     'plugin:react-hooks/recommended',
+    'plugin:testing-library/react',
   ],
   parser: '@typescript-eslint/parser',
   plugins: [

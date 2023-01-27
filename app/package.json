@@ -1,0 +1,35 @@
+{
+  "name": "app",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
+    "test:coverage": "craco test --coverage --watchAll=false",
+    "deploy": "yarn build && cp build/index.html build/200.html && surge build/ hawtio-next.surge.sh"
+  },
+  "dependencies": {
+    "@craco/craco": "^6.4.5",
+    "@hawtio/react": "workspace:*",
+    "react": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "web-vitals": "^2.1.4"
+  },
+  "devDependencies": {
+    "@hawtio/backend-middleware": "^1.0.3"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "packageManager": "yarn@3.3.1"
+}

@@ -1,10 +1,16 @@
-const path = require('path')
 const { hawtioBackend } = require('@hawtio/backend-middleware')
 
 module.exports = {
   webpack: {
-    alias: {
-      '@hawtio': path.resolve(__dirname, 'src/hawtio'),
+    configure: {
+      ignoreWarnings: [
+        function ignoreSourcemapsloaderWarnings(warning) {
+          return warning.module
+            && warning.module.resource.includes('node_modules')
+            && warning.details
+            && warning.details.includes('source-map-loader')
+        },
+      ],
     },
   },
   jest: {
@@ -12,22 +18,11 @@ module.exports = {
       // Automatically clear mock calls and instances between every test
       clearMocks: true,
 
-      moduleDirectories: [
-        '<rootDir>/node_modules/',
-        '<rootDir>/src/hawtio/test/'
-      ],
-
-      moduleNameMapper: {
-        ['@hawtio/(.*)']: '<rootDir>/src/hawtio/$1',
-        'react-markdown': '<rootDir>/node_modules/react-markdown/react-markdown.min.js'
-      },
-
       // The path to a module that runs some code to configure or set up the testing framework before each test
       setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
 
       testPathIgnorePatterns: [
         '<rootDir>/node_modules/',
-        '<rootDir>/src/hawtio/test/'
       ],
 
       transformIgnorePatterns: [

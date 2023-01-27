@@ -1,73 +1,32 @@
 {
-  "name": "hawtio-next",
-  "version": "0.1.0",
+  "name": "@hawtio/next-root",
+  "version": "0.0.0",
   "private": true,
+  "author": "Hawtio developer team",
   "license": "Apache-2.0",
+  "workspaces": [
+    "packages/*",
+    "app"
+  ],
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
-    "test": "craco test",
-    "test:coverage": "craco test --coverage --watchAll=false",
-    "lint": "yarn eslint src/",
-    "lint:fix": "yarn eslint --fix src/",
-    "deploy": "yarn build && cp build/index.html build/200.html && surge build/ hawtio-next.surge.sh"
-  },
-  "dependencies": {
-    "@craco/craco": "^6.4.5",
-    "@patternfly/react-core": "^4.250.1",
-    "@patternfly/react-table": "^4.111.33",
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.5.2",
-    "@types/node": "^16.18.3",
-    "@types/react": "^18.0.24",
-    "@types/react-dom": "^18.0.8",
-    "@types/react-router-dom": "^5.3.3",
-    "jolokia.js": "1.7.1-6",
-    "jquery": "^3.6.1",
-    "js-logger": "^1.6.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-markdown": "^8.0.3",
-    "react-router-dom": "^5.3.4",
-    "react-scripts": "5.0.1",
-    "react-split": "^2.0.14",
-    "superstruct": "^0.16.5",
-    "typescript": "^4.8.4",
-    "web-vitals": "^2.1.4"
+    "start": "yarn build:packages && yarn workspace app start",
+    "build": "yarn build:packages && yarn build:app",
+    "build:packages": "yarn workspace @hawtio/react build",
+    "build:app": "yarn workspace app build",
+    "test": "yarn test:packages && yarn test:app",
+    "test:packages": "yarn workspace @hawtio/react test",
+    "test:app": "yarn workspace app test",
+    "lint": "yarn eslint packages/hawtio/src/ app/src/",
+    "lint:fix": "yarn lint --fix"
   },
   "devDependencies": {
-    "@hawtio/backend-middleware": "^1.0.3",
     "@typescript-eslint/eslint-plugin": "^5.38.0",
     "@typescript-eslint/parser": "^5.38.0",
     "cz-conventional-changelog": "3.3.0",
     "eslint": "^8.24.0",
+    "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-react-hooks": "^4.6.0"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest",
-      "eslint:recommended",
-      "plugin:react/recommended",
-      "plugin:react-hooks/recommended",
-      "plugin:jest/recommended",
-      "plugin:testing-library/react"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   },
   "config": {
     "commitizen": {
