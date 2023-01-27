@@ -43,7 +43,13 @@ Then run another Java application which has a Jolokia endpoint from a different 
 mvn spring-boot:run
 ```
 
-You can connect to this example at this Jolokia URL: <http://localhost:10001/actuator/hawtio/jolokia>
+You can connect to this example application at the Jolokia URL: <http://localhost:10001/actuator/hawtio/jolokia>. Open the Connect tab and create a connection with the following parameters:
+
+- Name: \<any name\>
+- Scheme: HTTP
+- Host: `localhost`
+- Port: `10001`
+- Path: `/actuator/hawtio/jolokia`
 
 ### Building
 
