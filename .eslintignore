@@ -3,5 +3,8 @@
 /app/*.js
 /app/*.cjs
 
+jest.config.ts
+tsup.config.ts
+
 dist/
 build/

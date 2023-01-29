@@ -4,6 +4,10 @@
   "private": true,
   "author": "Hawtio developer team",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hawtio/hawtio-next.git"
+  },
   "workspaces": [
     "packages/*",
     "app"
