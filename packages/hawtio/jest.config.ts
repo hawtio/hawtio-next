@@ -1,8 +1,20 @@
 export default {
+  preset: 'ts-jest',
+  testEnvironment: 'jsdom',
+
   // Automatically clear mock calls and instances between every test
   clearMocks: true,
 
-  // The path to a module that runs some code to configure or set up the testing framework before each test
+  moduleNameMapper: {
+    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga|md)$':
+      '<rootDir>/src/__mocks__/fileMock.js',
+    '\\.(css|less)$': '<rootDir>/src/__mocks__/styleMock.js',
+    '@hawtio/(.*)': '<rootDir>/src/$1',
+    'react-markdown': '<rootDir>/../../node_modules/react-markdown/react-markdown.min.js',
+  },
+
+  // The path to a module that runs some code to configure or set up the testing
+  // framework before each test
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
 
   testPathIgnorePatterns: [
