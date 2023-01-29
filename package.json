@@ -13,9 +13,11 @@
     "app"
   ],
   "scripts": {
-    "start": "yarn build:packages && yarn workspace app start",
+    "start": "concurrently -n hawtio,app \"yarn build:packages:watch\" \"yarn start:app\"",
+    "start:app": "yarn workspace app start",
     "build": "yarn build:packages && yarn build:app",
     "build:packages": "yarn workspace @hawtio/react build",
+    "build:packages:watch": "yarn workspace @hawtio/react build:watch",
     "build:app": "yarn workspace app build",
     "test": "yarn test:packages && yarn test:app",
     "test:packages": "yarn workspace @hawtio/react test",
@@ -26,6 +28,7 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.38.0",
     "@typescript-eslint/parser": "^5.38.0",
+    "concurrently": "^7.6.0",
     "cz-conventional-changelog": "3.3.0",
     "eslint": "^8.24.0",
     "eslint-config-react-app": "^7.0.1",
