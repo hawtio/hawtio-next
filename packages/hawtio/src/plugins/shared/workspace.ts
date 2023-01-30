@@ -6,7 +6,7 @@ import { is, object } from 'superstruct'
 import { pluginName } from './globals'
 import { MBeanTree, MBeanNode } from './tree'
 
-const log = Logger.get(`${pluginName}-workspace`)
+const log = Logger.get(`hawtio-${pluginName}-workspace`)
 
 export type MBeanCache = { [propertyList: string]: string }
 
@@ -35,7 +35,7 @@ class Workspace {
     // TODO: this.jolokiaStatus.xhr = null
     const domains = this.unwindResponseWithRBACCache(value)
     log.debug("JMX tree loaded:", domains)
-    return new MBeanTree(domains)
+    return MBeanTree.createMBeanTreeFromDomains('workspace', domains)
   }
 
   /**
@@ -73,7 +73,7 @@ class Workspace {
   }
 
   private matchesProperties(node: MBeanNode, properties: Record<string, unknown>): boolean {
-    if (!node) return false;
+    if (!node) return false
 
     for (const [k, v] of Object.entries(properties)) {
       switch(k) {
@@ -82,44 +82,44 @@ class Workspace {
           break
         case 'name':
           if (node.name !== v) return false
-          break;
+          break
         case 'icon':
           if (JSON.stringify(node.icon) !== JSON.stringify(v)) return false
-          break;
+          break
       }
     }
 
-    return true;
+    return true
   }
 
   async treeContainsDomainAndProperties(domainName: string, properties?: Record<string, unknown> | null): Promise<boolean> {
     const tree = await this.tree
     if (!tree) {
-      return false;
+      return false
     }
 
-    const domain = tree.get(domainName);
+    const domain = tree.get(domainName)
     if (!domain) {
-      return false;
+      return false
     }
 
     if (properties) {
       let domainAndChildren:MBeanNode[] = [domain]
-      domainAndChildren = domainAndChildren.concat(domain.children || []);
+      domainAndChildren = domainAndChildren.concat(domain.children || [])
       const checkProperties = (node: MBeanNode) => {
         if (!this.matchesProperties(node, properties)) {
           if (node.children && node.children.length > 0) {
-            return node.children.some(checkProperties);
+            return node.children.some(checkProperties)
           } else {
-            return false;
+            return false
           }
         } else {
-          return true;
+          return true
         }
-      };
-      return domainAndChildren.some(checkProperties);
+      }
+      return domainAndChildren.some(checkProperties)
     }
-    return true;
+    return true
   }
 }
 

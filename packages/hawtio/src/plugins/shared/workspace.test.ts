@@ -1,7 +1,7 @@
 import { workspace } from './workspace'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { jolokiaService } from '@hawtio/plugins/connect/jolokia-service'
-import { MBeanTree, MBeanNode } from '@hawtio/plugins/jmx/tree'
+import { MBeanTree } from '@hawtio/plugins/shared/tree'
 
 jest.mock('@hawtio/plugins/connect/jolokia-service')
 

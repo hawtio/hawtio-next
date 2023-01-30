@@ -1,9 +1,8 @@
 import { hawtio } from '@hawtio/core'
 import { helpRegistry } from '@hawtio/help/registry'
-
+import { workspace } from '@hawtio/plugins/shared'
 import help from './help.md'
 import { Jmx } from './Jmx'
-import { workspace } from './workspace'
 
 export const jmx = () => {
   hawtio.addPlugin({

@@ -1,83 +1,16 @@
 import { Logger } from '@hawtio/core'
-import { escapeDots, escapeTags } from '@hawtio/util/jolokia'
-import { stringSorter, trimQuotes } from '@hawtio/util/strings'
-import { TreeViewDataItem } from '@patternfly/react-core'
-import { CubeIcon, FolderIcon, FolderOpenIcon } from '@patternfly/react-icons'
-import { IJmxDomain, IJmxDomains, IJmxMBean } from 'jolokia.js'
 import React from 'react'
-import { pluginName } from '../globals'
+import { CubeIcon, FolderIcon, FolderOpenIcon } from '@patternfly/react-icons'
+import { TreeViewDataItem } from '@patternfly/react-core'
+import { escapeDots, escapeTags } from '@hawtio/util/jolokia'
+import { IJmxMBean } from 'jolokia.js'
+import { stringSorter, trimQuotes } from '@hawtio/util/strings'
+import { ILogger } from 'js-logger'
 
-const log = Logger.get(`${pluginName}-tree`)
-
-export class MBeanTree {
-  private tree: MBeanNode[] = []
-
-  constructor(domains: IJmxDomains) {
-    this.populate(domains)
-  }
-
-  private populate(domains: IJmxDomains) {
-    Object.entries(domains).forEach(([name, domain]) => {
-      // Domain name is displayed in the tree, so let's escape it here.
-      // Use a custom escaping method here as escaping '"' breaks Camel tree.
-      const escapedName = escapeTags(name)
-      this.populateDomain(escapedName, domain)
-    })
-
-    this.sortTree()
-
-    // TODO: tree post processors
-  }
-
-  private populateDomain(name: string, domain: IJmxDomain) {
-    log.debug("JMX tree domain:", name)
-    const domainNode = this.getOrCreateNode(name)
-    Object.entries(domain).forEach(([propList, mbean]) => {
-      domainNode.populateMBean(propList, mbean)
-    })
-  }
-
-  private getOrCreateNode(name: string): MBeanNode {
-    const node = this.tree.find(node => node.name === name)
-    if (node) {
-      return node
-    }
-
-    const id = escapeDots(name)
-    const newNode = new MBeanNode(id, name, true)
-    this.tree.push(newNode)
-    return newNode
-  }
-
-  private sortTree() {
-    this.tree.sort((a, b) => stringSorter(a.name, b.name))
-    this.tree.forEach(node => node.sort(true))
-  }
-
-  getTree(): MBeanNode[] {
-    return this.tree
-  }
-
-  get(name: string): MBeanNode | null {
-    const node = this.tree.find(node => {
-      return node.name === name
-    })
-
-    return (node) ? node : null
-  }
-
-  isEmpty(): boolean {
-    return this.tree.length === 0
-  }
-}
-
-const Icons = {
-  folder: React.createElement(FolderIcon),
-  folderOpen: React.createElement(FolderOpenIcon),
-  mbean: React.createElement(CubeIcon),
-} as const
+const nodeLoggers: Map<string, ILogger> = new Map<string, ILogger>()
 
 export class MBeanNode implements TreeViewDataItem {
+  owner: string
   id: string
   name: string
   icon: React.ReactNode
@@ -88,7 +21,23 @@ export class MBeanNode implements TreeViewDataItem {
   objectName?: string
   mbean?: IJmxMBean
 
-  constructor(id: string, name: string, folder: boolean) {
+  private log: ILogger
+
+  //
+  // Avoid creating a new logger for every node by registering
+  // and getting the same logger for all nodes belonging to the same tree
+  //
+  private static getLogger(owner: string): ILogger {
+    const logId =`${owner}-node`
+    let log: ILogger|undefined = nodeLoggers.get(logId)
+    if (! log) {
+      log = Logger.get(logId)
+      nodeLoggers.set(logId, log)
+    }
+    return log
+  }
+
+  constructor(owner: string, id: string, name: string, folder: boolean) {
     this.id = id
     this.name = name
     if (folder) {
@@ -98,16 +47,19 @@ export class MBeanNode implements TreeViewDataItem {
     } else {
       this.icon = Icons.mbean
     }
+
+    this.owner = owner
+    this.log = MBeanNode.getLogger(owner)
   }
 
   populateMBean(propList: string, mbean: IJmxMBean) {
-    log.debug("  JMX tree mbean:", propList)
+    this.log.debug("  JMX tree mbean:", propList)
     const props = new PropertyList(this, propList)
     this.createMBeanNode(props.getPaths(), props, mbean)
   }
 
   private createMBeanNode(paths: string[], props: PropertyList, mbean: IJmxMBean) {
-    log.debug("    JMX tree property:", paths[0])
+    this.log.debug("    JMX tree property:", paths[0])
     if (paths.length === 1) {
       // final mbean node
       const mbeanNode = this.create(paths[0], false)
@@ -135,15 +87,15 @@ export class MBeanNode implements TreeViewDataItem {
   create(name: string, folder: boolean): MBeanNode {
     // this method should be invoked on a folder node
     if (this.children === undefined) {
-      log.warn(`node "${this.name}" should be a folder`)
+      this.log.warn(`node "${this.name}" should be a folder`)
       // re-init as folder
       this.icon = Icons.folder
       this.expandedIcon = Icons.folderOpen
       this.children = []
     }
 
-    const id = escapeDots(name)
-    const newChild = new MBeanNode(id, name, folder)
+    const id = escapeDots(name) + '-' + (this.children.length + 1)
+    const newChild = new MBeanNode(this.owner, id, name, folder)
     this.children.push(newChild)
     return newChild
   }
@@ -161,6 +113,51 @@ export class MBeanNode implements TreeViewDataItem {
     if (recursive) {
       this.children?.forEach(child => child.sort(recursive))
     }
+  }
+
+  findDescendant(filter: (node: MBeanNode) => boolean): MBeanNode | null {
+    if (filter(this)) {
+      return this
+    }
+
+    let answer: MBeanNode | null = null
+    if (this.children) {
+      this.children.forEach((child) => {
+        if (!answer) {
+          answer = child.findDescendant(filter)
+        }
+      })
+    }
+    return answer
+  }
+
+  filterClone(filter: (node: MBeanNode) => boolean): MBeanNode | null {
+    const copyChildren: MBeanNode[] = []
+    if (this.children) {
+      this.children.forEach((child) => {
+        const childCopy = child.filterClone(filter)
+        if (childCopy) {
+          copyChildren.push(childCopy)
+        }
+      })
+
+      //
+      // Nodes with either children that conform to filter
+      // Or the this node itself conforms to filter
+      //
+      if (copyChildren.length > 0 || filter(this)) {
+        const copy: MBeanNode = new MBeanNode(this.owner, this.id, this.name, copyChildren.length > 0)
+        copy.children = copyChildren
+        return copy
+      }
+    } else if (filter(this)) {
+      //
+      // This node has no children but itself conforms to filter
+      //
+      return new MBeanNode(this.owner, this.id, this.name, copyChildren.length > 0)
+    }
+
+    return null
   }
 }
 
@@ -250,6 +247,12 @@ class PropertyList {
     return `${this.domain.name}:${this.propList}`
   }
 }
+
+const Icons = {
+  folder: React.createElement(FolderIcon),
+  folderOpen: React.createElement(FolderOpenIcon),
+  mbean: React.createElement(CubeIcon),
+} as const
 
 /**
  * Reorders objects by the given key according to the given order of values.

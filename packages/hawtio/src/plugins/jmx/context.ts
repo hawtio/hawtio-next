@@ -1,12 +1,12 @@
 import { createContext, useEffect, useState } from 'react'
-import { MBeanNode, MBeanTree } from './tree'
-import { workspace } from './workspace'
+import { workspace, MBeanNode, MBeanTree } from '@hawtio/plugins/shared'
+import { pluginName } from './globals'
 
 /**
  * Custom React hook for using JMX MBean tree.
  */
 export function useMBeanTree() {
-  const [tree, setTree] = useState<MBeanTree>(new MBeanTree({}))
+  const [tree, setTree] = useState<MBeanTree>(MBeanTree.createEmptyTree(pluginName))
   const [loaded, setLoaded] = useState(false)
   const [node, setNode] = useState<MBeanNode | null>(null)
 
@@ -29,7 +29,7 @@ type MBeanTreeContext = {
 }
 
 export const MBeanTreeContext = createContext<MBeanTreeContext>({
-  tree: new MBeanTree({}),
+  tree: MBeanTree.createEmptyTree(pluginName),
   node: null,
   setNode: () => { /* no-op */ }
 })
