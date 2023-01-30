@@ -36,7 +36,7 @@
     "react-router-dom": "^5.3.4",
     "react-split": "^2.0.14",
     "superstruct": "^1.0.3",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.5"
   },
   "devDependencies": {
     "eslint-config-react-app": "^7.0.1",
