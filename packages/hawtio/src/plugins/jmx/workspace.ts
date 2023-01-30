@@ -4,7 +4,7 @@ import { isString } from '@hawtio/util/strings'
 import { IErrorResponse, IJmxDomain, IJmxDomains, IJmxMBean, ISimpleOptions } from 'jolokia.js'
 import { is, object } from 'superstruct'
 import { pluginName } from './globals'
-import { MBeanTree } from './tree'
+import { MBeanTree, MBeanNode } from './tree'
 
 const log = Logger.get(`${pluginName}-workspace`)
 
@@ -31,6 +31,7 @@ class Workspace {
       }
     }
     const value = await jolokiaService.list(options)
+
     // TODO: this.jolokiaStatus.xhr = null
     const domains = this.unwindResponseWithRBACCache(value)
     log.debug("JMX tree loaded:", domains)
@@ -69,6 +70,56 @@ class Workspace {
    */
   async hasMBeans(): Promise<boolean> {
     return !(await this.tree).isEmpty()
+  }
+
+  private matchesProperties(node: MBeanNode, properties: Record<string, unknown>): boolean {
+    if (!node) return false;
+
+    for (const [k, v] of Object.entries(properties)) {
+      switch(k) {
+        case 'id':
+          if (! node.id.startsWith(v as string) && node.id !== v) return false
+          break
+        case 'name':
+          if (node.name !== v) return false
+          break;
+        case 'icon':
+          if (JSON.stringify(node.icon) !== JSON.stringify(v)) return false
+          break;
+      }
+    }
+
+    return true;
+  }
+
+  async treeContainsDomainAndProperties(domainName: string, properties?: Record<string, unknown> | null): Promise<boolean> {
+    const tree = await this.tree
+    if (!tree) {
+      return false;
+    }
+
+    const domain = tree.get(domainName);
+    if (!domain) {
+      return false;
+    }
+
+    if (properties) {
+      let domainAndChildren:MBeanNode[] = [domain]
+      domainAndChildren = domainAndChildren.concat(domain.children || []);
+      const checkProperties = (node: MBeanNode) => {
+        if (!this.matchesProperties(node, properties)) {
+          if (node.children && node.children.length > 0) {
+            return node.children.some(checkProperties);
+          } else {
+            return false;
+          }
+        } else {
+          return true;
+        }
+      };
+      return domainAndChildren.some(checkProperties);
+    }
+    return true;
   }
 }
 

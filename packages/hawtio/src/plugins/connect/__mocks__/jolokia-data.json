@@ -1,0 +1,1272 @@
+{
+  "cache": {
+    "camel::org.apache.camel.management.mbean.ManagedBrowsableEndpoint": {
+      "op": {
+        "getCamelId": {
+          "args": [],
+          "ret": "java.lang.String",
+          "desc": "CamelId"
+        }
+      },
+      "not": {},
+      "canInvoke": true,
+      "attr": {
+        "EndpointUri": {
+          "rw": false,
+          "type": "java.lang.String",
+          "desc": "Endpoint URI"
+        },
+        "CamelManagementName": {
+          "rw": false,
+          "type": "java.lang.String",
+          "desc": "Camel ManagementName"
+        },
+        "EndpointBaseUri": {
+          "rw": false,
+          "type": "java.lang.String",
+          "desc": "Endpoint Base URI (no query parameters)"
+        },
+        "State": {
+          "rw": false,
+          "type": "java.lang.String",
+          "desc": "Endpoint State"
+        },
+        "CamelId": {
+          "rw": false,
+          "type": "java.lang.String",
+          "desc": "Camel ID"
+        },
+        "Singleton": {
+          "rw": false,
+          "type": "boolean",
+          "desc": "Singleton"
+        }
+      },
+      "desc": "Managed BrowsableEndpoint"
+    }
+  },
+  "domains": {
+    "java.util.logging": {
+      "type=Logging": {
+        "op": {
+          "getLoggerLevel": {
+            "args": [
+              {
+                "name": "p0",
+                "type": "java.lang.String",
+                "desc": "p0"
+              }
+            ],
+            "ret": "java.lang.String",
+            "desc": "getLoggerLevel"
+          },
+          "getParentLoggerName": {
+            "args": [
+              {
+                "name": "p0",
+                "type": "java.lang.String",
+                "desc": "p0"
+              }
+            ],
+            "ret": "java.lang.String",
+            "desc": "getParentLoggerName"
+          },
+          "setLoggerLevel": {
+            "args": [
+              {
+                "name": "p0",
+                "type": "java.lang.String",
+                "desc": "p0"
+              },
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": "p1"
+              }
+            ],
+            "ret": "void",
+            "desc": "setLoggerLevel"
+          }
+        },
+        "not": {},
+        "canInvoke": true,
+        "attr": {
+          "LoggerNames": {
+            "rw": false,
+            "type": "[Ljava.lang.String;",
+            "desc": "LoggerNames"
+          },
+          "ObjectName": {
+            "rw": false,
+            "type": "javax.management.ObjectName",
+            "desc": "ObjectName"
+          }
+        },
+        "desc": "Information on the management interface of the MBean"
+      }
+    },
+    "quartz": {
+      "type=QuartzScheduler,name=DefaultQuartzScheduler-SampleCamel,instance=NON_CLUSTERED": {
+        "op": {
+          "getTriggerState": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              },
+              {
+                "name": "p2",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "java.lang.String",
+            "desc": "Operation exposed for management"
+          },
+          "resumeJob": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              },
+              {
+                "name": "p2",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "resumeTriggersStartingWith": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "pauseJobsAll": {
+            "args": [],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "standby": {
+            "args": [],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "getTriggerNames": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "java.util.List",
+            "desc": "Operation exposed for management"
+          },
+          "pauseAllTriggers": {
+            "args": [],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "deleteCalendar": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "pauseTriggersStartingWith": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "resumeTrigger": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              },
+              {
+                "name": "p2",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "pauseTriggersEndingWith": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "resumeTriggersContaining": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "deleteJob": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              },
+              {
+                "name": "p2",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "boolean",
+            "desc": "Operation exposed for management"
+          },
+          "pauseJobsEndingWith": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "pauseJob": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              },
+              {
+                "name": "p2",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "resumeTriggersEndingWith": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "resumeAllTriggers": {
+            "args": [],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "resumeJobsContaining": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "resumeJobsStartingWith": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "unscheduleJob": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              },
+              {
+                "name": "p2",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "boolean",
+            "desc": "Operation exposed for management"
+          },
+          "scheduleJob": [
+            {
+              "args": [
+                {
+                  "name": "p1",
+                  "type": "java.lang.String",
+                  "desc": ""
+                },
+                {
+                  "name": "p2",
+                  "type": "java.lang.String",
+                  "desc": ""
+                },
+                {
+                  "name": "p3",
+                  "type": "java.util.Map",
+                  "desc": ""
+                }
+              ],
+              "ret": "void",
+              "desc": "Operation exposed for management"
+            },
+            {
+              "args": [
+                {
+                  "name": "p1",
+                  "type": "java.util.Map",
+                  "desc": ""
+                },
+                {
+                  "name": "p2",
+                  "type": "java.util.Map",
+                  "desc": ""
+                }
+              ],
+              "ret": "void",
+              "desc": "Operation exposed for management"
+            },
+            {
+              "args": [
+                {
+                  "name": "p1",
+                  "type": "java.lang.String",
+                  "desc": ""
+                },
+                {
+                  "name": "p2",
+                  "type": "java.lang.String",
+                  "desc": ""
+                },
+                {
+                  "name": "p3",
+                  "type": "java.lang.String",
+                  "desc": ""
+                },
+                {
+                  "name": "p4",
+                  "type": "java.lang.String",
+                  "desc": ""
+                }
+              ],
+              "ret": "java.util.Date",
+              "desc": "Operation exposed for management"
+            }
+          ],
+          "getJobNames": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "java.util.List",
+            "desc": "Operation exposed for management"
+          },
+          "resumeJobGroup": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "triggerJob": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              },
+              {
+                "name": "p2",
+                "type": "java.lang.String",
+                "desc": ""
+              },
+              {
+                "name": "p3",
+                "type": "java.util.Map",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "getTrigger": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              },
+              {
+                "name": "p2",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "javax.management.openmbean.CompositeData",
+            "desc": "Operation exposed for management"
+          },
+          "interruptJob": [
+            {
+              "args": [
+                {
+                  "name": "p1",
+                  "type": "java.lang.String",
+                  "desc": ""
+                }
+              ],
+              "ret": "boolean",
+              "desc": "Operation exposed for management"
+            },
+            {
+              "args": [
+                {
+                  "name": "p1",
+                  "type": "java.lang.String",
+                  "desc": ""
+                },
+                {
+                  "name": "p2",
+                  "type": "java.lang.String",
+                  "desc": ""
+                }
+              ],
+              "ret": "boolean",
+              "desc": "Operation exposed for management"
+            }
+          ],
+          "resumeTriggersAll": {
+            "args": [],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "clear": {
+            "args": [],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "start": {
+            "args": [],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "addJob": [
+            {
+              "args": [
+                {
+                  "name": "p1",
+                  "type": "java.util.Map",
+                  "desc": ""
+                },
+                {
+                  "name": "p2",
+                  "type": "boolean",
+                  "desc": ""
+                }
+              ],
+              "ret": "void",
+              "desc": "Operation exposed for management"
+            },
+            {
+              "args": [
+                {
+                  "name": "p1",
+                  "type": "javax.management.openmbean.CompositeData",
+                  "desc": ""
+                },
+                {
+                  "name": "p2",
+                  "type": "boolean",
+                  "desc": ""
+                }
+              ],
+              "ret": "void",
+              "desc": "Operation exposed for management"
+            }
+          ],
+          "scheduleBasicJob": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.util.Map",
+                "desc": ""
+              },
+              {
+                "name": "p2",
+                "type": "java.util.Map",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "getTriggersOfJob": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              },
+              {
+                "name": "p2",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "java.util.List",
+            "desc": "Operation exposed for management"
+          },
+          "pauseTriggersContaining": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "getJobDetail": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              },
+              {
+                "name": "p2",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "javax.management.openmbean.CompositeData",
+            "desc": "Operation exposed for management"
+          },
+          "pauseJobGroup": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "pauseTriggerGroup": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "pauseTrigger": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              },
+              {
+                "name": "p2",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "pauseJobsStartingWith": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "pauseTriggersAll": {
+            "args": [],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "pauseJobsContaining": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "resumeJobsAll": {
+            "args": [],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "resumeJobsEndingWith": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "resumeTriggerGroup": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          },
+          "shutdown": {
+            "args": [],
+            "ret": "void",
+            "desc": "Operation exposed for management"
+          }
+        },
+        "not": {},
+        "canInvoke": true,
+        "attr": {
+          "CalendarNames": {
+            "rw": false,
+            "type": "java.util.List",
+            "desc": "Attribute exposed for management"
+          },
+          "PausedTriggerGroups": {
+            "rw": false,
+            "type": "java.util.Set",
+            "desc": "Attribute exposed for management"
+          },
+          "AllTriggers": {
+            "rw": false,
+            "type": "java.util.List",
+            "desc": "Attribute exposed for management"
+          },
+          "ThreadPoolClassName": {
+            "rw": false,
+            "type": "java.lang.String",
+            "desc": "Attribute exposed for management"
+          },
+          "Started": {
+            "rw": false,
+            "type": "boolean",
+            "desc": "Attribute exposed for management"
+          },
+          "JobsCompletedMostRecentSample": {
+            "rw": false,
+            "type": "long",
+            "desc": "Attribute exposed for management"
+          },
+          "JobsScheduledMostRecentSample": {
+            "rw": false,
+            "type": "long",
+            "desc": "Attribute exposed for management"
+          },
+          "StandbyMode": {
+            "rw": false,
+            "type": "boolean",
+            "desc": "Attribute exposed for management"
+          },
+          "JobsExecutedMostRecentSample": {
+            "rw": false,
+            "type": "long",
+            "desc": "Attribute exposed for management"
+          },
+          "SampledStatisticsEnabled": {
+            "rw": true,
+            "type": "boolean",
+            "desc": "Attribute exposed for management"
+          },
+          "PerformanceMetrics": {
+            "rw": false,
+            "type": "java.util.Map",
+            "desc": "Attribute exposed for management"
+          },
+          "JobStoreClassName": {
+            "rw": false,
+            "type": "java.lang.String",
+            "desc": "Attribute exposed for management"
+          },
+          "Shutdown": {
+            "rw": false,
+            "type": "boolean",
+            "desc": "Attribute exposed for management"
+          },
+          "Version": {
+            "rw": false,
+            "type": "java.lang.String",
+            "desc": "Attribute exposed for management"
+          },
+          "SchedulerInstanceId": {
+            "rw": false,
+            "type": "java.lang.String",
+            "desc": "Attribute exposed for management"
+          },
+          "JobGroupNames": {
+            "rw": false,
+            "type": "java.util.List",
+            "desc": "Attribute exposed for management"
+          },
+          "CurrentlyExecutingJobs": {
+            "rw": false,
+            "type": "javax.management.openmbean.TabularData",
+            "desc": "Attribute exposed for management"
+          },
+          "AllJobDetails": {
+            "rw": false,
+            "type": "javax.management.openmbean.TabularData",
+            "desc": "Attribute exposed for management"
+          },
+          "ThreadPoolSize": {
+            "rw": false,
+            "type": "int",
+            "desc": "Attribute exposed for management"
+          },
+          "SchedulerName": {
+            "rw": false,
+            "type": "java.lang.String",
+            "desc": "Attribute exposed for management"
+          },
+          "TriggerGroupNames": {
+            "rw": false,
+            "type": "java.util.List",
+            "desc": "Attribute exposed for management"
+          }
+        },
+        "desc": "Information on the management interface of the MBean"
+      }
+    },
+    "org.apache.camel": {
+      "context=SampleCamel,type=tracer,name=BacklogDebugger": {
+        "op": {
+          "getSuspendedBreakpointNodeIds": {
+            "args": [],
+            "ret": "java.util.Set",
+            "desc": "Return the node ids which is currently suspended"
+          },
+          "getDebugCounter": {
+            "args": [],
+            "ret": "long",
+            "desc": "DebugCounter"
+          },
+          "setMessageBodyOnBreakpoint": [
+            {
+              "args": [
+                {
+                  "name": "p1",
+                  "type": "java.lang.String",
+                  "desc": ""
+                },
+                {
+                  "name": "p2",
+                  "type": "java.lang.Object",
+                  "desc": ""
+                },
+                {
+                  "name": "p3",
+                  "type": "java.lang.String",
+                  "desc": ""
+                }
+              ],
+              "ret": "void",
+              "desc": "Updates the message body (with a new type) on the suspended breakpoint at the given node id"
+            },
+            {
+              "args": [
+                {
+                  "name": "p1",
+                  "type": "java.lang.String",
+                  "desc": ""
+                },
+                {
+                  "name": "p2",
+                  "type": "java.lang.Object",
+                  "desc": ""
+                }
+              ],
+              "ret": "void",
+              "desc": "Updates the message body (uses same type as old body) on the suspended breakpoint at the given node id"
+            }
+          ],
+          "resetDebugCounter": {
+            "args": [],
+            "ret": "void",
+            "desc": "Resets the debug counter"
+          },
+          "removeBreakpoint": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Remote the breakpoint from the given node id (will resume suspend breakpoint first)"
+          },
+          "evaluateExpressionAtBreakpoint": [
+            {
+              "args": [
+                {
+                  "name": "p1",
+                  "type": "java.lang.String",
+                  "desc": ""
+                },
+                {
+                  "name": "p2",
+                  "type": "java.lang.String",
+                  "desc": ""
+                },
+                {
+                  "name": "p3",
+                  "type": "java.lang.String",
+                  "desc": ""
+                },
+                {
+                  "name": "p4",
+                  "type": "java.lang.String",
+                  "desc": ""
+                }
+              ],
+              "ret": "java.lang.Object",
+              "desc": "Evaluates the expression at a given breakpoint node id"
+            },
+            {
+              "args": [
+                {
+                  "name": "p1",
+                  "type": "java.lang.String",
+                  "desc": ""
+                },
+                {
+                  "name": "p2",
+                  "type": "java.lang.String",
+                  "desc": ""
+                },
+                {
+                  "name": "p3",
+                  "type": "java.lang.String",
+                  "desc": ""
+                }
+              ],
+              "ret": "java.lang.String",
+              "desc": "Evaluates the expression at a given breakpoint node id and returns the result as String"
+            }
+          ],
+          "getFallbackTimeout": {
+            "args": [],
+            "ret": "long",
+            "desc": "FallbackTimeout"
+          },
+          "setExchangePropertyOnBreakpoint": [
+            {
+              "args": [
+                {
+                  "name": "p1",
+                  "type": "java.lang.String",
+                  "desc": ""
+                },
+                {
+                  "name": "p2",
+                  "type": "java.lang.String",
+                  "desc": ""
+                },
+                {
+                  "name": "p3",
+                  "type": "java.lang.Object",
+                  "desc": ""
+                }
+              ],
+              "ret": "void",
+              "desc": "Updates/adds the exchange property (uses same type as old exchange property  value) on the suspended breakpoint at the given node id"
+            },
+            {
+              "args": [
+                {
+                  "name": "p1",
+                  "type": "java.lang.String",
+                  "desc": ""
+                },
+                {
+                  "name": "p2",
+                  "type": "java.lang.String",
+                  "desc": ""
+                },
+                {
+                  "name": "p3",
+                  "type": "java.lang.Object",
+                  "desc": ""
+                },
+                {
+                  "name": "p4",
+                  "type": "java.lang.String",
+                  "desc": ""
+                }
+              ],
+              "ret": "void",
+              "desc": "Updates/adds the exchange property (with a new type) on the suspended breakpoint at the given node id"
+            }
+          ],
+          "stepBreakpoint": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Starts single step debugging from the suspended breakpoint at the given node id"
+          },
+          "validateConditionalBreakpoint": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              },
+              {
+                "name": "p2",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "java.lang.String",
+            "desc": "Used for validating if a given breakpoint condition (predicate) is valid or not"
+          },
+          "disableDebugger": {
+            "args": [],
+            "ret": "void",
+            "desc": "Disable the debugger"
+          },
+          "setBodyIncludeStreams": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "boolean",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "BodyIncludeStreams"
+          },
+          "setMessageHeaderOnBreakpoint": [
+            {
+              "args": [
+                {
+                  "name": "p1",
+                  "type": "java.lang.String",
+                  "desc": ""
+                },
+                {
+                  "name": "p2",
+                  "type": "java.lang.String",
+                  "desc": ""
+                },
+                {
+                  "name": "p3",
+                  "type": "java.lang.Object",
+                  "desc": ""
+                }
+              ],
+              "ret": "void",
+              "desc": "Updates/adds the message header (uses same type as old header value) on the suspended breakpoint at the given node id"
+            },
+            {
+              "args": [
+                {
+                  "name": "p1",
+                  "type": "java.lang.String",
+                  "desc": ""
+                },
+                {
+                  "name": "p2",
+                  "type": "java.lang.String",
+                  "desc": ""
+                },
+                {
+                  "name": "p3",
+                  "type": "java.lang.Object",
+                  "desc": ""
+                },
+                {
+                  "name": "p4",
+                  "type": "java.lang.String",
+                  "desc": ""
+                }
+              ],
+              "ret": "void",
+              "desc": "Updates/adds the message header (with a new type) on the suspended breakpoint at the given node id"
+            }
+          ],
+          "setBodyMaxChars": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "int",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "BodyMaxChars"
+          },
+          "getBodyMaxChars": {
+            "args": [],
+            "ret": "int",
+            "desc": "BodyMaxChars"
+          },
+          "getLoggingLevel": {
+            "args": [],
+            "ret": "java.lang.String",
+            "desc": "LoggingLevel"
+          },
+          "messageHistoryOnBreakpointAsXml": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "java.lang.String",
+            "desc": "Returns the message history at the given node id as XML"
+          },
+          "suspendedBreakpointNodeIds": {
+            "args": [],
+            "ret": "java.util.Set",
+            "desc": "Return the node ids which is currently suspended"
+          },
+          "attach": {
+            "args": [],
+            "ret": "void",
+            "desc": "Attach the debugger"
+          },
+          "breakpoints": {
+            "args": [],
+            "ret": "java.util.Set",
+            "desc": "Return the node ids which has breakpoints"
+          },
+          "removeMessageHeaderOnBreakpoint": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              },
+              {
+                "name": "p2",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Removes the message header on the suspended breakpoint at the given node id"
+          },
+          "isSingleStepMode": {
+            "args": [],
+            "ret": "boolean",
+            "desc": "SingleStepMode"
+          },
+          "setFallbackTimeout": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "long",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "FallbackTimeout"
+          },
+          "isBodyIncludeFiles": {
+            "args": [],
+            "ret": "boolean",
+            "desc": "BodyIncludeFiles"
+          },
+          "enableDebugger": {
+            "args": [],
+            "ret": "void",
+            "desc": "Enable the debugger"
+          },
+          "addBreakpoint": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "java.lang.String",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "Add a breakpoint at the given node id"
+          },
+          "removeAllBreakpoints": {
+            "args": [],
+            "ret": "void",
+            "desc": "Remote all breakpoints (will resume all suspend breakpoints first and exists single step mode)"
+          },
+          "setBodyIncludeFiles": {
+            "args": [
+              {
+                "name": "p1",
+                "type": "boolean",
+                "desc": ""
+              }
+            ],
+            "ret": "void",
+            "desc": "BodyIncludeFiles"
+          },
+          "FirstExchangeFailureTimestamp": {
+            "rw": false,
+            "type": "java.util.Date",
+            "desc": "First Exchange Failed Timestamp"
+          },
+          "RouteId": {
+            "rw": false,
+            "type": "java.lang.String",
+            "desc": "Route ID"
+          },
+          "RouteConfigurationId": {
+            "rw": false,
+            "type": "java.lang.String",
+            "desc": "Route Configuration ID"
+          },
+          "RoutePolicyList": {
+            "rw": false,
+            "type": "java.lang.String",
+            "desc": "Route Policy List"
+          },
+          "FailuresHandled": {
+            "rw": false,
+            "type": "long",
+            "desc": "Number of failures handled"
+          },
+          "RouteGroup": {
+            "rw": false,
+            "type": "java.lang.String",
+            "desc": "Route Group"
+          },
+          "MessageHistory": {
+            "rw": false,
+            "type": "java.lang.Boolean",
+            "desc": "Message History"
+          },
+          "LastError": {
+            "rw": false,
+            "type": "org.apache.camel.api.management.mbean.RouteError",
+            "desc": "Last error"
+          },
+          "Load05": {
+            "rw": false,
+            "type": "java.lang.String",
+            "desc": "Average load over the last five minutes"
+          },
+          "OldestInflightExchangeId": {
+            "rw": false,
+            "type": "java.lang.String",
+            "desc": "Oldest inflight exchange id"
+          },
+          "State": {
+            "rw": false,
+            "type": "java.lang.String",
+            "desc": "Route State"
+          },
+          "Redeliveries": {
+            "rw": false,
+            "type": "long",
+            "desc": "Number of redeliveries (internal only)"
+          },
+          "MinProcessingTime": {
+            "rw": false,
+            "type": "long",
+            "desc": "Min Processing Time [milliseconds]"
+          },
+          "LastExchangeCompletedExchangeId": {
+            "rw": false,
+            "type": "java.lang.String",
+            "desc": "Last Exchange Completed ExchangeId"
+          },
+          "Tracing": {
+            "rw": true,
+            "type": "java.lang.Boolean",
+            "desc": "Tracing"
+          },
+          "Load01": {
+            "rw": false,
+            "type": "java.lang.String",
+            "desc": "Average load over the last minute"
+          }
+        },
+        "desc": "Managed Route"
+      }
+    }
+  }
+}

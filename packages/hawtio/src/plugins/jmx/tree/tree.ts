@@ -58,6 +58,14 @@ export class MBeanTree {
     return this.tree
   }
 
+  get(name: string): MBeanNode | null {
+    const node = this.tree.find(node => {
+      return node.name === name
+    })
+
+    return (node) ? node : null
+  }
+
   isEmpty(): boolean {
     return this.tree.length === 0
   }
