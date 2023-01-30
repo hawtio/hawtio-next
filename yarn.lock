@@ -1859,7 +1859,7 @@ __metadata:
     jest: ^29.4.1
     jest-environment-jsdom: ^29.4.1
     jest-watch-typeahead: ^2.2.2
-    jolokia.js: 1.7.1-6
+    jolokia.js: 1.7.2
     jquery: ^3.6.3
     js-logger: ^1.6.1
     react: ^18.2.0
@@ -10069,12 +10069,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jolokia.js@npm:1.7.1-6":
-  version: 1.7.1-6
-  resolution: "jolokia.js@npm:1.7.1-6"
+"jolokia.js@npm:1.7.2":
+  version: 1.7.2
+  resolution: "jolokia.js@npm:1.7.2"
   dependencies:
     "@types/jquery": ^3.5.14
-  checksum: 4c7e6dda1db83935ee42341048a23eb5cbf76ec6f3f6fc2328d8c05a850345a25eb1f9f6491c0504ff9f3b94a84d94fb41b7c85b312c452081599b3d1df61847
+  checksum: 88aafeee1416ee6b02c0d7fd78bc8bf379a928f0047a7cb629c2eff5ddc9403a57b59ebbf58e86a55984649de76a18a93fc7153d7763d916981624f5034477af
   languageName: node
   linkType: hard
 
