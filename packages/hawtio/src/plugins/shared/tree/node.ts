@@ -16,6 +16,7 @@ export class MBeanNode implements TreeViewDataItem {
   icon: React.ReactNode
   expandedIcon?: React.ReactNode
   children?: MBeanNode[]
+  properties?: Record<string, string>
 
   // MBean info
   objectName?: string
@@ -84,6 +85,14 @@ export class MBeanNode implements TreeViewDataItem {
     return this.children?.find(node => node.name === name) || null
   }
 
+  getIndex(index: number): MBeanNode | null {
+    return this.children ? this.children[index]: null
+  }
+
+  getChildren(): MBeanNode[] {
+    return this.children ? this.children : []
+  }
+
   create(name: string, folder: boolean): MBeanNode {
     // this method should be invoked on a folder node
     if (this.children === undefined) {
@@ -108,7 +117,29 @@ export class MBeanNode implements TreeViewDataItem {
     return this.create(name, folder)
   }
 
+  removeChildren(): MBeanNode[] {
+    if (!this.children) return []
+
+    const remove: MBeanNode[] = this.children
+    this.children = []
+    return remove
+  }
+
+  childCount(): number {
+    return this.children ? this.children.length : 0
+  }
+
+  addProperty(key: string, value: string) {
+    if (!this.properties) {
+      this.properties = {}
+    }
+
+    this.properties[key] = value
+  }
+
   sort(recursive: boolean) {
+    if (! this.children) return
+
     this.children?.sort((a, b) => stringSorter(a.name, b.name))
     if (recursive) {
       this.children?.forEach(child => child.sort(recursive))
@@ -158,6 +189,19 @@ export class MBeanNode implements TreeViewDataItem {
     }
 
     return null
+  }
+
+  adopt(child: MBeanNode) {
+    if (!this.children) {
+      this.children = []
+    }
+
+    this.children.push(child)
+  }
+
+  setIcons(icon: React.ReactNode) {
+    this.icon = icon
+    this.expandedIcon = icon
   }
 }
 
