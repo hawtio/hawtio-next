@@ -22,16 +22,16 @@ describe('workspace', () => {
   })
 
   test('tree contains domain', async () => {
-    expect(workspace.treeContainsDomainAndProperties('quartz')).resolves.toBeTruthy()
+    await expect(workspace.treeContainsDomainAndProperties('quartz')).resolves.toBeTruthy()
   })
 
   test('tree does not contain domain', async () => {
-    expect(workspace.treeContainsDomainAndProperties('not.a.domain')).resolves.toBeFalsy()
+    await expect(workspace.treeContainsDomainAndProperties('not.a.domain')).resolves.toBeFalsy()
   })
 
   test('tree contains domain with properties', async () => {
-    expect(workspace.treeContainsDomainAndProperties('quartz', {id: 'quartz', name: 'quartz'})).resolves.toBeTruthy()
-    expect(workspace.treeContainsDomainAndProperties('quartz', {id: 'QuartzScheduler', name: 'QuartzScheduler'})).resolves.toBeTruthy()
-    expect(workspace.treeContainsDomainAndProperties('quartz', {id: 'SomeRandomChild', name: 'NoThisChildIsNotHere'})).resolves.toBeFalsy()
+    await expect(workspace.treeContainsDomainAndProperties('quartz', {id: 'quartz', name: 'quartz'})).resolves.toBeTruthy()
+    await expect(workspace.treeContainsDomainAndProperties('quartz', {id: 'QuartzScheduler', name: 'QuartzScheduler'})).resolves.toBeTruthy()
+    await expect(workspace.treeContainsDomainAndProperties('quartz', {id: 'SomeRandomChild', name: 'NoThisChildIsNotHere'})).resolves.toBeFalsy()
   })
 })
