@@ -303,11 +303,16 @@ class JolokiaService {
     })
   }
 
-  async read(mbean: string): Promise<AttributeValues> {
+  async read(mbean: string, attribute?: string): Promise<AttributeValues> {
+    const payload: IRequest = { type: 'read', mbean }
+    if (attribute) {
+      payload.attribute = attribute
+    }
+
     const jolokia = await this.jolokia
     return new Promise(resolve => {
       jolokia.request(
-        { type: 'read', mbean },
+        payload,
         onSuccess(response => resolve(response.value as AttributeValues))
       )
     })
