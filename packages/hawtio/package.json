@@ -9,6 +9,18 @@
   "files": [
     "dist"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hawtio/hawtio-next.git"
+  },
+  "keywords": [
+    "hawtio",
+    "camel",
+    "console",
+    "jmx",
+    "react",
+    "patternfly"
+  ],
   "scripts": {
     "build": "tsup --clean",
     "build:watch": "tsup --watch",
