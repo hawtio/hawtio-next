@@ -1,0 +1,52 @@
+import React from 'react'
+import Split from 'react-split'
+import { EmptyState, EmptyStateIcon, EmptyStateVariant, PageSection, PageSectionVariants, Spinner, Title } from '@patternfly/react-core'
+import { CubesIcon } from '@patternfly/react-icons'
+import { CamelTreeView } from './CamelTreeView'
+import { CamelContent } from './CamelContent'
+import { useCamelTree, CamelContext } from './context'
+
+export const Camel: React.FunctionComponent = () => {
+  //
+  // TODO - consider whether refresh() will be needed
+  //
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { tree, loaded, refresh, node, setNode } = useCamelTree()
+
+  if (!loaded) {
+    return (
+      <PageSection>
+        <Spinner isSVG aria-label="Loading Camel Contexts tree" />
+      </PageSection>
+    )
+  }
+
+  if (tree.isEmpty()) {
+    return (
+      <PageSection variant={PageSectionVariants.light}>
+        <EmptyState variant={EmptyStateVariant.full}>
+          <EmptyStateIcon icon={CubesIcon} />
+          <Title headingLevel="h1" size="lg">No Camel Contexts found</Title>
+        </EmptyState>
+      </PageSection>
+    )
+  }
+
+  return (
+    <CamelContext.Provider value={{ tree, node, setNode }}>
+    <Split
+      className="camel-split"
+      sizes={[30, 70]}
+      minSize={200}
+      gutterSize={5}
+    >
+      <div>
+        <CamelTreeView />
+      </div>
+      <div>
+        <CamelContent />
+      </div>
+    </Split>
+    </CamelContext.Provider>
+  )
+}
