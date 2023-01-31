@@ -2,8 +2,9 @@ import { Logger } from '@hawtio/core'
 import { escapeDots, escapeTags } from '@hawtio/util/jolokia'
 import { stringSorter } from '@hawtio/util/strings'
 import { IJmxDomain, IJmxDomains } from 'jolokia.js'
-import { MBeanNode } from './node'
 import { ILogger } from 'js-logger'
+import { MBeanNode } from './node'
+import { treeProcessorRegistry, TreeProcessorFunction } from './registry'
 
 export class MBeanTree {
 
@@ -54,8 +55,6 @@ export class MBeanTree {
     })
 
     this.sortTree()
-
-    // TODO: tree post processors
   }
 
   private populateDomain(name: string, domain: IJmxDomain) {
@@ -63,6 +62,12 @@ export class MBeanTree {
     const domainNode = this.getOrCreateNode(name)
     Object.entries(domain).forEach(([propList, mbean]) => {
       domainNode.populateMBean(propList, mbean)
+    })
+
+    // Execute any post-processors for the domain
+    const processors: TreeProcessorFunction[] = treeProcessorRegistry.getProcessors(name)
+    processors.forEach((processor: TreeProcessorFunction) => {
+      processor(domainNode)
     })
   }
 
