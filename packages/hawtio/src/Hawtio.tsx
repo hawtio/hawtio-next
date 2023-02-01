@@ -4,9 +4,17 @@ import { HawtioContextProvider } from './context'
 import './Hawtio.css'
 import { HawtioPage } from './ui/page/HawtioPage'
 
-export const Hawtio: React.FunctionComponent = () =>
-  <HawtioContextProvider>
-    <BrowserRouter>
-      <HawtioPage />
-    </BrowserRouter>
-  </HawtioContextProvider>
+export type HawtioProps = {
+  basepath: string
+}
+
+export const Hawtio: React.FunctionComponent<HawtioProps> = props => {
+  const { basepath } = props
+  return (
+    <HawtioContextProvider>
+      <BrowserRouter basename={basepath}>
+        <HawtioPage />
+      </BrowserRouter>
+    </HawtioContextProvider>
+  )
+}
