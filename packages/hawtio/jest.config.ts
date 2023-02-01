@@ -1,6 +1,7 @@
 export default {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
+  silent: true,
 
   // Automatically clear mock calls and instances between every test
   clearMocks: true,
