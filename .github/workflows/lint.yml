@@ -4,13 +4,13 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - "src/**"
+    paths-ignore:
+      - "**.md"
   push:
     branches:
       - main
-    paths:
-      - "src/**"
+    paths-ignore:
+      - "**.md"
 
 jobs:
   lint:
