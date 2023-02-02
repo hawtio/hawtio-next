@@ -23,21 +23,22 @@ You need to have installed the following tools before developing the project.
 - [Node.js >= 16](https://nodejs.org/en/)
 - [Yarn v3](https://yarnpkg.com/getting-started/install)
 
-#### Minimum Version of Yarn is 3.3.1
-The default installation version of yarn on many operating systems is *1.22-19* (the classic version). This causes a problem as the development app downloads the `@hawtio/react` package rather than using
-the project directory. As a result, the mandated minimum version has been set to *3.3.1*.
+#### Minimum Version of Yarn is 3.4.1
 
-If `yarn install` is attempted with a version lower than *3.3.1* then an error message is displayed, eg.
+The default installation version of yarn on many operating systems is *1.22-19* (the classic version). This causes a problem as the development app downloads the `@hawtio/react` package rather than using
+the project directory. As a result, the mandated minimum version has been set to *3.4.1*.
+
+If `yarn install` is attempted with a version lower than *3.4.1* then an error message is displayed, eg.
 > $ /usr/bin/yarn install
 > yarn install v1.22.19
 > [1/5] Validating package.json...
-> error @hawtio/next-root@0.0.0: The engine "yarn" is incompatible with this module. Expected version ">=3.3.1". Got "1.22.19"
+> error @hawtio/next-root@0.0.0: The engine "yarn" is incompatible with this module. Expected version ">=3.4.1". Got "1.22.19"
 > error Found incompatible module.
 
-To upgrade such a version to 3.3.1, use yarn's own `set-version` command:
-> yarn set version 3.3.1
+To upgrade such a version to 3.4.1, use yarn's own `set-version` command:
+> yarn set version 3.4.1
 
-This will download the 3.3.1 internals to `hawtio-next/.yarn` which are then deferred to by the installed yarn binary.
+This will download the 3.4.1 internals to `hawtio-next/.yarn` which are then deferred to by the installed yarn binary.
 
 ### Developing
 
