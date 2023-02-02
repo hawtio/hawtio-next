@@ -1,6 +1,7 @@
 import { hawtio } from '@hawtio/core'
 import { helpRegistry } from '@hawtio/help/registry'
 import { preferencesRegistry } from '@hawtio/preferences/registry'
+import { isString } from '@hawtio/util/strings'
 import $ from 'jquery'
 import { Connect } from './Connect'
 import { ConnectPreferences } from './ConnectPreferences'
@@ -33,8 +34,12 @@ async function isActive(): Promise<boolean> {
 async function isProxyEnabled(): Promise<boolean> {
   return new Promise<boolean>((resolve) => {
     $.ajax(proxyEnabledPath)
-      .done((data: string) => {
+      .done((data: unknown) => {
         // Disable proxy only when explicitly disabled
+        if (!isString(data)) {
+          resolve(true)
+          return
+        }
         const enabled = data.trim() !== 'false'
         log.debug('Proxy enabled:', enabled)
         resolve(enabled)
