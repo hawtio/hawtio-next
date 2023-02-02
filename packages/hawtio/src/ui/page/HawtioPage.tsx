@@ -3,7 +3,7 @@ import { HawtioPreferences } from '@hawtio/preferences/HawtioPreferences'
 import { EmptyState, EmptyStateIcon, EmptyStateVariant, Page, PageSection, PageSectionVariants, Spinner, Title } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons'
 import React from 'react'
-import { Redirect, Route, Switch, useLocation } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { HawtioNotification } from '../notification/HawtioNotification'
 import { PageContext, usePlugins } from './context'
 import { HawtioBackground } from './HawtioBackground'
@@ -36,7 +36,7 @@ export const HawtioPage: React.FunctionComponent = () => {
   const defaultPlugin = plugins[0] || null
   let defaultPage
   if (defaultPlugin) {
-    defaultPage = <Redirect to={{ pathname: defaultPlugin.path, search }} />
+    defaultPage = <Navigate to={{ pathname: defaultPlugin.path, search }} />
   } else {
     defaultPage = <HawtioHome />
   }
@@ -49,26 +49,20 @@ export const HawtioPage: React.FunctionComponent = () => {
         sidebar={<HawtioSidebar />}
         isManagedSidebar
       >
-        <Switch>
+        <Routes>
           {/* plugins */}
           {plugins.map(plugin => (
             <Route
               key={plugin.id}
-              path={plugin.path}
-              component={plugin.component}
-            />
+              path={`${plugin.path}/*`}
+              element={React.createElement(plugin.component)}/>
           ))}
-          <Route key='help' path='/help'>
-            <HawtioHelp />
-          </Route>
-          <Route key='preferences' path='/preferences'>
-            <HawtioPreferences />
-          </Route>
-          <Route key='root' path='/' >
-            {defaultPage}
-          </Route>
-        </Switch>
-        <HawtioNotification />
+          <Route key='help' path='help/*' element={<HawtioHelp />} />
+          <Route key='preferences' path='preferences/*' element={<HawtioPreferences />} />
+
+          <Route index key='root' path='/' element={defaultPage} />
+        </Routes>
+      <HawtioNotification />
       </Page>
     </PageContext.Provider>
   )

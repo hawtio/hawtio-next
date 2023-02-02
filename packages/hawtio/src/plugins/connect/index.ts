@@ -10,7 +10,7 @@ export const connect = () => {
   hawtio.addPlugin({
     id: 'connect',
     title: 'Connect',
-    path: '/connect',
+    path: 'connect',
     component: Connect,
     isActive,
   })
