@@ -62,6 +62,9 @@ class PluginLoader {
    */
   loadPlugins(callback: (plugins: Plugins) => void): void {
     log.info("Bootstrapping Hawtio...")
+
+    // TODO: Load external plugins
+
     callback(this.plugins)
   }
 
