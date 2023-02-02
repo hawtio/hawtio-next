@@ -2,7 +2,7 @@
 import { helpRegistry } from '@hawtio/help/registry'
 import { Card, Nav, NavItem, NavList, PageGroup, PageNavigation, PageSection, PageSectionVariants, Title } from '@patternfly/react-core'
 import React from 'react'
-import { NavLink, Redirect, Route, Switch, useLocation } from 'react-router-dom'
+import { NavLink,Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import help from './help.md'
 import { HomePreferences } from './HomePreferences'
 import { LogsPreferences } from './LogsPreferences'
@@ -14,7 +14,6 @@ preferencesRegistry.add('logs', 'Logs', LogsPreferences, 2)
 
 export const HawtioPreferences: React.FunctionComponent = () => {
   const location = useLocation()
-  const path = (id: string) => `/preferences/${id}`
   return (
     <React.Fragment>
       <PageSection variant={PageSectionVariants.light}>
@@ -25,8 +24,8 @@ export const HawtioPreferences: React.FunctionComponent = () => {
           <Nav aria-label="Nav" variant="tertiary">
             <NavList>
               {preferencesRegistry.getPreferences().map(prefs =>
-                <NavItem key={prefs.id} isActive={location.pathname === path(prefs.id)}>
-                  <NavLink to={path(prefs.id)}>{prefs.title}</NavLink>
+                <NavItem key={prefs.id} isActive={location.pathname === prefs.id}>
+                  <NavLink to={prefs.id}>{prefs.title}</NavLink>
                 </NavItem>
               )}
             </NavList>
@@ -35,15 +34,15 @@ export const HawtioPreferences: React.FunctionComponent = () => {
       </PageGroup>
       <PageSection>
         <Card isFullHeight>
-          <Switch>
+          <Routes>
             {preferencesRegistry.getPreferences().map(prefs => (
               <Route
                 key={prefs.id}
-                path={path(prefs.id)}
-                component={prefs.component} />
+                path={prefs.id}
+                element={React.createElement(prefs.component)} />
             ))}
-            <Redirect exact from='/preferences' to={path('home')} />
-          </Switch>
+            <Route path="/" element={<Navigate to={'home'}/>}/>
+          </Routes>
         </Card >
       </PageSection>
     </React.Fragment>

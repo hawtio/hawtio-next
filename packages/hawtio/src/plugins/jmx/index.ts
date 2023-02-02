@@ -8,7 +8,7 @@ export const jmx = () => {
   hawtio.addPlugin({
     id: 'jmx',
     title: 'JMX',
-    path: '/jmx',
+    path: 'jmx',
     component: Jmx,
     isActive: async () => workspace.hasMBeans(),
   })

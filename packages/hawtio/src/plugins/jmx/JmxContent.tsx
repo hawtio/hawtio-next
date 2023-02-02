@@ -2,7 +2,7 @@ import { Card, CardBody, EmptyState, EmptyStateIcon, EmptyStateVariant, Nav, Nav
 import { CubesIcon, InfoCircleIcon } from '@patternfly/react-icons'
 import { OnRowClick, Table, TableBody, TableHeader, TableProps } from '@patternfly/react-table'
 import React, { useContext } from 'react'
-import { NavLink, Route, useLocation } from 'react-router-dom'
+import { NavLink,Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { Attributes } from './attributes/Attributes'
 import { Chart } from './chart/Chart'
 import { MBeanTreeContext } from './context'
@@ -23,8 +23,6 @@ export const JmxContent: React.FunctionComponent = () => {
     )
   }
 
-  const path = (id: string) => `/jmx/${id}`
-
   const navItems = [
     { id: 'attributes', title: 'Attributes', component: Attributes },
     { id: 'operations', title: 'Operations', component: Operations },
@@ -35,8 +33,8 @@ export const JmxContent: React.FunctionComponent = () => {
     <Nav aria-label="MBean Nav" variant="tertiary">
       <NavList>
         {navItems.map(nav =>
-          <NavItem key={nav.id} isActive={pathname === path(nav.id)}>
-            <NavLink to={{ pathname: path(nav.id), search }}>{nav.title}</NavLink>
+          <NavItem key={nav.id} isActive={pathname ===nav.id}>
+            <NavLink to={{ pathname: nav.id, search }}>{nav.title}</NavLink>
           </NavItem>
         )}
       </NavList>
@@ -44,7 +42,7 @@ export const JmxContent: React.FunctionComponent = () => {
   )
 
   const mbeanRoutes = navItems.map(nav =>
-    <Route key={nav.id} path={path(nav.id)} component={nav.component} />
+    <Route key={nav.id} path={nav.id} element={React.createElement(nav.component)} />
   )
 
   return (
@@ -63,8 +61,10 @@ export const JmxContent: React.FunctionComponent = () => {
       <PageSection>
         {node.objectName &&
           <React.Fragment>
-            {mbeanRoutes}
-            <Route key='root' exact path='/jmx' component={Attributes} />
+            <Routes>
+              {mbeanRoutes}
+              <Route key="root" path="/" element={<Navigate to={"attributes"}/>}/>
+            </Routes>
           </React.Fragment>
         }
         {!node.objectName &&
