@@ -52,7 +52,16 @@ export interface JolokiaConfig {
 export const STORAGE_KEY_JOLOKIA_OPTIONS = 'connect.jolokia.options'
 export const STORAGE_KEY_UPDATE_RATE = 'connect.jolokia.updateRate'
 
-class JolokiaService {
+export interface IJolokiaService {
+  getJolokiaUrl(): Promise<string | null>
+  list(options: ISimpleOptions): Promise<unknown>
+  read(mbean: string, attribute?: string): Promise<AttributeValues>
+  execute(mbean: string, operation: string, args?: unknown[]): Promise<unknown>
+  register(request: IRequest, callback: IResponseFn): Promise<number>
+  unregister(handle: number): void
+}
+
+class JolokiaService implements IJolokiaService {
   private jolokiaUrl: Promise<string | null>
   private jolokia: Promise<IJolokia>
   private config: JolokiaConfig = {
@@ -67,6 +76,8 @@ class JolokiaService {
     this.jolokia = new Promise((resolve) => {
       this.createJolokia().then(jolokia => resolve(jolokia))
     })
+
+    // Start Jolokia
     this.jolokia.then(jolokia => {
       const updateRate = this.loadUpdateRate()
       jolokia.start(updateRate)
@@ -75,14 +86,9 @@ class JolokiaService {
   }
 
   private async initJolokiaUrl(): Promise<string | null> {
-    const url = new URL(window.location.href)
-    const searchParams = url.searchParams
-    log.debug("Checking search params:", searchParams.toString())
-
-    // Check remote connection from URL query param
-    const conn = searchParams.get(PARAM_KEY_CONNECTION)
+    // Check remote connection
+    const conn = connectService.getCurrentConnection()
     if (conn) {
-      // Remote connection
       log.debug('Connection name', conn, 'provided, not discovering Jolokia')
       return connectService.getJolokiaUrlFromName(conn)
     }

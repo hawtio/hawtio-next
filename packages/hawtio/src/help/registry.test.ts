@@ -1,4 +1,3 @@
-import * as support from '@hawtio/test/support'
 import { helpRegistry } from './registry'
 
 describe('helpRegistry', () => {
@@ -29,8 +28,6 @@ describe('helpRegistry', () => {
   })
 
   test('return helps in order', async () => {
-    support.mockFetch('')
-
     expect(helpRegistry).not.toBeNull()
     expect(helpRegistry.getHelps()).toEqual([])
 

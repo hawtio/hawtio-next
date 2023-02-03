@@ -1,7 +1,5 @@
-import { workspace } from './workspace'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { jolokiaService } from '@hawtio/plugins/connect/jolokia-service'
 import { MBeanTree } from '@hawtio/plugins/shared/tree'
+import { workspace } from './workspace'
 
 jest.mock('@hawtio/plugins/connect/jolokia-service')
 
@@ -30,8 +28,8 @@ describe('workspace', () => {
   })
 
   test('tree contains domain with properties', async () => {
-    await expect(workspace.treeContainsDomainAndProperties('quartz', {id: 'quartz', name: 'quartz'})).resolves.toBeTruthy()
-    await expect(workspace.treeContainsDomainAndProperties('quartz', {id: 'QuartzScheduler', name: 'QuartzScheduler'})).resolves.toBeTruthy()
-    await expect(workspace.treeContainsDomainAndProperties('quartz', {id: 'SomeRandomChild', name: 'NoThisChildIsNotHere'})).resolves.toBeFalsy()
+    await expect(workspace.treeContainsDomainAndProperties('quartz', { id: 'quartz', name: 'quartz' })).resolves.toBeTruthy()
+    await expect(workspace.treeContainsDomainAndProperties('quartz', { id: 'QuartzScheduler', name: 'QuartzScheduler' })).resolves.toBeTruthy()
+    await expect(workspace.treeContainsDomainAndProperties('quartz', { id: 'SomeRandomChild', name: 'NoThisChildIsNotHere' })).resolves.toBeFalsy()
   })
 })
