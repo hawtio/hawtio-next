@@ -10,10 +10,50 @@ export type ConnectionTestResult = {
 }
 
 const STORAGE_KEY_CONNECTIONS = 'connect.connections'
+const STORAGE_KEY_CURRENT_CONNECTION = 'connect.currentConnection'
 
 export const PARAM_KEY_CONNECTION = 'con'
 
-class ConnectService {
+export interface IConnectService {
+  getCurrentConnection(): string | null
+  loadConnections(): Connections
+  saveConnections(connections: Connections): void
+  getConnection(name: string): Connection | null
+  connectionToUrl(connection: Connection): string
+  checkReachable(connection: Connection): Promise<boolean>
+  testConnection(connection: Connection): Promise<ConnectionTestResult>
+  connect(connection: Connection): void
+  getJolokiaUrl(connection: Connection): string
+  getJolokiaUrlFromName(name: string): string | null
+  export(connections: Connections): void
+}
+
+class ConnectService implements IConnectService {
+  private currentConnection: string | null
+
+  constructor() {
+    this.currentConnection = this.initCurrentConnection()
+  }
+
+  private initCurrentConnection(): string | null {
+    // Check remote connection from URL query param
+    const url = new URL(window.location.href)
+    const searchParams = url.searchParams
+    log.debug("Checking search params:", searchParams.toString())
+    let conn = searchParams.get(PARAM_KEY_CONNECTION)
+    if (conn) {
+      sessionStorage.setItem(STORAGE_KEY_CURRENT_CONNECTION, JSON.stringify(conn))
+      return conn
+    }
+
+    // Check remote connection from session storage
+    conn = sessionStorage.getItem(STORAGE_KEY_CURRENT_CONNECTION)
+    return conn ? JSON.parse(conn) : null
+  }
+
+  getCurrentConnection(): string | null {
+    return this.currentConnection
+  }
 
   loadConnections(): Connections {
     const conns = localStorage.getItem(STORAGE_KEY_CONNECTIONS)
