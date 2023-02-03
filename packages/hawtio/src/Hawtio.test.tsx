@@ -4,7 +4,7 @@ import { Hawtio } from './Hawtio'
 describe('Hawtio', () => {
   test('renders page', async () => {
     render(
-      <Hawtio basepath='/hawtio' />
+      <Hawtio basepath='/' />
     )
     await waitFor(() => {
       const example = screen.queryByText('Hawtio')
