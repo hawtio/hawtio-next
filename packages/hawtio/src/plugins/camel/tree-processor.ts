@@ -3,7 +3,7 @@ import { MBeanNode } from '@hawtio/plugins/shared'
 import React from 'react'
 import { jmxDomain } from './globals'
 import { routesService } from './routes-service'
-import { CamelIcon, EndPointFolderIcon, EndPointIcon, RouteIcon } from './icons'
+import { CamelIcon, EndpointFolderIcon, EndpointNodeIcon, CamelRouteIcon } from './icons'
 
 /**
  * Fetch the camel version and add it to the tree to avoid making a blocking call
@@ -67,9 +67,9 @@ export function processTreeDomain(domainNode: MBeanNode) {
     // Stash the camel version as a separate property
     retrieveCamelVersion(newCtxNode)
 
-    const endPointFolderIcon = React.createElement(EndPointFolderIcon)
-    const endPointIcon = React.createElement(EndPointIcon)
-    const routeIcon = React.createElement(RouteIcon)
+    const endPointFolderIcon = React.createElement(EndpointFolderIcon)
+    const endPointIcon = React.createElement(EndpointNodeIcon)
+    const routeIcon = React.createElement(CamelRouteIcon)
 
     const routesNode = context.get('routes')
     adoptChild(newCtxNode, routesNode, 'routes', endPointFolderIcon)
