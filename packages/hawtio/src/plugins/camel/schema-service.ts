@@ -1,5 +1,5 @@
 import { apacheCamelModel } from '@hawtio/plugins/camel/model'
-import { pathGet, isString } from '@hawtio/util/objects'
+import { isObject, pathGet, isString } from '@hawtio/util/objects'
 import clone from 'clone'
 
 class SchemaService {
@@ -10,47 +10,47 @@ class SchemaService {
    * @param {String} name
    * @param {any} schema
    */
-  lookupDefinition(name: string, schema: any): {}|null {
+  lookupDefinition(name: string, schema: Record<string, unknown>): Record<string, unknown>|null {
     if (!schema) return null
 
-    const defs = schema.definitions;
-    if (! defs) return null
+    if (! isObject(schema.definitions)) return null
 
-    const answer = defs[name];
-    if (! answer) return null
+    const defs: Record<string, unknown> = schema.definitions as Record<string, unknown>
+    if (! isObject(defs[name])) return null
 
-    let fullSchema = answer["fullSchema"];
-    if (fullSchema) {
-      return fullSchema;
+    const answer = defs[name] as Record<string, unknown>
+    if (isObject(answer["fullSchema"])) {
+      return answer["fullSchema"] as Record<string, unknown>
     }
 
     // we may extend another, if so we need to copy in the base properties
-    let extendsTypes = pathGet(answer, ["extends", "type"]);
+    let extendsTypes = pathGet(answer, ["extends", "type"])
     if (! extendsTypes) return answer
 
-    fullSchema = clone(answer);
-    fullSchema.properties = fullSchema.properties || {};
+    const fullSchema = clone(answer)
+    fullSchema.properties = fullSchema.properties || {}
     if (extendsTypes.constructor !== Array) {
-      extendsTypes = [extendsTypes];
+      extendsTypes = [extendsTypes]
     }
-    for (let extendType in extendsTypes) {
+    for (const extendType in extendsTypes) {
       if (isString(extendType)) {
-        var extendDef = this.lookupDefinition(extendType, schema);
-        var properties = pathGet(extendDef, ["properties"]);
-        if (properties) {
+        const extendDef = this.lookupDefinition(extendType, schema)
+        const properties = pathGet(extendDef, ["properties"])
+        if (isObject(properties)) {
           for (const [key, property] of Object.entries(properties)) {
-            fullSchema.properties[key] = property;
+            const fp: Record<string, unknown> = fullSchema.properties as Record<string, unknown>
+            fp[key] = property
           }
         }
       }
     }
-    answer["fullSchema"] = fullSchema;
-    return fullSchema;
+    answer["fullSchema"] = fullSchema
+    return fullSchema
   }
 
-  getSchema(nodeIdOrDefinition: object|string): object|null {
+  getSchema(nodeIdOrDefinition: Record<string, unknown>|string): Record<string, unknown>|null {
     if (typeof nodeIdOrDefinition === 'string' || nodeIdOrDefinition instanceof String)
-      return this.lookupDefinition(nodeIdOrDefinition as string, apacheCamelModel);
+      return this.lookupDefinition(nodeIdOrDefinition as string, apacheCamelModel)
     else
       return nodeIdOrDefinition
   }

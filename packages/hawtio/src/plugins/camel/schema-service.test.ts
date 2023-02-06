@@ -3,21 +3,24 @@ import { apacheCamelModel } from '@hawtio/plugins/camel/model'
 
 describe('schema-service', () => {
   test('lookupDefinition of routes', () => {
-    const routeDefn: any = schemaService.lookupDefinition('routes', apacheCamelModel)
+    const routeDefn: Record<string, unknown>|null = schemaService.lookupDefinition('routes', apacheCamelModel)
     expect(routeDefn).not.toBeNull()
-    expect(routeDefn.type).toBe('object')
-    expect(routeDefn.title).toBe('Routes')
-    expect(routeDefn.group).toBe('configuration')
-    expect(routeDefn.icon).toBe('generic24.png')
+    const rd: Record<string, unknown> = routeDefn as Record<string, unknown>
+    expect(rd.type).toBe('object')
+    expect(rd.title).toBe('Routes')
+    expect(rd.group).toBe('configuration')
+    expect(rd.icon).toBe('generic24.png')
   })
 
   test('getSchema nodeId', () => {
-    const routeDefn: any = schemaService.getSchema('routes')
+    const routeDefn: Record<string, unknown>|null = schemaService.getSchema('routes')
     expect(routeDefn).not.toBeNull()
-    expect(routeDefn.type).toBe('object')
-    expect(routeDefn.title).toBe('Routes')
-    expect(routeDefn.group).toBe('configuration')
-    expect(routeDefn.icon).toBe('generic24.png')
+
+    const rd: Record<string, unknown> = routeDefn as Record<string, unknown>
+    expect(rd.type).toBe('object')
+    expect(rd.title).toBe('Routes')
+    expect(rd.group).toBe('configuration')
+    expect(rd.icon).toBe('generic24.png')
   })
 
   test('getSchema nodeDefn', () => {
@@ -31,7 +34,7 @@ describe('schema-service', () => {
         "acceptOutput": "false"
     }
 
-    const rd: any = schemaService.getSchema(routeDefn)
+    const rd: Record<string, unknown>|null = schemaService.getSchema(routeDefn)
     expect(rd).toBe(routeDefn)
   })
 })

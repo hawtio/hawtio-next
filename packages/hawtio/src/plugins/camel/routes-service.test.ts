@@ -1,6 +1,6 @@
+import React from 'react'
+import { render, screen, cleanup } from '@testing-library/react'
 import { routesService } from './routes-service'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { jolokiaService } from '@hawtio/plugins/connect/jolokia-service'
 import { MBeanNode } from '@hawtio/plugins/shared/tree'
 import fs from 'fs'
 import path from 'path'
@@ -16,13 +16,13 @@ describe('routes-service', () => {
 
   const testRouteId = 'simple'
   const routesXmlPath = path.resolve(__dirname, '../connect/__mocks__/camel-sample-app-routes.xml')
-  const sampleRoutesXml = fs.readFileSync(routesXmlPath, {encoding:'utf8', flag:'r'});
+  const sampleRoutesXml = fs.readFileSync(routesXmlPath, {encoding:'utf8', flag:'r'})
   const doc: XMLDocument = $.parseXML(sampleRoutesXml as string)
   const simpleRouteXml = $(doc).find("route[id='" + testRouteId + "']")[0]
 
   beforeEach(() => {
     contextNode = new MBeanNode(owner, 'SampleCamel', 'sample-camel-1', true)
-    contextNode.objectName = 'org.apache.camel:context=SampleCamel,type=context,name=\"SampleCamel\"'
+    contextNode.objectName = 'org.apache.camel:context=SampleCamel,type=context,name="SampleCamel"'
 
     routesNode = new MBeanNode(owner, 'Routes', 'routes-2', true)
     routesNode.addProperty('type', 'routes')
@@ -42,7 +42,7 @@ describe('routes-service', () => {
   test('processRouteXml no contextNode', async () => {
     const nullCtx: MBeanNode|null = null
     const route = await routesService.processRouteXml(nullCtx, simpleRouteNode)
-    expect(route).toBeNull
+    expect(route).toBeNull()
   })
 
   test('processRouteXml no mbean', async () => {
@@ -89,6 +89,11 @@ describe('routes-service', () => {
       expect(childNode.name).toBe(exp[i].name)
       expect(childNode.getChildren().length).toBe(0)
       expect(childNode.icon).not.toBeNull()
+      render(childNode.icon as React.ReactElement)
     }
+
+    expect(screen.getAllByAltText('EndpointIcon').length).toBe(3)
+    expect(screen.getByAltText('SetBodyIcon')).toBeInTheDocument()
+    cleanup()
   })
 })
