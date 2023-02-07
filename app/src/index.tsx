@@ -18,7 +18,7 @@ const root = ReactDOM.createRoot(
 )
 root.render(
   <React.StrictMode>
-    <Hawtio basepath='/hawtio' />
+    <Hawtio />
   </React.StrictMode>
 )
 
