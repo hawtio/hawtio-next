@@ -1,3 +1,4 @@
+import $ from 'jquery'
 import { log } from './globals'
 
 export interface Plugin {
@@ -6,6 +7,7 @@ export interface Plugin {
   path: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component: React.ComponentType<any>
+
   /**
    * Returns if this plugin should be activated.
    * This method needs to return a promise as the process of resolving if a plugin
@@ -20,9 +22,18 @@ type Plugins = {
 }
 
 /**
- * Plugin loader and discovery mechanism.
+ * Hawtio core service.
+ *
+ * This service provides the following functionalities:
+ * - Base path provisioning
+ * - Plugin loader and discovery mechanism
  */
-class PluginLoader {
+class HawtioCore {
+
+  /**
+   * Hawtio base path.
+   */
+  private basePath?: string
 
   /**
    * List of URLs that the plugin loader will try and discover plugins from.
@@ -34,10 +45,29 @@ class PluginLoader {
    */
   private plugins: Plugins = {}
 
+  setBasePath(path: string) {
+    this.basePath = path
+  }
+
+  getBasePath(): string | undefined {
+    if (!this.basePath) {
+      this.basePath = this.documentBase()
+    }
+    return this.basePath
+  }
+
+  private documentBase(): string | undefined {
+    const base = $('head').find('base')
+    if (base && base.length > 0) {
+      return base.attr('href')
+    }
+    return undefined
+  }
+
   /**
-   * Add an angular module to the list of modules to bootstrap.
+   * Adds an angular module to the list of modules to bootstrap.
    */
-  addPlugin(plugin: Plugin): PluginLoader {
+  addPlugin(plugin: Plugin): HawtioCore {
     log.info("Add plugin:", plugin.id)
     if (this.plugins[plugin.id]) {
       throw new Error(`Plugin "${plugin.id}" already exists`)
@@ -47,12 +77,22 @@ class PluginLoader {
   }
 
   /**
-   * Add a URL for discovering plugins.
+   * Adds a URL for discovering plugins.
    */
-  addUrl(url: string): PluginLoader {
+  addUrl(url: string): HawtioCore {
     log.info("Add URL:", url)
     this.urls.push(url)
     return this
+  }
+
+  /**
+   * Bootstraps Hawtio.
+   */
+  bootstrap() {
+    this.loadPlugins(plugins => {
+      log.info('Plugins loaded:', plugins)
+    })
+    log.info('Bootstrapped Hawtio')
   }
 
   /**
@@ -60,7 +100,7 @@ class PluginLoader {
    *
    * It is invoked from Hawtio's bootstrapping.
    */
-  loadPlugins(callback: (plugins: Plugins) => void): void {
+  private loadPlugins(callback: (plugins: Plugins) => void): void {
     log.info("Bootstrapping Hawtio...")
 
     // TODO: Load external plugins
@@ -72,6 +112,9 @@ class PluginLoader {
     return Object.values(this.plugins)
   }
 
+  /**
+   * Resolves which of registered plugins are active with the current environment.
+   */
   async resolvePlugins(): Promise<Plugin[]> {
     // load plugins sequentially to maintain the order
     const resolved: Plugin[] = []
@@ -87,6 +130,6 @@ class PluginLoader {
 }
 
 /**
- * PluginLoader singleton instance.
+ * Hawtio core singleton instance.
  */
-export const hawtio = new PluginLoader()
+export const hawtio = new HawtioCore()
