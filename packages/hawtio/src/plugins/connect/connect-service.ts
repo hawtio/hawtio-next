@@ -1,3 +1,4 @@
+import { hawtio } from '@hawtio/core'
 import { toString } from '@hawtio/util/strings'
 import { joinPaths } from '@hawtio/util/urls'
 import Jolokia, { IJolokia } from 'jolokia.js'
@@ -119,7 +120,9 @@ class ConnectService implements IConnectService {
 
   connect(connection: Connection) {
     log.debug('Connecting with options:', toString(connection))
-    const url = `/?${PARAM_KEY_CONNECTION}=${connection.name}`
+    const basepath = hawtio.getBasePath() ? hawtio.getBasePath() : '/'
+    const url = `${basepath}?${PARAM_KEY_CONNECTION}=${connection.name}`
+    log.debug('Opening URL:', url)
     window.open(url)
   }
 
