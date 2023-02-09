@@ -25,6 +25,7 @@
     "generate:camel-model": "cd src/plugins/camel/model > /dev/null && ./mvnw compile",
     "build": "tsup --clean",
     "build:watch": "tsup --watch",
+    "generate:camel-icons": "node ./utils/generate-camel-svg-index.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",

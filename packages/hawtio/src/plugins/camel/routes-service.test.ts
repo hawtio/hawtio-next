@@ -6,6 +6,7 @@ import { MBeanNode } from '@hawtio/plugins/shared/tree'
 import fs from 'fs'
 import path from 'path'
 import $ from 'jquery'
+import { IconNames } from './icons'
 
 jest.mock('@hawtio/plugins/connect/jolokia-service')
 
@@ -102,8 +103,8 @@ describe('routes-service', () => {
       render(childNode.icon as React.ReactElement)
     }
 
-    expect(screen.getAllByAltText('EndpointIcon').length).toBe(3)
-    expect(screen.getByAltText('SetBodyIcon')).toBeInTheDocument()
+    expect(screen.getAllByAltText(IconNames.EndpointIcon).length).toBe(3)
+    expect(screen.getByAltText(IconNames.SetBodyIcon)).toBeInTheDocument()
     cleanup()
   })
 })

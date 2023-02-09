@@ -22,7 +22,7 @@
     "test": "yarn test:packages && yarn test:app",
     "test:packages": "yarn workspace @hawtio/react test",
     "test:app": "yarn workspace app test",
-    "lint": "yarn eslint packages/hawtio/src/ app/src/",
+    "lint": "yarn eslint packages/hawtio/src/ packages/hawtio/utils/ app/src/",
     "lint:fix": "yarn lint --fix",
     "format:check": "yarn prettier --check .",
     "format:fix": "yarn prettier --write .",
