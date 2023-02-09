@@ -56,6 +56,7 @@ class RoutesService {
       const icon: React.ReactNode = this.getIcon(nodeSettings)
       node.setIcons(icon)
 
+      // TODO - tooltips to be implemented
       // updateRouteNodeLabelAndTooltip(node, route, nodeSettings)
 
       this.loadRouteChildren(node, routeXml)
@@ -97,7 +98,6 @@ class RoutesService {
 
     let xml = null
     try {
-      // Run synchronously as we want the treeview lazy function to fully complete
       xml = await jolokiaService.execute(mbeanName, 'dumpRoutesAsXml()')
     } catch (error) {
       throw new Error("Failed to dump xml from mbean: " + mbeanName)
