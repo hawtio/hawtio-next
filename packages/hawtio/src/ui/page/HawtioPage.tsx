@@ -4,6 +4,7 @@ import { EmptyState, EmptyStateIcon, EmptyStateVariant, Page, PageSection, PageS
 import { CubesIcon } from '@patternfly/react-icons'
 import React from 'react'
 import { Redirect, Route, Switch, useLocation } from 'react-router-dom'
+import { HawtioNotification } from '../notification/HawtioNotification'
 import { PageContext, usePlugins } from './context'
 import { HawtioBackground } from './HawtioBackground'
 import { HawtioHeader } from './HawtioHeader'
@@ -67,6 +68,7 @@ export const HawtioPage: React.FunctionComponent = () => {
             {defaultPage}
           </Route>
         </Switch>
+        <HawtioNotification />
       </Page>
     </PageContext.Provider>
   )
