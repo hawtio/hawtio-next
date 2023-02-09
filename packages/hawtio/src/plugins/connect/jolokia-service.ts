@@ -1,4 +1,5 @@
 import { userService } from '@hawtio/auth'
+import { eventService } from '@hawtio/core'
 import { getCookie } from '@hawtio/util/cookies'
 import { escapeMBeanPath, onListSuccess, onSimpleSuccess, onSimpleSuccessAndError, onSuccess } from '@hawtio/util/jolokia'
 import { isObject } from '@hawtio/util/objects'
@@ -232,8 +233,12 @@ class JolokiaService implements IJolokiaService {
           const validityPeriod = updateRate * (errorThreshold + 1)
           setTimeout(() => errorCount--, validityPeriod)
           if (errorCount > errorThreshold) {
-            // TODO: how to notify
-            //Core.notification('danger', 'Connection lost. Retrying...', updateRate)
+            eventService.notify({
+              type: 'danger',
+              message: 'Connection lost. Retrying...',
+              // -100ms is to not overlap between update and notification
+              duration: updateRate - 100
+            })
           }
         }
       }
