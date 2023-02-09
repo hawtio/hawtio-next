@@ -2,15 +2,32 @@ import { eventService, Notification, NotificationType } from '@hawtio/core'
 import { Alert, AlertActionCloseButton, AlertGroup, AlertProps } from '@patternfly/react-core'
 import React, { useEffect, useState } from 'react'
 
+const MAX_ALERTS_TO_DISPLAY = 5
+
 export const HawtioNotification: React.FunctionComponent = () => {
   const [alerts, setAlerts] = useState<Partial<AlertProps>[]>([])
+  const [overflowMessage, setOverflowMessage] = useState('')
+  const [maxDisplayed, setMaxDisplayed] = useState(MAX_ALERTS_TO_DISPLAY)
+
+  const getOverflowMessage = (alertsNumber: number) => {
+    const overflow = alertsNumber - maxDisplayed
+    return overflow > 0 ? `View ${overflow} more alerts` : ''
+  }
 
   const addAlert = (title: string, variant: NotificationType, key: React.Key) => {
-    setAlerts(alerts => [...alerts, { title, variant, key }])
+    const newAlerts = [...alerts, { title, variant, key }]
+    setAlerts(newAlerts)
+    setOverflowMessage(getOverflowMessage(newAlerts.length))
+    // reset max displayed every time a new alert is added
+    setMaxDisplayed(MAX_ALERTS_TO_DISPLAY)
   }
 
   const removeAlert = (key: React.Key) => {
-    setAlerts(alerts => [...alerts.filter(alert => alert.key !== key)])
+    const newAlerts = alerts.filter(alert => alert.key !== key)
+    setAlerts(newAlerts)
+    setOverflowMessage(getOverflowMessage(newAlerts.length))
+    // reset max displayed every time an alert is removed
+    setMaxDisplayed(MAX_ALERTS_TO_DISPLAY)
   }
 
   const getUniqueKey = () => new Date().getTime()
@@ -28,11 +45,22 @@ export const HawtioNotification: React.FunctionComponent = () => {
     eventService.onNotify(listener)
 
     return () => eventService.removeListener(listener)
+    // TODO: better way to ensure one listener registration per rendering
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const onOverflowClick = () => {
+    setMaxDisplayed(alerts.length)
+    setOverflowMessage('')
+  }
+
   return (
-    <AlertGroup isToast isLiveRegion>
-      {alerts.map(({ key, variant, title }) => (
+    <AlertGroup
+      isToast
+      isLiveRegion
+      onOverflowClick={onOverflowClick}
+      overflowMessage={overflowMessage}>
+      {alerts.slice(0, maxDisplayed).map(({ key, variant, title }) => (
         <Alert
           variant={variant}
           title={title}
