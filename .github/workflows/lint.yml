@@ -39,4 +39,4 @@ jobs:
       - name: Install
         run: yarn install
       - name: Lint
-        run: yarn lint
+        run: yarn lint --max-warnings=0
