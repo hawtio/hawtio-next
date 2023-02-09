@@ -1,5 +1,6 @@
 import React from 'react'
 import { render, screen, cleanup } from '@testing-library/react'
+import { jolokiaService } from '@hawtio/plugins/connect/jolokia-service'
 import { routesService } from './routes-service'
 import { MBeanNode } from '@hawtio/plugins/shared/tree'
 import fs from 'fs'
@@ -15,10 +16,19 @@ describe('routes-service', () => {
   let simpleRouteNode: MBeanNode
 
   const testRouteId = 'simple'
-  const routesXmlPath = path.resolve(__dirname, '../connect/__mocks__/camel-sample-app-routes.xml')
+  const routesXmlPath = path.resolve(__dirname, 'testdata', 'camel-sample-app-routes.xml')
   const sampleRoutesXml = fs.readFileSync(routesXmlPath, {encoding:'utf8', flag:'r'})
   const doc: XMLDocument = $.parseXML(sampleRoutesXml as string)
   const simpleRouteXml = $(doc).find("route[id='" + testRouteId + "']")[0]
+
+  jolokiaService.execute = jest.fn(
+    async (mbean: string, operation: string, args?: unknown[]): Promise<unknown> => {
+      if (mbean === 'org.apache.camel:context=SampleCamel,type=context,name="SampleCamel"' && operation === 'dumpRoutesAsXml()') {
+        return sampleRoutesXml
+      }
+
+      return ''
+    })
 
   beforeEach(() => {
     contextNode = new MBeanNode(owner, 'SampleCamel', 'sample-camel-1', true)
