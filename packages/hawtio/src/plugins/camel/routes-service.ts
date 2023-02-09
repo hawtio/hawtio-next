@@ -36,7 +36,7 @@ class RoutesService {
       //
       // Fetch the correct FunctionComponent icon from the icons module
       //
-      return React.createElement(icons.getIconComponent(iname))
+      return icons.getIcon(iname)
     }
 
     return null
