@@ -26,10 +26,10 @@ export class MBeanTree {
     return mBeanTree
   }
 
-  static createFilteredTree(originalTree: MBeanNode[], expanded: boolean, filter: (node: MBeanNode) => boolean): MBeanNode[] {
+  static createFilteredTree(originalTree: MBeanNode[], filter: (node: MBeanNode) => boolean): MBeanNode[] {
     const filteredTree: MBeanNode[] = []
     for (const node of originalTree) {
-      const copy = node.filterClone(filter, expanded)
+      const copy = node.filterClone(filter)
       if (copy) {
         filteredTree.push(copy)
       }

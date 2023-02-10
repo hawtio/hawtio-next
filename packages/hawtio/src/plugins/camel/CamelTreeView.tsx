@@ -4,32 +4,48 @@ import React, { ChangeEvent, useContext, useState } from 'react'
 import './CamelTreeView.css'
 import { CamelContext } from './context'
 
+/**
+ * Expansion requires more than 2 states since the expandAll
+ * must be removed completely to defer to the expanded state
+ * of each data node
+ */
+enum ExpansionValue {
+  /**
+   * should revert to the expanded state of the data
+   */
+  Default,
+  /**
+   * all data should be expanded
+   */
+  ExpandAll,
+  /**
+   * all data should be collapsed
+   */
+  CollapseAll,
+}
+
 export const CamelTreeView: React.FunctionComponent = () => {
   const { tree, node, setNode } = useContext(CamelContext)
-  //
-  // expanded different numbered states as more than 2
-  // - 0: should revert to the expanded state of the data
-  // - 1: all data should be expanded
-  // - 2: all data should be collapsed
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [expanded, setExpanded] = useState(0)
+  const [expanded, setExpanded] = useState(ExpansionValue.Default)
   const [filteredTree, setFilteredTree] = useState(tree.getTree())
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onSearch = (event: ChangeEvent<HTMLInputElement>) => {
     // Ensure no node from the 'old' filtered is lingering
     setNode(null)
-    setExpanded(0)
+    setExpanded(ExpansionValue.Default)
 
     const input = event.target.value
     if (input === '') {
       setFilteredTree(tree.getTree())
     } else {
       setFilteredTree(
-        MBeanTree.createFilteredTree(tree.getTree(), true, (node: MBeanNode) =>
+        MBeanTree.createFilteredTree(tree.getTree(), (node: MBeanNode) =>
           node.name.toLowerCase().includes(input.toLowerCase()),
         ),
       )
+      setExpanded(ExpansionValue.ExpandAll)
     }
   }
 
@@ -50,14 +66,14 @@ export const CamelTreeView: React.FunctionComponent = () => {
   }
 
   const setAllExpanded = (value: boolean) => {
-    setExpanded(value ? 1 : 2)
+    setExpanded(value ? ExpansionValue.ExpandAll : ExpansionValue.CollapseAll)
   }
 
   const expandedProp = (): object => {
     switch (expanded) {
-      case 1:
+      case ExpansionValue.ExpandAll:
         return { allExpanded : true }
-      case 2:
+      case ExpansionValue.CollapseAll:
         return { allExpanded : false }
       default:
         return {}
