@@ -55,11 +55,7 @@ export const HawtioNotification: React.FunctionComponent = () => {
   }
 
   return (
-    <AlertGroup
-      isToast
-      isLiveRegion
-      onOverflowClick={onOverflowClick}
-      overflowMessage={overflowMessage}>
+    <AlertGroup isToast isLiveRegion onOverflowClick={onOverflowClick} overflowMessage={overflowMessage}>
       {alerts.slice(0, maxDisplayed).map(({ key, variant, title }) => (
         <Alert
           variant={variant}

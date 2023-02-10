@@ -15,14 +15,11 @@ export const ConnectPreferences: React.FunctionComponent = () => {
   const [maxDepth, setMaxDepth] = useState(DEFAULT_MAX_DEPTH)
   const [maxCollectionSize, setMaxCollectionSize] = useState(DEFAULT_MAX_COLLECTION_SIZE)
 
-  const onUpdateRateChanged = (updateRate: string) =>
-    setUpdateRate(parseInt(updateRate))
+  const onUpdateRateChanged = (updateRate: string) => setUpdateRate(parseInt(updateRate))
 
-  const onMaxDepthChanged = (maxDepth: string) =>
-    setMaxDepth(parseInt(maxDepth))
+  const onMaxDepthChanged = (maxDepth: string) => setMaxDepth(parseInt(maxDepth))
 
-  const onMaxCollectionSizeChanged = (maxCollectionSize: string) =>
-    setMaxCollectionSize(parseInt(maxCollectionSize))
+  const onMaxCollectionSizeChanged = (maxCollectionSize: string) => setMaxCollectionSize(parseInt(maxCollectionSize))
 
   const applyJolokia = () => {
     // TODO: impl
@@ -35,59 +32,40 @@ export const ConnectPreferences: React.FunctionComponent = () => {
   }
 
   const JolokiaForm = () => (
-    <FormSection title="Jolokia" titleElement="h2">
-      <FormGroup
-        label="Update rate"
-        fieldId="jolokia-form-update-rate"
-      >
+    <FormSection title='Jolokia' titleElement='h2'>
+      <FormGroup label='Update rate' fieldId='jolokia-form-update-rate'>
         <TextInput
-          id="jolokia-form-update-rate-input"
-          type="number"
+          id='jolokia-form-update-rate-input'
+          type='number'
           value={updateRate}
           onChange={onUpdateRateChanged}
         />
       </FormGroup>
-      <FormGroup
-        label="Max depth"
-        fieldId="jolokia-form-max-depth"
-      >
-        <TextInput
-          id="jolokia-form-max-depth-input"
-          type="number"
-          value={maxDepth}
-          onChange={onMaxDepthChanged}
-        />
+      <FormGroup label='Max depth' fieldId='jolokia-form-max-depth'>
+        <TextInput id='jolokia-form-max-depth-input' type='number' value={maxDepth} onChange={onMaxDepthChanged} />
       </FormGroup>
-      <FormGroup
-        label="Max collection size"
-        fieldId="jolokia-form-max-collection-size"
-      >
+      <FormGroup label='Max collection size' fieldId='jolokia-form-max-collection-size'>
         <TextInput
-          id="jolokia-form-max-collection-size-input"
-          type="number"
+          id='jolokia-form-max-collection-size-input'
+          type='number'
           value={maxCollectionSize}
           onChange={onMaxCollectionSizeChanged}
         />
       </FormGroup>
-      <FormGroup
-        fieldId="jolokia-form-apply"
-        helperText="Restart Hawtio with the new values in effect."
-      >
-        <Button onClick={applyJolokia}>
-          Apply
-        </Button>
+      <FormGroup fieldId='jolokia-form-apply' helperText='Restart Hawtio with the new values in effect.'>
+        <Button onClick={applyJolokia}>Apply</Button>
       </FormGroup>
     </FormSection>
   )
 
   const ResetForm = () => (
-    <FormSection title="Reset" titleElement="h2">
+    <FormSection title='Reset' titleElement='h2'>
       <FormGroup
-        label="Clear saved connections"
-        fieldId="reset-form-clear"
+        label='Clear saved connections'
+        fieldId='reset-form-clear'
         helperText="Clear all saved connection settings stored in your browser's local storage."
       >
-        <Button variant="danger" onClick={reset}>
+        <Button variant='danger' onClick={reset}>
           Clear
         </Button>
       </FormGroup>

@@ -40,7 +40,7 @@ class ConnectService implements IConnectService {
     // Check remote connection from URL query param
     const url = new URL(window.location.href)
     const searchParams = url.searchParams
-    log.debug("Checking search params:", searchParams.toString())
+    log.debug('Checking search params:', searchParams.toString())
     let conn = searchParams.get(PARAM_KEY_CONNECTION)
     if (conn) {
       sessionStorage.setItem(STORAGE_KEY_CURRENT_CONNECTION, JSON.stringify(conn))
@@ -109,8 +109,9 @@ class ConnectService implements IConnectService {
                 default:
                   resolve({ ok: false, message: 'Connection failed' })
               }
-            }
-          })
+            },
+          },
+        )
       } catch (error) {
         log.error(error)
         reject(error)
@@ -136,14 +137,14 @@ class ConnectService implements IConnectService {
         method: 'post',
         mimeType: 'application/json',
         username: connection.username,
-        password: connection.password
+        password: connection.password,
       })
     }
 
     return new Jolokia({
       url: this.getJolokiaUrl(connection),
       method: 'post',
-      mimeType: 'application/json'
+      mimeType: 'application/json',
     })
   }
 
@@ -151,9 +152,9 @@ class ConnectService implements IConnectService {
    * Get the Jolokia URL for the given connection.
    */
   getJolokiaUrl(connection: Connection): string {
-    log.debug("Connect to server with connection:", toString(connection))
+    log.debug('Connect to server with connection:', toString(connection))
     if (connection.jolokiaUrl) {
-      log.debug("Using provided URL:", connection.jolokiaUrl)
+      log.debug('Using provided URL:', connection.jolokiaUrl)
       return connection.jolokiaUrl
     }
 
@@ -163,8 +164,9 @@ class ConnectService implements IConnectService {
       connection.scheme || 'http',
       connection.host || 'localhost',
       String(connection.port || 80),
-      connection.path)
-    log.debug("Using URL:", url)
+      connection.path,
+    )
+    log.debug('Using URL:', url)
     return url
   }
 
@@ -182,7 +184,7 @@ class ConnectService implements IConnectService {
       return response.responseJSON['reason'] === reason
     }
     // Otherwise expect a response header containing a forbidden reason
-    return response.getResponseHeader("Hawtio-Forbidden-Reason") === reason
+    return response.getResponseHeader('Hawtio-Forbidden-Reason') === reason
   }
 
   export(connections: Connections) {

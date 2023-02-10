@@ -12,7 +12,7 @@ export const HawtioSidebar: React.FunctionComponent = () => {
   }
 
   const pageNav = (
-    <Nav theme="dark">
+    <Nav theme='dark'>
       <NavList>
         {plugins.map(plugin => (
           <NavItem key={plugin.id} isActive={plugin.path === pathname}>
@@ -23,5 +23,5 @@ export const HawtioSidebar: React.FunctionComponent = () => {
     </Nav>
   )
 
-  return <PageSidebar nav={pageNav} theme="dark" />
+  return <PageSidebar nav={pageNav} theme='dark' />
 }

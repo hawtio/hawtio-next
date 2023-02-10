@@ -1,5 +1,19 @@
 import { Logger } from '@hawtio/core'
-import { IErrorResponse, IErrorResponseFn, IListOptions, IListResponseFn, IOptions, IOptionsBase, IResponseFn, ISearchOptions, ISearchResponseFn, ISimpleOptions, ISimpleResponseFn, IVersionOptions, IVersionResponseFn } from 'jolokia.js'
+import {
+  IErrorResponse,
+  IErrorResponseFn,
+  IListOptions,
+  IListResponseFn,
+  IOptions,
+  IOptionsBase,
+  IResponseFn,
+  ISearchOptions,
+  ISearchResponseFn,
+  ISimpleOptions,
+  ISimpleResponseFn,
+  IVersionOptions,
+  IVersionResponseFn,
+} from 'jolokia.js'
 
 const log = Logger.get('hawtio-util')
 
@@ -32,16 +46,13 @@ export function onVersionSuccess(successFn: IVersionResponseFn, options: IVersio
 }
 
 export function onGenericSuccess<R, O extends IOptionsBase>(successFn: R, options?: O): O {
-  return onGenericSuccessAndError(
-    successFn,
-    defaultErrorHandler(options),
-    options)
+  return onGenericSuccessAndError(successFn, defaultErrorHandler(options), options)
 }
 
 export function onGenericSuccessAndError<R, O extends IOptionsBase>(
   successFn: R,
   errorFn: IErrorResponseFn,
-  options?: O
+  options?: O,
 ): O {
   const defaultOptions: IOptionsBase = {
     method: 'POST',
@@ -91,8 +102,7 @@ function isIgnorableException(response: IErrorResponse): boolean {
     'IllegalArgumentException: No operation',
   ]
   const test = (e: string) => ignorables.some(i => e.indexOf(i) >= 0)
-  return (response.stacktrace != null && test(response.stacktrace))
-    || (response.error != null && test(response.error))
+  return (response.stacktrace != null && test(response.stacktrace)) || (response.error != null && test(response.error))
 }
 
 /**
@@ -121,17 +131,14 @@ export function escapeMBeanPath(mbean: string): string {
  * @param mbean the MBean
  */
 function applyJolokiaEscapeRules(mbean: string): string {
-  return mbean
-    .replace(/!/g, '!!')
-    .replace(/\//g, '!/')
-    .replace(/"/g, '!"')
+  return mbean.replace(/!/g, '!!').replace(/\//g, '!/').replace(/"/g, '!"')
 }
 
 /**
  * Escapes only tags ('<' and '>') as opposed to typical URL encodings.
  *
  * @param text string to be escaped
-*/
+ */
 export function escapeTags(text: string): string {
   let escaped = text.replace('<', '&lt;')
   escaped = escaped.replace('>', '&gt;')
@@ -142,7 +149,7 @@ export function escapeTags(text: string): string {
  * Escapes dots ('.') to '-'.
  *
  * @param text string to be escaped
-*/
+ */
 export function escapeDots(text: string): string {
   return text.replace(/\./g, '-')
 }

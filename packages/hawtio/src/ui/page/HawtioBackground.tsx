@@ -11,8 +11,7 @@ const images: BackgroundImageSrcMap = {
   xs2x: backgroundImageSrcXs2x,
   sm: backgroundImageSrcSm,
   sm2x: backgroundImageSrcSm2x,
-  lg: backgroundImageSrcLg
+  lg: backgroundImageSrcLg,
 }
 
-export const HawtioBackground: React.FunctionComponent = () =>
-  <BackgroundImage src={images} />
+export const HawtioBackground: React.FunctionComponent = () => <BackgroundImage src={images} />

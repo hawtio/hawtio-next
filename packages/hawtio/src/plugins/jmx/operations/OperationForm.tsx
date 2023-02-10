@@ -1,4 +1,26 @@
-import { ActionGroup, Button, Checkbox, ClipboardCopy, ClipboardCopyVariant, DataListAction, DataListCell, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Dropdown, DropdownItem, DropdownPosition, Form, FormGroup, KebabToggle, Text, TextInput, Title } from '@patternfly/react-core'
+import {
+  ActionGroup,
+  Button,
+  Checkbox,
+  ClipboardCopy,
+  ClipboardCopyVariant,
+  DataListAction,
+  DataListCell,
+  DataListContent,
+  DataListItem,
+  DataListItemCells,
+  DataListItemRow,
+  DataListToggle,
+  Dropdown,
+  DropdownItem,
+  DropdownPosition,
+  Form,
+  FormGroup,
+  KebabToggle,
+  Text,
+  TextInput,
+  Title,
+} from '@patternfly/react-core'
 import React, { useContext, useState } from 'react'
 import { MBeanTreeContext } from '../context'
 import { Operation } from './operation'
@@ -46,7 +68,7 @@ export const OperationForm: React.FunctionComponent<OperationFormProps> = props 
         </DataListCell>,
         <DataListCell key={`operation-cell-desc-${name}`} isFilled={false}>
           {operation.description}
-        </DataListCell>
+        </DataListCell>,
       ]}
     />
   )
@@ -64,16 +86,10 @@ export const OperationForm: React.FunctionComponent<OperationFormProps> = props 
         isOpen={isDropdownOpen}
         toggle={<KebabToggle onToggle={handleDropdownToggle} />}
         dropdownItems={[
-          <DropdownItem
-            key={`operation-action-copy-method-name-${name}`}
-            onClick={copyMethodName}
-          >
+          <DropdownItem key={`operation-action-copy-method-name-${name}`} onClick={copyMethodName}>
             Copy method name
           </DropdownItem>,
-          <DropdownItem
-            key={`operation-action-copy-jolokia-url-${name}`}
-            onClick={copyJolokiaURL}
-          >
+          <DropdownItem key={`operation-action-copy-jolokia-url-${name}`} onClick={copyJolokiaURL}>
             Copy Jolokia URL
           </DropdownItem>,
         ]}
@@ -82,26 +98,13 @@ export const OperationForm: React.FunctionComponent<OperationFormProps> = props 
   )
 
   return (
-    <DataListItem
-      key={`operation-${name}`}
-      aria-labelledby={`operation ${name}`}
-      isExpanded={isExpanded}
-    >
+    <DataListItem key={`operation-${name}`} aria-labelledby={`operation ${name}`} isExpanded={isExpanded}>
       <DataListItemRow>
-        <DataListToggle
-          onClick={handleToggle}
-          isExpanded={isExpanded}
-          id="ex-toggle1"
-          aria-controls="ex-expand1"
-        />
+        <DataListToggle onClick={handleToggle} isExpanded={isExpanded} id='ex-toggle1' aria-controls='ex-expand1' />
         <OperationCells />
         <OperationActions />
       </DataListItemRow>
-      <OperationFormContents
-        {...props}
-        objectName={objectName}
-        isExpanded={isExpanded}
-      />
+      <OperationFormContents {...props} objectName={objectName} isExpanded={isExpanded} />
     </DataListItem>
   )
 }
@@ -158,9 +161,7 @@ const OperationFormContents: React.FunctionComponent<OperationFormContentsProps>
     if (!result) {
       return false
     }
-    return result.startsWith('<!DOCTYPE html>')
-      || /^<table[^>]*>/.test(result)
-      || /^<ul[^>]*>/.test(result)
+    return result.startsWith('<!DOCTYPE html>') || /^<table[^>]*>/.test(result) || /^<ul[^>]*>/.test(result)
   }
 
   const argFormInput = (javaType: string, index: number) => {
@@ -174,9 +175,9 @@ const OperationFormContents: React.FunctionComponent<OperationFormContentsProps>
       case 'long':
       case 'java.lang.Integer':
       case 'java.lang.Long':
-        return <TextInput id={id} type="number" value={Number(value)} onChange={updateArgValues(index)} />
+        return <TextInput id={id} type='number' value={Number(value)} onChange={updateArgValues(index)} />
       default:
-        return <TextInput id={id} type="text" value={String(value)} onChange={updateArgValues(index)} />
+        return <TextInput id={id} type='text' value={String(value)} onChange={updateArgValues(index)} />
     }
   }
 
@@ -193,23 +194,22 @@ const OperationFormContents: React.FunctionComponent<OperationFormContentsProps>
 
   const OperationExecuteForm = () => (
     <Form isHorizontal={operation.args.length > 0}>
-      {(operation.args.length === 0) &&
-        <Text component="p">
-          This JMX operation requires no arguments.
-          Click the <code>Execute</code> button to invoke the operation.
+      {operation.args.length === 0 && (
+        <Text component='p'>
+          This JMX operation requires no arguments. Click the <code>Execute</code> button to invoke the operation.
         </Text>
-      }
-      {(operation.args.length > 0) &&
-        <Text component="p">
-          This JMX operation requires some parameters.
-          Fill in the fields below and click the <code>Execute</code> button to invoke the operation.
+      )}
+      {operation.args.length > 0 && (
+        <Text component='p'>
+          This JMX operation requires some parameters. Fill in the fields below and click the <code>Execute</code>{' '}
+          button to invoke the operation.
         </Text>
-      }
+      )}
       {argForms}
       <ActionGroup>
         <Button
           key={`operation-action-execute-${name}`}
-          variant="primary"
+          variant='primary'
           onClick={execute}
           isSmall
           isDisabled={isExecuting}
@@ -222,7 +222,7 @@ const OperationFormContents: React.FunctionComponent<OperationFormContentsProps>
 
   const OperationExecuteResult = () => (
     <React.Fragment>
-      <Title headingLevel="h4">Result</Title>
+      <Title headingLevel='h4'>Result</Title>
       {/*
         TODO: Known issue - "Warning: findDOMNode is deprecated in StrictMode."
         https://github.com/patternfly/patternfly-react/issues/8368
@@ -233,7 +233,7 @@ const OperationFormContents: React.FunctionComponent<OperationFormContentsProps>
         isCode
         isReadOnly
         //removeFindDomNode
-        className={isFailed ? "jmx-operation-error" : ""}
+        className={isFailed ? 'jmx-operation-error' : ''}
       >
         {result}
       </ClipboardCopy>
@@ -242,22 +242,14 @@ const OperationFormContents: React.FunctionComponent<OperationFormContentsProps>
 
   return (
     <React.Fragment>
-      <DataListContent
-        id={`operation-execute-${name}`}
-        aria-label={`operation execute ${name}`}
-        isHidden={!isExpanded}
-      >
+      <DataListContent id={`operation-execute-${name}`} aria-label={`operation execute ${name}`} isHidden={!isExpanded}>
         <OperationExecuteForm />
       </DataListContent>
-      {result &&
-        <DataListContent
-          id={`operation-result-${name}`}
-          aria-label={`operation result ${name}`}
-          isHidden={!isExpanded}
-        >
+      {result && (
+        <DataListContent id={`operation-result-${name}`} aria-label={`operation result ${name}`} isHidden={!isExpanded}>
           <OperationExecuteResult />
         </DataListContent>
-      }
+      )}
     </React.Fragment>
   )
 }

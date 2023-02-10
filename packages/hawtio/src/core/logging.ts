@@ -44,13 +44,13 @@ class LocalStorageHawtioLogger implements HawtioLogger {
   createDefaultHandler: typeof jsLogger.createDefaultHandler = jsLogger.createDefaultHandler
 
   private readonly LOG_LEVEL_MAP: { [name: string]: ILogLevel } = {
-    'TRACE': this.TRACE,
-    'DEBUG': this.DEBUG,
-    'INFO': this.INFO,
-    'TIME': this.TIME,
-    'WARN': this.WARN,
-    'ERROR': this.ERROR,
-    'OFF': this.OFF,
+    TRACE: this.TRACE,
+    DEBUG: this.DEBUG,
+    INFO: this.INFO,
+    TIME: this.TIME,
+    WARN: this.WARN,
+    ERROR: this.ERROR,
+    OFF: this.OFF,
   } as const
 
   get(name: string): ILogger {

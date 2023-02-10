@@ -1,7 +1,6 @@
 import { UserService } from './user-service'
 
 describe('userService', () => {
-
   test('default user - login - logout', () => {
     const service = new UserService()
     expect(service.isLogin()).toBe(false)

@@ -1,4 +1,12 @@
-import { EmptyState, EmptyStateIcon, EmptyStateVariant, PageSection, PageSectionVariants, Spinner, Title } from '@patternfly/react-core'
+import {
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateVariant,
+  PageSection,
+  PageSectionVariants,
+  Spinner,
+  Title,
+} from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons'
 import React from 'react'
 import Split from 'react-split'
@@ -13,7 +21,7 @@ export const Jmx: React.FunctionComponent = () => {
   if (!loaded) {
     return (
       <PageSection>
-        <Spinner isSVG aria-label="Loading MBean tree" />
+        <Spinner isSVG aria-label='Loading MBean tree' />
       </PageSection>
     )
   }
@@ -23,7 +31,9 @@ export const Jmx: React.FunctionComponent = () => {
       <PageSection variant={PageSectionVariants.light}>
         <EmptyState variant={EmptyStateVariant.full}>
           <EmptyStateIcon icon={CubesIcon} />
-          <Title headingLevel="h1" size="lg">No MBeans found</Title>
+          <Title headingLevel='h1' size='lg'>
+            No MBeans found
+          </Title>
         </EmptyState>
       </PageSection>
     )
@@ -31,12 +41,7 @@ export const Jmx: React.FunctionComponent = () => {
 
   return (
     <MBeanTreeContext.Provider value={{ tree, node, setNode }}>
-      <Split
-        className="jmx-split"
-        sizes={[30, 70]}
-        minSize={200}
-        gutterSize={5}
-      >
+      <Split className='jmx-split' sizes={[30, 70]} minSize={200} gutterSize={5}>
         <div>
           <JmxTreeView />
         </div>

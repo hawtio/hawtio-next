@@ -6,7 +6,6 @@ export type Help = {
 }
 
 class HelpRegistry {
-
   private helps: { [id: string]: Help } = {}
 
   add(id: string, title: string, content: string, order = 100) {

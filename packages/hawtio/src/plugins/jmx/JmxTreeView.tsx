@@ -20,16 +20,12 @@ export const JmxTreeView: React.FunctionComponent = () => {
 
   return (
     <TreeView
-      id="jmx-tree-view"
+      id='jmx-tree-view'
       data={tree.getTree()}
       hasGuides={true}
       allExpanded={expanded}
       onSelect={onSelect}
-      toolbar={
-        <PluginTreeViewToolbar
-          onSearch={onSearch}
-          onSetExpanded={setExpanded}
-        />}
+      toolbar={<PluginTreeViewToolbar onSearch={onSearch} onSetExpanded={setExpanded} />}
     />
   )
 }

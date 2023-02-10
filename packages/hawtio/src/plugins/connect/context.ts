@@ -22,5 +22,7 @@ type ConnectContext = {
 
 export const ConnectContext = createContext<ConnectContext>({
   connections: {},
-  dispatch: () => { /* no-op */ }
+  dispatch: () => {
+    /* no-op */
+  },
 })

@@ -24,17 +24,17 @@ class Workspace {
     const options: ISimpleOptions = {
       ignoreErrors: true,
       error: (response: IErrorResponse) => {
-        log.debug("Error fetching JMX tree:", response)
+        log.debug('Error fetching JMX tree:', response)
       },
       ajaxError: (xhr: JQueryXHR) => {
-        log.debug("Error fetching JMX tree:", xhr)
-      }
+        log.debug('Error fetching JMX tree:', xhr)
+      },
     }
     const value = await jolokiaService.list(options)
 
     // TODO: this.jolokiaStatus.xhr = null
     const domains = this.unwindResponseWithRBACCache(value)
-    log.debug("JMX tree loaded:", domains)
+    log.debug('JMX tree loaded:', domains)
     return MBeanTree.createMBeanTreeFromDomains('workspace', domains)
   }
 
@@ -76,9 +76,9 @@ class Workspace {
     if (!node) return false
 
     for (const [k, v] of Object.entries(properties)) {
-      switch(k) {
+      switch (k) {
         case 'id':
-          if (! node.id.startsWith(v as string) && node.id !== v) return false
+          if (!node.id.startsWith(v as string) && node.id !== v) return false
           break
         case 'name':
           if (node.name !== v) return false
@@ -92,7 +92,10 @@ class Workspace {
     return true
   }
 
-  async treeContainsDomainAndProperties(domainName: string, properties?: Record<string, unknown> | null): Promise<boolean> {
+  async treeContainsDomainAndProperties(
+    domainName: string,
+    properties?: Record<string, unknown> | null,
+  ): Promise<boolean> {
     const tree = await this.tree
     if (!tree) {
       return false
@@ -104,7 +107,7 @@ class Workspace {
     }
 
     if (properties) {
-      let domainAndChildren:MBeanNode[] = [domain]
+      let domainAndChildren: MBeanNode[] = [domain]
       domainAndChildren = domainAndChildren.concat(domain.children || [])
       const checkProperties = (node: MBeanNode) => {
         if (!this.matchesProperties(node, properties)) {

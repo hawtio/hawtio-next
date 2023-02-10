@@ -1,4 +1,16 @@
-import { Card, CardBody, Nav, NavItem, NavList, PageGroup, PageNavigation, PageSection, PageSectionVariants, TextContent, Title } from '@patternfly/react-core'
+import {
+  Card,
+  CardBody,
+  Nav,
+  NavItem,
+  NavList,
+  PageGroup,
+  PageNavigation,
+  PageSection,
+  PageSectionVariants,
+  TextContent,
+  Title,
+} from '@patternfly/react-core'
 import React from 'react'
 import Markdown from 'react-markdown'
 import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
@@ -12,17 +24,17 @@ export const HawtioHelp: React.FunctionComponent = () => {
   return (
     <React.Fragment>
       <PageSection variant={PageSectionVariants.light}>
-        <Title headingLevel="h1">Help</Title>
+        <Title headingLevel='h1'>Help</Title>
       </PageSection>
       <PageGroup>
         <PageNavigation>
-          <Nav aria-label="Nav" variant="tertiary">
+          <Nav aria-label='Nav' variant='tertiary'>
             <NavList>
-              {helpRegistry.getHelps().map(help =>
+              {helpRegistry.getHelps().map(help => (
                 <NavItem key={help.id} isActive={location.pathname === help.id}>
                   <NavLink to={help.id}>{help.title}</NavLink>
                 </NavItem>
-              )}
+              ))}
             </NavList>
           </Nav>
         </PageNavigation>
@@ -30,15 +42,20 @@ export const HawtioHelp: React.FunctionComponent = () => {
       <PageSection>
         <Card isFullHeight>
           <Routes>
-            {helpRegistry.getHelps().map(help =>
-              <Route key={help.id} path={help.id} element={
-                <CardBody>
-                  <TextContent>
-                    <Markdown>{help.content}</Markdown>
-                  </TextContent>
-                </CardBody>}
-              />)}
-           <Route path='/' element={<Navigate to='home' />} />
+            {helpRegistry.getHelps().map(help => (
+              <Route
+                key={help.id}
+                path={help.id}
+                element={
+                  <CardBody>
+                    <TextContent>
+                      <Markdown>{help.content}</Markdown>
+                    </TextContent>
+                  </CardBody>
+                }
+              />
+            ))}
+            <Route path='/' element={<Navigate to='home' />} />
           </Routes>
         </Card>
       </PageSection>

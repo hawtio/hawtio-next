@@ -25,5 +25,7 @@ type LogsContext = {
 export const LogsContext = createContext<LogsContext>({
   childLoggers: [],
   availableChildLoggers: [],
-  reloadChildLoggers: () => { /* no-op */ },
+  reloadChildLoggers: () => {
+    /* no-op */
+  },
 })

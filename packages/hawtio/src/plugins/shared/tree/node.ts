@@ -29,9 +29,9 @@ export class MBeanNode implements TreeViewDataItem {
   // and getting the same logger for all nodes belonging to the same tree
   //
   private static getLogger(owner: string): ILogger {
-    const logId =`${owner}-node`
-    let log: ILogger|undefined = nodeLoggers.get(logId)
-    if (! log) {
+    const logId = `${owner}-node`
+    let log: ILogger | undefined = nodeLoggers.get(logId)
+    if (!log) {
       log = Logger.get(logId)
       nodeLoggers.set(logId, log)
     }
@@ -54,13 +54,13 @@ export class MBeanNode implements TreeViewDataItem {
   }
 
   populateMBean(propList: string, mbean: IJmxMBean) {
-    this.log.debug("  JMX tree mbean:", propList)
+    this.log.debug('  JMX tree mbean:', propList)
     const props = new PropertyList(this, propList)
     this.createMBeanNode(props.getPaths(), props, mbean)
   }
 
   private createMBeanNode(paths: string[], props: PropertyList, mbean: IJmxMBean) {
-    this.log.debug("    JMX tree property:", paths[0])
+    this.log.debug('    JMX tree property:', paths[0])
     if (paths.length === 1) {
       // final mbean node
       const mbeanNode = this.create(paths[0], false)
@@ -70,7 +70,7 @@ export class MBeanNode implements TreeViewDataItem {
 
     const path = paths.shift()
     if (path === undefined) {
-      throw new Error("path should not be empty")
+      throw new Error('path should not be empty')
     }
     const child = this.getOrCreate(path, true)
     child.createMBeanNode(paths, props, mbean)
@@ -86,7 +86,7 @@ export class MBeanNode implements TreeViewDataItem {
   }
 
   getIndex(index: number): MBeanNode | null {
-    return this.children ? this.children[index]: null
+    return this.children ? this.children[index] : null
   }
 
   getChildren(): MBeanNode[] {
@@ -138,7 +138,7 @@ export class MBeanNode implements TreeViewDataItem {
   }
 
   sort(recursive: boolean) {
-    if (! this.children) return
+    if (!this.children) return
 
     this.children?.sort((a, b) => stringSorter(a.name, b.name))
     if (recursive) {
@@ -153,7 +153,7 @@ export class MBeanNode implements TreeViewDataItem {
 
     let answer: MBeanNode | null = null
     if (this.children) {
-      this.children.forEach((child) => {
+      this.children.forEach(child => {
         if (!answer) {
           answer = child.findDescendant(filter)
         }
@@ -165,7 +165,7 @@ export class MBeanNode implements TreeViewDataItem {
   filterClone(filter: (node: MBeanNode) => boolean): MBeanNode | null {
     const copyChildren: MBeanNode[] = []
     if (this.children) {
-      this.children.forEach((child) => {
+      this.children.forEach(child => {
         const childCopy = child.filterClone(filter)
         if (childCopy) {
           copyChildren.push(childCopy)
@@ -208,11 +208,14 @@ export class MBeanNode implements TreeViewDataItem {
 class PropertyList {
   private domain: MBeanNode
   private propList: string
-  private paths: { key: string, value: string }[] = []
+  private paths: { key: string; value: string }[] = []
   typeName?: string
   serviceName?: string
 
-  private readonly propRegex = new RegExp('(([^=,]+)=(\\\\"[^"]+\\\\"|\\\\\'[^\']+\\\\\'|"[^"]+"|\'[^\']+\'|[^,]+))|([^=,]+)', 'g')
+  private readonly propRegex = new RegExp(
+    '(([^=,]+)=(\\\\"[^"]+\\\\"|\\\\\'[^\']+\\\\\'|"[^"]+"|\'[^\']+\'|[^,]+))|([^=,]+)',
+    'g',
+  )
 
   constructor(domain: MBeanNode, propList: string) {
     this.domain = domain
@@ -306,7 +309,7 @@ export function reorderObjects(objs: object[], key: string, order: string[]) {
     return
   }
 
-  const objKey = key as keyof typeof objs[0]
+  const objKey = key as keyof (typeof objs)[0]
   order.reverse().forEach(value => {
     const index = objs.findIndex(o => o[objKey] === value)
     if (index >= 0) {
@@ -324,7 +327,7 @@ export function checkReorderNeeded(objs: object[], key: string, order: string[])
     return false
   }
 
-  const objKey = key as keyof typeof objs[0]
+  const objKey = key as keyof (typeof objs)[0]
   if (objs.length < order.length) {
     return objs.some((o, i) => o[objKey] !== order[i])
   }

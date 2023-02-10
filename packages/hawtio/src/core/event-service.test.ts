@@ -10,7 +10,7 @@ describe('EventService', () => {
     eventService.notify({
       type: 'success',
       message: 'Test message',
-      duration: 1000
+      duration: 1000,
     })
     expect.hasAssertions()
   })

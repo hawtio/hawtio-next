@@ -8,7 +8,7 @@ describe('strings', () => {
     expect(toString(obj)).toEqual('{ a: x, b: y, c: z }')
   })
 
-  test("trimQuotes()", () => {
+  test('trimQuotes()', () => {
     // it should only trim enclosing quotes
     expect(trimQuotes('"0.0.0.0"')).toBe('0.0.0.0')
     expect(trimQuotes("'0.0.0.0'")).toBe('0.0.0.0')

@@ -1,4 +1,27 @@
-import { Button, ButtonVariant, DataList, DataListAction, DataListCell, DataListItem, DataListItemCells, DataListItemRow, Dropdown, DropdownItem, DropdownPosition, ExpandableSection, KebabToggle, Modal, ModalVariant, PageSection, PageSectionVariants, Text, TextContent, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core'
+import {
+  Button,
+  ButtonVariant,
+  DataList,
+  DataListAction,
+  DataListCell,
+  DataListItem,
+  DataListItemCells,
+  DataListItemRow,
+  Dropdown,
+  DropdownItem,
+  DropdownPosition,
+  ExpandableSection,
+  KebabToggle,
+  Modal,
+  ModalVariant,
+  PageSection,
+  PageSectionVariants,
+  Text,
+  TextContent,
+  Toolbar,
+  ToolbarContent,
+  ToolbarItem,
+} from '@patternfly/react-core'
 import { OutlinedQuestionCircleIcon, PluggedIcon, PlusIcon, UnpluggedIcon } from '@patternfly/react-icons'
 import React, { useContext, useEffect, useState } from 'react'
 import { connectService } from './connect-service'
@@ -20,32 +43,42 @@ export const Connect: React.FunctionComponent = () => {
         </Text>
       }
     >
-      <Text component="p">
-        This page allows you to connect to remote processes which <strong>already have a
-          <a href="https://jolokia.org/agent.html" target="_blank" rel="noreferrer">Jolokia agent</a> running inside them</strong>.
-        You will need to know the host name, port and path of the Jolokia agent to be able to connect.
+      <Text component='p'>
+        This page allows you to connect to remote processes which{' '}
+        <strong>
+          already have a
+          <a href='https://jolokia.org/agent.html' target='_blank' rel='noreferrer'>
+            Jolokia agent
+          </a>{' '}
+          running inside them
+        </strong>
+        . You will need to know the host name, port and path of the Jolokia agent to be able to connect.
       </Text>
-      <Text component="p">
+      <Text component='p'>
         If the process you wish to connect to does not have a Jolokia agent inside, please refer to the
-        <a href="http://jolokia.org/agent.html" target="_blank" rel="noreferrer">Jolokia documentation</a> for how to add a JVM,
-        servlet or OSGi based agent inside it.
+        <a href='http://jolokia.org/agent.html' target='_blank' rel='noreferrer'>
+          Jolokia documentation
+        </a>{' '}
+        for how to add a JVM, servlet or OSGi based agent inside it.
       </Text>
-      <Text component="p">
-        If you are using <a href="https://developers.redhat.com/products/fuse/overview/" target="_blank" rel="noreferrer">Red Hat Fuse</a>
-        or <a href="http://activemq.apache.org/" target="_blank" rel="noreferrer">Apache ActiveMQ</a>,
-        then a Jolokia agent is included by default (use context path of Jolokia agent, usually
-        <code>jolokia</code>). Or you can always just deploy hawtio inside the process (which includes the Jolokia agent,
-        use Jolokia servlet mapping inside hawtio context path, usually <code>hawtio/jolokia</code>).
+      <Text component='p'>
+        If you are using{' '}
+        <a href='https://developers.redhat.com/products/fuse/overview/' target='_blank' rel='noreferrer'>
+          Red Hat Fuse
+        </a>
+        or{' '}
+        <a href='http://activemq.apache.org/' target='_blank' rel='noreferrer'>
+          Apache ActiveMQ
+        </a>
+        , then a Jolokia agent is included by default (use context path of Jolokia agent, usually
+        <code>jolokia</code>). Or you can always just deploy hawtio inside the process (which includes the Jolokia
+        agent, use Jolokia servlet mapping inside hawtio context path, usually <code>hawtio/jolokia</code>).
       </Text>
     </ExpandableSection>
   )
 
   const ConnectionList = () => (
-    <DataList
-      id="connection-list"
-      aria-label="connection list"
-      isCompact
-    >
+    <DataList id='connection-list' aria-label='connection list' isCompact>
       {Object.entries(connections).map(([name, connection]) => (
         <ConnectionItem key={name} name={name} connection={connection} />
       ))}
@@ -56,7 +89,7 @@ export const Connect: React.FunctionComponent = () => {
     <ConnectContext.Provider value={{ connections, dispatch }}>
       <PageSection variant={PageSectionVariants.light}>
         <TextContent>
-          <Text component="h1">Connect</Text>
+          <Text component='h1'>Connect</Text>
           <ConnectHint />
         </TextContent>
       </PageSection>
@@ -78,7 +111,7 @@ const ConnectToolbar: React.FunctionComponent = () => {
     scheme: 'http',
     host: '',
     port: 8080,
-    path: '/hawtio/jolokia'
+    path: '/hawtio/jolokia',
   }
 
   const handleAddToggle = () => {
@@ -90,39 +123,31 @@ const ConnectToolbar: React.FunctionComponent = () => {
   }
 
   return (
-    <Toolbar id="connect-toolbar">
+    <Toolbar id='connect-toolbar'>
       <ToolbarContent>
         <ToolbarItem>
-          <Button
-            variant={ButtonVariant.secondary}
-            onClick={handleAddToggle}
-          >
+          <Button variant={ButtonVariant.secondary} onClick={handleAddToggle}>
             <PlusIcon /> Add connection
           </Button>
         </ToolbarItem>
         <ToolbarItem>
           <Dropdown
-            key="connect-toolbar-dropdown"
+            key='connect-toolbar-dropdown'
             isPlain
             isOpen={isDropdownOpen}
             toggle={<KebabToggle onToggle={() => setIsDropdownOpen(!isDropdownOpen)} />}
             dropdownItems={[
-              <DropdownItem key="connect-toolbar-dropdown-import" isDisabled>
+              <DropdownItem key='connect-toolbar-dropdown-import' isDisabled>
                 Import connections
               </DropdownItem>,
-              <DropdownItem key="connect-toolbar-dropdown-export" onClick={exportConnections}>
+              <DropdownItem key='connect-toolbar-dropdown-export' onClick={exportConnections}>
                 Export connections
               </DropdownItem>,
             ]}
           />
         </ToolbarItem>
       </ToolbarContent>
-      <ConnectModal
-        mode="add"
-        isOpen={isAddOpen}
-        onClose={handleAddToggle}
-        input={initialConnection}
-      />
+      <ConnectModal mode='add' isOpen={isAddOpen} onClose={handleAddToggle} input={initialConnection} />
     </Toolbar>
   )
 }
@@ -142,8 +167,7 @@ const ConnectionItem: React.FunctionComponent<ConnectionItemProps> = props => {
 
   useEffect(() => {
     const check = () => {
-      connectService.checkReachable(connection)
-        .then(result => setReachable(result))
+      connectService.checkReachable(connection).then(result => setReachable(result))
     }
     check() // initial fire
     const timer = setInterval(check, 20000)
@@ -179,17 +203,17 @@ const ConnectionItem: React.FunctionComponent<ConnectionItemProps> = props => {
   const ConfirmDeleteModal = () => (
     <Modal
       variant={ModalVariant.small}
-      title="Delete Connection"
-      titleIconVariant="danger"
+      title='Delete Connection'
+      titleIconVariant='danger'
       isOpen={isConfirmDeleteOpen}
       onClose={handleConfirmDeleteToggle}
       actions={[
-        <Button key="delete" variant="danger" onClick={deleteConnection}>
+        <Button key='delete' variant='danger' onClick={deleteConnection}>
           Delete
         </Button>,
-        <Button key="cancel" variant="link" onClick={handleConfirmDeleteToggle}>
+        <Button key='cancel' variant='link' onClick={handleConfirmDeleteToggle}>
           Cancel
-        </Button>
+        </Button>,
       ]}
     >
       You are about to delete the <b>{name}</b> connection.
@@ -202,14 +226,14 @@ const ConnectionItem: React.FunctionComponent<ConnectionItemProps> = props => {
         <DataListItemCells
           dataListCells={[
             <DataListCell key={`connection-cell-icon-${name}`} isIcon>
-              {reachable ? <PluggedIcon color="green" /> : <UnpluggedIcon color="red" />}
+              {reachable ? <PluggedIcon color='green' /> : <UnpluggedIcon color='red' />}
             </DataListCell>,
             <DataListCell key={`connection-cell-name-${name}`}>
               <b>{name}</b>
             </DataListCell>,
             <DataListCell key={`connection-cell-url-${name}`} width={3}>
               {connectService.connectionToUrl(connection)}
-            </DataListCell>
+            </DataListCell>,
           ]}
         />
         <DataListAction
@@ -219,7 +243,7 @@ const ConnectionItem: React.FunctionComponent<ConnectionItemProps> = props => {
         >
           <Button
             key={`connection-action-connect-${name}`}
-            variant="primary"
+            variant='primary'
             onClick={connect}
             isDisabled={!reachable}
             isSmall
@@ -233,16 +257,10 @@ const ConnectionItem: React.FunctionComponent<ConnectionItemProps> = props => {
             isOpen={isDropdownOpen}
             toggle={<KebabToggle onToggle={handleDropdownToggle} />}
             dropdownItems={[
-              <DropdownItem
-                key={`connection-action-edit-${name}`}
-                onClick={handleEditToggle}
-              >
+              <DropdownItem key={`connection-action-edit-${name}`} onClick={handleEditToggle}>
                 Edit
               </DropdownItem>,
-              <DropdownItem
-                key={`connection-action-delete-${name}`}
-                onClick={handleConfirmDeleteToggle}
-              >
+              <DropdownItem key={`connection-action-delete-${name}`} onClick={handleConfirmDeleteToggle}>
                 Delete
               </DropdownItem>,
             ]}
@@ -250,12 +268,7 @@ const ConnectionItem: React.FunctionComponent<ConnectionItemProps> = props => {
           <ConfirmDeleteModal />
         </DataListAction>
       </DataListItemRow>
-      <ConnectModal
-        mode="edit"
-        isOpen={isEditOpen}
-        onClose={handleEditToggle}
-        input={connection}
-      />
+      <ConnectModal mode='edit' isOpen={isEditOpen} onClose={handleEditToggle} input={connection} />
     </DataListItem>
   )
 }

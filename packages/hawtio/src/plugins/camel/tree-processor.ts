@@ -8,31 +8,31 @@ import { CamelIcon, EndPointFolderIcon, EndPointIcon, RouteIcon } from './icons'
 // Fetch the camel version and add it to the tree
 // to avoid making a blocking call elsewhere
 //
-function retrieveCamelVersion(contextNode: MBeanNode|null) {
-  if (! contextNode) return
+function retrieveCamelVersion(contextNode: MBeanNode | null) {
+  if (!contextNode) return
 
-  if (! contextNode.objectName) {
+  if (!contextNode.objectName) {
     contextNode.addProperty('version', 'Camel Version not available')
     return
   }
 
   jolokiaService.read(contextNode.objectName, 'CamelVersion').then((response: unknown) => {
-    contextNode.addProperty('version', (response as string))
+    contextNode.addProperty('version', response as string)
   })
 }
 
-function adoptChild(parent: MBeanNode|null, child: MBeanNode|null, type: string, childIcon: React.ReactNode) {
-  if (! parent || ! child) return
+function adoptChild(parent: MBeanNode | null, child: MBeanNode | null, type: string, childIcon: React.ReactNode) {
+  if (!parent || !child) return
 
   parent.adopt(child)
   child.setIcons(childIcon)
   child.addProperty('type', type)
 }
 
-function setChildIcon(node: MBeanNode|null, childIcon: React.ReactNode) {
-  if (! node) return
+function setChildIcon(node: MBeanNode | null, childIcon: React.ReactNode) {
+  if (!node) return
 
-  node.getChildren().forEach((child) => {
+  node.getChildren().forEach(child => {
     child.setIcons(childIcon)
   })
 }
@@ -91,11 +91,19 @@ export function processTreeDomain(domainNode: MBeanNode) {
     // context/routes/endpoints/components/dataformats as MBeans
     //
     const mBeansNode = (newCtxNode as MBeanNode).getOrCreate('~MBeans', true)
-    context.getChildren()
-      .filter(child =>
-        !(child.name === 'context' || child.name === 'routes' || child.name === 'endpoints'
-                || child.name === 'components' || child.name === 'dataformats'))
-        .forEach(child => mBeansNode.adopt(child))
+    context
+      .getChildren()
+      .filter(
+        child =>
+          !(
+            child.name === 'context' ||
+            child.name === 'routes' ||
+            child.name === 'endpoints' ||
+            child.name === 'components' ||
+            child.name === 'dataformats'
+          ),
+      )
+      .forEach(child => mBeansNode.adopt(child))
 
     mBeansNode.sort(false)
 

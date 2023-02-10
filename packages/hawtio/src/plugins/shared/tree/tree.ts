@@ -7,7 +7,6 @@ import { MBeanNode } from './node'
 import { treeProcessorRegistry, TreeProcessorFunction } from './registry'
 
 export class MBeanTree {
-
   private id: string
   private log: ILogger
 
@@ -58,7 +57,7 @@ export class MBeanTree {
   }
 
   private populateDomain(name: string, domain: IJmxDomain) {
-    this.log.debug("JMX tree domain:", name)
+    this.log.debug('JMX tree domain:', name)
     const domainNode = this.getOrCreateNode(name)
     Object.entries(domain).forEach(([propList, mbean]) => {
       domainNode.populateMBean(propList, mbean)
@@ -97,7 +96,7 @@ export class MBeanTree {
       return node.name === name
     })
 
-    return (node) ? node : null
+    return node ? node : null
   }
 
   isEmpty(): boolean {
@@ -113,7 +112,7 @@ export class MBeanTree {
    */
   findDescendant(filter: (node: MBeanNode) => boolean): MBeanNode | null {
     let answer: MBeanNode | null = null
-    this.tree.forEach((child) => {
+    this.tree.forEach(child => {
       if (!answer) {
         answer = child.findDescendant(filter)
       }
