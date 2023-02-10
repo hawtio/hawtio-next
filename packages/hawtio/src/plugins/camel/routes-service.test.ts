@@ -18,18 +18,20 @@ describe('routes-service', () => {
 
   const testRouteId = 'simple'
   const routesXmlPath = path.resolve(__dirname, 'testdata', 'camel-sample-app-routes.xml')
-  const sampleRoutesXml = fs.readFileSync(routesXmlPath, {encoding:'utf8', flag:'r'})
+  const sampleRoutesXml = fs.readFileSync(routesXmlPath, { encoding: 'utf8', flag: 'r' })
   const doc: XMLDocument = $.parseXML(sampleRoutesXml as string)
   const simpleRouteXml = $(doc).find("route[id='" + testRouteId + "']")[0]
 
-  jolokiaService.execute = jest.fn(
-    async (mbean: string, operation: string, args?: unknown[]): Promise<unknown> => {
-      if (mbean === 'org.apache.camel:context=SampleCamel,type=context,name="SampleCamel"' && operation === 'dumpRoutesAsXml()') {
-        return sampleRoutesXml
-      }
+  jolokiaService.execute = jest.fn(async (mbean: string, operation: string, args?: unknown[]): Promise<unknown> => {
+    if (
+      mbean === 'org.apache.camel:context=SampleCamel,type=context,name="SampleCamel"' &&
+      operation === 'dumpRoutesAsXml()'
+    ) {
+      return sampleRoutesXml
+    }
 
-      return ''
-    })
+    return ''
+  })
 
   beforeEach(() => {
     contextNode = new MBeanNode(owner, 'SampleCamel', 'sample-camel-1', true)
@@ -51,7 +53,7 @@ describe('routes-service', () => {
   })
 
   test('processRouteXml no contextNode', async () => {
-    const nullCtx: MBeanNode|null = null
+    const nullCtx: MBeanNode | null = null
     const route = await routesService.processRouteXml(nullCtx, simpleRouteNode)
     expect(route).toBeNull()
   })
@@ -80,8 +82,8 @@ describe('routes-service', () => {
     expect(simpleRouteNode.childCount()).toBe(4)
 
     type MBeanAttr = {
-      id: string,
-      name: string,
+      id: string
+      name: string
       children?: MBeanAttr[]
     }
 
@@ -89,13 +91,13 @@ describe('routes-service', () => {
       { id: 'from', name: 'from' },
       { id: 'setBody2', name: 'setBody' },
       { id: 'to3', name: 'to' },
-      { id: 'to4', name: 'to' }
+      { id: 'to4', name: 'to' },
     ]
 
     for (let i = 0; i < simpleRouteNode.childCount(); ++i) {
-      let childNode: MBeanNode|null = simpleRouteNode.getIndex(i)
+      let childNode: MBeanNode | null = simpleRouteNode.getIndex(i)
       expect(childNode).not.toBeNull()
-      childNode = (childNode as MBeanNode)
+      childNode = childNode as MBeanNode
       expect(childNode.id).toBe(exp[i].id)
       expect(childNode.name).toBe(exp[i].name)
       expect(childNode.getChildren().length).toBe(0)

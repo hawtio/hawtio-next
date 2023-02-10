@@ -177,7 +177,7 @@ export class MBeanNode implements TreeViewDataItem {
       })
     }
 
-    if (copyChildren.length === 0 && ! filter(this)) {
+    if (copyChildren.length === 0 && !filter(this)) {
       //
       // this has no children and does not conform to filter
       //

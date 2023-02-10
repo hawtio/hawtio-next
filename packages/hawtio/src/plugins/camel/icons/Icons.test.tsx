@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react'
 import { IconNames, getIcon } from './Icons'
 
 describe('svg-icons', () => {
-
   test('getIcon', async () => {
     const icon1: JSX.Element = getIcon(IconNames.AggregateIcon)
     const icon2: JSX.Element = getIcon(IconNames.GenericIcon)

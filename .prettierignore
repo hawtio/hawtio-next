@@ -2,3 +2,9 @@ build
 coverage
 dist
 .yarn
+
+# any directories specifically labelled ignore
+**/ignore/**
+
+# Ignore generated camel model (need to fix generator to fix all the linting errors)
+/packages/hawtio/src/plugins/camel/model/camelModel.ts
