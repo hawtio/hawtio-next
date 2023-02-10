@@ -15,7 +15,6 @@ export class MBeanNode implements TreeViewDataItem {
   name: string
   icon: React.ReactNode
   expandedIcon?: React.ReactNode
-  defaultExpanded?: boolean
   children?: MBeanNode[]
   properties?: Record<string, string>
 
@@ -167,11 +166,11 @@ export class MBeanNode implements TreeViewDataItem {
     return answer
   }
 
-  filterClone(filter: (node: MBeanNode) => boolean, expanded?: boolean): MBeanNode | null {
+  filterClone(filter: (node: MBeanNode) => boolean): MBeanNode | null {
     const copyChildren: MBeanNode[] = []
     if (this.children) {
       this.children.forEach(child => {
-        const childCopy = child.filterClone(filter, expanded)
+        const childCopy = child.filterClone(filter)
         if (childCopy) {
           copyChildren.push(childCopy)
         }
@@ -191,9 +190,6 @@ export class MBeanNode implements TreeViewDataItem {
     }
     copy.icon = this.icon
     copy.expandedIcon = this.expandedIcon
-    if (expanded !== undefined) {
-      copy.defaultExpanded = expanded
-    }
     return copy
   }
 
