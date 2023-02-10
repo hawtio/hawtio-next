@@ -15,6 +15,7 @@ export class MBeanNode implements TreeViewDataItem {
   name: string
   icon: React.ReactNode
   expandedIcon?: React.ReactNode
+  defaultExpanded?: boolean
   children?: MBeanNode[]
   properties?: Record<string, string>
 
@@ -162,33 +163,34 @@ export class MBeanNode implements TreeViewDataItem {
     return answer
   }
 
-  filterClone(filter: (node: MBeanNode) => boolean): MBeanNode | null {
+  filterClone(filter: (node: MBeanNode) => boolean, expanded?: boolean): MBeanNode | null {
     const copyChildren: MBeanNode[] = []
     if (this.children) {
       this.children.forEach(child => {
-        const childCopy = child.filterClone(filter)
+        const childCopy = child.filterClone(filter, expanded)
         if (childCopy) {
           copyChildren.push(childCopy)
         }
       })
-
-      //
-      // Nodes with either children that conform to filter
-      // Or the this node itself conforms to filter
-      //
-      if (copyChildren.length > 0 || filter(this)) {
-        const copy: MBeanNode = new MBeanNode(this.owner, this.id, this.name, copyChildren.length > 0)
-        copy.children = copyChildren
-        return copy
-      }
-    } else if (filter(this)) {
-      //
-      // This node has no children but itself conforms to filter
-      //
-      return new MBeanNode(this.owner, this.id, this.name, copyChildren.length > 0)
     }
 
-    return null
+    if (copyChildren.length == 0 && ! filter(this)) {
+      //
+      // this has no children and does not conform to filter
+      //
+      return null
+    }
+
+    const copy = new MBeanNode(this.owner, this.id, this.name, copyChildren.length > 0)
+    if (copyChildren.length > 0) {
+      copy.children = copyChildren
+    }
+    copy.icon = this.icon
+    copy.expandedIcon = this.expandedIcon
+    if (expanded !== undefined) {
+      copy.defaultExpanded = expanded
+    }
+    return copy
   }
 
   adopt(child: MBeanNode) {
