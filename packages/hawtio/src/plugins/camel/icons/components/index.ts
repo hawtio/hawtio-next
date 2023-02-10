@@ -1,2 +1,0 @@
-
-export { CamelImageIcon } from './CamelImageIcon'

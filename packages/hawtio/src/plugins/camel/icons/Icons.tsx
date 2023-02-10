@@ -1,4 +1,4 @@
-import { CamelImageIcon } from './components'
+import { CamelImageIcon } from './CamelImageIcon'
 import * as svg from './svg'
 
 const elementMap: Map<string, JSX.Element> = new Map<string, JSX.Element>()
