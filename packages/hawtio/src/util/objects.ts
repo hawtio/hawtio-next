@@ -3,6 +3,10 @@ export function isObject(value: unknown): value is object {
   return value != null && (type === 'object' || type === 'function')
 }
 
+export function cloneObject<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value))
+}
+
 export function isEmpty(obj: object): boolean {
   return Object.keys(obj).length === 0
 }

@@ -1992,13 +1992,11 @@ __metadata:
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.4.0
     "@testing-library/user-event": ^14.4.3
-    "@types/clone": ^2.1.1
     "@types/jest": ^29.4.0
     "@types/node": ^18.13.0
     "@types/react": ^18.0.28
     "@types/react-dom": ^18.0.10
     "@types/react-router-dom": ^5.3.3
-    clone: ^2.1.2
     eslint-config-react-app: ^7.0.1
     eventemitter3: ^5.0.0
     jest: ^29.4.2
@@ -3218,13 +3216,6 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: bfcadb042a41b124c4e3de4925e3be6d35b78f93f27c4535d5ff86980dc0f8bc407ed99b9b54528952dc62834d5a779392f7a12c2947dd19330eb05a6bcae15a
-  languageName: node
-  linkType: hard
-
-"@types/clone@npm:^2.1.1":
-  version: 2.1.1
-  resolution: "@types/clone@npm:2.1.1"
-  checksum: bda9668b9d6e0875d64bbe00763676f566e8647bc224333a03ac7fd66655dfed56a98a9f8304d0145c4411b964649c84c4d1a03adbdb6547eafb9ab8f303d254
   languageName: node
   linkType: hard
 
@@ -5374,13 +5365,6 @@ __metadata:
   version: 1.0.4
   resolution: "clone@npm:1.0.4"
   checksum: d06418b7335897209e77bdd430d04f882189582e67bd1f75a04565f3f07f5b3f119a9d670c943b6697d0afb100f03b866b3b8a1f91d4d02d72c4ecf2bb64b5dd
-  languageName: node
-  linkType: hard
-
-"clone@npm:^2.1.2":
-  version: 2.1.2
-  resolution: "clone@npm:2.1.2"
-  checksum: aaf106e9bc025b21333e2f4c12da539b568db4925c0501a1bf4070836c9e848c892fa22c35548ce0d1132b08bbbfa17a00144fe58fccdab6fa900fec4250f67d
   languageName: node
   linkType: hard
 
@@ -15160,7 +15144,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsup@npm:^6.6.3":
+"tsup@npm:^6.6.2, tsup@npm:^6.6.3":
   version: 6.6.3
   resolution: "tsup@npm:6.6.3"
   dependencies:
