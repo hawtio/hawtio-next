@@ -1,6 +1,5 @@
 import { apacheCamelModel } from '@hawtio/plugins/camel/model'
-import { isObject, isString } from '@hawtio/util/objects'
-import clone from 'clone'
+import { isObject, cloneObject } from '@hawtio/util/objects'
 
 class SchemaService {
 
@@ -33,7 +32,7 @@ class SchemaService {
     }
     if (extendsTypes.length === 0) return answer
 
-    const fullSchema = clone(answer)
+    const fullSchema = cloneObject(answer)
     fullSchema.properties = fullSchema.properties || {}
     for (const extendType of extendsTypes) {
       const extendDef = this.lookupDefinition((fullSchema[extendType] as string), schema)
