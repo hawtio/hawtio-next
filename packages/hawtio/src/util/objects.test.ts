@@ -8,7 +8,9 @@ describe('objects', () => {
     expect(isObject(false)).toBe(false)
     const obj = { a: 'x', b: 'y', c: 'z' }
     expect(isObject(obj)).toBe(true)
-    const fn = () => { /* no-op */ }
+    const fn = () => {
+      /* no-op */
+    }
     expect(isObject(fn)).toBe(true)
   })
 })

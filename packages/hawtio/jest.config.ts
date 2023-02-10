@@ -18,15 +18,9 @@ export default {
   // framework before each test
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
 
-  testPathIgnorePatterns: [
-    '<rootDir>/node_modules/',
-  ],
+  testPathIgnorePatterns: ['<rootDir>/node_modules/'],
 
-  transformIgnorePatterns: [
-    'node_modules/(?!@patternfly/react-icons/dist/esm/icons)/',
-  ],
+  transformIgnorePatterns: ['node_modules/(?!@patternfly/react-icons/dist/esm/icons)/'],
 
-  coveragePathIgnorePatterns: [
-    'node_modules/',
-  ],
+  coveragePathIgnorePatterns: ['node_modules/'],
 }

@@ -35,8 +35,8 @@ export function useCamelTree() {
         const subTree: MBeanTree = MBeanTree.createMBeanTreeFromNodes(pluginName, [rootNode])
         setTree(subTree)
         if (rootNode && rootNode.children && rootNode.children.length > 0) {
-          const r: TreeViewDataItem = (rootNode as TreeViewDataItem)
-          const c: TreeViewDataItem = (rootNode.children[0] as TreeViewDataItem)
+          const r: TreeViewDataItem = rootNode as TreeViewDataItem
+          const c: TreeViewDataItem = rootNode.children[0] as TreeViewDataItem
           c.defaultExpanded = true
           r.defaultExpanded = true
           setNode(rootNode.children[0])
@@ -45,11 +45,10 @@ export function useCamelTree() {
         // 2. Somewhere in the bootstrapping need to refilter the camel content of the tree
         //    to reshape it as the camel context original - icons too!!!
 
-
         // Jmx.enableTree(this.$scope, this.$location, this.workspace, $(treeElementId), [rootNode])
         // this.updateSelectionFromURL()
       } else {
-        console.log("TODO: reroute back to jmx view")
+        console.log('TODO: reroute back to jmx view')
         setTree(wkspTree)
         // // No camel contexts so redirect to the JMX view and select the first tree node
         // if (tree.children && tree.children.length > 0) {
@@ -72,5 +71,7 @@ type CamelContext = {
 export const CamelContext = createContext<CamelContext>({
   tree: MBeanTree.createEmptyTree(pluginName),
   node: null,
-  setNode: () => { /* no-op */ }
+  setNode: () => {
+    /* no-op */
+  },
 })

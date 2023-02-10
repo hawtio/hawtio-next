@@ -29,7 +29,6 @@ type Plugins = {
  * - Plugin loader and discovery mechanism
  */
 class HawtioCore {
-
   /**
    * Hawtio base path.
    */
@@ -68,7 +67,7 @@ class HawtioCore {
    * Adds an angular module to the list of modules to bootstrap.
    */
   addPlugin(plugin: Plugin): HawtioCore {
-    log.info("Add plugin:", plugin.id)
+    log.info('Add plugin:', plugin.id)
     if (this.plugins[plugin.id]) {
       throw new Error(`Plugin "${plugin.id}" already exists`)
     }
@@ -80,7 +79,7 @@ class HawtioCore {
    * Adds a URL for discovering plugins.
    */
   addUrl(url: string): HawtioCore {
-    log.info("Add URL:", url)
+    log.info('Add URL:', url)
     this.urls.push(url)
     return this
   }
@@ -101,7 +100,7 @@ class HawtioCore {
    * It is invoked from Hawtio's bootstrapping.
    */
   private loadPlugins(callback: (plugins: Plugins) => void): void {
-    log.info("Bootstrapping Hawtio...")
+    log.info('Bootstrapping Hawtio...')
 
     // TODO: Load external plugins
 
@@ -126,7 +125,6 @@ class HawtioCore {
     }
     return resolved
   }
-
 }
 
 /**

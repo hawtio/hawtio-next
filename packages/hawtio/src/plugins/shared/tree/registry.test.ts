@@ -7,13 +7,12 @@ describe('treeProcessorRegistry', () => {
   })
 
   test('add a domain processor', async () => {
-
     expect(treeProcessorRegistry).not.toBeNull()
     expect(treeProcessorRegistry.getDomains()).toEqual([])
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const testProcessor = (domainNode: MBeanNode) => {
-      console.log("Nothing to do")
+      console.log('Nothing to do')
     }
 
     treeProcessorRegistry.add('test', testProcessor)
@@ -23,7 +22,7 @@ describe('treeProcessorRegistry', () => {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const testProcessor2 = (domainNode: MBeanNode) => {
-      console.log("Nothing to do")
+      console.log('Nothing to do')
     }
 
     // Add additional processor to same domain

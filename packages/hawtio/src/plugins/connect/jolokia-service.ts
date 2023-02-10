@@ -1,9 +1,30 @@
 import { userService } from '@hawtio/auth'
 import { eventService } from '@hawtio/core'
 import { getCookie } from '@hawtio/util/cookies'
-import { escapeMBeanPath, onListSuccess, onSimpleSuccess, onSimpleSuccessAndError, onSuccess } from '@hawtio/util/jolokia'
+import {
+  escapeMBeanPath,
+  onListSuccess,
+  onSimpleSuccess,
+  onSimpleSuccessAndError,
+  onSuccess,
+} from '@hawtio/util/jolokia'
 import { isObject } from '@hawtio/util/objects'
-import Jolokia, { IAjaxErrorFn, IErrorResponse, IJmxDomain, IJmxDomains, IJmxMBean, IJolokia, IListOptions, IOptions, IRequest, IResponseFn, ISearchOptions, ISimpleOptions, IVersion, IVersionOptions } from 'jolokia.js'
+import Jolokia, {
+  IAjaxErrorFn,
+  IErrorResponse,
+  IJmxDomain,
+  IJmxDomains,
+  IJmxMBean,
+  IJolokia,
+  IListOptions,
+  IOptions,
+  IRequest,
+  IResponseFn,
+  ISearchOptions,
+  ISimpleOptions,
+  IVersion,
+  IVersionOptions,
+} from 'jolokia.js'
 import 'jolokia.js/jolokia-simple'
 import $ from 'jquery'
 import { func, is, object } from 'superstruct'
@@ -24,11 +45,7 @@ const DEFAULT_JOLOKIA_OPTIONS: IOptions = {
 } as const
 const DEFAULT_UPDATE_RATE = 5000
 
-const JOLOKIA_PATHS = [
-  '/hawtio/jolokia',
-  '/jolokia',
-  'jolokia',
-] as const
+const JOLOKIA_PATHS = ['/hawtio/jolokia', '/jolokia', 'jolokia'] as const
 
 enum JolokiaListMethod {
   /** The default LIST+EXEC Jolokia operations. */
@@ -43,7 +60,7 @@ enum JolokiaListMethod {
  * This is really a MBean that provides an optimised Jolokia list operation,
  * with optionally decorated RBAC info on the result.
  */
-const OPTIMISED_JOLOKIA_LIST_MBEAN = "hawtio:type=security,name=RBACRegistry"
+const OPTIMISED_JOLOKIA_LIST_MBEAN = 'hawtio:type=security,name=RBACRegistry'
 
 export interface JolokiaConfig {
   method: JolokiaListMethod
@@ -71,10 +88,10 @@ class JolokiaService implements IJolokiaService {
   }
 
   constructor() {
-    this.jolokiaUrl = new Promise((resolve) => {
+    this.jolokiaUrl = new Promise(resolve => {
       this.initJolokiaUrl().then(url => resolve(url))
     })
-    this.jolokia = new Promise((resolve) => {
+    this.jolokia = new Promise(resolve => {
       this.createJolokia().then(jolokia => resolve(jolokia))
     })
 
@@ -96,7 +113,7 @@ class JolokiaService implements IJolokiaService {
 
     // Discover Jolokia
     for (const path of JOLOKIA_PATHS) {
-      log.debug("Checking Jolokia path:", path)
+      log.debug('Checking Jolokia path:', path)
       try {
         return await this.tryProbeJolokiaPath(path)
       } catch (e) {
@@ -133,7 +150,7 @@ class JolokiaService implements IJolokiaService {
         .fail((xhr: JQueryXHR) => {
           if (xhr.status === 401 || xhr.status === 403) {
             // I guess this could be it...
-            log.debug("Using URL:", path, "assuming it could be an agent but got return code:", xhr.status)
+            log.debug('Using URL:', path, 'assuming it could be an agent but got return code:', xhr.status)
             resolve(path)
             return
           }
@@ -145,13 +162,13 @@ class JolokiaService implements IJolokiaService {
   private async createJolokia(): Promise<IJolokia> {
     const jolokiaUrl = await this.jolokiaUrl
     if (!jolokiaUrl) {
-      log.debug("Use dummy Jolokia")
+      log.debug('Use dummy Jolokia')
       return new DummyJolokia()
     }
 
     // TODO: hawtio-oauth may have already set up jQuery beforeSend?
     if (!$.ajaxSettings.beforeSend) {
-      log.debug("Set up jQuery beforeSend")
+      log.debug('Set up jQuery beforeSend')
       $.ajaxSetup({ beforeSend: this.beforeSend() })
     }
 
@@ -174,17 +191,17 @@ class JolokiaService implements IJolokiaService {
     // Just set Authorization for now...
     const header = 'Authorization'
     if (userService.isLogin() && userService.getToken()) {
-      log.debug("Set authorization header to token")
+      log.debug('Set authorization header to token')
       return (xhr: JQueryXHR) => {
         if (userService.getToken()) {
           xhr.setRequestHeader(header, `Bearer ${userService.getToken()}`)
         }
       }
-    } else if (connection && connection.token) { // TODO: when?
-      return (xhr: JQueryXHR) =>
-        xhr.setRequestHeader(header, `Bearer ${connection.token}`)
+    } else if (connection && connection.token) {
+      // TODO: when?
+      return (xhr: JQueryXHR) => xhr.setRequestHeader(header, `Bearer ${connection.token}`)
     } else if (connection && connection.username && connection.password) {
-      log.debug("Set authorization header to username/password")
+      log.debug('Set authorization header to username/password')
       const authInfo = window.btoa(`${connection.username}:${connection.password}`)
       const basicAuthHeader = `Basic ${authInfo}`
       return (xhr: JQueryXHR) => xhr.setRequestHeader(header, basicAuthHeader)
@@ -192,11 +209,13 @@ class JolokiaService implements IJolokiaService {
       const token = getCookie('XSRF-TOKEN')
       if (token) {
         // For CSRF protection with Spring Security
-        log.debug("Set XSRF token header from cookies")
+        log.debug('Set XSRF token header from cookies')
         return (xhr: JQueryXHR) => xhr.setRequestHeader('X-XSRF-TOKEN', token)
       } else {
-        log.debug("Not set any authorization header")
-        return () => { /* no-op */ }
+        log.debug('Not set any authorization header')
+        return () => {
+          /* no-op */
+        }
       }
     }
   }
@@ -237,7 +256,7 @@ class JolokiaService implements IJolokiaService {
               type: 'danger',
               message: 'Connection lost. Retrying...',
               // -100ms is to not overlap between update and notification
-              duration: updateRate - 100
+              duration: updateRate - 100,
             })
           }
         }
@@ -252,10 +271,11 @@ class JolokiaService implements IJolokiaService {
    * @param jolokia Jolokia instance to use
    */
   private async checkListOptimisation(jolokia: IJolokia): Promise<void> {
-    log.debug("Check if we can call optimised jolokia.list() operation")
-    return new Promise<void>((resolve) => {
-      jolokia.list(escapeMBeanPath(this.config.mbean), onListSuccess(
-        (value: IJmxDomains | IJmxDomain | IJmxMBean) => {
+    log.debug('Check if we can call optimised jolokia.list() operation')
+    return new Promise<void>(resolve => {
+      jolokia.list(
+        escapeMBeanPath(this.config.mbean),
+        onListSuccess((value: IJmxDomains | IJmxDomain | IJmxMBean) => {
           // check if the MBean exists by testing whether the returned value has
           // the 'op' property
           if (isObject(value?.op)) {
@@ -265,10 +285,10 @@ class JolokiaService implements IJolokiaService {
             // which equals LIST=GENERAL in practice
             this.config.method = JolokiaListMethod.UNDETERMINED
           }
-          log.debug("Jolokia list method:", JolokiaListMethod[this.config.method])
+          log.debug('Jolokia list method:', JolokiaListMethod[this.config.method])
           resolve()
-        }
-      ))
+        }),
+      )
     })
   }
 
@@ -292,24 +312,25 @@ class JolokiaService implements IJolokiaService {
   async list(options: ISimpleOptions): Promise<unknown> {
     const jolokia = await this.jolokia
     const { method, mbean } = this.config
-    return new Promise<unknown>((resolve) => {
+    return new Promise<unknown>(resolve => {
       switch (method) {
         case JolokiaListMethod.OPTIMISED:
-          log.debug("Invoke Jolokia list MBean in optimised mode")
+          log.debug('Invoke Jolokia list MBean in optimised mode')
           options.maxDepth = 9
-          jolokia.execute(mbean, "list()", onSimpleSuccess(
-            value => resolve(value),
-            options
-          ))
+          jolokia.execute(
+            mbean,
+            'list()',
+            onSimpleSuccess(value => resolve(value), options),
+          )
           break
         case JolokiaListMethod.DEFAULT:
         case JolokiaListMethod.UNDETERMINED:
         default:
-          log.debug("Invoke Jolokia list MBean in default mode")
-          jolokia.list(null, onListSuccess(
-            value => resolve(value),
-            options
-          ))
+          log.debug('Invoke Jolokia list MBean in default mode')
+          jolokia.list(
+            null,
+            onListSuccess(value => resolve(value), options),
+          )
       }
     })
   }
@@ -324,7 +345,7 @@ class JolokiaService implements IJolokiaService {
     return new Promise(resolve => {
       jolokia.request(
         payload,
-        onSuccess(response => resolve(response.value as AttributeValues))
+        onSuccess(response => resolve(response.value as AttributeValues)),
       )
     })
   }
@@ -332,11 +353,16 @@ class JolokiaService implements IJolokiaService {
   async execute(mbean: string, operation: string, args: unknown[] = []): Promise<unknown> {
     const jolokia = await this.jolokia
     return new Promise((resolve, reject) => {
-      jolokia.execute(mbean, operation, ...args, onSimpleSuccessAndError(
-        (response: unknown) => resolve(response),
-        // TODO: move to OperationService
-        (response: IErrorResponse) => reject(response.stacktrace || response.error)
-      ))
+      jolokia.execute(
+        mbean,
+        operation,
+        ...args,
+        onSimpleSuccessAndError(
+          (response: unknown) => resolve(response),
+          // TODO: move to OperationService
+          (response: IErrorResponse) => reject(response.stacktrace || response.error),
+        ),
+      )
     })
   }
 
@@ -376,29 +402,56 @@ class DummyJolokia implements IJolokia {
   isDummy = true
   private running = false
 
-  request(...args: unknown[]) { return null }
-
-  getAttribute(mbean: string, attribute: string, path?: string | ISimpleOptions, opts?: ISimpleOptions) { return null }
-  setAttribute(mbean: string, attribute: string, value: unknown, path?: string | ISimpleOptions, opts?: ISimpleOptions) { /* no-op */ }
-
-  execute(mbean: string, operation: string, ...args: unknown[]) {
-    args?.forEach(arg =>
-      is(arg, object({ success: func() })) && arg.success?.(null))
+  request(...args: unknown[]) {
     return null
   }
-  search(mBeanPattern: string, opts?: ISearchOptions) { return null }
+
+  getAttribute(mbean: string, attribute: string, path?: string | ISimpleOptions, opts?: ISimpleOptions) {
+    return null
+  }
+  setAttribute(
+    mbean: string,
+    attribute: string,
+    value: unknown,
+    path?: string | ISimpleOptions,
+    opts?: ISimpleOptions,
+  ) {
+    /* no-op */
+  }
+
+  execute(mbean: string, operation: string, ...args: unknown[]) {
+    args?.forEach(arg => is(arg, object({ success: func() })) && arg.success?.(null))
+    return null
+  }
+  search(mBeanPattern: string, opts?: ISearchOptions) {
+    return null
+  }
   list(path: string, opts?: IListOptions) {
     opts?.success?.({})
     return null
   }
-  version(opts?: IVersionOptions) { return ({} as IVersion) }
+  version(opts?: IVersionOptions) {
+    return {} as IVersion
+  }
 
-  register(params: unknown, ...request: unknown[]) { return 0 }
-  unregister(handle: number) { /* no-op */ }
-  jobs() { return [] }
-  start(period: number) { this.running = true }
-  stop() { this.running = false }
-  isRunning() { return this.running }
+  register(params: unknown, ...request: unknown[]) {
+    return 0
+  }
+  unregister(handle: number) {
+    /* no-op */
+  }
+  jobs() {
+    return []
+  }
+  start(period: number) {
+    this.running = true
+  }
+  stop() {
+    this.running = false
+  }
+  isRunning() {
+    return this.running
+  }
 }
 /* eslint-enable @typescript-eslint/no-unused-vars */
 

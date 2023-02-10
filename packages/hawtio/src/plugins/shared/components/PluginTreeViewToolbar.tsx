@@ -6,13 +6,13 @@ import {
   ToolbarGroup,
   ToolbarItem,
   Tooltip,
-  TreeViewSearch
+  TreeViewSearch,
 } from '@patternfly/react-core'
 import { MinusIcon, PlusIcon } from '@patternfly/react-icons'
 
 interface ToolbarProps {
-  onSearch: (event: ChangeEvent<HTMLInputElement>) => void,
-  onSetExpanded: (newExpanded: boolean) => void,
+  onSearch: (event: ChangeEvent<HTMLInputElement>) => void
+  onSetExpanded: (newExpanded: boolean) => void
 }
 
 export const PluginTreeViewToolbar: React.FunctionComponent<ToolbarProps> = (props: ToolbarProps) => {
@@ -36,25 +36,18 @@ export const PluginTreeViewToolbar: React.FunctionComponent<ToolbarProps> = (pro
   return (
     <Toolbar style={{ padding: 0 }}>
       <ToolbarContent style={{ padding: 0 }}>
-        <ToolbarGroup variant="filter-group">
-          <ToolbarItem variant="search-filter" widths={{ default: '100%' }}>
+        <ToolbarGroup variant='filter-group'>
+          <ToolbarItem variant='search-filter' widths={{ default: '100%' }}>
             <TreeViewSearch
               onSearch={onSearch}
-              id="input-search"
-              name="search-input"
-              aria-label="Search input example"
+              id='input-search'
+              name='search-input'
+              aria-label='Search input example'
             />
           </ToolbarItem>
-          <ToolbarItem variant="expand-all">
-            <Tooltip
-              content={expanded ? 'Collapse all' : 'Expand all'}
-              removeFindDomNode
-            >
-              <Button
-                variant="plain"
-                aria-label="Expand Collapse"
-                onClick={toggleExpanded}
-              >
+          <ToolbarItem variant='expand-all'>
+            <Tooltip content={expanded ? 'Collapse all' : 'Expand all'} removeFindDomNode>
+              <Button variant='plain' aria-label='Expand Collapse' onClick={toggleExpanded}>
                 {expanded ? <MinusIcon /> : <PlusIcon />}
               </Button>
             </Tooltip>

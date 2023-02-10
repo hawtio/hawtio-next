@@ -21,7 +21,7 @@ export const Operations: React.FunctionComponent = () => {
     return (
       <Card>
         <CardBody>
-          <Text component="p">
+          <Text component='p'>
             <InfoCircleIcon /> This MBean has no JMX operations.
           </Text>
         </CardBody>
@@ -32,11 +32,7 @@ export const Operations: React.FunctionComponent = () => {
   const operations = createOperations(objectName, mbean.op)
 
   const OperationList = () => (
-    <DataList
-      id="jmx-operation-list"
-      aria-label="operation list"
-      isCompact
-    >
+    <DataList id='jmx-operation-list' aria-label='operation list' isCompact>
       {operations.map(op => (
         <OperationForm key={op.name} name={op.name} operation={op} />
       ))}
@@ -46,7 +42,7 @@ export const Operations: React.FunctionComponent = () => {
   return (
     <Card isFullHeight>
       <CardBody>
-        <Text component="p">
+        <Text component='p'>
           This MBean supports the following JMX operations. Expand an item in the list to invoke that operation.
         </Text>
       </CardBody>

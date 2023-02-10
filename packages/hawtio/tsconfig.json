@@ -2,16 +2,10 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@hawtio/*": [
-        "src/*"
-      ]
+      "@hawtio/*": ["src/*"]
     },
     "target": "es2015",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -28,10 +22,6 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "src/hawtio/**/ignore/**"
-  ],
+  "include": ["src"],
+  "exclude": ["src/hawtio/**/ignore/**"]
 }

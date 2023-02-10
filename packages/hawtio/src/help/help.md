@@ -8,6 +8,6 @@ Browse the available help topics for plugin specific documentation using the hel
 
 ### Further reading
 
-- [Hawtio](https://hawt.io "Hawtio") website
+- [Hawtio](https://hawt.io 'Hawtio') website
 - Help improve Hawtio by [contributing](https://hawt.io/docs/contributing/)
 - Hawtio on [GitHub](https://github.com/hawtio/hawtio)

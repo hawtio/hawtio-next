@@ -1,5 +1,17 @@
 import { isBlank } from '@hawtio/util/strings'
-import { ActionGroup, Button, ButtonVariant, Form, FormGroup, HelperText, HelperTextItem, Modal, ModalVariant, Switch, TextInput } from '@patternfly/react-core'
+import {
+  ActionGroup,
+  Button,
+  ButtonVariant,
+  Form,
+  FormGroup,
+  HelperText,
+  HelperTextItem,
+  Modal,
+  ModalVariant,
+  Switch,
+  TextInput,
+} from '@patternfly/react-core'
 import { ExclamationCircleIcon } from '@patternfly/react-icons'
 import React, { useContext, useState } from 'react'
 import { ConnectionTestResult, connectService } from './connect-service'
@@ -129,84 +141,81 @@ export const ConnectModal: React.FunctionComponent<ConnectModalProps> = props =>
       isOpen={isOpen}
       onClose={clear}
       actions={[
-        <Button key="save" variant={ButtonVariant.primary} form="connection-form" onClick={save}>
+        <Button key='save' variant={ButtonVariant.primary} form='connection-form' onClick={save}>
           {mode === 'add' ? 'Add' : 'Save'}
         </Button>,
-        <Button key="cancel" variant={ButtonVariant.link} onClick={clear}>
+        <Button key='cancel' variant={ButtonVariant.link} onClick={clear}>
           Cancel
-        </Button>
-      ]}>
-      <Form id="connection-form" isHorizontal>
+        </Button>,
+      ]}
+    >
+      <Form id='connection-form' isHorizontal>
         <FormGroup
-          label="Name"
+          label='Name'
           isRequired
-          fieldId="connection-form-name"
+          fieldId='connection-form-name'
           helperTextInvalid={validations.name.text}
           helperTextInvalidIcon={<ExclamationCircleIcon />}
           validated={validations.name.validated}
         >
           <TextInput
             isRequired
-            id="connection-form-name"
-            name="connection-form-name"
+            id='connection-form-name'
+            name='connection-form-name'
             value={connection.name}
             onChange={name => setConnection({ ...connection, name })}
             validated={validations.name.validated}
           />
         </FormGroup>
-        <FormGroup
-          label="Scheme"
-          isRequired
-          fieldId="connection-form-scheme"
-        >
+        <FormGroup label='Scheme' isRequired fieldId='connection-form-scheme'>
           <Switch
-            id="connection-form-scheme"
-            label="HTTPS"
-            labelOff="HTTP"
+            id='connection-form-scheme'
+            label='HTTPS'
+            labelOff='HTTP'
             isChecked={connection.scheme === 'https'}
             onChange={https => setConnection({ ...connection, scheme: https ? 'https' : 'http' })}
           />
         </FormGroup>
         <FormGroup
-          label="Host"
+          label='Host'
           isRequired
-          fieldId="connection-form-host"
+          fieldId='connection-form-host'
           helperTextInvalid={validations.host.text}
           helperTextInvalidIcon={<ExclamationCircleIcon />}
           validated={validations.host.validated}
         >
           <TextInput
             isRequired
-            id="connection-form-host"
-            name="connection-form-host"
+            id='connection-form-host'
+            name='connection-form-host'
             value={connection.host}
             onChange={host => setConnection({ ...connection, host })}
             validated={validations.host.validated}
           />
         </FormGroup>
         <FormGroup
-          label="Port"
+          label='Port'
           isRequired
-          fieldId="connection-form-port"
+          fieldId='connection-form-port'
           helperTextInvalid={validations.port.text}
           helperTextInvalidIcon={<ExclamationCircleIcon />}
           validated={validations.port.validated}
         >
           <TextInput
             isRequired
-            type="number"
-            id="connection-form-port"
-            name="connection-form-port"
+            type='number'
+            id='connection-form-port'
+            name='connection-form-port'
             value={connection.port}
             onChange={port => setConnection({ ...connection, port: parseInt(port) })}
             validated={validations.port.validated}
           />
         </FormGroup>
-        <FormGroup label="Path" isRequired fieldId="connection-form-path">
+        <FormGroup label='Path' isRequired fieldId='connection-form-path'>
           <TextInput
             isRequired
-            id="connection-form-path"
-            name="connection-form-path"
+            id='connection-form-path'
+            name='connection-form-path'
             value={connection.path}
             onChange={path => setConnection({ ...connection, path })}
           />
@@ -215,15 +224,13 @@ export const ConnectModal: React.FunctionComponent<ConnectModalProps> = props =>
           <Button variant={ButtonVariant.secondary} onClick={test} isSmall>
             Test connection
           </Button>
-          {validations.test ?
+          {validations.test ? (
             <HelperText>
               <HelperTextItem variant={validations.test.ok ? 'success' : 'error'} hasIcon>
                 {validations.test.message}
               </HelperTextItem>
             </HelperText>
-            :
-            null
-          }
+          ) : null}
         </ActionGroup>
       </Form>
     </Modal>

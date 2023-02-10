@@ -25,10 +25,11 @@ You need to have installed the following tools before developing the project.
 
 #### Minimum Version of Yarn is 3.4.1
 
-The default installation version of yarn on many operating systems is *1.22-19* (the classic version). This causes a problem as the development app downloads the `@hawtio/react` package rather than using
-the project directory. As a result, the mandated minimum version has been set to *3.4.1*.
+The default installation version of yarn on many operating systems is _1.22-19_ (the classic version). This causes a problem as the development app downloads the `@hawtio/react` package rather than using
+the project directory. As a result, the mandated minimum version has been set to _3.4.1_.
 
-If `yarn install` is attempted with a version lower than *3.4.1* then an error message is displayed, eg.
+If `yarn install` is attempted with a version lower than _3.4.1_ then an error message is displayed, eg.
+
 > $ /usr/bin/yarn install
 > yarn install v1.22.19
 > [1/5] Validating package.json...
@@ -36,6 +37,7 @@ If `yarn install` is attempted with a version lower than *3.4.1* then an error m
 > error Found incompatible module.
 
 To upgrade such a version to 3.4.1, use yarn's own `set-version` command:
+
 > yarn set version 3.4.1
 
 This will download the 3.4.1 internals to `hawtio-next/.yarn` which are then deferred to by the installed yarn binary.

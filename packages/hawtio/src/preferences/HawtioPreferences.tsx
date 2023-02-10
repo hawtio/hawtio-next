@@ -1,8 +1,17 @@
-
 import { helpRegistry } from '@hawtio/help/registry'
-import { Card, Nav, NavItem, NavList, PageGroup, PageNavigation, PageSection, PageSectionVariants, Title } from '@patternfly/react-core'
+import {
+  Card,
+  Nav,
+  NavItem,
+  NavList,
+  PageGroup,
+  PageNavigation,
+  PageSection,
+  PageSectionVariants,
+  Title,
+} from '@patternfly/react-core'
 import React from 'react'
-import { NavLink,Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import help from './help.md'
 import { HomePreferences } from './HomePreferences'
 import { LogsPreferences } from './LogsPreferences'
@@ -17,17 +26,17 @@ export const HawtioPreferences: React.FunctionComponent = () => {
   return (
     <React.Fragment>
       <PageSection variant={PageSectionVariants.light}>
-        <Title headingLevel="h1">Preferences</Title>
+        <Title headingLevel='h1'>Preferences</Title>
       </PageSection>
       <PageGroup>
         <PageNavigation>
-          <Nav aria-label="Nav" variant="tertiary">
+          <Nav aria-label='Nav' variant='tertiary'>
             <NavList>
-              {preferencesRegistry.getPreferences().map(prefs =>
+              {preferencesRegistry.getPreferences().map(prefs => (
                 <NavItem key={prefs.id} isActive={location.pathname === prefs.id}>
                   <NavLink to={prefs.id}>{prefs.title}</NavLink>
                 </NavItem>
-              )}
+              ))}
             </NavList>
           </Nav>
         </PageNavigation>
@@ -36,14 +45,11 @@ export const HawtioPreferences: React.FunctionComponent = () => {
         <Card isFullHeight>
           <Routes>
             {preferencesRegistry.getPreferences().map(prefs => (
-              <Route
-                key={prefs.id}
-                path={prefs.id}
-                element={React.createElement(prefs.component)} />
+              <Route key={prefs.id} path={prefs.id} element={React.createElement(prefs.component)} />
             ))}
-            <Route path="/" element={<Navigate to={'home'}/>}/>
+            <Route path='/' element={<Navigate to={'home'} />} />
           </Routes>
-        </Card >
+        </Card>
       </PageSection>
     </React.Fragment>
   )

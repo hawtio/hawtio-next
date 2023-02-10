@@ -38,13 +38,10 @@ export const Attributes: React.FunctionComponent = () => {
     }
 
     const mbean = node.objectName
-    attributeService.register(
-      { type: 'read', mbean },
-      (response: IResponse) => {
-        log.debug('Scheduler - Attributes:', response.value)
-        setAttributes(response.value as AttributeValues)
-      },
-    )
+    attributeService.register({ type: 'read', mbean }, (response: IResponse) => {
+      log.debug('Scheduler - Attributes:', response.value)
+      setAttributes(response.value as AttributeValues)
+    })
 
     return () => attributeService.unregisterAll()
   }, [node])
@@ -57,22 +54,23 @@ export const Attributes: React.FunctionComponent = () => {
     return (
       <Card>
         <CardBody>
-          <Text component="p">Reading attributes...</Text>
+          <Text component='p'>Reading attributes...</Text>
         </CardBody>
       </Card>
     )
-
   }
 
   const columns: TableProps['cells'] = ['Attribute', 'Value']
-  const rows: TableProps['rows'] = Object.entries(attributes)
-    .map(([name, value]) => [name, isObject(value) ? JSON.stringify(value) : String(value)])
+  const rows: TableProps['rows'] = Object.entries(attributes).map(([name, value]) => [
+    name,
+    isObject(value) ? JSON.stringify(value) : String(value),
+  ])
 
   if (rows.length === 0) {
     return (
       <Card>
         <CardBody>
-          <Text component="p">
+          <Text component='p'>
             <InfoCircleIcon /> This MBean has no attributes.
           </Text>
         </CardBody>
@@ -93,20 +91,11 @@ export const Attributes: React.FunctionComponent = () => {
 
   return (
     <Card isFullHeight>
-      <Table
-        aria-label="Attributes"
-        variant="compact"
-        cells={columns}
-        rows={rows}
-      >
+      <Table aria-label='Attributes' variant='compact' cells={columns} rows={rows}>
         <TableHeader />
         <TableBody onRowClick={selectAttribute} />
       </Table>
-      <AttributeModal
-        isOpen={isModalOpen}
-        onClose={handleModalToggle}
-        input={selected}
-      />
+      <AttributeModal isOpen={isModalOpen} onClose={handleModalToggle} input={selected} />
     </Card>
   )
 }

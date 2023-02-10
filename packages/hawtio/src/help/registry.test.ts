@@ -23,8 +23,7 @@ describe('helpRegistry', () => {
     `)
 
     // duplicate help not allowed
-    expect(() => helpRegistry.add('test', 'Test', payload))
-      .toThrowError(/Help 'test' already registered/)
+    expect(() => helpRegistry.add('test', 'Test', payload)).toThrowError(/Help 'test' already registered/)
   })
 
   test('return helps in order', async () => {

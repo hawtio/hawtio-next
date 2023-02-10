@@ -7,6 +7,6 @@ export default defineConfig({
   loader: {
     '.svg': 'dataurl',
     '.jpg': 'dataurl',
-    '.md': 'text'
+    '.md': 'text',
   },
 })

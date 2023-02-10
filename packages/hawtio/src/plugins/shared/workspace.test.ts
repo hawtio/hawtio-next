@@ -4,9 +4,7 @@ import { workspace } from './workspace'
 jest.mock('@hawtio/plugins/connect/jolokia-service')
 
 describe('workspace', () => {
-
   test('getting the tree', async () => {
-
     const tree: MBeanTree = await workspace.getTree()
     expect(tree.isEmpty()).toBeFalsy()
     expect(tree.get('java.util.logging')).toBeDefined()
@@ -28,8 +26,14 @@ describe('workspace', () => {
   })
 
   test('tree contains domain with properties', async () => {
-    await expect(workspace.treeContainsDomainAndProperties('quartz', { id: 'quartz', name: 'quartz' })).resolves.toBeTruthy()
-    await expect(workspace.treeContainsDomainAndProperties('quartz', { id: 'QuartzScheduler', name: 'QuartzScheduler' })).resolves.toBeTruthy()
-    await expect(workspace.treeContainsDomainAndProperties('quartz', { id: 'SomeRandomChild', name: 'NoThisChildIsNotHere' })).resolves.toBeFalsy()
+    await expect(
+      workspace.treeContainsDomainAndProperties('quartz', { id: 'quartz', name: 'quartz' }),
+    ).resolves.toBeTruthy()
+    await expect(
+      workspace.treeContainsDomainAndProperties('quartz', { id: 'QuartzScheduler', name: 'QuartzScheduler' }),
+    ).resolves.toBeTruthy()
+    await expect(
+      workspace.treeContainsDomainAndProperties('quartz', { id: 'SomeRandomChild', name: 'NoThisChildIsNotHere' }),
+    ).resolves.toBeFalsy()
   })
 })

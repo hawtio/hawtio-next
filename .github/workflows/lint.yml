@@ -5,12 +5,12 @@ on:
     branches:
       - main
     paths-ignore:
-      - "**.md"
+      - '**.md'
   push:
     branches:
       - main
     paths-ignore:
-      - "**.md"
+      - '**.md'
 
 jobs:
   lint:
@@ -37,6 +37,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Install
+        id: install
         run: yarn install
+      - name: Format check
+        id: format-check
+        run: yarn format:check
       - name: Lint
+        id: lint
+        if: steps.install.outcome == 'success'
         run: yarn lint --max-warnings=0

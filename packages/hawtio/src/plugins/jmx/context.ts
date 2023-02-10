@@ -31,5 +31,7 @@ type MBeanTreeContext = {
 export const MBeanTreeContext = createContext<MBeanTreeContext>({
   tree: MBeanTree.createEmptyTree(pluginName),
   node: null,
-  setNode: () => { /* no-op */ }
+  setNode: () => {
+    /* no-op */
+  },
 })

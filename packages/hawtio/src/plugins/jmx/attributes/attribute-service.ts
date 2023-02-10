@@ -12,12 +12,12 @@ class AttributeService {
 
   async register(request: IRequest, callback: IResponseFn) {
     const handle = await jolokiaService.register(request, callback)
-    log.debug("Register handle:", handle)
+    log.debug('Register handle:', handle)
     this.handles.push(handle)
   }
 
   unregisterAll() {
-    log.debug("Unregister all handles:", this.handles)
+    log.debug('Unregister all handles:', this.handles)
     this.handles.forEach(handle => jolokiaService.unregister(handle))
     this.handles = []
   }

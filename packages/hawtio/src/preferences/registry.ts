@@ -9,7 +9,6 @@ export type Preferences = {
 }
 
 class PreferencesRegistry {
-
   private preferences: { [id: string]: Preferences } = {}
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

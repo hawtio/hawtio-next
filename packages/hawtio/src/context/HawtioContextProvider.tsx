@@ -8,9 +8,5 @@ type Props = {
 }
 
 export const HawtioContextProvider: React.FunctionComponent<Props> = ({ children }) => {
-  return (
-    <HawtioContext.Provider value={initialState}>
-      {children}
-    </HawtioContext.Provider>
-  )
+  return <HawtioContext.Provider value={initialState}>{children}</HawtioContext.Provider>
 }

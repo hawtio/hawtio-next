@@ -21,8 +21,8 @@ export function isBlank(str: string): boolean {
 }
 
 /**
-* Simple toString that obscures any field called 'password'.
-*/
+ * Simple toString that obscures any field called 'password'.
+ */
 export function toString(obj: unknown): string {
   if (!obj) {
     return '{}'
@@ -47,7 +47,10 @@ export function obfuscate(str: string): string {
   if (typeof str !== 'string') {
     return ''
   }
-  return str.split('').map(() => '*').join('')
+  return str
+    .split('')
+    .map(() => '*')
+    .join('')
 }
 
 /**
@@ -82,7 +85,11 @@ export function trimQuotes(text: string): string {
 }
 
 export function stringSorter(a: string, b: string): number {
-  if (a < b) { return -1 }
-  if (a > b) { return 1 }
+  if (a < b) {
+    return -1
+  }
+  if (a > b) {
+    return 1
+  }
   return 0
 }

@@ -22,9 +22,9 @@ export const DELETE = 'DELETE'
 export const RESET = 'RESET'
 
 export type ConnectionsAction =
-  | { type: typeof ADD, connection: Connection }
-  | { type: typeof UPDATE, name: string, connection: Connection }
-  | { type: typeof DELETE, name: string }
+  | { type: typeof ADD; connection: Connection }
+  | { type: typeof UPDATE; name: string; connection: Connection }
+  | { type: typeof DELETE; name: string }
   | { type: typeof RESET }
 
 export function reducer(state: Connections, action: ConnectionsAction): Connections {
@@ -54,9 +54,9 @@ export function reducer(state: Connections, action: ConnectionsAction): Connecti
           // TODO: error handling
           return state
         } else {
-          return Object.fromEntries(Object.entries(state).map(([k, v]) =>
-            k === name ? [connection.name, connection] : [k, v]
-          ))
+          return Object.fromEntries(
+            Object.entries(state).map(([k, v]) => (k === name ? [connection.name, connection] : [k, v])),
+          )
         }
       }
     }

@@ -8,25 +8,23 @@ module.exports = {
     'plugin:react/jsx-runtime',
     'plugin:react-hooks/recommended',
     'plugin:testing-library/react',
+    'prettier',
   ],
   parser: '@typescript-eslint/parser',
-  plugins: [
-    '@typescript-eslint',
-    'import',
-  ],
+  plugins: ['@typescript-eslint', 'import'],
   rules: {
-    'semi': ['error', 'never'],
+    semi: ['error', 'never'],
     '@typescript-eslint/explicit-member-accessibility': [
       'warn',
       {
-        accessibility: 'no-public'
-      }
+        accessibility: 'no-public',
+      },
     ],
     '@typescript-eslint/no-empty-function': [
       'error',
       {
-        'allow': ['constructors']
-      }
+        allow: ['constructors'],
+      },
     ],
     '@typescript-eslint/no-redeclare': 'off',
     'import/no-default-export': 'error',
@@ -34,11 +32,11 @@ module.exports = {
     'testing-library/no-debugging-utils': [
       'warn',
       {
-        'utilsToCheckFor': {
-          'debug': false,
-        }
-      }
-    ]
+        utilsToCheckFor: {
+          debug: false,
+        },
+      },
+    ],
   },
   root: true,
 }

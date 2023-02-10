@@ -3,12 +3,7 @@ import { Logger } from './logging'
 
 const log = Logger.get('hawtio-core-event')
 
-export type NotificationType =
-  | 'default'
-  | 'info'
-  | 'success'
-  | 'warning'
-  | 'danger'
+export type NotificationType = 'default' | 'info' | 'success' | 'warning' | 'danger'
 
 export type Notification = {
   type: NotificationType

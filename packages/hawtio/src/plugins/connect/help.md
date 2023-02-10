@@ -2,7 +2,7 @@
 
 The Connect tab allows you to connect to local and remote Jolokia instances so you can examine JVMs.
 
-The "Remote" sub-tab is used to manually add connection details for a Jolokia instance.  You can store connection details and quickly recall the details of a connection and connect.
+The "Remote" sub-tab is used to manually add connection details for a Jolokia instance. You can store connection details and quickly recall the details of a connection and connect.
 
 The use proxy option should often be enabled, as Hawtio is running in your browser; usually due to CORS; you cannot open a different host or port from your browser (due to browse security restrictions); so we have to use a proxy servlet inside the Hawtio web app to proxy all requests for a different jolokia server - so we can communicate with a different jolokia agent.
 

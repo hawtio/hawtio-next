@@ -11,12 +11,10 @@ export const HomePreferences: React.FunctionComponent = () => {
   }
 
   const UIForm = () => (
-    <FormGroup
-      label="Default vertical nav state"
-      fieldId="ui-form-vertical-nav-switch">
+    <FormGroup label='Default vertical nav state' fieldId='ui-form-vertical-nav-switch'>
       <Switch
-        label="Show vertical navigation"
-        labelOff="Hide vertical navigation"
+        label='Show vertical navigation'
+        labelOff='Hide vertical navigation'
         isChecked={defaultVerticalNavState}
         onChange={setDefaultVerticalNavState}
       />
@@ -25,11 +23,11 @@ export const HomePreferences: React.FunctionComponent = () => {
 
   const ResetForm = () => (
     <FormGroup
-      label="Reset settings"
-      fieldId="reset-form-reset"
+      label='Reset settings'
+      fieldId='reset-form-reset'
       helperText="Clear all custom settings stored in your browser's local storage and reset to defaults."
     >
-      <Button variant="danger" onClick={reset}>
+      <Button variant='danger' onClick={reset}>
         Reset
       </Button>
     </FormGroup>
@@ -38,10 +36,10 @@ export const HomePreferences: React.FunctionComponent = () => {
   return (
     <CardBody>
       <Form isHorizontal>
-        <FormSection title="UI" titleElement="h2">
+        <FormSection title='UI' titleElement='h2'>
           <UIForm />
         </FormSection>
-        <FormSection title="Reset" titleElement="h2">
+        <FormSection title='Reset' titleElement='h2'>
           <ResetForm />
         </FormSection>
       </Form>

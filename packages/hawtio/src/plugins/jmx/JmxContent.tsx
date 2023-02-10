@@ -1,8 +1,23 @@
-import { Card, CardBody, EmptyState, EmptyStateIcon, EmptyStateVariant, Nav, NavItem, NavList, PageGroup, PageNavigation, PageSection, PageSectionVariants, Text, Title } from '@patternfly/react-core'
+import {
+  Card,
+  CardBody,
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateVariant,
+  Nav,
+  NavItem,
+  NavList,
+  PageGroup,
+  PageNavigation,
+  PageSection,
+  PageSectionVariants,
+  Text,
+  Title,
+} from '@patternfly/react-core'
 import { CubesIcon, InfoCircleIcon } from '@patternfly/react-icons'
 import { OnRowClick, Table, TableBody, TableHeader, TableProps } from '@patternfly/react-table'
 import React, { useContext } from 'react'
-import { NavLink,Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { Attributes } from './attributes/Attributes'
 import { Chart } from './chart/Chart'
 import { MBeanTreeContext } from './context'
@@ -17,7 +32,9 @@ export const JmxContent: React.FunctionComponent = () => {
       <PageSection variant={PageSectionVariants.light} isFilled>
         <EmptyState variant={EmptyStateVariant.full}>
           <EmptyStateIcon icon={CubesIcon} />
-          <Title headingLevel="h1" size="lg">Select MBean</Title>
+          <Title headingLevel='h1' size='lg'>
+            Select MBean
+          </Title>
         </EmptyState>
       </PageSection>
     )
@@ -30,46 +47,40 @@ export const JmxContent: React.FunctionComponent = () => {
   ]
 
   const mbeanNav = (
-    <Nav aria-label="MBean Nav" variant="tertiary">
+    <Nav aria-label='MBean Nav' variant='tertiary'>
       <NavList>
-        {navItems.map(nav =>
-          <NavItem key={nav.id} isActive={pathname ===nav.id}>
+        {navItems.map(nav => (
+          <NavItem key={nav.id} isActive={pathname === nav.id}>
             <NavLink to={{ pathname: nav.id, search }}>{nav.title}</NavLink>
           </NavItem>
-        )}
+        ))}
       </NavList>
     </Nav>
   )
 
-  const mbeanRoutes = navItems.map(nav =>
+  const mbeanRoutes = navItems.map(nav => (
     <Route key={nav.id} path={nav.id} element={React.createElement(nav.component)} />
-  )
+  ))
 
   return (
     <React.Fragment>
       <PageGroup>
         <PageSection variant={PageSectionVariants.light}>
-          <Title headingLevel="h1">{node.name}</Title>
-          <Text component="small">{node.objectName}</Text>
+          <Title headingLevel='h1'>{node.name}</Title>
+          <Text component='small'>{node.objectName}</Text>
         </PageSection>
-        {node.objectName &&
-          <PageNavigation>
-            {mbeanNav}
-          </PageNavigation>
-        }
+        {node.objectName && <PageNavigation>{mbeanNav}</PageNavigation>}
       </PageGroup>
       <PageSection>
-        {node.objectName &&
+        {node.objectName && (
           <React.Fragment>
             <Routes>
               {mbeanRoutes}
-              <Route key="root" path="/" element={<Navigate to={"attributes"}/>}/>
+              <Route key='root' path='/' element={<Navigate to={'attributes'} />} />
             </Routes>
           </React.Fragment>
-        }
-        {!node.objectName &&
-          <JmxContentMBeans />
-        }
+        )}
+        {!node.objectName && <JmxContentMBeans />}
       </PageSection>
     </React.Fragment>
   )
@@ -83,14 +94,13 @@ const JmxContentMBeans: React.FunctionComponent = () => {
   }
 
   const columns: TableProps['cells'] = ['MBean', 'Object Name']
-  const rows: TableProps['rows'] = (node.children || [])
-    .map(child => [child.name, child.objectName || '-'])
+  const rows: TableProps['rows'] = (node.children || []).map(child => [child.name, child.objectName || '-'])
 
   if (rows.length === 0) {
     return (
       <Card>
         <CardBody>
-          <Text component="p">
+          <Text component='p'>
             <InfoCircleIcon /> This node has no MBeans.
           </Text>
         </CardBody>
@@ -108,12 +118,7 @@ const JmxContentMBeans: React.FunctionComponent = () => {
 
   return (
     <Card isFullHeight>
-      <Table
-        aria-label="MBeans"
-        variant="compact"
-        cells={columns}
-        rows={rows}
-      >
+      <Table aria-label='MBeans' variant='compact' cells={columns} rows={rows}>
         <TableHeader />
         <TableBody onRowClick={selectChild} />
       </Table>

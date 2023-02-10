@@ -1,7 +1,23 @@
 import imgLogo from '@hawtio/img/hawtio-logo.svg'
 import imgAvatar from '@hawtio/img/img_avatar.svg'
 import { HawtioAbout } from '@hawtio/ui/about/HawtioAbout'
-import { Avatar, Brand, Dropdown, DropdownItem, DropdownToggle, Masthead, MastheadBrand, MastheadContent, MastheadMain, MastheadToggle, PageToggleButton, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core'
+import {
+  Avatar,
+  Brand,
+  Dropdown,
+  DropdownItem,
+  DropdownToggle,
+  Masthead,
+  MastheadBrand,
+  MastheadContent,
+  MastheadMain,
+  MastheadToggle,
+  PageToggleButton,
+  Toolbar,
+  ToolbarContent,
+  ToolbarGroup,
+  ToolbarItem,
+} from '@patternfly/react-core'
 import { BarsIcon, HelpIcon } from '@patternfly/react-icons'
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -19,29 +35,25 @@ export const HawtioHeader: React.FunctionComponent = () => {
   const onAboutToggle = () => setAboutOpen(!aboutOpen)
 
   const helpItems = [
-    <DropdownItem key="help" component={
-      <Link to='/help'>Help</Link>
-    } />,
-    <DropdownItem key="about" onClick={onAboutToggle}>About</DropdownItem>
+    <DropdownItem key='help' component={<Link to='/help'>Help</Link>} />,
+    <DropdownItem key='about' onClick={onAboutToggle}>
+      About
+    </DropdownItem>,
   ]
 
   const userItems = [
-    <DropdownItem key="preferences" component={
-      <Link to='/preferences'>Preferences</Link>
-    } />,
-    <DropdownItem key="logout" component={
-      <Link to='/logout'>Log out</Link>
-    } />
+    <DropdownItem key='preferences' component={<Link to='/preferences'>Preferences</Link>} />,
+    <DropdownItem key='logout' component={<Link to='/logout'>Log out</Link>} />,
   ]
 
   const headerToolbar = (
-    <Toolbar id="hawtio-header-toolbar">
+    <Toolbar id='hawtio-header-toolbar'>
       <ToolbarContent>
         <ToolbarGroup>
           <ToolbarItem>
             <Dropdown
               isPlain
-              position="right"
+              position='right'
               onSelect={onHelpSelect}
               toggle={
                 <DropdownToggle toggleIndicator={null} onToggle={setHelpOpen}>
@@ -57,14 +69,14 @@ export const HawtioHeader: React.FunctionComponent = () => {
           <ToolbarItem>
             <Dropdown
               isPlain
-              position="right"
+              position='right'
               onSelect={onUserSelect}
               isOpen={userOpen}
               toggle={
                 <DropdownToggle
-                  id="hawtio-header-user-dropdown-toggle"
+                  id='hawtio-header-user-dropdown-toggle'
                   onToggle={setUserOpen}
-                  icon={<Avatar src={imgAvatar} alt="user" />}
+                  icon={<Avatar src={imgAvatar} alt='user' />}
                 >
                   Hawtio User
                 </DropdownToggle>
@@ -77,26 +89,24 @@ export const HawtioHeader: React.FunctionComponent = () => {
     </Toolbar>
   )
 
-  const hawtioLogo = <Brand src={imgLogo} alt="Hawtio Management Console" />
+  const hawtioLogo = <Brand src={imgLogo} alt='Hawtio Management Console' />
 
   return (
     <React.Fragment>
       <Masthead display={{ default: 'inline' }}>
         <MastheadToggle>
           <PageToggleButton
-            variant="plain"
-            aria-label="Global navigation"
+            variant='plain'
+            aria-label='Global navigation'
             isNavOpen={navOpen}
             onNavToggle={onNavToggle}
-            id="vertical-nav-toggle"
+            id='vertical-nav-toggle'
           >
             <BarsIcon />
           </PageToggleButton>
         </MastheadToggle>
         <MastheadMain>
-          <MastheadBrand component={props => <Link to="/" {...props} />}>
-            {hawtioLogo}
-          </MastheadBrand>
+          <MastheadBrand component={props => <Link to='/' {...props} />}>{hawtioLogo}</MastheadBrand>
         </MastheadMain>
         <MastheadContent>{headerToolbar}</MastheadContent>
       </Masthead>
