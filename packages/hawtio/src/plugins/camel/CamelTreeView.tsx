@@ -72,9 +72,9 @@ export const CamelTreeView: React.FunctionComponent = () => {
   const expandedProp = (): object => {
     switch (expanded) {
       case ExpansionValue.ExpandAll:
-        return { allExpanded : true }
+        return { allExpanded: true }
       case ExpansionValue.CollapseAll:
-        return { allExpanded : false }
+        return { allExpanded: false }
       default:
         return {}
     }

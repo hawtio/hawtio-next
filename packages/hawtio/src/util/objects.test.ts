@@ -21,7 +21,9 @@ describe('objects', () => {
     expect(isString(false)).toBe(false)
     const obj = { a: 'x', b: 'y', c: 'z' }
     expect(isString(obj)).toBe(false)
-    const fn = () => { /* no-op */ }
+    const fn = () => {
+      /* no-op */
+    }
     expect(isString(fn)).toBe(false)
     expect(isString('hello')).toBe(true)
   })

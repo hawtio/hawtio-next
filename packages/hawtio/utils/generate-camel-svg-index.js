@@ -11,11 +11,13 @@ function capitalize(value) {
 }
 
 function safeSvgName(name) {
-  let iname = name.replace('.svg', '')                   // Remove svg file extension
-  iname = iname.replace('24', '')                        // Remove 24 suffix
-  iname = iname.replace('-icon', '')                     // Remove any -icon suffix
-  iname = iname.replace('icon', '')                      // Remove remaining icon suffix
-  iname = iname.replace(/-([a-z])/g, (g) => { return g[1].toUpperCase() })
+  let iname = name.replace('.svg', '') // Remove svg file extension
+  iname = iname.replace('24', '') // Remove 24 suffix
+  iname = iname.replace('-icon', '') // Remove any -icon suffix
+  iname = iname.replace('icon', '') // Remove remaining icon suffix
+  iname = iname.replace(/-([a-z])/g, g => {
+    return g[1].toUpperCase()
+  })
   iname = iname.charAt(0).toLowerCase() + iname.slice(1) // Lower-case the first letter
   return iname
 }
@@ -35,7 +37,7 @@ async function generateContents(svgPath, prefix) {
       expNames.push(...contents[2])
     }
 
-    if (! ent.name.endsWith('.svg')) {
+    if (!ent.name.endsWith('.svg')) {
       continue
     }
 
@@ -50,7 +52,7 @@ async function generateContents(svgPath, prefix) {
   impContent.sort()
 
   // Generate the export list
-  for(let i = 0; i < names.length; ++i) {
+  for (let i = 0; i < names.length; ++i) {
     expContent.push(`  ${names[i]},`)
   }
 
@@ -59,7 +61,7 @@ async function generateContents(svgPath, prefix) {
 }
 
 async function writeToIndex(svgpath, idx) {
-  fs.writeFileSync(idx, "// === AUTO-GENERATED WITH generate-camel-svg-index.js ===\n\n", { flag: 'a+' })
+  fs.writeFileSync(idx, '// === AUTO-GENERATED WITH generate-camel-svg-index.js ===\n\n', { flag: 'a+' })
 
   const contents = await generateContents(svgpath)
   const impContent = contents[0]
@@ -70,33 +72,33 @@ async function writeToIndex(svgpath, idx) {
   // Write out the imports of the svg files
   //
   for (const imp of impContent) {
-    fs.writeFileSync(idx, imp + "\n", { flag: 'a+' })
+    fs.writeFileSync(idx, imp + '\n', { flag: 'a+' })
   }
 
   //
   // Write out an enum of the export names
   //
-  fs.writeFileSync(idx, "\nenum IconNames {\n", { flag: 'a+' })
+  fs.writeFileSync(idx, '\nenum IconNames {\n', { flag: 'a+' })
   for (const name of expNames) {
     const iconName = name[0].toUpperCase() + name.substr(1) + 'Icon'
-    fs.writeFileSync(idx, `  ${iconName} = "${iconName}",\n`, { flag: 'a+' })
+    fs.writeFileSync(idx, `  ${iconName} = '${iconName}',\n`, { flag: 'a+' })
   }
-  fs.writeFileSync(idx, "}\n", { flag: 'a+' })
+  fs.writeFileSync(idx, '}\n', { flag: 'a+' })
 
   //
   // Write out the exports of the svg names starting with the enum
   //
-  fs.writeFileSync(idx, "\nexport {\n", { flag: 'a+' })
-  fs.writeFileSync(idx, "  IconNames,\n", { flag: 'a+' })
+  fs.writeFileSync(idx, '\nexport {\n', { flag: 'a+' })
+  fs.writeFileSync(idx, '  IconNames,\n', { flag: 'a+' })
 
   for (const exp of expContent) {
-    fs.writeFileSync(idx, exp + "\n", { flag: 'a+' })
+    fs.writeFileSync(idx, exp + '\n', { flag: 'a+' })
   }
 
-  fs.writeFileSync(idx, "}\n", { flag: 'a+' })
+  fs.writeFileSync(idx, '}\n', { flag: 'a+' })
 }
 
-if (! fs.existsSync(svgdir)) {
+if (!fs.existsSync(svgdir)) {
   console.error(`${svgdir} does not exist. Exiting`)
   process.exit(1)
 }
