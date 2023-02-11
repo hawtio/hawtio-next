@@ -7,7 +7,6 @@ import {
   Page,
   PageSection,
   PageSectionVariants,
-  Spinner,
   Title,
 } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons'
@@ -17,20 +16,15 @@ import { HawtioNotification } from '../notification/HawtioNotification'
 import { PageContext, usePlugins } from './context'
 import { HawtioBackground } from './HawtioBackground'
 import { HawtioHeader } from './HawtioHeader'
+import { HawtioLoading } from './HawtioLoading'
 import { HawtioSidebar } from './HawtioSidebar'
 
 export const HawtioPage: React.FunctionComponent = () => {
-  const { plugins, loaded } = usePlugins()
+  const { plugins, pluginsLoaded } = usePlugins()
   const { search } = useLocation()
 
-  if (!loaded) {
-    return (
-      <Page>
-        <PageSection>
-          <Spinner isSVG aria-label='Loading Hawtio' />
-        </PageSection>
-      </Page>
-    )
+  if (!pluginsLoaded) {
+    return <HawtioLoading />
   }
 
   const HawtioHome = () => (
@@ -53,7 +47,7 @@ export const HawtioPage: React.FunctionComponent = () => {
   }
 
   return (
-    <PageContext.Provider value={{ plugins, loaded }}>
+    <PageContext.Provider value={{ plugins, pluginsLoaded }}>
       <HawtioBackground />
       <Page header={<HawtioHeader />} sidebar={<HawtioSidebar />} isManagedSidebar>
         <Routes>

@@ -1,4 +1,4 @@
-import { configManager, hawtio, Plugin } from '@hawtio/core'
+import { Branding, configManager, hawtio, Plugin } from '@hawtio/core'
 import { createContext, useEffect, useState } from 'react'
 import { log } from './globals'
 
@@ -7,7 +7,7 @@ import { log } from './globals'
  */
 export function usePlugins() {
   const [plugins, setPlugins] = useState<Plugin[]>([])
-  const [loaded, setLoaded] = useState(false)
+  const [pluginsLoaded, setPluginsLoaded] = useState(false)
 
   log.debug('Plugins:', hawtio.getPlugins())
 
@@ -26,20 +26,41 @@ export function usePlugins() {
       }
 
       setPlugins(enabledPlugins)
-      setLoaded(true)
+      setPluginsLoaded(true)
     }
     loadPlugins()
   }, [])
 
-  return { plugins, loaded }
+  return { plugins, pluginsLoaded }
+}
+
+/**
+ * Custom React hook for using Hawtio branding.
+ */
+export function useBranding() {
+  const [branding, setBranding] = useState<Branding>({})
+  const [brandingLoaded, setBrandingLoaded] = useState(false)
+
+  useEffect(() => {
+    const loadBranding = async () => {
+      const config = await configManager.getConfig()
+      if (config.branding) {
+        setBranding(config.branding)
+      }
+      setBrandingLoaded(true)
+    }
+    loadBranding()
+  }, [])
+
+  return { branding, brandingLoaded }
 }
 
 export type PageContext = {
   plugins: Plugin[]
-  loaded: boolean
+  pluginsLoaded: boolean
 }
 
 export const PageContext = createContext<PageContext>({
   plugins: [],
-  loaded: false,
+  pluginsLoaded: false,
 })

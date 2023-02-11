@@ -4,10 +4,10 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { PageContext } from './context'
 
 export const HawtioSidebar: React.FunctionComponent = () => {
-  const { plugins, loaded } = useContext(PageContext)
+  const { plugins, pluginsLoaded } = useContext(PageContext)
   const { pathname } = useLocation()
 
-  if (!loaded) {
+  if (!pluginsLoaded) {
     return null
   }
 
