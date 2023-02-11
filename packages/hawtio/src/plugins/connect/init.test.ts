@@ -1,35 +1,30 @@
-import * as support from '@hawtio/test/support'
+import fetchMock from 'jest-fetch-mock'
 import { connectService } from './connect-service'
 import { isActive } from './init'
 
 jest.mock('@hawtio/plugins/connect/connect-service')
 
-const globalFetch = global.fetch
-
 describe('isActive', () => {
   beforeEach(() => {
     jest.resetModules()
-  })
-
-  afterEach(() => {
-    global.fetch = globalFetch
+    fetchMock.resetMocks()
   })
 
   test('/proxy/enabled returns false', async () => {
-    support.mockFetch('   false   \n')
+    fetchMock.mockResponse('   false   \n')
 
-    await expect(isActive()).resolves.toEqual(true)
+    await expect(isActive()).resolves.toEqual(false)
   })
 
   test('/proxy/enabled returns not false & connection name is not set', async () => {
-    support.mockFetch('true')
+    fetchMock.mockResponse('true')
     connectService.getCurrentConnection = jest.fn(() => null)
 
     await expect(isActive()).resolves.toEqual(true)
   })
 
   test('/proxy/enabled returns not false & connection name is set', async () => {
-    support.mockFetch('')
+    fetchMock.mockResponse('')
     connectService.getCurrentConnection = jest.fn(() => 'test-connection')
 
     await expect(isActive()).resolves.toEqual(false)

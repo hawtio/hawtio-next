@@ -1,6 +1,5 @@
 import React from 'react'
 import { BrowserRouter } from 'react-router-dom'
-import { HawtioContextProvider } from './context'
 import { hawtio } from './core'
 import './Hawtio.css'
 import { HawtioPage } from './ui/page/HawtioPage'
@@ -17,10 +16,8 @@ export const Hawtio: React.FunctionComponent<HawtioProps> = props => {
   }
 
   return (
-    <HawtioContextProvider>
-      <BrowserRouter basename={hawtio.getBasePath()}>
-        <HawtioPage />
-      </BrowserRouter>
-    </HawtioContextProvider>
+    <BrowserRouter basename={hawtio.getBasePath()}>
+      <HawtioPage />
+    </BrowserRouter>
   )
 }

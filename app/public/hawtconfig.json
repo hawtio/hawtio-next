@@ -2,7 +2,7 @@
   "branding": {
     "appName": "Hawtio Management Console",
     "appLogoUrl": "img/hawtio-logo.svg",
-    "css": "src/example/example.css",
+    "css": "branding-example.css",
     "favicon": ""
   },
   "about": {
