@@ -20,5 +20,5 @@
     "copyright": "&copy; Hawtio project",
     "imgSrc": "img/hawtio-logo.svg"
   },
-  "disabledRoutes": []
+  "disabledRoutes": ["disabled"]
 }

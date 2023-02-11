@@ -118,8 +118,7 @@ class HawtioCore {
     // load plugins sequentially to maintain the order
     const resolved: Plugin[] = []
     for (const plugin of this.getPlugins()) {
-      const active = await plugin.isActive()
-      if (active) {
+      if (await plugin.isActive()) {
         resolved.push(plugin)
       }
     }
