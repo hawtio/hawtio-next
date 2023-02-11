@@ -1,4 +1,4 @@
-import { hawtio, Plugin } from '@hawtio/core'
+import { configManager, hawtio, Plugin } from '@hawtio/core'
 import { createContext, useEffect, useState } from 'react'
 import { log } from './globals'
 
@@ -14,7 +14,18 @@ export function usePlugins() {
   useEffect(() => {
     const loadPlugins = async () => {
       const activePlugins = await hawtio.resolvePlugins()
-      setPlugins(activePlugins)
+
+      // Disable plugins from hawtconfig.json
+      const enabledPlugins: Plugin[] = []
+      for (const plugin of activePlugins) {
+        if (await configManager.isRouteEnabled(plugin.path)) {
+          enabledPlugins.push(plugin)
+        } else {
+          log.debug(`Plugin "${plugin.id}" disabled by hawtconfig.json`)
+        }
+      }
+
+      setPlugins(enabledPlugins)
       setLoaded(true)
     }
     loadPlugins()
