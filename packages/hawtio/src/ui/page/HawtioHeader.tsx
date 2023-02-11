@@ -21,15 +21,61 @@ import {
 import { BarsIcon, HelpIcon } from '@patternfly/react-icons'
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useBranding } from './context'
 import './HawtioHeader.css'
 
 export const HawtioHeader: React.FunctionComponent = () => {
   const [navOpen, setNavOpen] = useState(true)
+
+  const onNavToggle = () => setNavOpen(!navOpen)
+
+  return (
+    <React.Fragment>
+      <Masthead display={{ default: 'inline' }}>
+        <MastheadToggle>
+          <PageToggleButton
+            variant='plain'
+            aria-label='Global navigation'
+            isNavOpen={navOpen}
+            onNavToggle={onNavToggle}
+            id='vertical-nav-toggle'
+          >
+            <BarsIcon />
+          </PageToggleButton>
+        </MastheadToggle>
+        <MastheadMain>
+          <HawtioBrand />
+        </MastheadMain>
+        <MastheadContent>
+          <HawtioHeaderToolbar />
+        </MastheadContent>
+      </Masthead>
+    </React.Fragment>
+  )
+}
+
+const HawtioBrand: React.FunctionComponent = () => {
+  const { branding, brandingLoaded } = useBranding()
+
+  if (!brandingLoaded) {
+    return null
+  }
+
+  const appLogo = branding.appLogoUrl || imgLogo
+  const appName = branding.appName || 'Hawtio Management Console'
+
+  return (
+    <MastheadBrand component={props => <Link to='/' {...props} />}>
+      <Brand src={appLogo} alt={appName} />
+    </MastheadBrand>
+  )
+}
+
+const HawtioHeaderToolbar: React.FunctionComponent = () => {
   const [helpOpen, setHelpOpen] = useState(false)
   const [userOpen, setUserOpen] = useState(false)
   const [aboutOpen, setAboutOpen] = useState(false)
 
-  const onNavToggle = () => setNavOpen(!navOpen)
   const onHelpSelect = () => setHelpOpen(!helpOpen)
   const onUserSelect = () => setUserOpen(!userOpen)
   const onAboutToggle = () => setAboutOpen(!aboutOpen)
@@ -46,7 +92,7 @@ export const HawtioHeader: React.FunctionComponent = () => {
     <DropdownItem key='logout' component={<Link to='/logout'>Log out</Link>} />,
   ]
 
-  const headerToolbar = (
+  return (
     <Toolbar id='hawtio-header-toolbar'>
       <ToolbarContent>
         <ToolbarGroup>
@@ -86,31 +132,7 @@ export const HawtioHeader: React.FunctionComponent = () => {
           </ToolbarItem>
         </ToolbarGroup>
       </ToolbarContent>
-    </Toolbar>
-  )
-
-  const hawtioLogo = <Brand src={imgLogo} alt='Hawtio Management Console' />
-
-  return (
-    <React.Fragment>
-      <Masthead display={{ default: 'inline' }}>
-        <MastheadToggle>
-          <PageToggleButton
-            variant='plain'
-            aria-label='Global navigation'
-            isNavOpen={navOpen}
-            onNavToggle={onNavToggle}
-            id='vertical-nav-toggle'
-          >
-            <BarsIcon />
-          </PageToggleButton>
-        </MastheadToggle>
-        <MastheadMain>
-          <MastheadBrand component={props => <Link to='/' {...props} />}>{hawtioLogo}</MastheadBrand>
-        </MastheadMain>
-        <MastheadContent>{headerToolbar}</MastheadContent>
-      </Masthead>
       <HawtioAbout isOpen={aboutOpen} onClose={onAboutToggle} />
-    </React.Fragment>
+    </Toolbar>
   )
 }

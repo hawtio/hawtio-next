@@ -13,6 +13,7 @@ export type Config = {
 
 export type Branding = {
   appName?: string
+  appLogoUrl?: string
   css?: string
   favicon?: string
 }
