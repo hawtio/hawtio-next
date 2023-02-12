@@ -31,7 +31,9 @@ export type LoginLink = {
 export type About = {
   title?: string
   description?: string
+  imgSrc?: string
   productInfo?: AboutProductInfo[]
+  copyright?: string
 }
 
 export type AboutProductInfo = {
