@@ -94,4 +94,55 @@ describe('ConfigManager', () => {
     const routeEnabled = await configManager.isRouteEnabled('route1')
     expect(routeEnabled).toEqual(true)
   })
+
+  test('loads and adds product info', async () => {
+    // response for fetching hawtconfig.json
+    fetchMock.mockResponse(
+      JSON.stringify({
+        about: {
+          title: 'Test App',
+          description: 'This is a test.',
+          imgSrc: 'test-logo.svg',
+          productInfo: [
+            {
+              name: 'ABC',
+              value: '1.2.3',
+            },
+            {
+              name: 'XYZ',
+              value: '7.8.9',
+            },
+          ],
+          copyright: '© Hawtio project',
+        },
+      }),
+    )
+
+    const configManager = new __testing__.ConfigManager()
+    let config = await configManager.getConfig()
+    expect(config.about?.title).toEqual('Test App')
+    expect(config.about?.description).toEqual('This is a test.')
+    expect(config.about?.imgSrc).toEqual('test-logo.svg')
+    expect(config.about?.productInfo).toHaveLength(2)
+    let product1 = config.about?.productInfo?.[0]
+    expect(product1?.name).toEqual('ABC')
+    expect(product1?.value).toEqual('1.2.3')
+    let product2 = config.about?.productInfo?.[1]
+    expect(product2?.name).toEqual('XYZ')
+    expect(product2?.value).toEqual('7.8.9')
+    expect(config.about?.copyright).toEqual('© Hawtio project')
+
+    configManager.addProductInfo('Hawtio React', '1.0.0')
+    config = await configManager.getConfig()
+    expect(config.about?.productInfo).toHaveLength(3)
+    product1 = config.about?.productInfo?.[0]
+    expect(product1?.name).toEqual('ABC')
+    expect(product1?.value).toEqual('1.2.3')
+    product2 = config.about?.productInfo?.[1]
+    expect(product2?.name).toEqual('XYZ')
+    expect(product2?.value).toEqual('7.8.9')
+    const product3 = config.about?.productInfo?.[2]
+    expect(product3?.name).toEqual('Hawtio React')
+    expect(product3?.value).toEqual('1.0.0')
+  })
 })

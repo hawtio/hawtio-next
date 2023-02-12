@@ -122,6 +122,11 @@ class ConfigManager {
     const config = await this.config
     return !config.disabledRoutes || !config.disabledRoutes.includes(path)
   }
+
+  async addProductInfo(name: string, value: string) {
+    const config = await this.config
+    config.about?.productInfo?.push({ name, value })
+  }
 }
 
 export const configManager = new ConfigManager()

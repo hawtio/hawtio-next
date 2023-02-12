@@ -27,7 +27,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "prepack": "yarn build"
+    "replace-version": "replace __PACKAGE_VERSION_PLACEHOLDER__ $npm_package_version ./dist/index.js",
+    "prepack": "yarn build && yarn replace-version"
   },
   "dependencies": {
     "@patternfly/react-core": "^4.267.6",
@@ -58,6 +59,7 @@
     "jest-environment-jsdom": "^29.4.2",
     "jest-fetch-mock": "^3.0.3",
     "jest-watch-typeahead": "^2.2.2",
+    "replace": "^1.2.2",
     "ts-jest": "^29.0.5",
     "tsup": "^6.6.0"
   },
