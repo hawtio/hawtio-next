@@ -1,14 +1,14 @@
 import React from 'react'
 import { render, screen, cleanup } from '@testing-library/react'
-import { jolokiaService } from '@hawtio/plugins/connect/jolokia-service'
+import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { routesService } from './routes-service'
-import { MBeanNode } from '@hawtio/plugins/shared/tree'
+import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import fs from 'fs'
 import path from 'path'
 import $ from 'jquery'
 import { IconNames } from './icons'
 
-jest.mock('@hawtio/plugins/connect/jolokia-service')
+jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
 
 describe('routes-service', () => {
   const owner = 'test-tree'

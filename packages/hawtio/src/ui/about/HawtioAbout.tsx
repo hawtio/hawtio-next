@@ -1,5 +1,5 @@
-import imgLogo from '@hawtio/img/hawtio-logo.svg'
-import { stringSorter } from '@hawtio/util/strings'
+import imgLogo from '@hawtiosrc/img/hawtio-logo.svg'
+import { stringSorter } from '@hawtiosrc/util/strings'
 import { AboutModal, Text, TextContent, TextList, TextListItem } from '@patternfly/react-core'
 import React from 'react'
 import { useAbout } from './context'

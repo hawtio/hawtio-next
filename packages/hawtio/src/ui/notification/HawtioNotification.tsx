@@ -1,4 +1,4 @@
-import { eventService, Notification, NotificationType } from '@hawtio/core'
+import { eventService, Notification, NotificationType } from '@hawtiosrc/core'
 import { Alert, AlertActionCloseButton, AlertGroup, AlertProps } from '@patternfly/react-core'
 import React, { useEffect, useState } from 'react'
 

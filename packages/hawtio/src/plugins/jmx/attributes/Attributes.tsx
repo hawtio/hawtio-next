@@ -1,5 +1,5 @@
-import { AttributeValues } from '@hawtio/plugins/connect/jolokia-service'
-import { isObject } from '@hawtio/util/objects'
+import { AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
+import { isObject } from '@hawtiosrc/util/objects'
 import { Card, CardBody, Text } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
 import { OnRowClick, Table, TableBody, TableHeader, TableProps } from '@patternfly/react-table'

@@ -1,4 +1,4 @@
-import { Logger } from '@hawtio/core'
+import { Logger } from '@hawtiosrc/core'
 
 export const DEFAULT_USER = 'public'
 

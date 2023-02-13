@@ -30,7 +30,6 @@ module.exports = {
       moduleDirectories: ['<rootDir>/node_modules/', '<rootDir>/src/hawtio/test/'],
 
       moduleNameMapper: {
-        ['@hawtio/(.*)']: '<rootDir>/src/hawtio/$1',
         'react-markdown': '<rootDir>/node_modules/react-markdown/react-markdown.min.js',
       },
 

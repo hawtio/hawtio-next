@@ -1,6 +1,6 @@
 import React from 'react'
-import { MBeanNode } from '@hawtio/plugins/shared'
-import { jolokiaService } from '@hawtio/plugins/connect/jolokia-service'
+import { MBeanNode } from '@hawtiosrc/plugins/shared'
+import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { log } from './globals'
 import $ from 'jquery'
 import { schemaService } from './schema-service'

@@ -1,14 +1,14 @@
-import { userService } from '@hawtio/auth'
-import { eventService } from '@hawtio/core'
-import { getCookie } from '@hawtio/util/cookies'
+import { userService } from '@hawtiosrc/auth'
+import { eventService } from '@hawtiosrc/core'
+import { getCookie } from '@hawtiosrc/util/cookies'
 import {
   escapeMBeanPath,
   onListSuccess,
   onSimpleSuccess,
   onSimpleSuccessAndError,
   onSuccess,
-} from '@hawtio/util/jolokia'
-import { isObject } from '@hawtio/util/objects'
+} from '@hawtiosrc/util/jolokia'
+import { isObject } from '@hawtiosrc/util/objects'
 import Jolokia, {
   IAjaxErrorFn,
   IErrorResponse,

@@ -1,5 +1,7 @@
-import { apacheCamelModel } from '@hawtio/plugins/camel/model'
-import { isObject, cloneObject } from '@hawtio/util/objects'
+import { apacheCamelModel, apacheCamelModelVersion } from '@hawtio/camel-model-react'
+import { isObject, cloneObject } from '@hawtiosrc/util/objects'
+
+console.log('Using camel version: ' + apacheCamelModelVersion)
 
 class SchemaService {
   /**
@@ -22,7 +24,7 @@ class SchemaService {
     }
 
     // we may extend another, if so we need to copy in the base properties
-    let extendsTypes: string[] = []
+    const extendsTypes: string[] = []
     if (answer?.extends) {
       extendsTypes.push('extends')
     }

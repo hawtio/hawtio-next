@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from 'react'
 import { TreeViewDataItem } from '@patternfly/react-core'
-import { workspace, MBeanNode, MBeanTree } from '@hawtio/plugins/shared'
+import { workspace, MBeanNode, MBeanTree } from '@hawtiosrc/plugins/shared'
 import { pluginName, jmxDomain } from './globals'
 
 /**

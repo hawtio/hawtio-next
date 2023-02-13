@@ -1,4 +1,4 @@
-import { helpRegistry } from '@hawtio/help/registry'
+import { helpRegistry } from '@hawtiosrc/help/registry'
 import {
   Card,
   Nav,
