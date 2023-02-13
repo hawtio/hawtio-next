@@ -1,5 +1,5 @@
-import { jolokiaService } from '@hawtio/plugins/connect/jolokia-service'
-import { MBeanNode } from '@hawtio/plugins/shared'
+import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
+import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import React from 'react'
 import { jmxDomain } from './globals'
 import { routesService } from './routes-service'

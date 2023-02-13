@@ -1,10 +1,10 @@
-import { Logger } from '@hawtio/core'
+import { Logger } from '@hawtiosrc/core'
 import React from 'react'
 import { CubeIcon, FolderIcon, FolderOpenIcon } from '@patternfly/react-icons'
 import { TreeViewDataItem } from '@patternfly/react-core'
-import { escapeDots, escapeTags } from '@hawtio/util/jolokia'
+import { escapeDots, escapeTags } from '@hawtiosrc/util/jolokia'
 import { IJmxMBean } from 'jolokia.js'
-import { stringSorter, trimQuotes } from '@hawtio/util/strings'
+import { stringSorter, trimQuotes } from '@hawtiosrc/util/strings'
 import { ILogger } from 'js-logger'
 
 const nodeLoggers: Map<string, ILogger> = new Map<string, ILogger>()

@@ -1,4 +1,4 @@
-import { jolokiaService } from '@hawtio/plugins/connect/jolokia-service'
+import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { log } from '../globals'
 
 class OperationService {

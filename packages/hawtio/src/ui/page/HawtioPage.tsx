@@ -1,5 +1,5 @@
-import { HawtioHelp } from '@hawtio/help/HawtioHelp'
-import { HawtioPreferences } from '@hawtio/preferences/HawtioPreferences'
+import { HawtioHelp } from '@hawtiosrc/help/HawtioHelp'
+import { HawtioPreferences } from '@hawtiosrc/preferences/HawtioPreferences'
 import {
   EmptyState,
   EmptyStateIcon,

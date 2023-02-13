@@ -1,4 +1,4 @@
-import { About, configManager } from '@hawtio/core'
+import { About, configManager } from '@hawtiosrc/core'
 import { useEffect, useState } from 'react'
 
 /**

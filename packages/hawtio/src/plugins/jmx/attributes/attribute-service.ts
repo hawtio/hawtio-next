@@ -1,5 +1,5 @@
-import { AttributeValues, jolokiaService } from '@hawtio/plugins/connect/jolokia-service'
-import { escapeMBean } from '@hawtio/util/jolokia'
+import { AttributeValues, jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
+import { escapeMBean } from '@hawtiosrc/util/jolokia'
 import { IRequest, IResponseFn } from 'jolokia.js'
 import { log } from '../globals'
 

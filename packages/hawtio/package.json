@@ -22,7 +22,6 @@
     "patternfly"
   ],
   "scripts": {
-    "generate:camel-model": "cd src/plugins/camel/model > /dev/null && ./mvnw compile",
     "build": "tsup --clean",
     "build:watch": "tsup --watch",
     "generate:camel-icons": "node ./utils/generate-camel-svg-index.js",
@@ -33,6 +32,7 @@
     "prepack": "yarn build && yarn replace-version"
   },
   "dependencies": {
+    "@hawtio/camel-model-react": "workspace:*",
     "@patternfly/react-core": "^4.267.6",
     "@patternfly/react-table": "^4.112.6",
     "@testing-library/jest-dom": "^5.16.5",

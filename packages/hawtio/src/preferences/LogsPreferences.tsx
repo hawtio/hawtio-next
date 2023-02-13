@@ -1,4 +1,4 @@
-import { ChildLogger, Logger } from '@hawtio/core'
+import { ChildLogger, Logger } from '@hawtiosrc/core'
 import {
   Button,
   CardBody,

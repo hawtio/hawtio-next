@@ -1,4 +1,4 @@
-import { Logger } from '@hawtio/core'
+import { Logger } from '@hawtiosrc/core'
 import {
   IErrorResponse,
   IErrorResponseFn,

@@ -13,7 +13,8 @@
     <version.io.hawt.plugin>1.5.11</version.io.hawt.plugin>
     <version.org.codehaus.gmaven.plugin>2.1</version.org.codehaus.gmaven.plugin>
 
-    <schema-outdir>.</schema-outdir>
+    <schema-outdir>./src</schema-outdir>
+    <index-file>index.ts</index-file>
     <schema-file>camelModel.ts</schema-file>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -66,6 +67,12 @@
                 }
                 file.write(file.text.trim() + ";")
                 file.write(file.text.trim() + "\n\nexport { _apacheCamelModelVersion, _apacheCamelModel };\n")
+                //
+                // Create index file for export
+                //
+                def idx = new File("${schema-outdir}/${index-file}")
+                idx.write("import { _apacheCamelModelVersion, _apacheCamelModel } from './camelModel'\n")
+                idx.write(idx.text.trim() + "\nexport { _apacheCamelModelVersion as apacheCamelModelVersion, _apacheCamelModel as apacheCamelModel }\n")
               </source>
             </configuration>
           </execution>

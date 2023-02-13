@@ -1,5 +1,5 @@
-import { isEmpty } from '@hawtio/util/objects'
-import { stringSorter, trimEnd } from '@hawtio/util/strings'
+import { isEmpty } from '@hawtiosrc/util/objects'
+import { stringSorter, trimEnd } from '@hawtiosrc/util/strings'
 import { IJmxOperation, IJmxOperations } from 'jolokia.js'
 
 type OperationMap = { [name: string]: Operation }

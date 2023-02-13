@@ -1,4 +1,4 @@
-import { Branding, configManager, hawtio, Plugin } from '@hawtio/core'
+import { Branding, configManager, hawtio, Plugin } from '@hawtiosrc/core'
 import { createContext, useEffect, useState } from 'react'
 import { log } from './globals'
 

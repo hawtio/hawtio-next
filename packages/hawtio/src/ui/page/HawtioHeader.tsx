@@ -1,6 +1,6 @@
-import imgLogo from '@hawtio/img/hawtio-logo.svg'
-import imgAvatar from '@hawtio/img/img_avatar.svg'
-import { HawtioAbout } from '@hawtio/ui/about/HawtioAbout'
+import imgLogo from '@hawtiosrc/img/hawtio-logo.svg'
+import imgAvatar from '@hawtiosrc/img/img_avatar.svg'
+import { HawtioAbout } from '@hawtiosrc/ui/about/HawtioAbout'
 import {
   Avatar,
   Brand,

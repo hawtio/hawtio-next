@@ -1,0 +1,30 @@
+{
+  "name": "@hawtio/camel-model-react",
+  "version": "0.1.0-dev",
+  "description": "Camel Catalog Definition Model",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "author": "Hawtio developer team",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hawtio/hawtio-next.git"
+  },
+  "keywords": [
+    "camel",
+    "model",
+    "definitions",
+    "javascript"
+  ],
+  "scripts": {
+    "generate": "./mvnw compile",
+    "build": "yarn generate && tsup --clean",
+    "test": "echo \"no tests to run\""
+  },
+  "peerDependencies": {
+    "typescript": "^4.9.5"
+  },
+  "devDependencies": {
+    "tsup": "^6.6.2"
+  }
+}

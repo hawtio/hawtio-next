@@ -1,4 +1,4 @@
-import { isBlank } from '@hawtio/util/strings'
+import { isBlank } from '@hawtiosrc/util/strings'
 import {
   ActionGroup,
   Button,

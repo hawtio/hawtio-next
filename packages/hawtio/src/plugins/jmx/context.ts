@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from 'react'
-import { workspace, MBeanNode, MBeanTree } from '@hawtio/plugins/shared'
+import { workspace, MBeanNode, MBeanTree } from '@hawtiosrc/plugins/shared'
 import { pluginName } from './globals'
 
 /**

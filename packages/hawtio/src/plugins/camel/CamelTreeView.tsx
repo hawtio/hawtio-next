@@ -1,4 +1,4 @@
-import { MBeanNode, MBeanTree, PluginTreeViewToolbar } from '@hawtio/plugins/shared'
+import { MBeanNode, MBeanTree, PluginTreeViewToolbar } from '@hawtiosrc/plugins/shared'
 import { TreeView, TreeViewDataItem } from '@patternfly/react-core'
 import React, { ChangeEvent, useContext, useState } from 'react'
 import './CamelTreeView.css'

@@ -1,4 +1,4 @@
-import { isEmpty } from '@hawtio/util/objects'
+import { isEmpty } from '@hawtiosrc/util/objects'
 import { Card, CardBody, DataList, Text } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
 import React, { useContext } from 'react'
