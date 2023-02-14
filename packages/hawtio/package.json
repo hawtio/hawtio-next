@@ -61,7 +61,7 @@
     "jest-watch-typeahead": "^2.2.2",
     "replace": "^1.2.2",
     "ts-jest": "^29.0.5",
-    "tsup": "^6.6.0"
+    "tsup": "^6.6.2"
   },
   "peerDependencies": {
     "@patternfly/react-core": "^4.267.6",
