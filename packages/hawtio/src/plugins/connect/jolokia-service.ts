@@ -88,12 +88,8 @@ class JolokiaService implements IJolokiaService {
   }
 
   constructor() {
-    this.jolokiaUrl = new Promise(resolve => {
-      this.initJolokiaUrl().then(url => resolve(url))
-    })
-    this.jolokia = new Promise(resolve => {
-      this.createJolokia().then(jolokia => resolve(jolokia))
-    })
+    this.jolokiaUrl = this.initJolokiaUrl()
+    this.jolokia = this.createJolokia()
 
     // Start Jolokia
     this.jolokia.then(jolokia => {
