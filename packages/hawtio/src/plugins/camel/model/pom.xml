@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>io.hawt</groupId>
+  <artifactId>camel-model-generator</artifactId>
+  <version>1.0</version>
+
+  <properties>
+    <version.org.apache.camel>3.19.0</version.org.apache.camel>
+
+    <version.io.hawt.plugin>1.5.11</version.io.hawt.plugin>
+    <version.org.codehaus.gmaven.plugin>2.1</version.org.codehaus.gmaven.plugin>
+
+    <schema-outdir>.</schema-outdir>
+    <schema-file>camelModel.ts</schema-file>
+
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-catalog</artifactId>
+      <version>${version.org.apache.camel}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>io.hawt</groupId>
+        <artifactId>hawtio-json-schema-generator-plugin</artifactId>
+        <version>${version.io.hawt.plugin}</version>
+        <executions>
+          <execution>
+            <id>generate-camel-model</id>
+            <goals>
+              <goal>generate-camel-model</goal>
+            </goals>
+            <configuration>
+              <buildDir>.</buildDir>
+              <schemaFile>${schema-outdir}/${schema-file}</schemaFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.gmaven</groupId>
+        <artifactId>groovy-maven-plugin</artifactId>
+        <version>${version.org.codehaus.gmaven.plugin}</version>
+        <executions>
+          <execution>
+            <id>modify-camel-model</id>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <phase>compile</phase>
+            <configuration>
+              <source>
+                // Ensure camel model is terminated with a semicolon
+                def file = new File("${schema-outdir}/${schema-file}")
+                if (!file.exists()) {
+                  fail("${schema-outdir}/${schema-file} does not exist!")
+                }
+                file.write(file.text.trim() + ";")
+                file.write(file.text.trim() + "\n\nexport { _apacheCamelModelVersion, _apacheCamelModel };\n")
+              </source>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
