@@ -73,7 +73,8 @@ export const STORAGE_KEY_UPDATE_RATE = 'connect.jolokia.updateRate'
 export interface IJolokiaService {
   getJolokiaUrl(): Promise<string | null>
   list(options: ISimpleOptions): Promise<unknown>
-  read(mbean: string, attribute?: string): Promise<AttributeValues>
+  readAttributes(mbean: string): Promise<AttributeValues>
+  readAttribute(mbean: string, attribute: string): Promise<unknown>
   execute(mbean: string, operation: string, args?: unknown[]): Promise<unknown>
   register(request: IRequest, callback: IResponseFn): Promise<number>
   unregister(handle: number): void
@@ -331,17 +332,22 @@ class JolokiaService implements IJolokiaService {
     })
   }
 
-  async read(mbean: string, attribute?: string): Promise<AttributeValues> {
-    const payload: IRequest = { type: 'read', mbean }
-    if (attribute) {
-      payload.attribute = attribute
-    }
-
+  async readAttributes(mbean: string): Promise<AttributeValues> {
     const jolokia = await this.jolokia
     return new Promise(resolve => {
       jolokia.request(
-        payload,
+        { type: 'read', mbean },
         onSuccess(response => resolve(response.value as AttributeValues)),
+      )
+    })
+  }
+
+  async readAttribute(mbean: string, attribute: string): Promise<unknown> {
+    const jolokia = await this.jolokia
+    return new Promise(resolve => {
+      jolokia.request(
+        { type: 'read', mbean, attribute },
+        onSuccess(response => resolve(response.value as unknown)),
       )
     })
   }
