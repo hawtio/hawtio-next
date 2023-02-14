@@ -130,6 +130,10 @@ export class MBeanNode implements TreeViewDataItem {
     return this.children ? this.children.length : 0
   }
 
+  getProperty(key: string): string {
+    return this.properties ? this.properties[key] : ''
+  }
+
   addProperty(key: string, value: string) {
     if (!this.properties) {
       this.properties = {}
@@ -174,7 +178,7 @@ export class MBeanNode implements TreeViewDataItem {
       })
     }
 
-    if (copyChildren.length == 0 && ! filter(this)) {
+    if (copyChildren.length === 0 && ! filter(this)) {
       //
       // this has no children and does not conform to filter
       //

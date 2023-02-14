@@ -22,6 +22,7 @@
     "patternfly"
   ],
   "scripts": {
+    "generate:camel-model": "cd src/plugins/camel/model > /dev/null && ./mvnw compile",
     "build": "tsup --clean",
     "build:watch": "tsup --watch",
     "test": "jest",
@@ -36,12 +37,14 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.4.3",
+    "@types/clone": "^2.1.1",
     "@types/jest": "^29.4.0",
     "@types/node": "^18.13.0",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.10",
     "@types/react-router-dom": "^5.3.3",
     "eventemitter3": "^5.0.0",
+    "clone": "^2.1.2",
     "jolokia.js": "1.7.2",
     "jquery": "^3.6.3",
     "js-logger": "^1.6.1",
