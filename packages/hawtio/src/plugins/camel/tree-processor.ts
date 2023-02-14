@@ -1,14 +1,14 @@
-import React from 'react'
-import { MBeanNode } from '@hawtio/plugins/shared'
-import { jmxDomain } from './globals'
 import { jolokiaService } from '@hawtio/plugins/connect/jolokia-service'
+import { MBeanNode } from '@hawtio/plugins/shared'
+import React from 'react'
+import { jmxDomain } from './globals'
 import { CamelIcon, EndPointFolderIcon, EndPointIcon, RouteIcon } from './icons'
 
-//
-// Fetch the camel version and add it to the tree
-// to avoid making a blocking call elsewhere
-//
-function retrieveCamelVersion(contextNode: MBeanNode | null) {
+/**
+ * Fetch the camel version and add it to the tree to avoid making a blocking call
+ * elsewhere.
+ */
+async function retrieveCamelVersion(contextNode: MBeanNode | null) {
   if (!contextNode) return
 
   if (!contextNode.objectName) {
@@ -16,9 +16,8 @@ function retrieveCamelVersion(contextNode: MBeanNode | null) {
     return
   }
 
-  jolokiaService.read(contextNode.objectName, 'CamelVersion').then((response: unknown) => {
-    contextNode.addProperty('version', response as string)
-  })
+  const camelVersion = await jolokiaService.readAttribute(contextNode.objectName, 'CamelVersion')
+  contextNode.addProperty('version', camelVersion as string)
 }
 
 function adoptChild(parent: MBeanNode | null, child: MBeanNode | null, type: string, childIcon: React.ReactNode) {

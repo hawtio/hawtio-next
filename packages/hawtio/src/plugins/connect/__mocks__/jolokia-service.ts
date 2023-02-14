@@ -15,11 +15,15 @@ class MockJolokiaService implements IJolokiaService {
     return jolokiaResponse
   }
 
-  async read(mbean: string, attribute?: string | undefined): Promise<AttributeValues> {
+  async readAttributes(mbean: string): Promise<AttributeValues> {
     return {}
   }
 
-  async execute(mbean: string, operation: string, args?: unknown[] | undefined): Promise<unknown> {
+  async readAttribute(mbean: string, attribute: string): Promise<unknown> {
+    return null
+  }
+
+  async execute(mbean: string, operation: string, args?: unknown[]): Promise<unknown> {
     return {}
   }
 

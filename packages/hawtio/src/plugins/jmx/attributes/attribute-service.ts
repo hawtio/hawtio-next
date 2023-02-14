@@ -7,7 +7,7 @@ class AttributeService {
   private handles: number[] = []
 
   async read(mbean: string): Promise<AttributeValues> {
-    return await jolokiaService.read(mbean)
+    return await jolokiaService.readAttributes(mbean)
   }
 
   async register(request: IRequest, callback: IResponseFn) {
