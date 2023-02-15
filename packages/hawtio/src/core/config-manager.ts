@@ -54,12 +54,8 @@ class ConfigManager {
   private brandingApplied: Promise<boolean>
 
   constructor() {
-    this.config = new Promise<Config>(resolve => {
-      this.loadConfig().then(config => resolve(config))
-    })
-    this.brandingApplied = new Promise<boolean>(resolve => {
-      this.applyBranding().then(result => resolve(result))
-    })
+    this.config = this.loadConfig()
+    this.brandingApplied = this.applyBranding()
   }
 
   private async loadConfig(): Promise<Config> {
