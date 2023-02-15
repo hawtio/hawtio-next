@@ -1,0 +1,55 @@
+{
+  "definitions": {
+    "base": {
+      "type": "object",
+      "title": "base",
+      "group": "language",
+      "icon": "base.png",
+      "description": "Base description",
+      "properties": {
+        "expression": {
+          "kind": "element",
+          "type": "string",
+          "title": "Expression",
+          "description": "The expression",
+          "required": true
+        },
+        "operation": {
+          "kind": "function",
+          "type": "string",
+          "title": "Function",
+          "description": "The function",
+          "required": false
+        }
+      }
+    },
+    "typed": {
+      "type": "base",
+      "title": "typed",
+      "properties": {
+        "value": {
+          "kind": "misc",
+          "type": "string",
+          "title": "Misc",
+          "description": "The Value",
+          "required": false
+        }
+      }
+    },
+    "extended": {
+      "type": "object",
+      "extends": "base",
+      "title": "extended",
+      "description": "Extended description",
+      "properties": {
+        "value2": {
+          "kind": "tag",
+          "type": "string",
+          "title": "Tag",
+          "description": "The Tag",
+          "required": true
+        }
+      }
+    }
+  }
+}

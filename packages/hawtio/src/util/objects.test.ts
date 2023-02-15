@@ -1,4 +1,4 @@
-import { isObject, pathGet, isString } from './objects'
+import { isObject, isString } from './objects'
 
 describe('objects', () => {
   test('isObject', () => {
@@ -12,30 +12,6 @@ describe('objects', () => {
       /* no-op */
     }
     expect(isObject(fn)).toBe(true)
-  })
-
-  test('pathGet', () => {
-    const o = {
-      a: 'a',
-      b: 'b',
-      c: {
-        x: 'x',
-        y: {
-          dd: 'dd'
-        },
-        z: {
-          aa: 'aa',
-          bb: 'bb',
-          cc: 'cc'
-        }
-      }
-    }
-
-    expect(pathGet(o, ['a'])).toBe('a')
-    expect(pathGet(o, ['b'])).toBe('b')
-    expect(pathGet(o, ['c', 'x'])).toBe('x')
-    expect(pathGet(o, ['c', 'y'])).toStrictEqual({ dd: 'dd' })
-    expect(pathGet(o, ['c', 'z', 'aa' ])).toBe('aa')
   })
 
   test('isString', () => {
