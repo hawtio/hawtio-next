@@ -1,4 +1,4 @@
-var _apacheCamelModelVersion = '3.19.0';
+var _apacheCamelModelVersion = '3.20.2';
 
 var _apacheCamelModel ={
   "definitions": {
@@ -22,7 +22,7 @@ var _apacheCamelModel ={
           "title": "Expression",
           "description": "The chosen language",
           "required": true,
-          "enum": [ "constant", "csimple", "datasonnet", "exchangeProperty", "groovy", "header", "hl7terser", "joor", "jq", "jsonpath", "language", "method", "mvel", "ognl", "python", "ref", "simple", "spel", "tokenize", "xpath", "xquery", "xtokenize" ]
+          "enum": [ "constant", "csimple", "datasonnet", "exchangeProperty", "groovy", "header", "hl7terser", "joor", "jq", "js", "jsonpath", "language", "method", "mvel", "ognl", "python", "ref", "simple", "spel", "tokenize", "xpath", "xquery", "xtokenize" ]
         }
       }
     },
@@ -264,6 +264,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -380,6 +389,15 @@ var _apacheCamelModel ={
           "enum": [ "Singleton", "Request", "Prototype" ],
           "description": "Scope of bean. When using singleton scope (default) the bean is created or looked up only once and reused for the lifetime of the endpoint. The bean should be thread-safe in case concurrent threads is calling the bean at the same time. When using request scope the bean is created or looked up once per request (exchange). This can be used if you want to store state on a bean while processing a request and you want to call the same bean instance multiple times while processing the request. The bean does not have to be thread-safe as the instance is only called from the same request. When using prototype scope, then the bean will be looked up or created per call. However in case of lookup then this is delegated to the bean registry such as Spring or CDI (if in use), which depends on their configuration can act as either singleton or prototype scope. So when using prototype scope then this depends on the bean registry implementation.",
           "title": "Scope",
+          "required": false,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
           "required": false,
           "deprecated": false
         },
@@ -527,6 +545,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -576,6 +603,15 @@ var _apacheCamelModel ={
           "type": "string",
           "description": "Refers to a circuit breaker configuration (such as resillience4j, or microprofile-fault-tolerance) to use for configuring the circuit breaker EIP.",
           "title": "Configuration",
+          "required": false,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
           "required": false,
           "deprecated": false
         },
@@ -645,6 +681,15 @@ var _apacheCamelModel ={
           "type": "string",
           "description": "This option can be used to explicit declare the method name to use, when using POJOs as the AggregationStrategy.",
           "title": "Aggregation Strategy Method Name",
+          "required": false,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
           "required": false,
           "deprecated": false
         },
@@ -908,6 +953,15 @@ var _apacheCamelModel ={
           "type": "string",
           "description": "To use a specific charset when converting",
           "title": "Charset",
+          "required": false,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
           "required": false,
           "deprecated": false
         },
@@ -1322,6 +1376,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -1439,6 +1502,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -1467,6 +1539,15 @@ var _apacheCamelModel ={
       "acceptOutput": "false",
       "nextSiblingAddedAsChild": "true",
       "properties": {
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -1495,6 +1576,15 @@ var _apacheCamelModel ={
       "acceptOutput": "false",
       "nextSiblingAddedAsChild": "true",
       "properties": {
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -1554,6 +1644,15 @@ var _apacheCamelModel ={
           "type": "integer",
           "description": "Sets the maximum size used by the org.apache.camel.spi.ProducerCache which is used to cache and reuse producers when using this dynamic router, when uris are reused. Beware that when using dynamic endpoints then it affects how well the cache can be utilized. If each dynamic endpoint is unique then its best to turn of caching by setting this to -1, which allows Camel to not cache both the producers and endpoints; they are regarded as prototype scoped and will be stopped and discarded after use. This reduces memory usage as otherwise producers\/endpoints are stored in memory in the caches. However if there are a high degree of dynamic endpoints that have been used before, then it can benefit to use the cache to reuse both producers and endpoints and therefore the cache size can be set accordingly or rely on the default size (1000). If there is a mix of unique and used before dynamic endpoints, then setting a reasonable cache size can help reduce memory usage to avoid storing too many non frequent used producers.",
           "title": "Cache Size",
+          "required": false,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
           "required": false,
           "deprecated": false
         },
@@ -1661,6 +1760,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -1695,34 +1803,6 @@ var _apacheCamelModel ={
           "description": "The specific error handler in use.",
           "title": "Error Handler Type",
           "required": true,
-          "deprecated": false
-        },
-        "id": {
-          "kind": "attribute",
-          "type": "string",
-          "description": "The id of this node",
-          "title": "Id",
-          "required": false,
-          "deprecated": false
-        }
-      }
-    },
-    "errorHandlerRef": {
-      "type": "object",
-      "title": "Error Handler Ref",
-      "group": "configuration,error",
-      "icon": "generic24.png",
-      "description": "Dead letter channel error handler.",
-      "acceptInput": "false",
-      "acceptOutput": "false",
-      "nextSiblingAddedAsChild": "false",
-      "properties": {
-        "ref": {
-          "kind": "attribute",
-          "type": "object",
-          "description": "References to an existing or custom error handler.",
-          "title": "Ref",
-          "required": false,
           "deprecated": false
         },
         "id": {
@@ -1948,6 +2028,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -2140,6 +2229,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -2176,6 +2274,15 @@ var _apacheCamelModel ={
           "required": true,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -2210,6 +2317,15 @@ var _apacheCamelModel ={
           "description": "Sets the uri of the endpoint to send to.",
           "title": "Uri",
           "required": true,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
           "deprecated": false
         },
         "id": {
@@ -2285,6 +2401,15 @@ var _apacheCamelModel ={
       "acceptOutput": "false",
       "nextSiblingAddedAsChild": "true",
       "properties": {
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -2318,6 +2443,15 @@ var _apacheCamelModel ={
           "type": "string",
           "description": "Intercept incoming messages from the uri or uri pattern. If this option is not configured, then all incoming messages is intercepted.",
           "title": "Uri",
+          "required": false,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
           "required": false,
           "deprecated": false
         },
@@ -2370,6 +2504,15 @@ var _apacheCamelModel ={
           "type": "string",
           "description": "After sending to the endpoint then send the message to this uri which allows to process its result.",
           "title": "After Uri",
+          "required": false,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
           "required": false,
           "deprecated": false
         },
@@ -2545,6 +2688,15 @@ var _apacheCamelModel ={
           "description": "Name of the Kamelet (templateId\/routeId) to call. Options for the kamelet can be specified using uri syntax, eg mynamecount=4&type=gold.",
           "title": "Name",
           "required": true,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
           "deprecated": false
         },
         "id": {
@@ -2766,6 +2918,15 @@ var _apacheCamelModel ={
           "required": true,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "inheritErrorHandler": {
           "kind": "attribute",
           "type": "boolean",
@@ -2873,6 +3034,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -2933,6 +3103,15 @@ var _apacheCamelModel ={
           "defaultValue": "false",
           "description": "If the breakOnShutdown attribute is true, then the loop will not iterate until it reaches the end when Camel is shut down.",
           "title": "Break On Shutdown",
+          "required": false,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
           "required": false,
           "deprecated": false
         },
@@ -3059,6 +3238,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -3166,6 +3354,15 @@ var _apacheCamelModel ={
           "type": "object",
           "description": "Sets an additional predicate that should be true before the onCompletion is triggered. To be used for fine grained controlling whether a completion callback should be invoked or not",
           "title": "On When",
+          "required": false,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
           "required": false,
           "deprecated": false
         },
@@ -3287,6 +3484,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -3321,6 +3527,15 @@ var _apacheCamelModel ={
           "defaultValue": "false",
           "description": "Whether the fallback goes over the network. If the fallback will go over the network it is another possible point of failure. It is important to execute the fallback command on a separate thread-pool, otherwise if the main command were to become latent and fill the thread-pool this would prevent the fallback from running if the two commands share the same pool.",
           "title": "Fallback Via Network",
+          "required": false,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
           "required": false,
           "deprecated": false
         },
@@ -3408,6 +3623,15 @@ var _apacheCamelModel ={
       "acceptOutput": "false",
       "nextSiblingAddedAsChild": "true",
       "properties": {
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -3561,6 +3785,15 @@ var _apacheCamelModel ={
           "required": true,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -3589,6 +3822,15 @@ var _apacheCamelModel ={
       "acceptOutput": "false",
       "nextSiblingAddedAsChild": "true",
       "properties": {
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -3623,6 +3865,15 @@ var _apacheCamelModel ={
           "description": "Sets a reference to use for lookup the policy in the registry.",
           "title": "Ref",
           "required": true,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
           "deprecated": false
         },
         "id": {
@@ -3720,6 +3971,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -3754,6 +4014,15 @@ var _apacheCamelModel ={
           "description": "Reference to the Processor to lookup in the registry to use. Can also be used for creating new beans by their class name by prefixing with #class, eg #class:com.foo.MyClassType. And it is also possible to refer to singleton beans by their type in the registry by prefixing with #type: syntax, eg #type:com.foo.MyClassType",
           "title": "Ref",
           "required": true,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
           "deprecated": false
         },
         "id": {
@@ -3986,6 +4255,15 @@ var _apacheCamelModel ={
           "defaultValue": "false",
           "description": "Shares the org.apache.camel.spi.UnitOfWork with the parent and each of the sub messages. Recipient List will by default not share unit of work between the parent exchange and each recipient exchange. This means each sub exchange has its own individual unit of work.",
           "title": "Share Unit Of Work",
+          "required": false,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
           "required": false,
           "deprecated": false
         },
@@ -4240,6 +4518,34 @@ var _apacheCamelModel ={
         }
       }
     },
+    "refErrorHandler": {
+      "type": "object",
+      "title": "Ref Error Handler",
+      "group": "configuration,error",
+      "icon": "generic24.png",
+      "description": "References to an existing or custom error handler.",
+      "acceptInput": "false",
+      "acceptOutput": "false",
+      "nextSiblingAddedAsChild": "false",
+      "properties": {
+        "ref": {
+          "kind": "attribute",
+          "type": "object",
+          "description": "References to an existing or custom error handler.",
+          "title": "Ref",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "The id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
     "removeHeader": {
       "type": "object",
       "title": "Remove Header",
@@ -4256,6 +4562,15 @@ var _apacheCamelModel ={
           "description": "Name of header to remove",
           "title": "Name",
           "required": true,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
           "deprecated": false
         },
         "id": {
@@ -4299,6 +4614,15 @@ var _apacheCamelModel ={
           "type": "string",
           "description": "Name or patter of headers to not remove. The pattern is matched in the following order: 1 = exact match 2 = wildcard (pattern ends with a and the name starts with the pattern) 3 = regular expression (all of above is case in-sensitive).",
           "title": "Exclude Pattern",
+          "required": false,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
           "required": false,
           "deprecated": false
         },
@@ -4346,6 +4670,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -4380,6 +4713,15 @@ var _apacheCamelModel ={
           "description": "Name of property to remove.",
           "title": "Name",
           "required": true,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
           "deprecated": false
         },
         "id": {
@@ -4424,6 +4766,15 @@ var _apacheCamelModel ={
           "description": "To configure the resequencer in using either batch or stream configuration. Will by default use batch configuration.",
           "title": "Resequencer Config",
           "required": true,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
           "deprecated": false
         },
         "id": {
@@ -4607,6 +4958,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -4658,6 +5018,15 @@ var _apacheCamelModel ={
           "defaultValue": "false",
           "description": "Mark only last sub transaction for rollback only. When using sub transactions (if the transaction manager support this)",
           "title": "Mark Rollback Only Last",
+          "required": false,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
           "required": false,
           "deprecated": false
         },
@@ -4717,6 +5086,30 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "nodePrefixId": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets a prefix to use for all node ids (not route id).",
+          "title": "Node Prefix Id",
+          "required": false,
+          "deprecated": false
+        },
+        "routeConfigurationId": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "The route configuration id or pattern this route should use for configuration. Multiple id\/pattern can be separated by comma.",
+          "title": "Route Configuration Id",
+          "required": false,
+          "deprecated": false
+        },
+        "precondition": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "The predicate of the precondition in simple language to evaluate in order to determine if this route should be included or not.",
+          "title": "Precondition",
+          "required": false,
+          "deprecated": false
+        },
         "streamCache": {
           "kind": "attribute",
           "type": "string",
@@ -4736,7 +5129,6 @@ var _apacheCamelModel ={
         "messageHistory": {
           "kind": "attribute",
           "type": "string",
-          "defaultValue": "true",
           "description": "Whether message history is enabled on this route.",
           "title": "Message History",
           "required": false,
@@ -4816,6 +5208,15 @@ var _apacheCamelModel ={
           "description": "Input to the route.",
           "title": "Input",
           "required": true,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
           "deprecated": false
         },
         "id": {
@@ -5180,6 +5581,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -5268,6 +5678,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -5313,6 +5732,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -5347,6 +5775,15 @@ var _apacheCamelModel ={
           "description": "Expression to return the transformed message body (the new message body to use)",
           "title": "Expression",
           "required": true,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
           "deprecated": false
         },
         "id": {
@@ -5489,6 +5926,15 @@ var _apacheCamelModel ={
           "description": "Configures the LoadBalancer using the given configuration.",
           "title": "Load Balancer Configuration",
           "required": true,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
           "deprecated": false
         },
         "id": {
@@ -5775,6 +6221,15 @@ var _apacheCamelModel ={
           "required": true,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -5810,6 +6265,15 @@ var _apacheCamelModel ={
           "description": "Sets the new exchange pattern of the Exchange to be used from this point forward",
           "title": "Pattern",
           "required": true,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
           "deprecated": false
         },
         "id": {
@@ -5856,6 +6320,15 @@ var _apacheCamelModel ={
           "required": true,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -5900,6 +6373,15 @@ var _apacheCamelModel ={
           "required": true,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -5941,6 +6423,15 @@ var _apacheCamelModel ={
           "type": "object",
           "description": "Sets the comparator to use for sorting",
           "title": "Comparator",
+          "required": false,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
           "required": false,
           "deprecated": false
         },
@@ -6081,6 +6572,15 @@ var _apacheCamelModel ={
           "defaultValue": "false",
           "description": "Shares the org.apache.camel.spi.UnitOfWork with the parent and each of the sub messages. Splitter will by default not share unit of work between the parent exchange and each split exchange. This means each split exchange has its own individual unit of work.",
           "title": "Share Unit Of Work",
+          "required": false,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
           "required": false,
           "deprecated": false
         },
@@ -6286,6 +6786,15 @@ var _apacheCamelModel ={
       "acceptOutput": "false",
       "nextSiblingAddedAsChild": "true",
       "properties": {
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -6342,6 +6851,15 @@ var _apacheCamelModel ={
       "acceptOutput": "false",
       "nextSiblingAddedAsChild": "true",
       "properties": {
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -6545,6 +7063,14 @@ var _apacheCamelModel ={
           "type": "string",
           "description": "Sets the id of the route built from the route template.",
           "title": "Route Id",
+          "required": false,
+          "deprecated": false
+        },
+        "prefixId": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets a prefix to use for all node ids (not route id).",
+          "title": "Prefix Id",
           "required": false,
           "deprecated": false
         },
@@ -6865,6 +7391,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -6953,6 +7488,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -7005,6 +7549,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -7039,6 +7592,15 @@ var _apacheCamelModel ={
           "description": "Sets the uri of the endpoint to send to.",
           "title": "Uri",
           "required": true,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
           "deprecated": false
         },
         "pattern": {
@@ -7130,6 +7692,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -7186,6 +7757,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -7220,6 +7800,15 @@ var _apacheCamelModel ={
           "description": "Expression to return the transformed message body (the new message body to use)",
           "title": "Expression",
           "required": true,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
           "deprecated": false
         },
         "id": {
@@ -7286,6 +7875,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -7319,6 +7917,26 @@ var _apacheCamelModel ={
           "type": "array",
           "description": "The configured transformers",
           "title": "Validators",
+          "required": true,
+          "deprecated": false
+        }
+      }
+    },
+    "value": {
+      "type": "object",
+      "title": "Value",
+      "group": "configuration",
+      "icon": "generic24.png",
+      "description": "A single value",
+      "acceptInput": "false",
+      "acceptOutput": "false",
+      "nextSiblingAddedAsChild": "false",
+      "properties": {
+        "value": {
+          "kind": "value",
+          "type": "string",
+          "description": "Property value",
+          "title": "Value",
           "required": true,
           "deprecated": false
         }
@@ -7388,6 +8006,15 @@ var _apacheCamelModel ={
           "required": true,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "id": {
           "kind": "attribute",
           "type": "string",
@@ -7422,6 +8049,15 @@ var _apacheCamelModel ={
           "description": "Expression used as the predicate to evaluate whether the message should be sent or not to the endpoint",
           "title": "Expression",
           "required": true,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
           "deprecated": false
         },
         "id": {
@@ -7535,6 +8171,15 @@ var _apacheCamelModel ={
           "defaultValue": "true",
           "description": "Whether to auto startup components when toD is starting up.",
           "title": "Auto Start Components",
+          "required": false,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
           "required": false,
           "deprecated": false
         },
@@ -7819,6 +8464,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this REST service from the route during build time. Once an REST service has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "type": {
           "kind": "attribute",
           "type": "string",
@@ -7958,6 +8612,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this REST service from the route during build time. Once an REST service has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "type": {
           "kind": "attribute",
           "type": "string",
@@ -8094,6 +8757,15 @@ var _apacheCamelModel ={
           "type": "string",
           "description": "To define the content type what the REST service produces (uses for output), such as application\/xml or application\/json This option will override what may be configured on a parent level",
           "title": "Produces",
+          "required": false,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this REST service from the route during build time. Once an REST service has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
           "required": false,
           "deprecated": false
         },
@@ -8408,11 +9080,11 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
-        "value": {
+        "allowableValues": {
           "kind": "element",
           "type": "array",
           "description": "Sets the parameter list of allowable values (enum).",
-          "title": "Value",
+          "title": "Allowable Values",
           "required": false,
           "deprecated": false
         },
@@ -8473,6 +9145,15 @@ var _apacheCamelModel ={
           "type": "string",
           "description": "To define the content type what the REST service produces (uses for output), such as application\/xml or application\/json This option will override what may be configured on a parent level",
           "title": "Produces",
+          "required": false,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this REST service from the route during build time. Once an REST service has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
           "required": false,
           "deprecated": false
         },
@@ -8615,6 +9296,15 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this REST service from the route during build time. Once an REST service has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
+          "deprecated": false
+        },
         "type": {
           "kind": "attribute",
           "type": "string",
@@ -8751,6 +9441,15 @@ var _apacheCamelModel ={
           "type": "string",
           "description": "To define the content type what the REST service produces (uses for output), such as application\/xml or application\/json This option will override what may be configured on a parent level",
           "title": "Produces",
+          "required": false,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this REST service from the route during build time. Once an REST service has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
           "required": false,
           "deprecated": false
         },
@@ -8905,11 +9604,11 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
-        "value": {
+        "allowableValues": {
           "kind": "element",
           "type": "array",
           "description": "Sets the parameter list of allowable values.",
-          "title": "Value",
+          "title": "Allowable Values",
           "required": false,
           "deprecated": false
         },
@@ -9015,6 +9714,15 @@ var _apacheCamelModel ={
           "type": "string",
           "description": "To define the content type what the REST service produces (uses for output), such as application\/xml or application\/json This option will override what may be configured on a parent level",
           "title": "Produces",
+          "required": false,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this REST service from the route during build time. Once an REST service has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
           "required": false,
           "deprecated": false
         },
@@ -9310,6 +10018,14 @@ var _apacheCamelModel ={
           "type": "string",
           "description": "Sets a leading API context-path the REST API services will be using. This can be used when using components such as camel-servlet where the deployed web application is deployed using a context-path.",
           "title": "Api Context Path",
+          "required": false,
+          "deprecated": false
+        },
+        "apiContextRouteId": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the route id to use for the route that services the REST API. The route will by default use an auto assigned route id.",
+          "title": "Api Context Route Id",
           "required": false,
           "deprecated": false
         },
@@ -10523,12 +11239,52 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "fhirContext": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "To use a custom fhir context. Reference to object of type ca.uhn.fhir.context.FhirContext",
+          "title": "Fhir Context",
+          "required": false,
+          "deprecated": false
+        },
         "prettyPrint": {
           "kind": "attribute",
           "type": "boolean",
           "defaultValue": "false",
           "description": "Sets the pretty print flag, meaning that the parser will encode resources with human-readable spacing and newlines between elements instead of condensing output as much as possible.",
           "title": "Pretty Print",
+          "required": false,
+          "deprecated": false
+        },
+        "parserErrorHandler": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Registers an error handler which will be invoked when any parse errors are found. Reference to object of type ca.uhn.fhir.parser.IParserErrorHandler",
+          "title": "Parser Error Handler",
+          "required": false,
+          "deprecated": false
+        },
+        "parserOptions": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the parser options object which will be used to supply default options to newly created parsers. Reference to object of type ca.uhn.fhir.context.ParserOptions.",
+          "title": "Parser Options",
+          "required": false,
+          "deprecated": false
+        },
+        "preferTypes": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "If set (FQN class names), when parsing resources the parser will try to use the given types when possible, in the order that they are provided (from highest to lowest priority). For example, if a custom type which declares to implement the Patient resource is passed in here, and the parser is parsing a Bundle containing a Patient resource, the parser will use the given custom type. Multiple class names can be separated by comma.",
+          "title": "Prefer Types",
+          "required": false,
+          "deprecated": false
+        },
+        "forceResourceId": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "When encoding, force this resource ID to be encoded as the resource ID. Reference to object of type org.hl7.fhir.instance.model.api.IIdType",
+          "title": "Force Resource Id",
           "required": false,
           "deprecated": false
         },
@@ -10560,16 +11316,16 @@ var _apacheCamelModel ={
         },
         "encodeElements": {
           "kind": "attribute",
-          "type": "object",
-          "description": "If provided, specifies the elements which should be encoded, to the exclusion of all others. Valid values for this field would include: Patient - Encode patient and all its children Patient.name - Encode only the patient's name Patient.name.family - Encode only the patient's family name .text - Encode the text element on any resource (only the very first position may contain a wildcard) .(mandatory) - This is a special case which causes any mandatory fields (min 0) to be encoded",
+          "type": "string",
+          "description": "If provided, specifies the elements which should be encoded, to the exclusion of all others. Multiple elements can be separated by comma when using String parameter. Valid values for this field would include: Patient - Encode patient and all its children Patient.name - Encode only the patient's name Patient.name.family - Encode only the patient's family name .text - Encode the text element on any resource (only the very first position may contain a wildcard) .(mandatory) - This is a special case which causes any mandatory fields (min 0) to be encoded",
           "title": "Encode Elements",
           "required": false,
           "deprecated": false
         },
         "dontEncodeElements": {
           "kind": "attribute",
-          "type": "object",
-          "description": "If provided, specifies the elements which should NOT be encoded. Valid values for this field would include: Patient - Don't encode patient and all its children Patient.name - Don't encode the patient's name Patient.name.family - Don't encode the patient's family name .text - Don't encode the text element on any resource (only the very first position may contain a wildcard) DSTU2 note: Note that values including meta, such as Patient.meta will work for DSTU2 parsers, but values with subelements on meta such as Patient.meta.lastUpdated will only work in DSTU3 mode.",
+          "type": "string",
+          "description": "If provided, specifies the elements which should NOT be encoded. Multiple elements can be separated by comma when using String parameter. Valid values for this field would include: Patient - Don't encode patient and all its children Patient.name - Don't encode the patient's name Patient.name.family - Don't encode the patient's family name .text - Don't encode the text element on any resource (only the very first position may contain a wildcard) DSTU2 note: Note that values including meta, such as Patient.meta will work for DSTU2 parsers, but values with subelements on meta such as Patient.meta.lastUpdated will only work in DSTU3 mode.",
           "title": "Dont Encode Elements",
           "required": false,
           "deprecated": false
@@ -10612,8 +11368,8 @@ var _apacheCamelModel ={
         },
         "dontStripVersionsFromReferencesAtPaths": {
           "kind": "attribute",
-          "type": "array",
-          "description": "If supplied value(s), any resource references at the specified paths will have their resource versions encoded instead of being automatically stripped during the encoding process. This setting has no effect on the parsing process. This method provides a finer-grained level of control than setStripVersionsFromReferences(String) and any paths specified by this method will be encoded even if setStripVersionsFromReferences(String) has been set to true (which is the default)",
+          "type": "string",
+          "description": "If supplied value(s), any resource references at the specified paths will have their resource versions encoded instead of being automatically stripped during the encoding process. This setting has no effect on the parsing process. Multiple elements can be separated by comma when using String parameter. This method provides a finer-grained level of control than setStripVersionsFromReferences(String) and any paths specified by this method will be encoded even if setStripVersionsFromReferences(String) has been set to true (which is the default)",
           "title": "Dont Strip Versions From References At Paths",
           "required": false,
           "deprecated": false
@@ -10654,12 +11410,52 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "fhirContext": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "To use a custom fhir context. Reference to object of type ca.uhn.fhir.context.FhirContext",
+          "title": "Fhir Context",
+          "required": false,
+          "deprecated": false
+        },
         "prettyPrint": {
           "kind": "attribute",
           "type": "boolean",
           "defaultValue": "false",
           "description": "Sets the pretty print flag, meaning that the parser will encode resources with human-readable spacing and newlines between elements instead of condensing output as much as possible.",
           "title": "Pretty Print",
+          "required": false,
+          "deprecated": false
+        },
+        "parserErrorHandler": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Registers an error handler which will be invoked when any parse errors are found. Reference to object of type ca.uhn.fhir.parser.IParserErrorHandler",
+          "title": "Parser Error Handler",
+          "required": false,
+          "deprecated": false
+        },
+        "parserOptions": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the parser options object which will be used to supply default options to newly created parsers. Reference to object of type ca.uhn.fhir.context.ParserOptions.",
+          "title": "Parser Options",
+          "required": false,
+          "deprecated": false
+        },
+        "preferTypes": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "If set (FQN class names), when parsing resources the parser will try to use the given types when possible, in the order that they are provided (from highest to lowest priority). For example, if a custom type which declares to implement the Patient resource is passed in here, and the parser is parsing a Bundle containing a Patient resource, the parser will use the given custom type. Multiple class names can be separated by comma.",
+          "title": "Prefer Types",
+          "required": false,
+          "deprecated": false
+        },
+        "forceResourceId": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "When encoding, force this resource ID to be encoded as the resource ID. Reference to object of type org.hl7.fhir.instance.model.api.IIdType",
+          "title": "Force Resource Id",
           "required": false,
           "deprecated": false
         },
@@ -10691,16 +11487,16 @@ var _apacheCamelModel ={
         },
         "encodeElements": {
           "kind": "attribute",
-          "type": "object",
-          "description": "If provided, specifies the elements which should be encoded, to the exclusion of all others. Valid values for this field would include: Patient - Encode patient and all its children Patient.name - Encode only the patient's name Patient.name.family - Encode only the patient's family name .text - Encode the text element on any resource (only the very first position may contain a wildcard) .(mandatory) - This is a special case which causes any mandatory fields (min 0) to be encoded",
+          "type": "string",
+          "description": "If provided, specifies the elements which should be encoded, to the exclusion of all others. Multiple elements can be separated by comma when using String parameter. Valid values for this field would include: Patient - Encode patient and all its children Patient.name - Encode only the patient's name Patient.name.family - Encode only the patient's family name .text - Encode the text element on any resource (only the very first position may contain a wildcard) .(mandatory) - This is a special case which causes any mandatory fields (min 0) to be encoded",
           "title": "Encode Elements",
           "required": false,
           "deprecated": false
         },
         "dontEncodeElements": {
           "kind": "attribute",
-          "type": "object",
-          "description": "If provided, specifies the elements which should NOT be encoded. Valid values for this field would include: Patient - Don't encode patient and all its children Patient.name - Don't encode the patient's name Patient.name.family - Don't encode the patient's family name .text - Don't encode the text element on any resource (only the very first position may contain a wildcard) DSTU2 note: Note that values including meta, such as Patient.meta will work for DSTU2 parsers, but values with subelements on meta such as Patient.meta.lastUpdated will only work in DSTU3 mode.",
+          "type": "string",
+          "description": "If provided, specifies the elements which should NOT be encoded. Multiple elements can be separated by comma when using String parameter. Valid values for this field would include: Patient - Don't encode patient and all its children Patient.name - Don't encode the patient's name Patient.name.family - Don't encode the patient's family name .text - Don't encode the text element on any resource (only the very first position may contain a wildcard) DSTU2 note: Note that values including meta, such as Patient.meta will work for DSTU2 parsers, but values with subelements on meta such as Patient.meta.lastUpdated will only work in DSTU3 mode.",
           "title": "Dont Encode Elements",
           "required": false,
           "deprecated": false
@@ -10743,8 +11539,8 @@ var _apacheCamelModel ={
         },
         "dontStripVersionsFromReferencesAtPaths": {
           "kind": "attribute",
-          "type": "array",
-          "description": "If supplied value(s), any resource references at the specified paths will have their resource versions encoded instead of being automatically stripped during the encoding process. This setting has no effect on the parsing process. This method provides a finer-grained level of control than setStripVersionsFromReferences(String) and any paths specified by this method will be encoded even if setStripVersionsFromReferences(String) has been set to true (which is the default)",
+          "type": "string",
+          "description": "If supplied value(s), any resource references at the specified paths will have their resource versions encoded instead of being automatically stripped during the encoding process. This setting has no effect on the parsing process. Multiple elements can be separated by comma when using String parameter. This method provides a finer-grained level of control than setStripVersionsFromReferences(String) and any paths specified by this method will be encoded even if setStripVersionsFromReferences(String) has been set to true (which is the default)",
           "title": "Dont Strip Versions From References At Paths",
           "required": false,
           "deprecated": false
@@ -11527,7 +12323,7 @@ var _apacheCamelModel ={
         "dataFormatTypes": {
           "kind": "attribute",
           "type": "string",
-          "description": "The classes to take into account for the marshalling",
+          "description": "The classes to take into account for the marshalling. Multiple classes can be separated by comma.",
           "title": "Data Format Types",
           "required": false,
           "deprecated": false
@@ -11535,7 +12331,7 @@ var _apacheCamelModel ={
         "mainFormatType": {
           "kind": "attribute",
           "type": "string",
-          "description": "The classes to take into account while unmarshalling",
+          "description": "The class to take into account while unmarshalling.",
           "title": "Main Format Type",
           "required": false,
           "deprecated": false
@@ -11589,6 +12385,15 @@ var _apacheCamelModel ={
           "description": "The data format to be used",
           "title": "Data Format Type",
           "required": true,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
+          "required": false,
           "deprecated": false
         },
         "id": {
@@ -12081,6 +12886,82 @@ var _apacheCamelModel ={
         }
       }
     },
+    "swiftMt": {
+      "type": "object",
+      "title": "SWIFT MT",
+      "group": "dataformat,transformation,swift",
+      "icon": "generic24.png",
+      "description": "Encode and decode SWIFT MT messages.",
+      "properties": {
+        "writeInJson": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "The flag indicating that messages must be marshalled in a JSON format.",
+          "title": "Write In Json",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "The id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "swiftMx": {
+      "type": "object",
+      "title": "SWIFT MX",
+      "group": "dataformat,transformation,swift",
+      "icon": "generic24.png",
+      "description": "Encode and decode SWIFT MX messages.",
+      "properties": {
+        "writeConfigRef": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Refers to a specific configuration to use when marshalling a message to lookup from the registry.",
+          "title": "Write Config Ref",
+          "required": false,
+          "deprecated": false
+        },
+        "writeInJson": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "The flag indicating that messages must be marshalled in a JSON format.",
+          "title": "Write In Json",
+          "required": false,
+          "deprecated": false
+        },
+        "readMessageId": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "The type of MX message to produce when unmarshalling an input stream. If not set, it will be automatically detected from the namespace used.",
+          "title": "Read Message Id",
+          "required": false,
+          "deprecated": false
+        },
+        "readConfigRef": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Refers to a specific configuration to use when unmarshalling an input stream to lookup from the registry.",
+          "title": "Read Config Ref",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "The id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
     "syslog": {
       "type": "object",
       "title": "Syslog",
@@ -12320,7 +13201,7 @@ var _apacheCamelModel ={
           "kind": "attribute",
           "type": "boolean",
           "defaultValue": "true",
-          "description": "Whether or not the trailing white spaces must ignored. The default value is true",
+          "description": "Whether or not the trailing white spaces must be ignored. The default value is true",
           "title": "Ignore Trailing Whitespaces",
           "required": false,
           "deprecated": false
@@ -12476,7 +13357,7 @@ var _apacheCamelModel ={
           "kind": "attribute",
           "type": "boolean",
           "defaultValue": "true",
-          "description": "Whether or not the trailing white spaces must ignored. The default value is true",
+          "description": "Whether or not the trailing white spaces must be ignored. The default value is true",
           "title": "Ignore Trailing Whitespaces",
           "required": false,
           "deprecated": false
@@ -12640,7 +13521,7 @@ var _apacheCamelModel ={
           "kind": "attribute",
           "type": "boolean",
           "defaultValue": "true",
-          "description": "Whether or not the trailing white spaces must ignored. The default value is true",
+          "description": "Whether or not the trailing white spaces must be ignored. The default value is true",
           "title": "Ignore Trailing Whitespaces",
           "required": false,
           "deprecated": false
@@ -12763,6 +13644,15 @@ var _apacheCamelModel ={
           "defaultValue": "false",
           "description": "Indicates whether null is allowed as value of a body to unmarshall.",
           "title": "Allow Null Body",
+          "required": false,
+          "deprecated": false
+        },
+        "disabled": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to disable this EIP from the route during build time. Once an EIP has been disabled then it cannot be enabled later at runtime.",
+          "title": "Disabled",
           "required": false,
           "deprecated": false
         },
@@ -13226,7 +14116,7 @@ var _apacheCamelModel ={
         "resultType": {
           "kind": "attribute",
           "type": "string",
-          "description": "Sets the class name of the constant type",
+          "description": "Sets the class of the result type (type from output)",
           "title": "Result Type",
           "required": false,
           "deprecated": false
@@ -13268,7 +14158,7 @@ var _apacheCamelModel ={
         "resultType": {
           "kind": "attribute",
           "type": "string",
-          "description": "Sets the class name of the result type (type from output)",
+          "description": "Sets the class of the result type (type from output)",
           "title": "Result Type",
           "required": false,
           "deprecated": false
@@ -13326,7 +14216,7 @@ var _apacheCamelModel ={
         "resultType": {
           "kind": "attribute",
           "type": "string",
-          "description": "Sets the class name of the result type (type from output) The default result type is com.datasonnet.document.Document",
+          "description": "Sets the class of the result type (type from output)",
           "title": "Result Type",
           "required": false,
           "deprecated": false
@@ -13433,6 +14323,14 @@ var _apacheCamelModel ={
           "required": true,
           "deprecated": false
         },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
         "trim": {
           "kind": "attribute",
           "type": "boolean",
@@ -13501,6 +14399,30 @@ var _apacheCamelModel ={
           "required": true,
           "deprecated": false
         },
+        "headerName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of header to use as input, instead of the message body It has as higher precedent than the propertyName if both are set.",
+          "title": "Header Name",
+          "required": false,
+          "deprecated": false
+        },
+        "propertyName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of property to use as input, instead of the message body. It has a lower precedent than the headerName if both are set.",
+          "title": "Property Name",
+          "required": false,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
         "trim": {
           "kind": "attribute",
           "type": "boolean",
@@ -13556,7 +14478,7 @@ var _apacheCamelModel ={
         "resultType": {
           "kind": "attribute",
           "type": "string",
-          "description": "Sets the class name of the result type (type from output)",
+          "description": "Sets the class of the result type (type from output)",
           "title": "Result Type",
           "required": false,
           "deprecated": false
@@ -13595,6 +14517,22 @@ var _apacheCamelModel ={
           "required": true,
           "deprecated": false
         },
+        "headerName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of header to use as input, instead of the message body It has as higher precedent than the propertyName if both are set.",
+          "title": "Header Name",
+          "required": false,
+          "deprecated": false
+        },
+        "propertyName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of property to use as input, instead of the message body. It has a lower precedent than the headerName if both are set.",
+          "title": "Property Name",
+          "required": false,
+          "deprecated": false
+        },
         "resultType": {
           "kind": "attribute",
           "type": "string",
@@ -13603,11 +14541,45 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
-        "headerName": {
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
           "kind": "attribute",
           "type": "string",
-          "description": "Name of header to use as input, instead of the message body It has as higher precedent than the propertyName if both are set.",
-          "title": "Header Name",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "js": {
+      "type": "object",
+      "title": "JavaScript",
+      "group": "language,javascript",
+      "icon": "generic24.png",
+      "description": "Evaluates a JavaScript expression.",
+      "properties": {
+        "expression": {
+          "kind": "value",
+          "type": "string",
+          "description": "The expression value in your chosen language syntax",
+          "title": "Expression",
+          "required": true,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
           "required": false,
           "deprecated": false
         },
@@ -13643,14 +14615,6 @@ var _apacheCamelModel ={
           "description": "The expression value in your chosen language syntax",
           "title": "Expression",
           "required": true,
-          "deprecated": false
-        },
-        "resultType": {
-          "kind": "attribute",
-          "type": "string",
-          "description": "Sets the class name of the result type (type from output)",
-          "title": "Result Type",
-          "required": false,
           "deprecated": false
         },
         "suppressExceptions": {
@@ -13689,11 +14653,12 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
-        "headerName": {
+        "unpackArray": {
           "kind": "attribute",
-          "type": "string",
-          "description": "Name of header to use as input, instead of the message body",
-          "title": "Header Name",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to unpack a single element json-array into an object.",
+          "title": "Unpack Array",
           "required": false,
           "deprecated": false
         },
@@ -13703,6 +14668,30 @@ var _apacheCamelModel ={
           "enum": [ "DEFAULT_PATH_LEAF_TO_NULL", "ALWAYS_RETURN_LIST", "AS_PATH_LIST", "SUPPRESS_EXCEPTIONS", "REQUIRE_PROPERTIES" ],
           "description": "To configure additional options on JSONPath. Multiple values can be separated by comma.",
           "title": "Option",
+          "required": false,
+          "deprecated": false
+        },
+        "headerName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of header to use as input, instead of the message body It has as higher precedent than the propertyName if both are set.",
+          "title": "Header Name",
+          "required": false,
+          "deprecated": false
+        },
+        "propertyName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of property to use as input, instead of the message body. It has a lower precedent than the headerName if both are set.",
+          "title": "Property Name",
+          "required": false,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
           "required": false,
           "deprecated": false
         },
@@ -13808,6 +14797,14 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
         "trim": {
           "kind": "attribute",
           "type": "boolean",
@@ -13840,6 +14837,14 @@ var _apacheCamelModel ={
           "description": "The expression value in your chosen language syntax",
           "title": "Expression",
           "required": true,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
           "deprecated": false
         },
         "trim": {
@@ -13876,6 +14881,14 @@ var _apacheCamelModel ={
           "required": true,
           "deprecated": false
         },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
         "trim": {
           "kind": "attribute",
           "type": "boolean",
@@ -13910,6 +14923,14 @@ var _apacheCamelModel ={
           "required": true,
           "deprecated": false
         },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
         "trim": {
           "kind": "attribute",
           "type": "boolean",
@@ -13942,6 +14963,14 @@ var _apacheCamelModel ={
           "description": "The expression value in your chosen language syntax",
           "title": "Expression",
           "required": true,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
           "deprecated": false
         },
         "trim": {
@@ -13981,7 +15010,7 @@ var _apacheCamelModel ={
         "resultType": {
           "kind": "attribute",
           "type": "string",
-          "description": "Sets the class name of the result type (type from output)",
+          "description": "Sets the class of the result type (type from output)",
           "title": "Result Type",
           "required": false,
           "deprecated": false
@@ -14018,6 +15047,14 @@ var _apacheCamelModel ={
           "description": "The expression value in your chosen language syntax",
           "title": "Expression",
           "required": true,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
           "deprecated": false
         },
         "trim": {
@@ -14070,14 +15107,6 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
-        "headerName": {
-          "kind": "attribute",
-          "type": "string",
-          "description": "Name of header to tokenize instead of using the message body.",
-          "title": "Header Name",
-          "required": false,
-          "deprecated": false
-        },
         "regex": {
           "kind": "attribute",
           "type": "boolean",
@@ -14127,6 +15156,22 @@ var _apacheCamelModel ={
           "defaultValue": "false",
           "description": "To skip the very first element",
           "title": "Skip First",
+          "required": false,
+          "deprecated": false
+        },
+        "headerName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of header to use as input, instead of the message body It has as higher precedent than the propertyName if both are set.",
+          "title": "Header Name",
+          "required": false,
+          "deprecated": false
+        },
+        "propertyName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of property to use as input, instead of the message body. It has a lower precedent than the headerName if both are set.",
+          "title": "Property Name",
           "required": false,
           "deprecated": false
         },
@@ -14216,14 +15261,6 @@ var _apacheCamelModel ={
           "required": false,
           "deprecated": false
         },
-        "headerName": {
-          "kind": "attribute",
-          "type": "string",
-          "description": "Name of header to use as input, instead of the message body",
-          "title": "Header Name",
-          "required": false,
-          "deprecated": false
-        },
         "threadSafety": {
           "kind": "attribute",
           "type": "boolean",
@@ -14247,6 +15284,22 @@ var _apacheCamelModel ={
           "type": "array",
           "description": "Injects the XML Namespaces of prefix - uri mappings",
           "title": "Namespace",
+          "required": false,
+          "deprecated": false
+        },
+        "headerName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of header to use as input, instead of the message body It has as higher precedent than the propertyName if both are set.",
+          "title": "Header Name",
+          "required": false,
+          "deprecated": false
+        },
+        "propertyName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of property to use as input, instead of the message body. It has a lower precedent than the headerName if both are set.",
+          "title": "Property Name",
           "required": false,
           "deprecated": false
         },
@@ -14284,19 +15337,19 @@ var _apacheCamelModel ={
           "required": true,
           "deprecated": false
         },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
         "type": {
           "kind": "attribute",
           "type": "string",
           "description": "Sets the class name of the result type (type from output) The default result type is NodeSet",
           "title": "Type",
-          "required": false,
-          "deprecated": false
-        },
-        "headerName": {
-          "kind": "attribute",
-          "type": "string",
-          "description": "Name of header to use as input, instead of the message body",
-          "title": "Header Name",
           "required": false,
           "deprecated": false
         },
@@ -14313,6 +15366,22 @@ var _apacheCamelModel ={
           "type": "array",
           "description": "Injects the XML Namespaces of prefix - uri mappings",
           "title": "Namespace",
+          "required": false,
+          "deprecated": false
+        },
+        "headerName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of header to use as input, instead of the message body It has as higher precedent than the propertyName if both are set.",
+          "title": "Header Name",
+          "required": false,
+          "deprecated": false
+        },
+        "propertyName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of property to use as input, instead of the message body. It has a lower precedent than the headerName if both are set.",
+          "title": "Property Name",
           "required": false,
           "deprecated": false
         },
@@ -14342,14 +15411,6 @@ var _apacheCamelModel ={
       "icon": "generic24.png",
       "description": "Tokenize XML payloads.",
       "properties": {
-        "headerName": {
-          "kind": "attribute",
-          "type": "string",
-          "description": "Name of header to tokenize instead of using the message body.",
-          "title": "Header Name",
-          "required": false,
-          "deprecated": false
-        },
         "mode": {
           "kind": "attribute",
           "type": "enum",
@@ -14372,6 +15433,22 @@ var _apacheCamelModel ={
           "type": "array",
           "description": "Injects the XML Namespaces of prefix - uri mappings",
           "title": "Namespace",
+          "required": false,
+          "deprecated": false
+        },
+        "headerName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of header to use as input, instead of the message body It has as higher precedent than the propertyName if both are set.",
+          "title": "Header Name",
+          "required": false,
+          "deprecated": false
+        },
+        "propertyName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of property to use as input, instead of the message body. It has a lower precedent than the headerName if both are set.",
+          "title": "Property Name",
           "required": false,
           "deprecated": false
         },
