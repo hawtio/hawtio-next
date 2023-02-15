@@ -5,7 +5,7 @@ import { routesService } from './routes-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import fs from 'fs'
 import path from 'path'
-import $ from 'jquery'
+import { parseXML } from '@hawtiosrc/util/xml'
 import { IconNames } from './icons'
 
 jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
@@ -19,8 +19,9 @@ describe('routes-service', () => {
   const testRouteId = 'simple'
   const routesXmlPath = path.resolve(__dirname, 'testdata', 'camel-sample-app-routes.xml')
   const sampleRoutesXml = fs.readFileSync(routesXmlPath, { encoding: 'utf8', flag: 'r' })
-  const doc: XMLDocument = $.parseXML(sampleRoutesXml as string)
-  const simpleRouteXml = $(doc).find("route[id='" + testRouteId + "']")[0]
+  const routesDoc: XMLDocument = parseXML(sampleRoutesXml as string)
+  // eslint-disable-next-line testing-library/no-node-access
+  const simpleRouteXml = routesDoc.getElementById(testRouteId) as Element
 
   jolokiaService.execute = jest.fn(async (mbean: string, operation: string, args?: unknown[]): Promise<unknown> => {
     if (

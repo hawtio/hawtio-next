@@ -5,6 +5,7 @@ import { log } from './globals'
 import $ from 'jquery'
 import { schemaService } from './schema-service'
 import * as icons from './icons'
+import { parseXML } from '@hawtiosrc/util/xml'
 
 class RoutesService {
   private getIcon(nodeSettingsOrXmlNode: Record<string, unknown> | Element): React.ReactNode {
@@ -110,13 +111,12 @@ class RoutesService {
       throw new Error('Failed to extract any xml from mbean: ' + mbeanName)
     }
 
-    const doc: XMLDocument = $.parseXML(xml as string)
-    const routes = $(doc).find("route[id='" + routeNode.name + "']")
-    if (routes && routes.length > 0) {
-      return routes[0]
-    } else {
+    const doc: XMLDocument = parseXML(xml as string)
+    const route = doc.getElementById(routeNode.name)
+    if (!route || route?.tagName?.toLowerCase() !== 'route') {
       throw new Error(`No routes in ${routeNode.name} route xml`)
     }
+    return route
   }
 
   transformXml(contextNode: MBeanNode | null, routesNode: MBeanNode | null) {
