@@ -1,5 +1,5 @@
 import { apacheCamelModel } from '@hawtio/plugins/camel/model'
-import { isObject, pathGet, isString } from '@hawtio/util/objects'
+import { isObject, isString } from '@hawtio/util/objects'
 import clone from 'clone'
 
 class SchemaService {
@@ -24,23 +24,24 @@ class SchemaService {
     }
 
     // we may extend another, if so we need to copy in the base properties
-    let extendsTypes = pathGet(answer, ["extends", "type"])
-    if (! extendsTypes) return answer
+    let extendsTypes: string[] = []
+    if (answer?.extends) {
+      extendsTypes.push('extends')
+    }
+    if (answer?.type) {
+      extendsTypes.push('type')
+    }
+    if (extendsTypes.length === 0) return answer
 
     const fullSchema = clone(answer)
     fullSchema.properties = fullSchema.properties || {}
-    if (extendsTypes.constructor !== Array) {
-      extendsTypes = [extendsTypes]
-    }
-    for (const extendType in extendsTypes) {
-      if (isString(extendType)) {
-        const extendDef = this.lookupDefinition(extendType, schema)
-        const properties = pathGet(extendDef, ["properties"])
-        if (isObject(properties)) {
-          for (const [key, property] of Object.entries(properties)) {
-            const fp: Record<string, unknown> = fullSchema.properties as Record<string, unknown>
-            fp[key] = property
-          }
+    for (const extendType of extendsTypes) {
+      const extendDef = this.lookupDefinition((fullSchema[extendType] as string), schema)
+      const properties = extendDef?.properties
+      if (isObject(properties)) {
+        for (const [key, property] of Object.entries(properties)) {
+          const fp: Record<string, unknown> = fullSchema.properties as Record<string, unknown>
+          fp[key] = property
         }
       }
     }
