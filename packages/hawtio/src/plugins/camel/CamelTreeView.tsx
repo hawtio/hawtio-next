@@ -1,6 +1,7 @@
-import React, { ChangeEvent, useState, useContext } from 'react'
-import { PluginTreeViewToolbar, MBeanNode, MBeanTree } from '@hawtio/plugins/shared'
+import { MBeanNode, MBeanTree, PluginTreeViewToolbar } from '@hawtio/plugins/shared'
 import { TreeView, TreeViewDataItem } from '@patternfly/react-core'
+import React, { ChangeEvent, useContext, useState } from 'react'
+import './CamelTreeView.css'
 import { CamelContext } from './context'
 
 export const CamelTreeView: React.FunctionComponent = () => {
