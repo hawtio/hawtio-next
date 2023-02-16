@@ -1966,9 +1966,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hawtio/camel-model-react@workspace:*, @hawtio/camel-model-react@workspace:packages/camel-model":
+"@hawtio/camel-model@workspace:*, @hawtio/camel-model@workspace:packages/camel-model":
   version: 0.0.0-use.local
-  resolution: "@hawtio/camel-model-react@workspace:packages/camel-model"
+  resolution: "@hawtio/camel-model@workspace:packages/camel-model"
   dependencies:
     tsup: ^6.6.2
   peerDependencies:
@@ -1997,7 +1997,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hawtio/react@workspace:packages/hawtio"
   dependencies:
-    "@hawtio/camel-model-react": "workspace:*"
+    "@hawtio/camel-model": "workspace:*"
     "@patternfly/react-core": ^4.267.6
     "@patternfly/react-table": ^4.112.6
     "@testing-library/jest-dom": ^5.16.5

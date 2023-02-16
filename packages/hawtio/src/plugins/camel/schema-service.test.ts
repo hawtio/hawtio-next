@@ -1,5 +1,5 @@
 import { schemaService } from './schema-service'
-import { apacheCamelModel } from '@hawtio/camel-model-react'
+import { apacheCamelModel } from '@hawtio/camel-model'
 import { isObject } from '@hawtiosrc/util/objects'
 import path from 'path'
 import fs from 'fs'
