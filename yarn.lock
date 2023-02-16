@@ -1971,7 +1971,6 @@ __metadata:
   resolution: "@hawtio/camel-model@workspace:packages/camel-model"
   dependencies:
     tsup: ^6.6.2
-  peerDependencies:
     typescript: ^4.9.5
   languageName: unknown
   linkType: soft

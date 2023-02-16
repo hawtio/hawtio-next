@@ -28,7 +28,8 @@
     "lint:fix": "yarn lint --fix",
     "format:check": "yarn prettier --check .",
     "format:fix": "yarn prettier --write .",
-    "release:packages:hawtio": "yarn workspace @hawtio/react npm publish"
+    "release:camel-model": "yarn workspace @hawtio/camel-model npm publish",
+    "release:hawtio": "yarn workspace @hawtio/react npm publish"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.50.0",
