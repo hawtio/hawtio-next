@@ -58,7 +58,7 @@
   "devDependencies": {
     "eslint-config-react-app": "^7.0.1",
     "jest": "^29.4.2",
-    "jest-environment-jsdom": "^29.4.2",
+    "jest-environment-jsdom": "^29.4.3",
     "jest-fetch-mock": "^3.0.3",
     "jest-watch-typeahead": "^2.2.2",
     "replace": "^1.2.2",
