@@ -1,4 +1,4 @@
-import { apacheCamelModel, apacheCamelModelVersion } from '@hawtio/camel-model-react'
+import { apacheCamelModel, apacheCamelModelVersion } from '@hawtio/camel-model'
 import { isObject, cloneObject } from '@hawtiosrc/util/objects'
 
 console.log('Using camel version: ' + apacheCamelModelVersion)

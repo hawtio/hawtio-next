@@ -1,5 +1,5 @@
 {
-  "name": "@hawtio/camel-model-react",
+  "name": "@hawtio/camel-model",
   "version": "0.1.0-dev",
   "description": "Camel Catalog Definition Model",
   "main": "./dist/index.js",

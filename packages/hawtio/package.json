@@ -32,7 +32,7 @@
     "prepack": "yarn build && yarn replace-version"
   },
   "dependencies": {
-    "@hawtio/camel-model-react": "workspace:*",
+    "@hawtio/camel-model": "workspace:*",
     "@patternfly/react-core": "^4.267.6",
     "@patternfly/react-table": "^4.112.6",
     "@testing-library/jest-dom": "^5.16.5",
