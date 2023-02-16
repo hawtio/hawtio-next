@@ -2,7 +2,7 @@ import React from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import { hawtio } from './core'
 import './Hawtio.css'
-import { HawtioPage } from './ui/page/HawtioPage'
+import { HawtioPage } from './ui/page'
 
 export type HawtioProps = {
   basepath?: string

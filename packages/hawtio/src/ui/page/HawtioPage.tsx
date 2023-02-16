@@ -12,7 +12,7 @@ import {
 import { CubesIcon } from '@patternfly/react-icons'
 import React from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import { HawtioNotification } from '../notification/HawtioNotification'
+import { HawtioNotification } from '../notification'
 import { PageContext, usePlugins } from './context'
 import { HawtioBackground } from './HawtioBackground'
 import { HawtioHeader } from './HawtioHeader'
