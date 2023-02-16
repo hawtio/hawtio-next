@@ -6,6 +6,9 @@
   "types": "./dist/index.d.ts",
   "author": "Hawtio developer team",
   "license": "Apache-2.0",
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hawtio/hawtio-next.git"
@@ -17,14 +20,13 @@
     "javascript"
   ],
   "scripts": {
+    "build": "tsup --clean",
     "generate": "./mvnw compile",
-    "build": "yarn generate && tsup --clean",
-    "test": "echo \"no tests to run\""
-  },
-  "peerDependencies": {
-    "typescript": "^4.9.5"
+    "test": "echo \"no tests to run\"",
+    "prepack": "yarn build"
   },
   "devDependencies": {
-    "tsup": "^6.6.2"
+    "tsup": "^6.6.2",
+    "typescript": "^4.9.5"
   }
 }
