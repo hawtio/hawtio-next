@@ -1,6 +1,4 @@
 import {
-  Card,
-  CardBody,
   EmptyState,
   EmptyStateIcon,
   EmptyStateVariant,
@@ -14,17 +12,17 @@ import {
   Text,
   Title,
 } from '@patternfly/react-core'
-import { CubesIcon, InfoCircleIcon } from '@patternfly/react-icons'
-import { OnRowClick, Table, TableBody, TableHeader, TableProps } from '@patternfly/react-table'
+import { CubesIcon } from '@patternfly/react-icons'
 import React, { useContext } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { Attributes } from './attributes/Attributes'
 import { Chart } from './chart/Chart'
 import { MBeanTreeContext } from './context'
 import { Operations } from './operations/Operations'
+import { JmxContentMBeans } from '@hawtiosrc/plugins/shared/components'
 
 export const JmxContent: React.FunctionComponent = () => {
-  const { node } = useContext(MBeanTreeContext)
+  const { node, setNode } = useContext(MBeanTreeContext)
   const { pathname, search } = useLocation()
 
   if (!node) {
@@ -80,48 +78,8 @@ export const JmxContent: React.FunctionComponent = () => {
             </Routes>
           </React.Fragment>
         )}
-        {!node.objectName && <JmxContentMBeans />}
+        {!node.objectName && <JmxContentMBeans node={node} setNode={setNode} />}
       </PageSection>
     </React.Fragment>
-  )
-}
-
-const JmxContentMBeans: React.FunctionComponent = () => {
-  const { node, setNode } = useContext(MBeanTreeContext)
-
-  if (!node) {
-    return null
-  }
-
-  const columns: TableProps['cells'] = ['MBean', 'Object Name']
-  const rows: TableProps['rows'] = (node.children || []).map(child => [child.name, child.objectName || '-'])
-
-  if (rows.length === 0) {
-    return (
-      <Card>
-        <CardBody>
-          <Text component='p'>
-            <InfoCircleIcon /> This node has no MBeans.
-          </Text>
-        </CardBody>
-      </Card>
-    )
-  }
-
-  const selectChild: OnRowClick = (_event, row) => {
-    const clicked = row[0]
-    const selected = node.children?.find(child => child.name === clicked)
-    if (selected) {
-      setNode(selected)
-    }
-  }
-
-  return (
-    <Card isFullHeight>
-      <Table aria-label='MBeans' variant='compact' cells={columns} rows={rows}>
-        <TableHeader />
-        <TableBody onRowClick={selectChild} />
-      </Table>
-    </Card>
   )
 }
