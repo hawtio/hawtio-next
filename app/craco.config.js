@@ -48,7 +48,10 @@ module.exports = {
     },
   },
   devServer: {
-    setupMiddlewares: middlewares => {
+    setupMiddlewares: (middlewares, devServer) => {
+      // Redirect / to /hawtio/
+      devServer.app.get('/', (req, res) => res.redirect('/hawtio/'))
+
       middlewares.push({
         name: 'hawtio-backend',
         path: '/proxy',
