@@ -13,6 +13,7 @@ import { CubesIcon } from '@patternfly/react-icons'
 import { CamelTreeView } from './CamelTreeView'
 import { CamelContent } from './CamelContent'
 import { useCamelTree, CamelContext } from './context'
+import './Camel.css'
 
 export const Camel: React.FunctionComponent = () => {
   //
@@ -44,7 +45,7 @@ export const Camel: React.FunctionComponent = () => {
 
   return (
     <CamelContext.Provider value={{ tree, node, setNode }}>
-      <Split className='camel-split' sizes={[30, 70]} minSize={200} gutterSize={5}>
+      <Split className='camel-split' sizes={[25, 75]} minSize={200} gutterSize={5}>
         <div>
           <CamelTreeView />
         </div>

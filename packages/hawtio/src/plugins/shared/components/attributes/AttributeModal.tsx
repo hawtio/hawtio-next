@@ -8,40 +8,39 @@ import {
   TextArea,
   TextInput,
 } from '@patternfly/react-core'
-import React, { useContext, useEffect, useState } from 'react'
-import { MBeanTreeContext } from '../context'
+import React, { useEffect, useState } from 'react'
 import { attributeService } from './attribute-service'
+import { NodeProps } from '../NodeProps'
 
-export type AttributeModalProps = {
+export interface AttributeModalProps extends NodeProps {
   isOpen: boolean
   onClose: () => void
   input: { name: string; value: string }
 }
 
 export const AttributeModal: React.FunctionComponent<AttributeModalProps> = props => {
-  const { node } = useContext(MBeanTreeContext)
   const { isOpen, onClose, input } = props
   const { name, value } = input
   const [jolokiaUrl, setJolokiaUrl] = useState('Loading...')
 
   useEffect(() => {
-    if (!node || !node.objectName) {
+    if (!props.node || !props.node.objectName) {
       return
     }
 
-    const mbean = node.objectName
+    const mbean = props.node.objectName
     const buildUrl = async () => {
       const url = await attributeService.buildUrl(mbean, name)
       setJolokiaUrl(url)
     }
     buildUrl()
-  }, [node, name])
+  }, [props.node, name])
 
-  if (!node || !node.mbean || !node.objectName) {
+  if (!props.node || !props.node.mbean || !props.node.objectName) {
     return null
   }
 
-  const attribute = node.mbean.attr[name]
+  const attribute = props.node.mbean.attr[name]
   if (!attribute) {
     return null
   }

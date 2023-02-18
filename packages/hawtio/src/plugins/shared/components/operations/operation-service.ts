@@ -1,5 +1,5 @@
 import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
-import { log } from '../globals'
+import { log } from '../../globals'
 
 class OperationService {
   async execute(mbean: string, operation: string, args: unknown[]): Promise<string> {

@@ -1,8 +1,9 @@
 import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import React from 'react'
-import { jmxDomain } from './globals'
+import { jmxDomain, camelContexts, camelCtx, routes, endpoints, components, dataformats } from './globals'
 import { routesService } from './routes-service'
+import * as ccs from './camel-content-service'
 import { IconNames, getIcon } from './icons'
 
 /**
@@ -26,7 +27,8 @@ function adoptChild(parent: MBeanNode | null, child: MBeanNode | null, type: str
 
   parent.adopt(child)
   child.setIcons(childIcon)
-  child.addProperty('type', type)
+  ccs.setType(child, type)
+  ccs.setDomain(child)
 }
 
 function setChildIcon(node: MBeanNode | null, childIcon: React.ReactNode) {
@@ -48,15 +50,16 @@ export function processTreeDomain(domainNode: MBeanNode) {
   const contexts = domainNode.removeChildren()
 
   // Create the initial contexts group node
-  const groupNode = domainNode.getOrCreate('Camel Contexts', true)
+  const groupNode = domainNode.getOrCreate(camelContexts, true)
   groupNode.icon = getIcon(IconNames.CamelIcon)
   groupNode.expandedIcon = domainNode.icon
   groupNode.addProperty('class', 'org-apache-camel-context-folder')
-  groupNode.addProperty('type', 'context')
-  groupNode.addProperty('key', 'camelContexts')
+  groupNode.addProperty('key', camelContexts)
+  ccs.setType(groupNode, camelCtx)
+  ccs.setDomain(groupNode)
 
   contexts.forEach((context: MBeanNode) => {
-    const contextCategory = context.get('context')
+    const contextCategory = context.get(camelCtx)
     let newCtxNode: MBeanNode | null = null
     if (contextCategory && contextCategory.childCount() === 1) {
       newCtxNode = contextCategory.getIndex(0)
@@ -71,22 +74,22 @@ export function processTreeDomain(domainNode: MBeanNode) {
     const endPointIcon = getIcon(IconNames.EndpointsNodeIcon)
     const routeIcon = getIcon(IconNames.CamelRouteIcon)
 
-    const routesNode = context.get('routes')
-    adoptChild(newCtxNode, routesNode, 'routes', endPointFolderIcon)
+    const routesNode = context.get(routes)
+    adoptChild(newCtxNode, routesNode, routes, endPointFolderIcon)
     setChildIcon(routesNode, routeIcon)
 
     routesService.transformXml(newCtxNode, routesNode)
 
-    const endpointsNode = context.get('endpoints')
-    adoptChild(newCtxNode, endpointsNode, 'endpoints', endPointFolderIcon)
+    const endpointsNode = context.get(endpoints)
+    adoptChild(newCtxNode, endpointsNode, endpoints, endPointFolderIcon)
     setChildIcon(endpointsNode, endPointIcon)
 
-    const componentsNode = context.get('components')
-    adoptChild(newCtxNode, componentsNode, 'components', endPointFolderIcon)
+    const componentsNode = context.get(components)
+    adoptChild(newCtxNode, componentsNode, components, endPointFolderIcon)
     setChildIcon(componentsNode, endPointIcon)
 
-    const dataFormatsNode = context.get('dataformats')
-    adoptChild(newCtxNode, dataFormatsNode, 'dataformats', endPointFolderIcon)
+    const dataFormatsNode = context.get(dataformats)
+    adoptChild(newCtxNode, dataFormatsNode, dataformats, endPointFolderIcon)
 
     //
     // Add all other entries which are not one of
@@ -98,11 +101,11 @@ export function processTreeDomain(domainNode: MBeanNode) {
       .filter(
         child =>
           !(
-            child.name === 'context' ||
-            child.name === 'routes' ||
-            child.name === 'endpoints' ||
-            child.name === 'components' ||
-            child.name === 'dataformats'
+            child.name === camelCtx ||
+            child.name === routes ||
+            child.name === endpoints ||
+            child.name === components ||
+            child.name === dataformats
           ),
       )
       .forEach(child => mBeansNode.adopt(child))

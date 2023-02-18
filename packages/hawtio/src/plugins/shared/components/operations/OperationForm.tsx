@@ -22,27 +22,26 @@ import {
   Title,
 } from '@patternfly/react-core'
 import React, { useContext, useState } from 'react'
-import { MBeanTreeContext } from '../context'
 import { Operation } from './operation'
 import { operationService } from './operation-service'
 import './OperationForm.css'
+import { NodeProps } from '../NodeProps'
 
-export type OperationFormProps = {
+export interface OperationFormProps extends NodeProps {
   name: string
   operation: Operation
 }
 
 export const OperationForm: React.FunctionComponent<OperationFormProps> = props => {
-  const { node } = useContext(MBeanTreeContext)
   const { name, operation } = props
   const [isExpanded, setIsExpanded] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
-  if (!node || !node.objectName || !node.mbean) {
+  if (!props.node || !props.node.objectName || !props.node.mbean) {
     return null
   }
 
-  const { objectName } = node
+  const { objectName } = props.node
 
   const handleToggle = () => {
     setIsExpanded(!isExpanded)

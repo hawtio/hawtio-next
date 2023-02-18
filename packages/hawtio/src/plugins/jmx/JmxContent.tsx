@@ -15,11 +15,11 @@ import {
 import { CubesIcon } from '@patternfly/react-icons'
 import React, { useContext } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import { Attributes } from './attributes/Attributes'
-import { Chart } from './chart/Chart'
 import { MBeanTreeContext } from './context'
-import { Operations } from './operations/Operations'
-import { JmxContentMBeans } from '@hawtiosrc/plugins/shared/components'
+import { Chart } from '@hawtiosrc/plugins/shared/components/chart'
+import { Operations } from '@hawtiosrc/plugins/shared/components/operations'
+import { Attributes } from '@hawtiosrc/plugins/shared/components/attributes'
+import { JmxContentMBeans, NodeProps } from '@hawtiosrc/plugins/shared/components'
 
 export const JmxContent: React.FunctionComponent = () => {
   const { node, setNode } = useContext(MBeanTreeContext)
@@ -56,8 +56,12 @@ export const JmxContent: React.FunctionComponent = () => {
     </Nav>
   )
 
+  const nodeProps: NodeProps = {
+    node: node
+  }
+
   const mbeanRoutes = navItems.map(nav => (
-    <Route key={nav.id} path={nav.id} element={React.createElement(nav.component)} />
+    <Route key={nav.id} path={nav.id} element={React.createElement(nav.component, nodeProps)} />
   ))
 
   return (
