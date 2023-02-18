@@ -1,9 +1,10 @@
 import React from 'react'
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
-import { log } from './globals'
+import { log, routeNode } from './globals'
 import $ from 'jquery'
 import { schemaService } from './schema-service'
+import * as ccs from './camel-content-service'
 import * as icons from './icons'
 import { parseXML } from '@hawtiosrc/util/xml'
 
@@ -54,7 +55,8 @@ class RoutesService {
     if (nodeSettings) {
       const id = routeXml.getAttribute('id') || nodeName
       const node = new MBeanNode(parent.owner, id, nodeName, false)
-      node.addProperty('type', 'routeNode')
+      ccs.setType(node, routeNode)
+      ccs.setDomain(node)
       const icon: React.ReactNode = this.getIcon(nodeSettings)
       node.setIcons(icon)
 

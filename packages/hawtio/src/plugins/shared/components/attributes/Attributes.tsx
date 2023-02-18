@@ -4,49 +4,48 @@ import { Card, CardBody, Text } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
 import { OnRowClick, Table, TableBody, TableHeader, TableProps } from '@patternfly/react-table'
 import { IResponse } from 'jolokia.js'
-import { useContext, useEffect, useState } from 'react'
-import { MBeanTreeContext } from '../context'
-import { log } from '../globals'
+import { useEffect, useState } from 'react'
+import { log } from '../../globals'
 import { attributeService } from './attribute-service'
 import { AttributeModal } from './AttributeModal'
+import { NodeProps } from '../NodeProps'
 
-export const Attributes: React.FunctionComponent = () => {
-  const { node } = useContext(MBeanTreeContext)
+export const Attributes: React.FunctionComponent<NodeProps> = props => {
   const [attributes, setAttributes] = useState<AttributeValues>({})
   const [isReading, setIsReading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selected, setSelected] = useState({ name: '', value: '' })
 
   useEffect(() => {
-    if (!node || !node.mbean || !node.objectName) {
+    if (!props.node || !props.node.mbean || !props.node.objectName) {
       return
     }
 
     setIsReading(true)
-    const objectName = node.objectName
+    const objectName = props.node.objectName
     const readAttributes = async () => {
       const attrs = await attributeService.read(objectName)
       setAttributes(attrs)
       setIsReading(false)
     }
     readAttributes()
-  }, [node])
+  }, [props.node])
 
   useEffect(() => {
-    if (!node || !node.mbean || !node.objectName) {
+    if (!props.node || !props.node.mbean || !props.node.objectName) {
       return
     }
 
-    const mbean = node.objectName
+    const mbean = props.node.objectName
     attributeService.register({ type: 'read', mbean }, (response: IResponse) => {
       log.debug('Scheduler - Attributes:', response.value)
       setAttributes(response.value as AttributeValues)
     })
 
     return () => attributeService.unregisterAll()
-  }, [node])
+  }, [props.node])
 
-  if (!node || !node.mbean || !node.objectName) {
+  if (!props.node || !props.node.mbean || !props.node.objectName) {
     return null
   }
 

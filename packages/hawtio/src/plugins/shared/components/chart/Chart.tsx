@@ -8,12 +8,11 @@ import {
 } from '@patternfly/react-core'
 import { ClipboardCheckIcon } from '@patternfly/react-icons'
 import { useContext } from 'react'
-import { MBeanTreeContext } from '../context'
+import { NodeProps } from '../NodeProps'
 
-export const Chart: React.FunctionComponent = () => {
-  const { node } = useContext(MBeanTreeContext)
+export const Chart: React.FunctionComponent<NodeProps> = (props) => {
 
-  if (!node || !node.mbean) {
+  if (!props.node || !props.node.mbean) {
     return null
   }
 
