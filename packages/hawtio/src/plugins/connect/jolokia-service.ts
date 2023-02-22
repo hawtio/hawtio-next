@@ -102,7 +102,7 @@ class JolokiaService implements IJolokiaService {
 
   private async initJolokiaUrl(): Promise<string | null> {
     // Check remote connection
-    const conn = connectService.getCurrentConnection()
+    const conn = connectService.getCurrentConnectionName()
     if (conn) {
       log.debug('Connection name', conn, 'provided, not discovering Jolokia')
       return connectService.getJolokiaUrlFromName(conn)
@@ -166,7 +166,7 @@ class JolokiaService implements IJolokiaService {
     // TODO: hawtio-oauth may have already set up jQuery beforeSend?
     if (!$.ajaxSettings.beforeSend) {
       log.debug('Set up jQuery beforeSend')
-      $.ajaxSetup({ beforeSend: this.beforeSend() })
+      $.ajaxSetup({ beforeSend: await this.beforeSend() })
     }
 
     const options = await this.loadJolokiaOptions()
@@ -183,11 +183,11 @@ class JolokiaService implements IJolokiaService {
     return jolokia
   }
 
-  private beforeSend(): JQueryBeforeSend {
-    const connection: Connection = {} as Connection
+  private async beforeSend(): Promise<JQueryBeforeSend> {
+    const connection = connectService.getCurrentConnection()
     // Just set Authorization for now...
     const header = 'Authorization'
-    if (userService.isLogin() && userService.getToken()) {
+    if ((await userService.isLogin()) && userService.getToken()) {
       log.debug('Set authorization header to token')
       return (xhr: JQueryXHR) => {
         if (userService.getToken()) {
@@ -237,9 +237,7 @@ class JolokiaService implements IJolokiaService {
             }
           } else {
             // just logout
-            if (userService.isLogin()) {
-              userService.logout()
-            }
+            userService.isLogin().then(login => login && userService.logout())
           }
           break
         }

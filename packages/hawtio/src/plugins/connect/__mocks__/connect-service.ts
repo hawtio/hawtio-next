@@ -6,7 +6,11 @@ class MockConnectService implements IConnectService {
     console.log('Using mock connect service')
   }
 
-  getCurrentConnection(): string | null {
+  getCurrentConnectionName(): string | null {
+    return null
+  }
+
+  getCurrentConnection(): Connection | null {
     return null
   }
 

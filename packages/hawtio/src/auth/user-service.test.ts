@@ -1,15 +1,30 @@
-import { UserService } from './user-service'
+import fetchMock from 'jest-fetch-mock'
+import { userService, __testing__ } from './user-service'
 
-describe('userService', () => {
-  test('default user - login - logout', () => {
-    const service = new UserService()
-    expect(service.isLogin()).toBe(false)
-    expect(service.isDefaultUser()).toBe(true)
-    service.login('bob', 'password')
-    expect(service.isLogin()).toBe(true)
-    expect(service.isDefaultUser()).toBe(false)
-    service.logout()
-    expect(service.isLogin()).toBe(false)
-    expect(service.isDefaultUser()).toBe(true)
+describe('UserService', () => {
+  beforeEach(() => {
+    fetchMock.resetMocks()
+  })
+
+  test('userService exists', () => {
+    expect(userService).not.toBeNull()
+  })
+
+  test('default user', async () => {
+    // response for fetching /user
+    fetchMock.mockResponse('public')
+
+    const userService = new __testing__.UserService()
+    await expect(userService.getUsername()).resolves.toBe('public')
+    await expect(userService.isLogin()).resolves.toBe(false)
+  })
+
+  test('logged in as an user', async () => {
+    // response for fetching /user
+    fetchMock.mockResponse('user1')
+
+    const userService = new __testing__.UserService()
+    await expect(userService.getUsername()).resolves.toBe('user1')
+    await expect(userService.isLogin()).resolves.toBe(true)
   })
 })
