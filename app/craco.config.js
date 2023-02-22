@@ -52,6 +52,12 @@ module.exports = {
       // Redirect / to /hawtio/
       devServer.app.get('/', (req, res) => res.redirect('/hawtio/'))
 
+      // Hawtio backend API mock
+      devServer.app.get('/hawtio/user', (req, res) => res.send('"developer"'))
+      devServer.app.post('/hawtio/auth/login', (req, res) => res.send('true'))
+      devServer.app.get('/hawtio/auth/logout', (req, res) => res.redirect('/hawtio/login'))
+      devServer.app.get('/hawtio/proxy/enabled', (req, res) => res.send('true'))
+
       middlewares.push({
         name: 'hawtio-backend',
         path: '/proxy',

@@ -1,42 +1,55 @@
-import { DEFAULT_USER, log, PATH_USER } from './globals'
+import { eventService } from '..'
+import { DEFAULT_USER, log, PATH_LOGOUT, PATH_USER } from './globals'
 
 export interface IUserService {
   getUsername(): Promise<string>
   isLogin(): Promise<boolean>
   getToken(): string | null
   setToken(token: string): void
-  logout(): void
+  logout(): Promise<void>
+}
+
+type Login = {
+  username: string
+  isLogin: boolean
 }
 
 class UserService implements IUserService {
-  private username: Promise<string>
-  private login: Promise<boolean>
+  private login: Promise<Login>
   private token: string | null = null
 
   constructor() {
-    this.username = this.fetchUser()
-    this.login = this.username.then(u => u !== DEFAULT_USER)
+    this.login = this.fetchUser()
   }
 
-  private async fetchUser(): Promise<string> {
+  private async fetchUser(): Promise<Login> {
     try {
       const res = await fetch(PATH_USER)
-      const user = await res.text()
-      log.info('Logged in as:', user)
-      return user
+      if (!res.ok) {
+        log.error('Failed to login:', res.status, res.statusText)
+        return { username: DEFAULT_USER, isLogin: false }
+      }
+
+      const username = await res.json()
+      log.info('Logged in as:', username)
+
+      // Send login event
+      eventService.login()
+
+      return { username, isLogin: true }
     } catch (err) {
       // Silently ignore as mostly it's just not logged-in yet
       log.debug('Failed to get logged-in user from', PATH_USER, '-', err)
+      return { username: DEFAULT_USER, isLogin: false }
     }
-    return DEFAULT_USER
   }
 
-  getUsername(): Promise<string> {
-    return this.username
+  async getUsername(): Promise<string> {
+    return (await this.login).username
   }
 
-  isLogin(): Promise<boolean> {
-    return this.login
+  async isLogin(): Promise<boolean> {
+    return (await this.login).isLogin
   }
 
   getToken(): string | null {
@@ -47,8 +60,20 @@ class UserService implements IUserService {
     this.token = token
   }
 
-  logout() {
-    // TODO: impl
+  async logout() {
+    const login = await this.login
+    if (!login.isLogin) {
+      log.debug('Not logged in')
+      return
+    }
+
+    log.info('Logged out:', login.username)
+
+    // Send logout event
+    eventService.logout()
+
+    log.debug('Redirect to:', PATH_LOGOUT)
+    window.location.href = PATH_LOGOUT
   }
 }
 

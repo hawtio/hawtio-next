@@ -5,6 +5,14 @@
     "css": "branding-example.css",
     "favicon": "favicon.ico"
   },
+  "login": {
+    "description": "Login page for Hawtio Management Console.",
+    "links": [
+      { "url": "#terms", "text": "Terms of Use" },
+      { "url": "#help", "text": "Help" },
+      { "url": "#privacy", "text": "Privacy Policy" }
+    ]
+  },
   "about": {
     "title": "Hawtio Management Console",
     "description": "A Hawtio reimplementation based on TypeScript + React.",

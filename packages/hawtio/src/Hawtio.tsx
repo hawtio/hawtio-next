@@ -1,7 +1,8 @@
 import React from 'react'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { hawtio } from './core'
 import './Hawtio.css'
+import { HawtioLogin } from './ui/login'
 import { HawtioPage } from './ui/page'
 
 export type HawtioProps = {
@@ -17,7 +18,10 @@ export const Hawtio: React.FunctionComponent<HawtioProps> = props => {
 
   return (
     <BrowserRouter basename={hawtio.getBasePath()}>
-      <HawtioPage />
+      <Routes>
+        <Route path='/login' element={<HawtioLogin />} />
+        <Route path='/*' element={<HawtioPage />} />
+      </Routes>
     </BrowserRouter>
   )
 }

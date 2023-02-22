@@ -10,7 +10,7 @@ export function useAbout() {
 
   useEffect(() => {
     const loadAbout = async () => {
-      const config = await configManager.getConfig()
+      const config = await configManager.getHawtconfig()
       if (config.about) {
         setAbout(config.about)
       }

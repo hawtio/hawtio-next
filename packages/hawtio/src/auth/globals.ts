@@ -6,3 +6,4 @@ export const log = Logger.get(moduleName)
 export const DEFAULT_USER = 'public'
 
 export const PATH_USER = 'user'
+export const PATH_LOGOUT = 'auth/logout'

@@ -1,9 +1,12 @@
 import $ from 'jquery'
+import { Plugin } from './core'
 import { Logger } from './logging'
 
 const log = Logger.get('hawtio-core-config')
 
-export type Config = {
+export const DEFAULT_APP_NAME = 'Hawtio Management Console'
+
+export type Hawtconfig = {
   branding?: Branding
   login?: Login
   about?: About
@@ -50,7 +53,7 @@ export type Online = {
 export const HAWTCONFIG_JSON = 'hawtconfig.json'
 
 class ConfigManager {
-  private config: Promise<Config>
+  private config: Promise<Hawtconfig>
   private brandingApplied: Promise<boolean>
 
   constructor() {
@@ -58,7 +61,7 @@ class ConfigManager {
     this.brandingApplied = this.applyBranding()
   }
 
-  private async loadConfig(): Promise<Config> {
+  private async loadConfig(): Promise<Hawtconfig> {
     log.info('Loading', HAWTCONFIG_JSON)
 
     try {
@@ -106,7 +109,7 @@ class ConfigManager {
     elm.prop('disabled', false)
   }
 
-  getConfig(): Promise<Config> {
+  getHawtconfig(): Promise<Hawtconfig> {
     return this.config
   }
 
@@ -117,6 +120,18 @@ class ConfigManager {
   async isRouteEnabled(path: string): Promise<boolean> {
     const config = await this.config
     return !config.disabledRoutes || !config.disabledRoutes.includes(path)
+  }
+
+  async filterEnabledPlugins(plugins: Plugin[]): Promise<Plugin[]> {
+    const enabledPlugins: Plugin[] = []
+    for (const plugin of plugins) {
+      if (await configManager.isRouteEnabled(plugin.path)) {
+        enabledPlugins.push(plugin)
+      } else {
+        log.debug(`Plugin "${plugin.id}" disabled by hawtconfig.json`)
+      }
+    }
+    return enabledPlugins
   }
 
   async addProductInfo(name: string, value: string) {

@@ -126,7 +126,7 @@ class ConnectService implements IConnectService {
 
   connect(connection: Connection) {
     log.debug('Connecting with options:', toString(connection))
-    const basepath = hawtio.getBasePath() ? hawtio.getBasePath() : '/'
+    const basepath = hawtio.getBasePath() || '/'
     const url = `${basepath}?${PARAM_KEY_CONNECTION}=${connection.name}`
     log.debug('Opening URL:', url)
     window.open(url)

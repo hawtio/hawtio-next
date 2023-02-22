@@ -13,8 +13,13 @@ export async function isActive(): Promise<boolean> {
 async function isProxyEnabled(): Promise<boolean> {
   try {
     const res = await fetch(PATH_PROXY_ENABLED)
-    const data = await res.text()
+    if (!res.ok) {
+      // Silently ignore and enable it when fetch failed
+      log.debug('Failed to fetch', PATH_PROXY_ENABLED, ':', res.status, res.statusText)
+      return true
+    }
 
+    const data = await res.text()
     // Disable proxy only when explicitly disabled
     const enabled = data.trim() !== 'false'
     log.debug('Proxy enabled:', enabled)

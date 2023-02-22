@@ -14,4 +14,18 @@ describe('EventService', () => {
     })
     expect.hasAssertions()
   })
+
+  test('login', () => {
+    const mockListener = jest.fn()
+    eventService.onLogin(mockListener)
+    eventService.login()
+    expect(mockListener).toBeCalled()
+  })
+
+  test('logout', () => {
+    const mockListener = jest.fn()
+    eventService.onLogout(mockListener)
+    eventService.logout()
+    expect(mockListener).toBeCalled()
+  })
 })

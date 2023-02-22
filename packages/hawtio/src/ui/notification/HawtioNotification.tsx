@@ -1,4 +1,4 @@
-import { eventService, Notification, NotificationType } from '@hawtiosrc/core'
+import { eventService, EVENT_NOTIFY, Notification, NotificationType } from '@hawtiosrc/core'
 import { Alert, AlertActionCloseButton, AlertGroup, AlertProps } from '@patternfly/react-core'
 import React, { useEffect, useState } from 'react'
 
@@ -44,7 +44,7 @@ export const HawtioNotification: React.FunctionComponent = () => {
     }
     eventService.onNotify(listener)
 
-    return () => eventService.removeListener(listener)
+    return () => eventService.removeListener(EVENT_NOTIFY, listener)
     // TODO: better way to ensure one listener registration per rendering
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

@@ -29,7 +29,6 @@ import 'jolokia.js/jolokia-simple'
 import $ from 'jquery'
 import { func, is, object } from 'superstruct'
 import { connectService, PARAM_KEY_CONNECTION } from './connect-service'
-import { Connection } from './connections'
 import { log } from './globals'
 
 const DEFAULT_MAX_DEPTH = 7
@@ -237,7 +236,9 @@ class JolokiaService implements IJolokiaService {
             }
           } else {
             // just logout
-            userService.isLogin().then(login => login && userService.logout())
+            userService.isLogin().then(login => {
+              login && userService.logout()
+            })
           }
           break
         }

@@ -1,1 +1,2 @@
-export { DEFAULT_USER, userService } from './user-service'
+export { DEFAULT_USER } from './globals'
+export { userService } from './user-service'
