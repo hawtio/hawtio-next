@@ -16,7 +16,8 @@ const STORAGE_KEY_CURRENT_CONNECTION = 'connect.currentConnection'
 export const PARAM_KEY_CONNECTION = 'con'
 
 export interface IConnectService {
-  getCurrentConnection(): string | null
+  getCurrentConnectionName(): string | null
+  getCurrentConnection(): Connection | null
   loadConnections(): Connections
   saveConnections(connections: Connections): void
   getConnection(name: string): Connection | null
@@ -52,8 +53,12 @@ class ConnectService implements IConnectService {
     return conn ? JSON.parse(conn) : null
   }
 
-  getCurrentConnection(): string | null {
+  getCurrentConnectionName(): string | null {
     return this.currentConnection
+  }
+
+  getCurrentConnection(): Connection | null {
+    return this.currentConnection ? this.getConnection(this.currentConnection) : null
   }
 
   loadConnections(): Connections {

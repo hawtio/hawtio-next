@@ -1,5 +1,5 @@
 import { connectService } from './connect-service'
-import { log, proxyEnabledPath } from './globals'
+import { log, PATH_PROXY_ENABLED } from './globals'
 
 export async function isActive(): Promise<boolean> {
   const proxyEnabled = await isProxyEnabled()
@@ -7,12 +7,12 @@ export async function isActive(): Promise<boolean> {
     return false
   }
 
-  return connectService.getCurrentConnection() === null
+  return connectService.getCurrentConnectionName() === null
 }
 
 async function isProxyEnabled(): Promise<boolean> {
   try {
-    const res = await fetch(proxyEnabledPath)
+    const res = await fetch(PATH_PROXY_ENABLED)
     const data = await res.text()
 
     // Disable proxy only when explicitly disabled
@@ -21,7 +21,7 @@ async function isProxyEnabled(): Promise<boolean> {
     return enabled
   } catch (err) {
     // Silently ignore and enable it when the path is not available
-    log.debug('Failed to fetch', proxyEnabledPath, ':', err)
+    log.debug('Failed to fetch', PATH_PROXY_ENABLED, ':', err)
     return true
   }
 }

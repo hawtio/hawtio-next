@@ -1,58 +1,60 @@
-import { Logger } from '@hawtiosrc/core'
+import { DEFAULT_USER, log, PATH_USER } from './globals'
 
-export const DEFAULT_USER = 'public'
+export interface IUserService {
+  getUsername(): Promise<string>
+  isLogin(): Promise<boolean>
+  getToken(): string | null
+  setToken(token: string): void
+  logout(): void
+}
 
-const log = Logger.get('hawtio-auth')
-
-export class UserService {
-  private username = DEFAULT_USER
-  private password: string | null = null
+class UserService implements IUserService {
+  private username: Promise<string>
+  private login: Promise<boolean>
   private token: string | null = null
-  private _login = false
 
-  private reset(): void {
-    this.username = DEFAULT_USER
-    this.password = null
-    this.token = null
-    this._login = false
+  constructor() {
+    this.username = this.fetchUser()
+    this.login = this.username.then(u => u !== DEFAULT_USER)
   }
 
-  /**
-   * Log in as a specific user.
-   */
-  login(username: string, password: string, token?: string) {
-    this.username = username
-    this.password = password
-    if (token) {
-      this.token = token
+  private async fetchUser(): Promise<string> {
+    try {
+      const res = await fetch(PATH_USER)
+      const user = await res.text()
+      log.info('Logged in as:', user)
+      return user
+    } catch (err) {
+      // Silently ignore as mostly it's just not logged-in yet
+      log.debug('Failed to get logged-in user from', PATH_USER, '-', err)
     }
-    this._login = true
-    log.info('Log in as:', this.username)
+    return DEFAULT_USER
   }
 
-  /**
-   * Log out the current user.
-   */
-  logout() {
-    if (!this._login) {
-      log.debug('Not logged in')
-      return
-    }
-    log.info('Log out:', this.username)
-    this.reset()
+  getUsername(): Promise<string> {
+    return this.username
+  }
+
+  isLogin(): Promise<boolean> {
+    return this.login
   }
 
   getToken(): string | null {
     return this.token
   }
 
-  isLogin(): boolean {
-    return this._login
+  setToken(token: string) {
+    this.token = token
   }
 
-  isDefaultUser(): boolean {
-    return this.username === DEFAULT_USER
+  logout() {
+    // TODO: impl
   }
 }
 
 export const userService = new UserService()
+
+// Export non-exported definitions for testing
+export const __testing__ = {
+  UserService,
+}

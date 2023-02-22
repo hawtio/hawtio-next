@@ -1,3 +1,4 @@
 import { Logger } from './logging'
 
-export const log = Logger.get('hawtio-core')
+export const moduleName = 'hawtio-core'
+export const log = Logger.get(moduleName)
