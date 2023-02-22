@@ -1,7 +1,8 @@
 import { apacheCamelModel, apacheCamelModelVersion } from '@hawtio/camel-model'
-import { isObject, cloneObject } from '@hawtiosrc/util/objects'
+import { cloneObject, isObject } from '@hawtiosrc/util/objects'
+import { log } from './globals'
 
-console.log('Using camel version: ' + apacheCamelModelVersion)
+log.info('Using Camel version:', apacheCamelModelVersion)
 
 class SchemaService {
   /**

@@ -24,7 +24,7 @@ describe('ConfigManager', () => {
     )
 
     const configManager = new __testing__.ConfigManager()
-    const config = await configManager.getConfig()
+    const config = await configManager.getHawtconfig()
     expect(config.branding?.appName).toEqual('Test App')
     expect(config.online?.projectSelector).toEqual('environment=dev,networkzone=internal')
   })
@@ -95,6 +95,26 @@ describe('ConfigManager', () => {
     expect(routeEnabled).toEqual(true)
   })
 
+  test('filterEnabledPlugins', async () => {
+    // response for fetching hawtconfig.json
+    fetchMock.mockResponse(
+      JSON.stringify({
+        disabledRoutes: ['route1', 'route3'],
+      }),
+    )
+    const plugins = [...Array(5).keys()].map(i => ({
+      id: `route${i}`,
+      title: `Route ${i}`,
+      path: `route${i}`,
+      component: () => null,
+      isActive: () => Promise.resolve(true),
+    }))
+
+    const configManager = new __testing__.ConfigManager()
+    const enabledPlugins = await configManager.filterEnabledPlugins(plugins)
+    expect(enabledPlugins.map(p => p.path)).toEqual(['route0', 'route2', 'route4'])
+  })
+
   test('loads and adds product info', async () => {
     // response for fetching hawtconfig.json
     fetchMock.mockResponse(
@@ -119,7 +139,7 @@ describe('ConfigManager', () => {
     )
 
     const configManager = new __testing__.ConfigManager()
-    let config = await configManager.getConfig()
+    let config = await configManager.getHawtconfig()
     expect(config.about?.title).toEqual('Test App')
     expect(config.about?.description).toEqual('This is a test.')
     expect(config.about?.imgSrc).toEqual('test-logo.svg')
@@ -133,7 +153,7 @@ describe('ConfigManager', () => {
     expect(config.about?.copyright).toEqual('© Hawtio project')
 
     configManager.addProductInfo('Hawtio React', '1.0.0')
-    config = await configManager.getConfig()
+    config = await configManager.getHawtconfig()
     expect(config.about?.productInfo).toHaveLength(3)
     product1 = config.about?.productInfo?.[0]
     expect(product1?.name).toEqual('ABC')

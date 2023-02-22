@@ -1,5 +1,6 @@
-import imgLogo from '@hawtiosrc/img/hawtio-logo.svg'
-import imgAvatar from '@hawtiosrc/img/img_avatar.svg'
+import { userService } from '@hawtiosrc/auth'
+import { DEFAULT_APP_NAME, useHawtconfig } from '@hawtiosrc/core'
+import { hawtioLogo, userAvatar } from '@hawtiosrc/img'
 import { HawtioAbout } from '@hawtiosrc/ui/about'
 import {
   Avatar,
@@ -19,9 +20,9 @@ import {
   ToolbarItem,
 } from '@patternfly/react-core'
 import { BarsIcon, HelpIcon } from '@patternfly/react-icons'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useBranding } from './context'
+import { PageContext } from './context'
 import './HawtioHeader.css'
 
 export const HawtioHeader: React.FunctionComponent = () => {
@@ -55,14 +56,14 @@ export const HawtioHeader: React.FunctionComponent = () => {
 }
 
 const HawtioBrand: React.FunctionComponent = () => {
-  const { branding, brandingLoaded } = useBranding()
+  const { hawtconfig, hawtconfigLoaded } = useHawtconfig()
 
-  if (!brandingLoaded) {
+  if (!hawtconfigLoaded) {
     return null
   }
 
-  const appLogo = branding.appLogoUrl || imgLogo
-  const appName = branding.appName || 'Hawtio Management Console'
+  const appLogo = hawtconfig.branding?.appLogoUrl || hawtioLogo
+  const appName = hawtconfig.branding?.appName || DEFAULT_APP_NAME
 
   return (
     <MastheadBrand component={props => <Link to='/' {...props} />}>
@@ -72,6 +73,8 @@ const HawtioBrand: React.FunctionComponent = () => {
 }
 
 const HawtioHeaderToolbar: React.FunctionComponent = () => {
+  const { username } = useContext(PageContext)
+
   const [helpOpen, setHelpOpen] = useState(false)
   const [userOpen, setUserOpen] = useState(false)
   const [aboutOpen, setAboutOpen] = useState(false)
@@ -79,6 +82,8 @@ const HawtioHeaderToolbar: React.FunctionComponent = () => {
   const onHelpSelect = () => setHelpOpen(!helpOpen)
   const onUserSelect = () => setUserOpen(!userOpen)
   const onAboutToggle = () => setAboutOpen(!aboutOpen)
+
+  const logout = () => userService.logout()
 
   const helpItems = [
     <DropdownItem key='help' component={<Link to='/help'>Help</Link>} />,
@@ -89,7 +94,9 @@ const HawtioHeaderToolbar: React.FunctionComponent = () => {
 
   const userItems = [
     <DropdownItem key='preferences' component={<Link to='/preferences'>Preferences</Link>} />,
-    <DropdownItem key='logout' component={<Link to='/logout'>Log out</Link>} />,
+    <DropdownItem key='logout' onClick={logout}>
+      Log out
+    </DropdownItem>,
   ]
 
   return (
@@ -122,9 +129,9 @@ const HawtioHeaderToolbar: React.FunctionComponent = () => {
                 <DropdownToggle
                   id='hawtio-header-user-dropdown-toggle'
                   onToggle={setUserOpen}
-                  icon={<Avatar src={imgAvatar} alt='user' />}
+                  icon={<Avatar src={userAvatar} alt='user' />}
                 >
-                  Hawtio User
+                  {username}
                 </DropdownToggle>
               }
               dropdownItems={userItems}

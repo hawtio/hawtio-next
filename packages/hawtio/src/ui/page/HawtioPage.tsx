@@ -1,6 +1,10 @@
+import { useUser } from '@hawtiosrc/auth/hooks'
+import { usePlugins } from '@hawtiosrc/core'
 import { HawtioHelp } from '@hawtiosrc/help/HawtioHelp'
+import { backgroundImages } from '@hawtiosrc/img'
 import { HawtioPreferences } from '@hawtiosrc/preferences/HawtioPreferences'
 import {
+  BackgroundImage,
   EmptyState,
   EmptyStateIcon,
   EmptyStateVariant,
@@ -11,20 +15,28 @@ import {
 } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons'
 import React from 'react'
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { HawtioNotification } from '../notification'
-import { PageContext, usePlugins } from './context'
-import { HawtioBackground } from './HawtioBackground'
+import { PageContext } from './context'
+import { log } from './globals'
 import { HawtioHeader } from './HawtioHeader'
 import { HawtioLoading } from './HawtioLoading'
 import { HawtioSidebar } from './HawtioSidebar'
 
 export const HawtioPage: React.FunctionComponent = () => {
+  const { username, isLogin, userLoaded } = useUser()
   const { plugins, pluginsLoaded } = usePlugins()
+  const navigate = useNavigate()
   const { search } = useLocation()
 
-  if (!pluginsLoaded) {
+  if (!userLoaded || !pluginsLoaded) {
     return <HawtioLoading />
+  }
+
+  log.debug(`Login state: username = ${username}, isLogin = ${isLogin}`)
+
+  if (!isLogin) {
+    navigate('login')
   }
 
   const HawtioHome = () => (
@@ -47,8 +59,8 @@ export const HawtioPage: React.FunctionComponent = () => {
   }
 
   return (
-    <PageContext.Provider value={{ plugins, pluginsLoaded }}>
-      <HawtioBackground />
+    <PageContext.Provider value={{ username, plugins }}>
+      <BackgroundImage src={backgroundImages} />
       <Page header={<HawtioHeader />} sidebar={<HawtioSidebar />} isManagedSidebar>
         <Routes>
           {/* plugins */}
@@ -58,7 +70,7 @@ export const HawtioPage: React.FunctionComponent = () => {
           <Route key='help' path='help/*' element={<HawtioHelp />} />
           <Route key='preferences' path='preferences/*' element={<HawtioPreferences />} />
 
-          <Route index key='root' path='/' element={defaultPage} />
+          <Route key='root' index element={defaultPage} />
         </Routes>
         <HawtioNotification />
       </Page>
