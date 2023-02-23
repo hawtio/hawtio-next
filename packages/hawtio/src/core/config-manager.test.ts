@@ -95,7 +95,7 @@ describe('ConfigManager', () => {
     expect(routeEnabled).toEqual(true)
   })
 
-  test('filterEnabledPlugins', async () => {
+  test('filters enabled plugins', async () => {
     // response for fetching hawtconfig.json
     fetchMock.mockResponse(
       JSON.stringify({

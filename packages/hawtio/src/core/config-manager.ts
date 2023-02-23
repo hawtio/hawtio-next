@@ -66,15 +66,19 @@ class ConfigManager {
 
     try {
       const res = await fetch(HAWTCONFIG_JSON)
+      if (!res.ok) {
+        log.error('Failed to fetch', HAWTCONFIG_JSON, '-', res.status, res.statusText)
+        return {}
+      }
+
       const config = await res.json()
       log.debug(HAWTCONFIG_JSON, '=', config)
       log.info('Loaded', HAWTCONFIG_JSON)
       return config
     } catch (err) {
       log.error('Error fetching', HAWTCONFIG_JSON, '-', err)
+      return {}
     }
-
-    return {}
   }
 
   private async applyBranding(): Promise<boolean> {
@@ -125,7 +129,7 @@ class ConfigManager {
   async filterEnabledPlugins(plugins: Plugin[]): Promise<Plugin[]> {
     const enabledPlugins: Plugin[] = []
     for (const plugin of plugins) {
-      if (await configManager.isRouteEnabled(plugin.path)) {
+      if (await this.isRouteEnabled(plugin.path)) {
         enabledPlugins.push(plugin)
       } else {
         log.debug(`Plugin "${plugin.id}" disabled by hawtconfig.json`)

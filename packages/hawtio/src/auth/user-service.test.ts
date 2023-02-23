@@ -13,7 +13,7 @@ describe('UserService', () => {
 
   test('log in as an user', async () => {
     // response for fetching /user
-    fetchMock.mockResponse('user1')
+    fetchMock.mockResponse('"user1"')
 
     const userService = new __testing__.UserService()
     await expect(userService.getUsername()).resolves.toBe('user1')

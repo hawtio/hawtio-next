@@ -3,10 +3,11 @@ import { Hawtio } from './Hawtio'
 
 describe('Hawtio', () => {
   test('renders page', async () => {
-    render(<Hawtio basepath='/' />)
+    render(<Hawtio />)
+
     await waitFor(() => {
-      const example = screen.queryByText('Hawtio')
-      expect(example).toBeInTheDocument()
+      const title = screen.queryByText('Hawtio')
+      expect(title).toBeInTheDocument()
     })
   })
 })
