@@ -7,6 +7,7 @@ import {
 import { InfoCircleIcon } from '@patternfly/react-icons'
 import { OnRowClick, Table, TableBody, TableHeader, TableProps } from '@patternfly/react-table'
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
+import './JmxContentBeans.css'
 
 export const JmxContentMBeans: React.FunctionComponent = () => {
   const { selectedNode, setSelectedNode } = useContext(PluginNodeSelectionContext)
@@ -42,7 +43,7 @@ export const JmxContentMBeans: React.FunctionComponent = () => {
     <Card isFullHeight>
       <Table aria-label='MBeans' variant='compact' cells={columns} rows={rows}>
         <TableHeader />
-        <TableBody onRowClick={selectChild} />
+        <TableBody onRowClick={selectChild} className={'jmx-table-body'}/>
       </Table>
     </Card>
   )
