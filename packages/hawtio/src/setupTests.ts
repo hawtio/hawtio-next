@@ -6,5 +6,16 @@ import '@testing-library/jest-dom/extend-expect'
 import fetchMock from 'jest-fetch-mock'
 
 fetchMock.enableMocks()
+
 // Default mock response for every usage of fetch
-fetchMock.mockResponse('{}')
+fetchMock.mockResponse(req => {
+  console.log('Mock fetch:', req.url)
+  let res = '{}'
+  switch (req.url) {
+    case 'user':
+      res = '"public"'
+      break
+    default:
+  }
+  return Promise.resolve(res)
+})

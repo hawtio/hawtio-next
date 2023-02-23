@@ -165,7 +165,8 @@ class JolokiaService implements IJolokiaService {
     // TODO: hawtio-oauth may have already set up jQuery beforeSend?
     if (!$.ajaxSettings.beforeSend) {
       log.debug('Set up jQuery beforeSend')
-      $.ajaxSetup({ beforeSend: await this.beforeSend() })
+      const beforeSend = await this.beforeSend()
+      $.ajaxSetup({ beforeSend })
     }
 
     const options = await this.loadJolokiaOptions()
