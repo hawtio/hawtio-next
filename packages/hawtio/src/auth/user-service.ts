@@ -1,5 +1,5 @@
 import { eventService } from '@hawtiosrc/core'
-import { DEFAULT_USER, log, PATH_LOGOUT, PATH_USER } from './globals'
+import { PUBLIC_USER, log, PATH_LOGOUT, PATH_USER } from './globals'
 
 export interface IUserService {
   getUsername(): Promise<string>
@@ -27,7 +27,7 @@ class UserService implements IUserService {
       const res = await fetch(PATH_USER)
       if (!res.ok) {
         log.error('Failed to login:', res.status, res.statusText)
-        return { username: DEFAULT_USER, isLogin: false }
+        return { username: PUBLIC_USER, isLogin: false }
       }
 
       const username = await res.json()
@@ -40,7 +40,7 @@ class UserService implements IUserService {
     } catch (err) {
       // Silently ignore as mostly it's just not logged-in yet
       log.debug('Failed to get logged-in user from', PATH_USER, '-', err)
-      return { username: DEFAULT_USER, isLogin: false }
+      return { username: PUBLIC_USER, isLogin: false }
     }
   }
 

@@ -1,5 +1,5 @@
 import fetchMock from 'jest-fetch-mock'
-import { DEFAULT_USER } from './globals'
+import { PUBLIC_USER } from './globals'
 import { userService, __testing__ } from './user-service'
 
 describe('UserService', () => {
@@ -25,7 +25,7 @@ describe('UserService', () => {
     fetchMock.mockReject(new Error('Forbidden'))
 
     const userService = new __testing__.UserService()
-    await expect(userService.getUsername()).resolves.toBe(DEFAULT_USER)
+    await expect(userService.getUsername()).resolves.toBe(PUBLIC_USER)
     await expect(userService.isLogin()).resolves.toBe(false)
   })
 })

@@ -1,4 +1,4 @@
-import { userService } from '@hawtiosrc/auth'
+import { PUBLIC_USER, userService } from '@hawtiosrc/auth'
 import { DEFAULT_APP_NAME, useHawtconfig } from '@hawtiosrc/core'
 import { hawtioLogo, userAvatar } from '@hawtiosrc/img'
 import { HawtioAbout } from '@hawtiosrc/ui/about'
@@ -75,6 +75,8 @@ const HawtioBrand: React.FunctionComponent = () => {
 const HawtioHeaderToolbar: React.FunctionComponent = () => {
   const { username } = useContext(PageContext)
 
+  const isPublic = username === PUBLIC_USER
+
   const [helpOpen, setHelpOpen] = useState(false)
   const [userOpen, setUserOpen] = useState(false)
   const [aboutOpen, setAboutOpen] = useState(false)
@@ -98,6 +100,10 @@ const HawtioHeaderToolbar: React.FunctionComponent = () => {
       Log out
     </DropdownItem>,
   ]
+  if (isPublic) {
+    // Delete logout
+    userItems.pop()
+  }
 
   return (
     <Toolbar id='hawtio-header-toolbar'>
@@ -131,7 +137,7 @@ const HawtioHeaderToolbar: React.FunctionComponent = () => {
                   onToggle={setUserOpen}
                   icon={<Avatar src={userAvatar} alt='user' />}
                 >
-                  {username}
+                  {isPublic ? '' : username}
                 </DropdownToggle>
               }
               dropdownItems={userItems}
