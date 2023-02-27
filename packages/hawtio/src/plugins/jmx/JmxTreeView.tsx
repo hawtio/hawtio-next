@@ -8,16 +8,15 @@ import './JmxTreeView.css'
 export const JmxTreeView: React.FunctionComponent = () => {
   const { tree, node, setNode } = useContext(MBeanTreeContext)
   const [expanded, setExpanded] = useState(false)
-  const [filteredTree, updateTree] = useState(tree.getTree())
+  const [filteredTree, setFilteredTree] = useState(tree.getTree())
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onSearch = (event: ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.value) updateTree(tree.getTree())
+    if (!event.target.value) setFilteredTree(tree.getTree())
 
     const treeElements = lookupSearchInTree(event.target.value, tree.getTree())
 
-    if (treeElements.length === 0) updateTree(tree.getTree())
-    else updateTree(treeElements)
+    if (treeElements.length === 0) setFilteredTree(tree.getTree())
+    else setFilteredTree(treeElements)
   }
 
   const onSelect = (event: React.MouseEvent<Element, MouseEvent>, item: TreeViewDataItem) => {
@@ -25,11 +24,11 @@ export const JmxTreeView: React.FunctionComponent = () => {
   }
 
   const lookupSearchInTree = (search: string, tree?: MBeanNode[]): MBeanNode[] => {
-    if (tree?.length === 0) return []
+    if (!tree || tree?.length === 0) return []
 
     let results: MBeanNode[] = []
 
-    for (const parentNode of tree || []) {
+    for (const parentNode of tree) {
       if (parentNode.name.toLowerCase().includes(search.toLowerCase())) {
         results = results.concat(parentNode)
       } else {
