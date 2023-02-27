@@ -4,46 +4,45 @@ import { string } from 'superstruct'
 import { log } from './globals'
 
 type LocalStorageFieldData<T> = {
-  localStorageKey: string,
-  defaultValue: T,
+  localStorageKey: string
+  defaultValue: T
   updateFunction: React.Dispatch<React.SetStateAction<T>>
 }
 
 export const HomePreferences: React.FunctionComponent = () => {
+  const LOCAL_STORAGE_VERTICAL_NAVIGATION = 'local_storage_vertical_navigation'
+  const DEFAULT_VALUE_VERTICAL_NAVIGATION = true
 
-  const LOCAL_STORAGE_VERTICAL_NAVIGATION = "local_storage_vertical_navigation"
-  const DEFAULT_VALUE_VERTICAL_NAVIGATION = true;
-  
-  const VERTICAL_NAVIGATION_INITIAL_VALUE : boolean = 
+  const VERTICAL_NAVIGATION_INITIAL_VALUE: boolean =
     localStorage.getItem(LOCAL_STORAGE_VERTICAL_NAVIGATION) !== null
-    ? localStorage.getItem(LOCAL_STORAGE_VERTICAL_NAVIGATION) === "true"
-    : DEFAULT_VALUE_VERTICAL_NAVIGATION;
+      ? localStorage.getItem(LOCAL_STORAGE_VERTICAL_NAVIGATION) === 'true'
+      : DEFAULT_VALUE_VERTICAL_NAVIGATION
 
   const [defaultVerticalNavState, setDefaultVerticalNavState] = useState(VERTICAL_NAVIGATION_INITIAL_VALUE)
 
-  const VERTICAL_NAVIGATION_FIELD_PARAMETERS : LocalStorageFieldData<boolean> = {
+  const VERTICAL_NAVIGATION_FIELD_PARAMETERS: LocalStorageFieldData<boolean> = {
     localStorageKey: LOCAL_STORAGE_VERTICAL_NAVIGATION,
     defaultValue: true,
-    updateFunction: setDefaultVerticalNavState
+    updateFunction: setDefaultVerticalNavState,
   }
 
   const FIELDS_TO_RESET = [VERTICAL_NAVIGATION_FIELD_PARAMETERS]
 
   const reset = () => {
-    FIELDS_TO_RESET.forEach(
-      field => {
-        localStorage.removeItem(field.localStorageKey)
-        field.updateFunction(field.defaultValue)
-      }
-    )
+    FIELDS_TO_RESET.forEach(field => {
+      localStorage.removeItem(field.localStorageKey)
+      field.updateFunction(field.defaultValue)
+    })
   }
 
-  const savingToLocalStorage = <T,>(keyToSave : string, updateFunction : React.Dispatch<React.SetStateAction<T>>) 
-    : React.Dispatch<React.SetStateAction<T>> => {
-    return (value) => {
+  const savingToLocalStorage = <T,>(
+    keyToSave: string,
+    updateFunction: React.Dispatch<React.SetStateAction<T>>,
+  ): React.Dispatch<React.SetStateAction<T>> => {
+    return value => {
       localStorage.setItem(keyToSave, String(value))
       return updateFunction(value)
-    };
+    }
   }
 
   const UIForm = () => (
