@@ -1,46 +1,26 @@
+import LocalStorageStatefulField from '@hawtiosrc/util/localStorageStatefulField'
 import { Button, CardBody, Form, FormGroup, FormSection, Switch } from '@patternfly/react-core'
-import React, { useState } from 'react'
-
-type LocalStorageFieldData<T> = {
-  localStorageKey: string
-  defaultValue: T
-  updateFunction: React.Dispatch<React.SetStateAction<T>>
-}
+import React from 'react'
 
 export const HomePreferences: React.FunctionComponent = () => {
-  const LOCAL_STORAGE_VERTICAL_NAVIGATION = 'local_storage_vertical_navigation'
-  const DEFAULT_VALUE_VERTICAL_NAVIGATION = true
+  const VERTICAL_NAVIGATION = 'home_vertical_navigation'
 
-  const VERTICAL_NAVIGATION_INITIAL_VALUE: boolean =
-    localStorage.getItem(LOCAL_STORAGE_VERTICAL_NAVIGATION) !== null
-      ? localStorage.getItem(LOCAL_STORAGE_VERTICAL_NAVIGATION) === 'true'
-      : DEFAULT_VALUE_VERTICAL_NAVIGATION
-
-  const [defaultVerticalNavState, setDefaultVerticalNavState] = useState(VERTICAL_NAVIGATION_INITIAL_VALUE)
-
-  const VERTICAL_NAVIGATION_FIELD_PARAMETERS: LocalStorageFieldData<boolean> = {
-    localStorageKey: LOCAL_STORAGE_VERTICAL_NAVIGATION,
-    defaultValue: true,
-    updateFunction: setDefaultVerticalNavState,
+  const LOCAL_STORAGE_FIELDS : Record<string, LocalStorageStatefulField<any>> = {
+    [VERTICAL_NAVIGATION] : new LocalStorageStatefulField(
+      VERTICAL_NAVIGATION,
+      true,
+      localStorageData => localStorageData === "true" 
+    )
   }
 
-  const FIELDS_TO_RESET = [VERTICAL_NAVIGATION_FIELD_PARAMETERS]
+  console.log(LOCAL_STORAGE_FIELDS)
 
   const reset = () => {
-    FIELDS_TO_RESET.forEach(field => {
-      localStorage.removeItem(field.localStorageKey)
-      field.updateFunction(field.defaultValue)
-    })
-  }
-
-  const savingToLocalStorage = <T,>(
-    keyToSave: string,
-    updateFunction: React.Dispatch<React.SetStateAction<T>>,
-  ): React.Dispatch<React.SetStateAction<T>> => {
-    return value => {
-      localStorage.setItem(keyToSave, String(value))
-      return updateFunction(value)
-    }
+    Object.values(LOCAL_STORAGE_FIELDS).forEach(
+      field => {
+        field.reset()
+      }
+    )
   }
 
   const UIForm = () => (
@@ -48,8 +28,8 @@ export const HomePreferences: React.FunctionComponent = () => {
       <Switch
         label='Show vertical navigation'
         labelOff='Hide vertical navigation'
-        isChecked={defaultVerticalNavState}
-        onChange={savingToLocalStorage(LOCAL_STORAGE_VERTICAL_NAVIGATION, setDefaultVerticalNavState)}
+        isChecked={LOCAL_STORAGE_FIELDS[VERTICAL_NAVIGATION].currentStatefulValue}
+        onChange={LOCAL_STORAGE_FIELDS[VERTICAL_NAVIGATION].updateSavingToLocalStorageFunction()}
       />
     </FormGroup>
   )
