@@ -1,7 +1,5 @@
 import { Button, CardBody, Form, FormGroup, FormSection, Switch } from '@patternfly/react-core'
 import React, { useState } from 'react'
-import { string } from 'superstruct'
-import { log } from './globals'
 
 type LocalStorageFieldData<T> = {
   localStorageKey: string
