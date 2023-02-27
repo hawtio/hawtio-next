@@ -232,7 +232,7 @@ const OperationFormContents: React.FunctionComponent<OperationFormContentsProps>
         isExpanded
         isCode
         isReadOnly
-        //removeFindDomNode
+        removeFindDomNode
         className={isFailed ? 'jmx-operation-error' : ''}
       >
         {result}
