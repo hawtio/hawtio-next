@@ -223,10 +223,6 @@ const OperationFormContents: React.FunctionComponent<OperationFormContentsProps>
   const OperationExecuteResult = () => (
     <React.Fragment>
       <Title headingLevel='h4'>Result</Title>
-      {/*
-        TODO: Known issue - "Warning: findDOMNode is deprecated in StrictMode."
-        https://github.com/patternfly/patternfly-react/issues/8368
-      */}
       <ClipboardCopy
         variant={ClipboardCopyVariant.expansion}
         isExpanded
