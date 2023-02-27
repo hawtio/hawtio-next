@@ -16,7 +16,7 @@ export const JmxTreeView: React.FunctionComponent = () => {
 
     const treeElements = lookupSearchInTree(event.target.value, tree.getTree())
 
-    if (treeElements.length == 0) updateTree(tree.getTree())
+    if (treeElements.length === 0) updateTree(tree.getTree())
     else updateTree(treeElements)
   }
 
@@ -25,17 +25,17 @@ export const JmxTreeView: React.FunctionComponent = () => {
   }
 
   const lookupSearchInTree = (search: string, tree?: MBeanNode[]): MBeanNode[] => {
-    if (tree?.length == 0) return []
+    if (tree?.length === 0) return []
 
     let results: MBeanNode[] = []
 
-    for (let parentNode of tree || []) {
+    for (const parentNode of tree || []) {
       if (parentNode.name.toLowerCase().includes(search.toLowerCase())) {
         results = results.concat(parentNode)
       } else {
         const resultsInSubtree = lookupSearchInTree(search, parentNode.children)
 
-        if (resultsInSubtree.length != 0) {
+        if (resultsInSubtree.length !== 0) {
           const parentNodeCloned = Object.assign({}, parentNode)
           parentNodeCloned.children = resultsInSubtree
 
