@@ -1,8 +1,7 @@
 import React from 'react'
-import { MBeanNode } from '@hawtiosrc/plugins/shared'
+import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { log, routeNode } from './globals'
-import $ from 'jquery'
 import { schemaService } from './schema-service'
 import * as ccs from './camel-content-service'
 import * as icons from './icons'
@@ -77,12 +76,10 @@ class RoutesService {
   loadRouteChildren(routeNode: MBeanNode, routeXml: Element) {
     routeNode.addProperty('xml', routeXml.outerHTML)
 
-    $(routeXml)
-      .children('*')
-      .each((idx, xmlNode) => {
-        const child = this.loadRouteChild(routeNode, xmlNode)
-        if (child) routeNode.adopt(child)
-      })
+    for (const childXml of routeXml.children) {
+      const child = this.loadRouteChild(routeNode, childXml)
+      if (child) routeNode.adopt(child)
+    }
   }
 
   /**
