@@ -6,7 +6,7 @@ import { is, object } from 'superstruct'
 import { pluginName } from './globals'
 import { MBeanTree, MBeanNode } from './tree'
 
-const log = Logger.get(`hawtio-${pluginName}-workspace`)
+const log = Logger.get(`${pluginName}-workspace`)
 
 export type MBeanCache = { [propertyList: string]: string }
 
