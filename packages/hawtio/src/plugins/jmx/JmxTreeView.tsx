@@ -3,11 +3,14 @@ import React, { ChangeEvent, useContext, useState } from 'react'
 import { PluginTreeViewToolbar, MBeanNode } from '@hawtiosrc/plugins/shared'
 import { MBeanTreeContext } from './context'
 import './JmxTreeView.css'
+import { useNavigate } from "react-router-dom"
+import { pluginPath } from './globals'
 
 export const JmxTreeView: React.FunctionComponent = () => {
   const { tree, selectedNode, setSelectedNode } = useContext(MBeanTreeContext)
   const [expanded, setExpanded] = useState(false)
   const [filteredTree, setFilteredTree] = useState(tree.getTree())
+  const navigate = useNavigate()
 
   const onSearch = (event: ChangeEvent<HTMLInputElement>) => {
     if (!event.target.value) setFilteredTree(tree.getTree())
@@ -20,6 +23,8 @@ export const JmxTreeView: React.FunctionComponent = () => {
 
   const onSelect = (event: React.MouseEvent<Element, MouseEvent>, item: TreeViewDataItem) => {
     setSelectedNode(item as MBeanNode)
+    /* On change of node selection update the url to the base plugin path */
+    navigate(pluginPath)
   }
 
   const lookupSearchInTree = (search: string, tree?: MBeanNode[]): MBeanNode[] => {
