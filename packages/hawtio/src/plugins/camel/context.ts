@@ -3,7 +3,7 @@ import { TreeViewDataItem } from '@patternfly/react-core'
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
 import { workspace, MBeanNode, MBeanTree } from '@hawtiosrc/plugins/shared'
 import { pluginName, pluginPath, jmxDomain } from './globals'
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"
 import { eventService, EVENT_REFRESH } from '@hawtiosrc/core'
 
 /**
@@ -14,24 +14,6 @@ export function useCamelTree() {
   const [loaded, setLoaded] = useState(false)
   const { selectedNode, setSelectedNode } = useContext(PluginNodeSelectionContext)
   const navigate = useNavigate()
-
-  useEffect(() => {
-    const loadTree = async () => {
-      await populateTree()
-      setLoaded(true)
-    }
-
-    const listener = () => {
-      setSelectedNode(null)
-      setLoaded(false)
-      loadTree()
-    }
-    eventService.onRefresh(listener)
-
-    loadTree()
-
-    return () => eventService.removeListener(EVENT_REFRESH, listener)
-  }, [])
 
   const populateTree = async () => {
     const wkspTree: MBeanTree = await workspace.getTree()
@@ -62,6 +44,24 @@ export function useCamelTree() {
       })
     }
   }
+
+  useEffect(() => {
+    const loadTree = async () => {
+      await populateTree()
+      setLoaded(true)
+    }
+
+    const listener = () => {
+      setSelectedNode(null)
+      setLoaded(false)
+      loadTree()
+    }
+    eventService.onRefresh(listener)
+
+    loadTree()
+
+    return () => eventService.removeListener(EVENT_REFRESH, listener)
+  })
 
   return { tree, loaded, selectedNode, setSelectedNode }
 }

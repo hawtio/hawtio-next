@@ -29,7 +29,7 @@ export function useMBeanTree() {
     loadTree()
 
     return () => eventService.removeListener(EVENT_REFRESH, listener)
-  }, [])
+  })
 
   return { tree, loaded, selectedNode, setSelectedNode }
 }
