@@ -3,11 +3,7 @@ import { isObject } from '@hawtiosrc/util/objects'
 import {
   jmxDomain,
   camelContexts,
-  camelCtx,
   routes,
-  endpoints,
-  components,
-  dataformats,
   routeNode
 } from './globals'
 
@@ -41,5 +37,5 @@ export function isRoutesFolder(node: MBeanNode): boolean {
 }
 
 export function isRouteNode(node: MBeanNode): boolean {
-  return node && isDomain(node) && isType(node, routeNode);
+  return node && isDomain(node) && isType(node, routeNode)
 }

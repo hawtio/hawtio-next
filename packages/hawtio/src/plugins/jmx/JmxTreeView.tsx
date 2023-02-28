@@ -1,5 +1,5 @@
 import { TreeView, TreeViewDataItem } from '@patternfly/react-core'
-import React, { ChangeEvent, useContext, useEffect, useState } from 'react'
+import React, { ChangeEvent, useContext, useState } from 'react'
 import { PluginTreeViewToolbar, MBeanNode } from '@hawtiosrc/plugins/shared'
 import { MBeanTreeContext } from './context'
 import './JmxTreeView.css'

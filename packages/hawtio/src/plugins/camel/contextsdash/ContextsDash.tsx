@@ -47,8 +47,8 @@ export const ContextsDash: React.FunctionComponent = () => {
   }
 
   const onDropdownToggle = (isOpen: boolean) => {
-    setIsOpen(isOpen);
-  };
+    setIsOpen(isOpen)
+  }
 
   const isStartEnabled = (): boolean => {
     return selectedCtxId.some(id => {
@@ -146,7 +146,7 @@ export const ContextsDash: React.FunctionComponent = () => {
         }
 
         deleteProcessed++
-        if (deleteProcessed == toDelete.length) {
+        if (deleteProcessed === toDelete.length) {
           setContexts(contexts.filter(c => toDelete.indexOf(c) < 0))
           workspace.refreshTree()
         }
@@ -295,7 +295,7 @@ export const ContextsDash: React.FunctionComponent = () => {
         Delete
       </Button>
     </DropdownItem>
-  ];
+  ]
 
   return (
     <Card isFullHeight>
@@ -316,10 +316,10 @@ export const ContextsDash: React.FunctionComponent = () => {
       <Table
         onSelect={(_event, isSelecting, rowIndex) => {
           if (rowIndex === -1) {
-            selectAllContexts(isSelecting);
+            selectAllContexts(isSelecting)
           } else {
-            const ctx = contexts[rowIndex];
-            onSelectContext(ctx, isSelecting);
+            const ctx = contexts[rowIndex]
+            onSelectContext(ctx, isSelecting)
           }
         }}
         canSelectAll={true}

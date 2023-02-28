@@ -26,7 +26,7 @@ class ContextsService {
     if (!ctxsNode) return []
 
     const children = ctxsNode.getChildren()
-    if (children.length == 0)
+    if (children.length === 0)
       return []
 
     const ctxAttributes: ContextDashAttributes[] = []
@@ -53,27 +53,21 @@ class ContextsService {
     this.handles = []
   }
 
-  startContext(context: ContextDashAttributes): Promise<any> {
-    return this.executeOperationOnContext('start()', context);
+  startContext(context: ContextDashAttributes): Promise<unknown> {
+    return this.executeOperationOnContext('start()', context)
   }
 
-  suspendContext(context: ContextDashAttributes): Promise<any> {
-    return this.executeOperationOnContext('suspend()', context);
+  suspendContext(context: ContextDashAttributes): Promise<unknown> {
+    return this.executeOperationOnContext('suspend()', context)
   }
 
-  stopContext(context: ContextDashAttributes): Promise<any> {
-    return this.executeOperationOnContext('stop()', context);
+  stopContext(context: ContextDashAttributes): Promise<unknown> {
+    return this.executeOperationOnContext('stop()', context)
   }
 
-  executeOperationOnContext(operation: string, context: ContextDashAttributes): Promise<any> {
-    return jolokiaService.execute(context.mbean, operation);
+  executeOperationOnContext(operation: string, context: ContextDashAttributes): Promise<unknown> {
+    return jolokiaService.execute(context.mbean, operation)
   }
-  //
-  //   executeOperationOnContexts(operation: string, contexts: Context[]): ng.IPromise<any[]> {
-  //     const objectNames = contexts.map(context => context.mbeanName);
-  //     return this.jolokiaService.executeMany(objectNames, operation);
-  //   }
-  // }
 }
 
 export const contextsService = new ContextsService()
