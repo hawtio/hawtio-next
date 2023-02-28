@@ -1,3 +1,7 @@
-export * from './components'
+export { PluginTreeViewToolbar } from './PluginTreeViewToolbar'
+export { JmxContentMBeans } from './JmxContentBeans'
+export { Attributes, AttributeModal } from './attributes'
+export { Operations } from './operations'
+export { Chart } from './chart'
 export * from './tree'
 export * from './workspace'

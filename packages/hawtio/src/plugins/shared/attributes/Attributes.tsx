@@ -6,7 +6,7 @@ import { OnRowClick, Table, TableBody, TableHeader, TableProps } from '@patternf
 import { IResponse } from 'jolokia.js'
 import { useEffect, useState, useContext } from 'react'
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
-import { log } from '../../globals'
+import { log } from '../globals'
 import { attributeService } from './attribute-service'
 import { AttributeModal } from './AttributeModal'
 
