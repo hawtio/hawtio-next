@@ -1,5 +1,5 @@
 import { eventService } from '@hawtiosrc/core'
-import { PUBLIC_USER, log, PATH_LOGOUT, PATH_USER } from './globals'
+import { log, PATH_LOGOUT, PATH_USER, PUBLIC_USER } from './globals'
 
 export interface IUserService {
   getUsername(): Promise<string>
@@ -19,14 +19,20 @@ class UserService implements IUserService {
   private token: string | null = null
 
   constructor() {
-    this.login = this.fetchUser()
+    this.login = this.fetchUser(true)
   }
 
-  private async fetchUser(): Promise<Login> {
+  private async fetchUser(retry: boolean): Promise<Login> {
     try {
       const res = await fetch(PATH_USER)
       if (!res.ok) {
         log.error('Failed to login:', res.status, res.statusText)
+        if (retry && res.status === 403) {
+          // Wait for 1000ms in case login session is not ready at server side
+          // This retry is mainly needed for Spring Security support
+          await new Promise(resolve => setTimeout(resolve, 1000))
+          return this.fetchUser(false)
+        }
         return { username: PUBLIC_USER, isLogin: false }
       }
 
