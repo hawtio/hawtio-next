@@ -44,7 +44,7 @@ const DEFAULT_JOLOKIA_OPTIONS: IOptions = {
 } as const
 const DEFAULT_UPDATE_RATE = 5000
 
-const JOLOKIA_PATHS = ['/hawtio/jolokia', '/jolokia', 'jolokia'] as const
+const JOLOKIA_PATHS = ['jolokia', '/hawtio/jolokia', '/jolokia'] as const
 
 enum JolokiaListMethod {
   /** The default LIST+EXEC Jolokia operations. */
