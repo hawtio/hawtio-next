@@ -2,13 +2,14 @@ import { Logger } from '@hawtiosrc/core'
 import { escapeDots, escapeTags } from '@hawtiosrc/util/jolokia'
 import { stringSorter } from '@hawtiosrc/util/strings'
 import { IJmxDomain, IJmxDomains } from 'jolokia.js'
-import { ILogger } from 'js-logger'
+import { pluginName } from '../globals'
 import { MBeanNode } from './node'
-import { treeProcessorRegistry, TreeProcessorFunction } from './registry'
+import { TreeProcessorFunction, treeProcessorRegistry } from './registry'
+
+const log = Logger.get(`${pluginName}-tree`)
 
 export class MBeanTree {
   private id: string
-  private log: ILogger
 
   static createEmptyTree(id: string): MBeanTree {
     return new MBeanTree(id)
@@ -42,7 +43,6 @@ export class MBeanTree {
 
   private constructor(id: string) {
     this.id = `hawtio-${id}`
-    this.log = Logger.get(this.id + '-tree')
   }
 
   private populate(domains: IJmxDomains) {
@@ -57,7 +57,7 @@ export class MBeanTree {
   }
 
   private populateDomain(name: string, domain: IJmxDomain) {
-    this.log.debug('JMX tree domain:', name)
+    log.debug('JMX tree domain:', name)
     const domainNode = this.getOrCreateNode(name)
     Object.entries(domain).forEach(([propList, mbean]) => {
       domainNode.populateMBean(propList, mbean)

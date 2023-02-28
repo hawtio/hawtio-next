@@ -1,13 +1,13 @@
 import { Logger } from '@hawtiosrc/core'
-import React from 'react'
-import { CubeIcon, FolderIcon, FolderOpenIcon } from '@patternfly/react-icons'
-import { TreeViewDataItem } from '@patternfly/react-core'
 import { escapeDots, escapeTags } from '@hawtiosrc/util/jolokia'
-import { IJmxMBean } from 'jolokia.js'
 import { stringSorter, trimQuotes } from '@hawtiosrc/util/strings'
-import { ILogger } from 'js-logger'
+import { TreeViewDataItem } from '@patternfly/react-core'
+import { CubeIcon, FolderIcon, FolderOpenIcon } from '@patternfly/react-icons'
+import { IJmxMBean } from 'jolokia.js'
+import React from 'react'
+import { pluginName } from '../globals'
 
-const nodeLoggers: Map<string, ILogger> = new Map<string, ILogger>()
+const log = Logger.get(`${pluginName}-tree`)
 
 export class MBeanNode implements TreeViewDataItem {
   owner: string
@@ -22,22 +22,6 @@ export class MBeanNode implements TreeViewDataItem {
   objectName?: string
   mbean?: IJmxMBean
 
-  private log: ILogger
-
-  //
-  // Avoid creating a new logger for every node by registering
-  // and getting the same logger for all nodes belonging to the same tree
-  //
-  private static getLogger(owner: string): ILogger {
-    const logId = `${owner}-node`
-    let log: ILogger | undefined = nodeLoggers.get(logId)
-    if (!log) {
-      log = Logger.get(logId)
-      nodeLoggers.set(logId, log)
-    }
-    return log
-  }
-
   constructor(owner: string, id: string, name: string, folder: boolean) {
     this.id = id
     this.name = name
@@ -50,17 +34,16 @@ export class MBeanNode implements TreeViewDataItem {
     }
 
     this.owner = owner
-    this.log = MBeanNode.getLogger(owner)
   }
 
   populateMBean(propList: string, mbean: IJmxMBean) {
-    this.log.debug('  JMX tree mbean:', propList)
+    log.debug('  JMX tree mbean:', propList)
     const props = new PropertyList(this, propList)
     this.createMBeanNode(props.getPaths(), props, mbean)
   }
 
   private createMBeanNode(paths: string[], props: PropertyList, mbean: IJmxMBean) {
-    this.log.debug('    JMX tree property:', paths[0])
+    log.debug('    JMX tree property:', paths[0])
     if (paths.length === 1) {
       // final mbean node
       const mbeanNode = this.create(paths[0], false)
@@ -96,7 +79,7 @@ export class MBeanNode implements TreeViewDataItem {
   create(name: string, folder: boolean): MBeanNode {
     // this method should be invoked on a folder node
     if (this.children === undefined) {
-      this.log.warn(`node "${this.name}" should be a folder`)
+      log.warn(`node "${this.name}" should be a folder`)
       // re-init as folder
       this.icon = Icons.folder
       this.expandedIcon = Icons.folderOpen
