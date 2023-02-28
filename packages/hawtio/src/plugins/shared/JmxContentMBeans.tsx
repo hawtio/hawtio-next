@@ -7,7 +7,7 @@ import {
 import { InfoCircleIcon } from '@patternfly/react-icons'
 import { OnRowClick, Table, TableBody, TableHeader, TableProps } from '@patternfly/react-table'
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
-import './JmxContentBeans.css'
+import './JmxContentMBeans.css'
 
 export const JmxContentMBeans: React.FunctionComponent = () => {
   const { selectedNode, setSelectedNode } = useContext(PluginNodeSelectionContext)
