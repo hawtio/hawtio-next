@@ -12,6 +12,7 @@ import {
   Text,
   Title,
 } from '@patternfly/react-core'
+import './JmxContent.css'
 import { CubesIcon } from '@patternfly/react-icons'
 import React, { useContext } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
@@ -19,7 +20,8 @@ import { MBeanTreeContext } from './context'
 import { Chart } from '@hawtiosrc/plugins/shared/components/chart'
 import { Operations } from '@hawtiosrc/plugins/shared/components/operations'
 import { Attributes } from '@hawtiosrc/plugins/shared/components/attributes'
-import { JmxContentMBeans } from '@hawtiosrc/plugins/shared/components'
+import { JmxContentMBeans, MBeanNode } from '@hawtiosrc/plugins/shared'
+import { Contexts } from './contexts'
 
 export const JmxContent: React.FunctionComponent = () => {
   const { selectedNode } = useContext(MBeanTreeContext)
@@ -38,11 +40,17 @@ export const JmxContent: React.FunctionComponent = () => {
     )
   }
 
-  const navItems = [
-    { id: 'attributes', title: 'Attributes', component: Attributes },
-    { id: 'operations', title: 'Operations', component: Operations },
-    { id: 'chart', title: 'Chart', component: Chart },
+  const mBeanApplicable = (node: MBeanNode) => node.objectName
+
+  const allNavItems = [
+    { id: 'attributes', title: 'Attributes', component: Attributes, isApplicable: mBeanApplicable},
+    { id: 'operations', title: 'Operations', component: Operations, isApplicable: mBeanApplicable },
+    { id: 'chart', title: 'Chart', component: Chart, isApplicable: mBeanApplicable },
+    { id: 'contexts', title: 'Contexts', component: Contexts, isApplicable: (node: MBeanNode) => node.id.includes('Contexts')},
   ]
+
+  /* Filter the nav items to those applicable to the selected node */
+  const navItems = allNavItems.filter(nav => nav.isApplicable(selectedNode))
 
   const mbeanNav = (
     <Nav aria-label='MBean Nav' variant='tertiary'>
@@ -67,18 +75,18 @@ export const JmxContent: React.FunctionComponent = () => {
           <Title headingLevel='h1'>{selectedNode.name}</Title>
           <Text component='small'>{selectedNode.objectName}</Text>
         </PageSection>
-        {selectedNode.objectName && <PageNavigation>{mbeanNav}</PageNavigation>}
+        {navItems.length > 0 && <PageNavigation>{mbeanNav}</PageNavigation>}
       </PageGroup>
-      <PageSection>
-        {selectedNode.objectName && (
+      <PageSection className={'jmx-main'}>
+        {navItems.length > 0 && (
           <React.Fragment>
             <Routes>
               {mbeanRoutes}
-              <Route key='root' path='/' element={<Navigate to={'attributes'} />} />
+              <Route key='root' path='/' element={<Navigate to={navItems[0].id} />} />
             </Routes>
           </React.Fragment>
         )}
-        {!selectedNode.objectName && <JmxContentMBeans />}
+        {(navItems.length === 0 && !selectedNode.objectName) && <JmxContentMBeans />}
       </PageSection>
     </React.Fragment>
   )
