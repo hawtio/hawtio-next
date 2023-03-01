@@ -2,7 +2,9 @@ import { createContext, useEffect, useState, useContext } from 'react'
 import { TreeViewDataItem } from '@patternfly/react-core'
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
 import { workspace, MBeanNode, MBeanTree } from '@hawtiosrc/plugins/shared'
-import { pluginName, jmxDomain } from './globals'
+import { pluginName, pluginPath, jmxDomain } from './globals'
+import { useNavigate } from "react-router-dom";
+import { eventService, EVENT_REFRESH } from '@hawtiosrc/core'
 
 /**
  * Custom React hook for using Camel MBean tree.
@@ -11,22 +13,25 @@ export function useCamelTree() {
   const [tree, setTree] = useState(MBeanTree.createEmpty(pluginName))
   const [loaded, setLoaded] = useState(false)
   const { selectedNode, setSelectedNode } = useContext(PluginNodeSelectionContext)
+  const navigate = useNavigate()
 
   useEffect(() => {
-    if (loaded) {
-      return
-    }
-
     const loadTree = async () => {
-      populateTree()
+      await populateTree()
       setLoaded(true)
     }
-    loadTree()
-  }, [loaded])
 
-  const refresh = () => {
-    setLoaded(false)
-  }
+    const listener = () => {
+      setSelectedNode(null)
+      setLoaded(false)
+      loadTree()
+    }
+    eventService.onRefresh(listener)
+
+    loadTree()
+
+    return () => eventService.removeListener(EVENT_REFRESH, listener)
+  }, [])
 
   const populateTree = async () => {
     const wkspTree: MBeanTree = await workspace.getTree()
@@ -44,19 +49,21 @@ export function useCamelTree() {
         } else {
           setSelectedNode(rootNode.children[0])
         }
+        /* On population of tree, ensure the url path is returned to the base plugin path */
+        navigate(pluginPath)
       }
     } else {
-      console.log('TODO: reroute back to jmx view')
       setTree(wkspTree)
-      // // No camel contexts so redirect to the JMX view and select the first tree node
-      // if (tree.children && tree.children.length > 0) {
-      //   const firstNode = tree.children[0]
-      //   this.$location.path('/jmx/attributes').search({ 'nid': firstNode['id'] })
-      // }
+      // No camel contexts so redirect to the JMX view and select the first tree node
+      navigate('jmx')
+      eventService.notify({
+        type: 'warning',
+        message: 'No Camel domain detected in target. Redirecting to back to jmx.'
+      })
     }
   }
 
-  return { tree, loaded, refresh, selectedNode, setSelectedNode }
+  return { tree, loaded, selectedNode, setSelectedNode }
 }
 
 type CamelContext = {

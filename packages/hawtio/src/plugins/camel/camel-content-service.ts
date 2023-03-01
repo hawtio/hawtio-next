@@ -1,7 +1,8 @@
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
+import { isObject } from '@hawtiosrc/util/objects'
 import {
   jmxDomain,
-  camelContextsId,
+  camelContexts,
   camelCtx,
   routes,
   endpoints,
@@ -22,12 +23,16 @@ export function isDomain(node: MBeanNode): boolean {
   return node && jmxDomain === node.getProperty('domain')
 }
 
+export function hasMBean(node: MBeanNode): boolean {
+  return node && isObject(node.mbean)
+}
+
 export function isType(node: MBeanNode, type: string): boolean {
   return node && type === node.getProperty('type')
 }
 
 export function isContextsFolder(node: MBeanNode): boolean {
-  return node && node.id === camelContextsId
+  return node && node.id.startsWith(camelContexts)
 }
 
 export function isRoutesFolder(node: MBeanNode): boolean {

@@ -5,6 +5,7 @@ import { IErrorResponse, IJmxDomain, IJmxDomains, IJmxMBean, ISimpleOptions } fr
 import { is, object } from 'superstruct'
 import { pluginName } from './globals'
 import { MBeanNode, MBeanTree } from './tree'
+import { eventService } from '@hawtiosrc/core'
 
 const log = Logger.get(`${pluginName}-workspace`)
 
@@ -34,6 +35,15 @@ class Workspace {
     const domains = this.unwindResponseWithRBACCache(value)
     log.debug('JMX tree loaded:', domains)
     return MBeanTree.createFromDomains(pluginName, domains)
+  }
+
+  refreshTree() {
+    this.tree = new Promise(resolve => {
+      this.loadTree().then(tree => {
+        resolve(tree)
+        eventService.refresh()
+      })
+    })
   }
 
   /**
