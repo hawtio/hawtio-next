@@ -8,39 +8,40 @@ import {
   TextArea,
   TextInput,
 } from '@patternfly/react-core'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { attributeService } from './attribute-service'
-import { NodeProps } from '../NodeProps'
+import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
 
-export interface AttributeModalProps extends NodeProps {
+export interface AttributeModalProps {
   isOpen: boolean
   onClose: () => void
   input: { name: string; value: string }
 }
 
 export const AttributeModal: React.FunctionComponent<AttributeModalProps> = props => {
+  const { selectedNode } = useContext(PluginNodeSelectionContext)
   const { isOpen, onClose, input } = props
   const { name, value } = input
   const [jolokiaUrl, setJolokiaUrl] = useState('Loading...')
 
   useEffect(() => {
-    if (!props.node || !props.node.objectName) {
+    if (!selectedNode || !selectedNode.objectName) {
       return
     }
 
-    const mbean = props.node.objectName
+    const mbean = selectedNode.objectName
     const buildUrl = async () => {
       const url = await attributeService.buildUrl(mbean, name)
       setJolokiaUrl(url)
     }
     buildUrl()
-  }, [props.node, name])
+  }, [selectedNode, name])
 
-  if (!props.node || !props.node.mbean || !props.node.objectName) {
+  if (!selectedNode || !selectedNode.mbean || !selectedNode.objectName) {
     return null
   }
 
-  const attribute = props.node.mbean.attr[name]
+  const attribute = selectedNode.mbean.attr[name]
   if (!attribute) {
     return null
   }

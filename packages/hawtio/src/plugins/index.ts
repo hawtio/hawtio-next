@@ -9,3 +9,4 @@ export const registerPlugins = () => {
 }
 
 export { jolokiaService } from './connect'
+export { PluginNodeSelectionContext, usePluginNodeSelected } from './selectionNodeContext'

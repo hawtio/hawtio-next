@@ -20,7 +20,7 @@ export const Camel: React.FunctionComponent = () => {
   // TODO - consider whether refresh() will be needed
   //
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { tree, loaded, refresh, node, setNode } = useCamelTree()
+  const { tree, loaded, refresh, selectedNode, setSelectedNode } = useCamelTree()
 
   if (!loaded) {
     return (
@@ -44,7 +44,7 @@ export const Camel: React.FunctionComponent = () => {
   }
 
   return (
-    <CamelContext.Provider value={{ tree, node, setNode }}>
+    <CamelContext.Provider value={{ tree, selectedNode, setSelectedNode }}>
       <Split className='camel-split' sizes={[25, 75]} minSize={200} gutterSize={5}>
         <div>
           <CamelTreeView />

@@ -8,11 +8,12 @@ import {
 } from '@patternfly/react-core'
 import { ClipboardCheckIcon } from '@patternfly/react-icons'
 import { useContext } from 'react'
-import { NodeProps } from '../NodeProps'
+import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
 
-export const Chart: React.FunctionComponent<NodeProps> = (props) => {
+export const Chart: React.FunctionComponent = () => {
+  const {selectedNode} = useContext(PluginNodeSelectionContext)
 
-  if (!props.node || !props.node.mbean) {
+  if (!selectedNode || !selectedNode.mbean) {
     return null
   }
 

@@ -24,24 +24,25 @@ import {
 import React, { useContext, useState } from 'react'
 import { Operation } from './operation'
 import { operationService } from './operation-service'
+import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
 import './OperationForm.css'
-import { NodeProps } from '../NodeProps'
 
-export interface OperationFormProps extends NodeProps {
+export interface OperationFormProps {
   name: string
   operation: Operation
 }
 
 export const OperationForm: React.FunctionComponent<OperationFormProps> = props => {
+  const {selectedNode} = useContext(PluginNodeSelectionContext)
   const { name, operation } = props
   const [isExpanded, setIsExpanded] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
-  if (!props.node || !props.node.objectName || !props.node.mbean) {
+  if (!selectedNode || !selectedNode.objectName || !selectedNode.mbean) {
     return null
   }
 
-  const { objectName } = props.node
+  const { objectName } = selectedNode
 
   const handleToggle = () => {
     setIsExpanded(!isExpanded)

@@ -4,48 +4,49 @@ import { Card, CardBody, Text } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
 import { OnRowClick, Table, TableBody, TableHeader, TableProps } from '@patternfly/react-table'
 import { IResponse } from 'jolokia.js'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useContext } from 'react'
+import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
 import { log } from '../../globals'
 import { attributeService } from './attribute-service'
 import { AttributeModal } from './AttributeModal'
-import { NodeProps } from '../NodeProps'
 
-export const Attributes: React.FunctionComponent<NodeProps> = props => {
+export const Attributes: React.FunctionComponent = () => {
+  const {selectedNode} = useContext(PluginNodeSelectionContext)
   const [attributes, setAttributes] = useState<AttributeValues>({})
   const [isReading, setIsReading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selected, setSelected] = useState({ name: '', value: '' })
 
   useEffect(() => {
-    if (!props.node || !props.node.mbean || !props.node.objectName) {
+    if (!selectedNode || !selectedNode.mbean || !selectedNode.objectName) {
       return
     }
 
     setIsReading(true)
-    const objectName = props.node.objectName
+    const objectName = selectedNode.objectName
     const readAttributes = async () => {
       const attrs = await attributeService.read(objectName)
       setAttributes(attrs)
       setIsReading(false)
     }
     readAttributes()
-  }, [props.node])
+  }, [selectedNode])
 
   useEffect(() => {
-    if (!props.node || !props.node.mbean || !props.node.objectName) {
+    if (!selectedNode || !selectedNode.mbean || !selectedNode.objectName) {
       return
     }
 
-    const mbean = props.node.objectName
+    const mbean = selectedNode.objectName
     attributeService.register({ type: 'read', mbean }, (response: IResponse) => {
       log.debug('Scheduler - Attributes:', response.value)
       setAttributes(response.value as AttributeValues)
     })
 
     return () => attributeService.unregisterAll()
-  }, [props.node])
+  }, [selectedNode])
 
-  if (!props.node || !props.node.mbean || !props.node.objectName) {
+  if (!selectedNode || !selectedNode.mbean || !selectedNode.objectName) {
     return null
   }
 
