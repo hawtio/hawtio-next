@@ -1,6 +1,6 @@
 import { hawtio } from '@hawtiosrc/core'
 // import { helpRegistry } from '@hawtiosrc/help/registry'
-import { workspace, treeProcessorRegistry } from '@hawtiosrc/plugins/shared'
+import { treeProcessorRegistry, workspace } from '@hawtiosrc/plugins/shared'
 import { jmxDomain } from './globals'
 import { processTreeDomain } from './tree-processor'
 // import { preferencesRegistry } from '@hawtiosrc/preferences/registry'
@@ -13,7 +13,7 @@ export const camel = () => {
   hawtio.addPlugin({
     id: 'camel',
     title: 'Camel',
-    path: '/camel',
+    path: 'camel',
     component: Camel,
     isActive: async () => {
       return workspace.treeContainsDomainAndProperties(jmxDomain)

@@ -4,7 +4,7 @@ import { isString } from '@hawtiosrc/util/strings'
 import { IErrorResponse, IJmxDomain, IJmxDomains, IJmxMBean, ISimpleOptions } from 'jolokia.js'
 import { is, object } from 'superstruct'
 import { pluginName } from './globals'
-import { MBeanTree, MBeanNode } from './tree'
+import { MBeanNode, MBeanTree } from './tree'
 
 const log = Logger.get(`${pluginName}-workspace`)
 
@@ -14,9 +14,7 @@ class Workspace {
   private tree: Promise<MBeanTree>
 
   constructor() {
-    this.tree = new Promise(resolve => {
-      this.loadTree().then(tree => resolve(tree))
-    })
+    this.tree = this.loadTree()
   }
 
   private async loadTree(): Promise<MBeanTree> {
@@ -35,7 +33,7 @@ class Workspace {
     // TODO: this.jolokiaStatus.xhr = null
     const domains = this.unwindResponseWithRBACCache(value)
     log.debug('JMX tree loaded:', domains)
-    return MBeanTree.createMBeanTreeFromDomains('workspace', domains)
+    return MBeanTree.createFromDomains(pluginName, domains)
   }
 
   /**
@@ -92,10 +90,7 @@ class Workspace {
     return true
   }
 
-  async treeContainsDomainAndProperties(
-    domainName: string,
-    properties?: Record<string, unknown> | null,
-  ): Promise<boolean> {
+  async treeContainsDomainAndProperties(domainName: string, properties?: Record<string, unknown>): Promise<boolean> {
     const tree = await this.tree
     if (!tree) {
       return false
@@ -107,8 +102,8 @@ class Workspace {
     }
 
     if (properties) {
-      let domainAndChildren: MBeanNode[] = [domain]
-      domainAndChildren = domainAndChildren.concat(domain.children || [])
+      const domainAndChildren: MBeanNode[] = [domain]
+      domainAndChildren.push(...(domain.children || []))
       const checkProperties = (node: MBeanNode) => {
         if (!this.matchesProperties(node, properties)) {
           if (node.children && node.children.length > 0) {
@@ -122,6 +117,7 @@ class Workspace {
       }
       return domainAndChildren.some(checkProperties)
     }
+
     return true
   }
 }

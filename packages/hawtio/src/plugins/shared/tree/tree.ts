@@ -4,30 +4,30 @@ import { stringSorter } from '@hawtiosrc/util/strings'
 import { IJmxDomain, IJmxDomains } from 'jolokia.js'
 import { pluginName } from '../globals'
 import { MBeanNode } from './node'
-import { TreeProcessorFunction, treeProcessorRegistry } from './registry'
+import { treeProcessorRegistry } from './processor-registry'
 
 const log = Logger.get(`${pluginName}-tree`)
 
 export class MBeanTree {
-  private id: string
+  private tree: MBeanNode[] = []
 
-  static createEmptyTree(id: string): MBeanTree {
+  static createEmpty(id: string): MBeanTree {
     return new MBeanTree(id)
   }
 
-  static createMBeanTreeFromDomains(id: string, domains: IJmxDomains): MBeanTree {
+  static createFromDomains(id: string, domains: IJmxDomains): MBeanTree {
     const mBeanTree = new MBeanTree(id)
     mBeanTree.populate(domains)
     return mBeanTree
   }
 
-  static createMBeanTreeFromNodes(id: string, nodes: MBeanNode[]) {
+  static createFromNodes(id: string, nodes: MBeanNode[]): MBeanTree {
     const mBeanTree = new MBeanTree(id)
     mBeanTree.tree = nodes
     return mBeanTree
   }
 
-  static createFilteredTree(originalTree: MBeanNode[], filter: (node: MBeanNode) => boolean): MBeanNode[] {
+  static filter(originalTree: MBeanNode[], filter: (node: MBeanNode) => boolean): MBeanNode[] {
     const filteredTree: MBeanNode[] = []
     for (const node of originalTree) {
       const copy = node.filterClone(filter)
@@ -39,11 +39,7 @@ export class MBeanTree {
     return filteredTree
   }
 
-  private tree: MBeanNode[] = []
-
-  private constructor(id: string) {
-    this.id = `hawtio-${id}`
-  }
+  private constructor(private id: string) {}
 
   private populate(domains: IJmxDomains) {
     Object.entries(domains).forEach(([name, domain]) => {
@@ -64,10 +60,7 @@ export class MBeanTree {
     })
 
     // Execute any post-processors for the domain
-    const processors: TreeProcessorFunction[] = treeProcessorRegistry.getProcessors(name)
-    processors.forEach((processor: TreeProcessorFunction) => {
-      processor(domainNode)
-    })
+    treeProcessorRegistry.process(name, domainNode)
   }
 
   private getOrCreateNode(name: string): MBeanNode {
