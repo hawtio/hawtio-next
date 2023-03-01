@@ -61,7 +61,13 @@ export function useCamelTree() {
     loadTree()
 
     return () => eventService.removeListener(EVENT_REFRESH, listener)
-  })
+    /*
+     * This effect should only be called on mount so cannot depend on selectedNode
+     * But cannot have [] removed either as this seems to execute the effect repeatedly
+     * So disable the lint check.
+     */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return { tree, loaded, selectedNode, setSelectedNode }
 }
