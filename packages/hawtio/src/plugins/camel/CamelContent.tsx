@@ -39,22 +39,28 @@ export const CamelContent: React.FunctionComponent = () => {
   }
 
   interface NavItem {
-    id: string,
-    title: string,
-    component: React.FunctionComponent,
+    id: string
+    title: string
+    component: React.FunctionComponent
     isApplicable(node: MBeanNode): boolean
   }
 
   /**
    * Test if nav should contain general mbean tabs
    */
-  const mBeanApplicable = (node: MBeanNode) => ccs.hasMBean(node) && !ccs.isContextsFolder(node) && !ccs.isRoutesFolder(node) && !ccs.isRouteNode(node)
+  const mBeanApplicable = (node: MBeanNode) =>
+    ccs.hasMBean(node) && !ccs.isContextsFolder(node) && !ccs.isRoutesFolder(node) && !ccs.isRouteNode(node)
 
   const allNavItems: NavItem[] = [
-    { id: 'contexts', title: 'Contexts', component: ContextsDash, isApplicable: (node: MBeanNode) => ccs.isContextsFolder(node) },
+    {
+      id: 'contexts',
+      title: 'Contexts',
+      component: ContextsDash,
+      isApplicable: (node: MBeanNode) => ccs.isContextsFolder(node),
+    },
     { id: 'attributes', title: 'Attributes', component: Attributes, isApplicable: mBeanApplicable },
     { id: 'operations', title: 'Operations', component: Operations, isApplicable: mBeanApplicable },
-    { id: 'chart', title: 'Chart', component: Chart, isApplicable: mBeanApplicable }
+    { id: 'chart', title: 'Chart', component: Chart, isApplicable: mBeanApplicable },
   ]
 
   /* Filter the nav items to those applicable to the selected node */
@@ -64,11 +70,10 @@ export const CamelContent: React.FunctionComponent = () => {
     <Nav aria-label='Camel Nav' variant='tertiary'>
       <NavList>
         {navItems.map(nav => (
-            (<NavItem key={nav.id} isActive={pathname === nav.id}>
-              <NavLink to={{ pathname: nav.id, search }}>{nav.title}</NavLink>
-            </NavItem>)
-            )
-          )}
+          <NavItem key={nav.id} isActive={pathname === nav.id}>
+            <NavLink to={{ pathname: nav.id, search }}>{nav.title}</NavLink>
+          </NavItem>
+        ))}
       </NavList>
     </Nav>
   )
@@ -95,7 +100,7 @@ export const CamelContent: React.FunctionComponent = () => {
             </Routes>
           </React.Fragment>
         )}
-        {(navItems.length === 0 && !selectedNode.objectName) && <JmxContentMBeans />}
+        {navItems.length === 0 && !selectedNode.objectName && <JmxContentMBeans />}
       </PageSection>
     </React.Fragment>
   )

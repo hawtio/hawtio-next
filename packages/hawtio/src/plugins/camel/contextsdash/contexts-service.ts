@@ -4,8 +4,8 @@ import { jolokiaService, AttributeValues } from '@hawtiosrc/plugins/connect/jolo
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
 
 export interface ContextDashAttributes {
-  context: string,
-  mbean: string,
+  context: string
+  mbean: string
   state: string
 }
 
@@ -16,7 +16,7 @@ class ContextsService {
     const actx: ContextDashAttributes = {
       context: context,
       mbean: mbean,
-      state: attributes ? attributes['State'] as string : 'Not Found'
+      state: attributes ? (attributes['State'] as string) : 'Not Found',
     }
 
     return actx
@@ -26,13 +26,11 @@ class ContextsService {
     if (!ctxsNode) return []
 
     const children = ctxsNode.getChildren()
-    if (children.length === 0)
-      return []
+    if (children.length === 0) return []
 
     const ctxAttributes: ContextDashAttributes[] = []
     for (const child of children) {
-      if (! child.objectName)
-        continue
+      if (!child.objectName) continue
 
       const attributes: AttributeValues = await jolokiaService.readAttributes(child.objectName as string)
       ctxAttributes.push(this.createContextAttibutes(child.name, child.objectName, attributes))

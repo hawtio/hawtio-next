@@ -1,11 +1,6 @@
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import { isObject } from '@hawtiosrc/util/objects'
-import {
-  jmxDomain,
-  camelContexts,
-  routes,
-  routeNode
-} from './globals'
+import { jmxDomain, camelContexts, routes, routeNode } from './globals'
 
 export function setType(node: MBeanNode, type: string) {
   node.addProperty('type', type)
@@ -32,8 +27,7 @@ export function isContextsFolder(node: MBeanNode): boolean {
 }
 
 export function isRoutesFolder(node: MBeanNode): boolean {
-  return node && isDomain(node) &&
-         !node.objectName && node.id === routes
+  return node && isDomain(node) && !node.objectName && node.id === routes
 }
 
 export function isRouteNode(node: MBeanNode): boolean {

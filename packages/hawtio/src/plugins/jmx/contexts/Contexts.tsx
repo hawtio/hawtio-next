@@ -10,7 +10,7 @@ import { contextsService, ContextAttributes } from './contexts-service'
 import { moveElement } from '@hawtiosrc/util/arrays'
 
 export const Contexts: React.FunctionComponent = () => {
-  const {selectedNode} = useContext(PluginNodeSelectionContext)
+  const { selectedNode } = useContext(PluginNodeSelectionContext)
 
   const emptyCtxs: ContextAttributes[] = []
   const [contexts, setContexts] = useState(emptyCtxs)
@@ -27,8 +27,7 @@ export const Contexts: React.FunctionComponent = () => {
   }, [selectedNode])
 
   useEffect(() => {
-    if (!contexts || contexts.length === 0)
-      return
+    if (!contexts || contexts.length === 0) return
 
     for (const [idx, ctx] of contexts.entries()) {
       const mbean = ctx.MBean
@@ -37,7 +36,10 @@ export const Contexts: React.FunctionComponent = () => {
 
         /* Replace the context in the existing set with the new one */
         const newCtx: ContextAttributes = contextsService.createContextAttibutes(
-          ctx.Context, mbean, response.value as AttributeValues)
+          ctx.Context,
+          mbean,
+          response.value as AttributeValues,
+        )
 
         /* Replace the context in the contexts array */
         const newContexts = [...contexts]
@@ -71,11 +73,11 @@ export const Contexts: React.FunctionComponent = () => {
     [key: string]: string[]
   } = {}
 
-  for(const [idx, ctx] of contexts.entries()) {
-    for(const [key, value] of Object.entries(ctx)) {
+  for (const [idx, ctx] of contexts.entries()) {
+    for (const [key, value] of Object.entries(ctx)) {
       if (key === 'MBean') continue // Do not need to display
 
-      if (! Object.hasOwn(contextData, key)) {
+      if (!Object.hasOwn(contextData, key)) {
         contextData[key] = []
         // Pad other contexts with an empty value
         for (let i = 0; i < idx; ++i) {
@@ -102,11 +104,10 @@ export const Contexts: React.FunctionComponent = () => {
   const columns: TableProps['cells'] = []
   const rows: TableProps['rows'] = []
   for (const [idx, headerName] of headerNames.entries()) {
-    columns.push({title: headerName, transforms: [wrappable]})
+    columns.push({ title: headerName, transforms: [wrappable] })
     const dataCol = contextData[headerName]
     for (const [dx, d] of dataCol.entries()) {
-      if (rows[dx] === undefined)
-        rows[dx] = []
+      if (rows[dx] === undefined) rows[dx] = []
 
       rows[dx].splice(idx, 0, d)
     }

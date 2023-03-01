@@ -11,7 +11,7 @@ import { attributeService } from './attribute-service'
 import { AttributeModal } from './AttributeModal'
 
 export const Attributes: React.FunctionComponent = () => {
-  const {selectedNode} = useContext(PluginNodeSelectionContext)
+  const { selectedNode } = useContext(PluginNodeSelectionContext)
   const [attributes, setAttributes] = useState<AttributeValues>({})
   const [isReading, setIsReading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)

@@ -11,7 +11,7 @@ import { useContext } from 'react'
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
 
 export const Chart: React.FunctionComponent = () => {
-  const {selectedNode} = useContext(PluginNodeSelectionContext)
+  const { selectedNode } = useContext(PluginNodeSelectionContext)
 
   if (!selectedNode || !selectedNode.mbean) {
     return null

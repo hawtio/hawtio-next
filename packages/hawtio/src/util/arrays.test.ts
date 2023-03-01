@@ -2,7 +2,6 @@ import { moveElement } from './arrays'
 
 describe('arrays', () => {
   test('moveElement', () => {
-
     const testArr: number[] = [2, 3, 4, 5, 1]
     moveElement(testArr, 1, 0)
     expect(testArr[0]).toEqual(1)
