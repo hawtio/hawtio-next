@@ -18,7 +18,7 @@ import React, { useContext } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { CamelContext } from './context'
 import { Attributes, Operations, Chart, JmxContentMBeans, MBeanNode } from '@hawtiosrc/plugins/shared'
-import { ContextsDash } from './contextsdash'
+import { Contexts } from './contexts'
 import * as ccs from './camel-content-service'
 
 export const CamelContent: React.FunctionComponent = () => {
@@ -55,7 +55,7 @@ export const CamelContent: React.FunctionComponent = () => {
     {
       id: 'contexts',
       title: 'Contexts',
-      component: ContextsDash,
+      component: Contexts,
       isApplicable: (node: MBeanNode) => ccs.isContextsFolder(node),
     },
     { id: 'attributes', title: 'Attributes', component: Attributes, isApplicable: mBeanApplicable },

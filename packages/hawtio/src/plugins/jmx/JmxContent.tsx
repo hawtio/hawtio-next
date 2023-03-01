@@ -21,7 +21,6 @@ import { Chart } from '@hawtiosrc/plugins/shared/chart'
 import { Operations } from '@hawtiosrc/plugins/shared/operations'
 import { Attributes } from '@hawtiosrc/plugins/shared/attributes'
 import { JmxContentMBeans, MBeanNode } from '@hawtiosrc/plugins/shared'
-import { Contexts } from './contexts'
 
 export const JmxContent: React.FunctionComponent = () => {
   const { selectedNode } = useContext(MBeanTreeContext)
@@ -46,12 +45,6 @@ export const JmxContent: React.FunctionComponent = () => {
     { id: 'attributes', title: 'Attributes', component: Attributes, isApplicable: mBeanApplicable },
     { id: 'operations', title: 'Operations', component: Operations, isApplicable: mBeanApplicable },
     { id: 'chart', title: 'Chart', component: Chart, isApplicable: mBeanApplicable },
-    {
-      id: 'contexts',
-      title: 'Contexts',
-      component: Contexts,
-      isApplicable: (node: MBeanNode) => node.id.includes('Contexts'),
-    },
   ]
 
   /* Filter the nav items to those applicable to the selected node */
