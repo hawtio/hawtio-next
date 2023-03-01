@@ -5,7 +5,7 @@ import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import { isObject } from '@hawtiosrc/util/objects'
 
 export interface ContextAttributes {
-  Context: string,
+  Context: string
   [key: string]: string
 }
 
@@ -15,7 +15,7 @@ class ContextsService {
   createContextAttibutes(context: string, mbean: string, attributes: AttributeValues): ContextAttributes {
     const actx: ContextAttributes = {
       Context: context,
-      MBean: mbean
+      MBean: mbean,
     }
 
     for (const [key, value] of Object.entries(attributes)) {
@@ -32,13 +32,11 @@ class ContextsService {
     if (!ctxsNode) return []
 
     const children = ctxsNode.getChildren()
-    if (children.length === 0)
-      return []
+    if (children.length === 0) return []
 
     const ctxAttributes: ContextAttributes[] = []
     for (const child of children) {
-      if (! child.objectName)
-        continue
+      if (!child.objectName) continue
 
       const attributes: AttributeValues = await jolokiaService.readAttributes(child.objectName as string)
       ctxAttributes.push(this.createContextAttibutes(child.name, child.objectName, attributes))

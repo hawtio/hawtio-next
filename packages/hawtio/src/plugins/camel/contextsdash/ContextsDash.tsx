@@ -24,7 +24,7 @@ import { eventService } from '@hawtiosrc/core'
 import { workspace } from '@hawtiosrc/plugins/shared'
 
 export const ContextsDash: React.FunctionComponent = () => {
-  const {selectedNode} = useContext(PluginNodeSelectionContext)
+  const { selectedNode } = useContext(PluginNodeSelectionContext)
   const [isReading, setIsReading] = useState(true)
 
   const emptyCtxs: ContextDashAttributes[] = []
@@ -64,17 +64,18 @@ export const ContextsDash: React.FunctionComponent = () => {
         return id && ctx.state === 'Suspended'
       })
       .forEach(ctx => {
-        contextsService.startContext(ctx)
+        contextsService
+          .startContext(ctx)
           .then(() => {
             eventService.notify({
               type: 'success',
-              message: 'Camel context started successfully'
+              message: 'Camel context started successfully',
             })
           })
           .catch((error: Error) => {
             eventService.notify({
               type: 'danger',
-              message: error.message
+              message: error.message,
             })
           })
       })
@@ -94,7 +95,8 @@ export const ContextsDash: React.FunctionComponent = () => {
         return id && ctx.state === 'Started'
       })
       .forEach(ctx => {
-        contextsService.suspendContext(ctx)
+        contextsService
+          .suspendContext(ctx)
           .then(() => {
             eventService.notify({
               type: 'success',
@@ -104,7 +106,7 @@ export const ContextsDash: React.FunctionComponent = () => {
           .catch((error: Error) => {
             eventService.notify({
               type: 'danger',
-              message: error.message
+              message: error.message,
             })
           })
       })
@@ -124,33 +126,29 @@ export const ContextsDash: React.FunctionComponent = () => {
   }
 
   const onDeleteConfirmClicked = () => {
-    const toDelete = contexts
-      .filter(ctx => selectedCtxId.find(id => ctx.context === id))
+    const toDelete = contexts.filter(ctx => selectedCtxId.find(id => ctx.context === id))
 
     let deleteProcessed = 0
-    toDelete
-      .forEach(async (ctx) => {
+    toDelete.forEach(async ctx => {
+      try {
+        await contextsService.stopContext(ctx)
+        eventService.notify({
+          type: 'success',
+          message: 'Camel context deleted.',
+        })
+      } catch (error) {
+        eventService.notify({
+          type: 'danger',
+          message: error as string,
+        })
+      }
 
-        try {
-          await contextsService.stopContext(ctx)
-          eventService.notify({
-            type: 'success',
-            message: 'Camel context deleted.'
-          })
-        }
-        catch(error) {
-          eventService.notify({
-            type: 'danger',
-            message: error as string
-          })
-        }
-
-        deleteProcessed++
-        if (deleteProcessed === toDelete.length) {
-          setContexts(contexts.filter(c => toDelete.indexOf(c) < 0))
-          workspace.refreshTree()
-        }
-      })
+      deleteProcessed++
+      if (deleteProcessed === toDelete.length) {
+        setContexts(contexts.filter(c => toDelete.indexOf(c) < 0))
+        workspace.refreshTree()
+      }
+    })
   }
 
   useEffect(() => {
@@ -162,7 +160,7 @@ export const ContextsDash: React.FunctionComponent = () => {
       } catch (error) {
         eventService.notify({
           type: 'warning',
-          message: error as string
+          message: error as string,
         })
       }
       setIsReading(false)
@@ -171,8 +169,7 @@ export const ContextsDash: React.FunctionComponent = () => {
   }, [selectedNode])
 
   useEffect(() => {
-    if (!contexts || contexts.length === 0)
-      return
+    if (!contexts || contexts.length === 0) return
 
     for (const [idx, ctx] of contexts.entries()) {
       const mbean = ctx.mbean
@@ -181,7 +178,10 @@ export const ContextsDash: React.FunctionComponent = () => {
 
         /* Replace the context in the existing set with the new one */
         const newCtx: ContextDashAttributes = contextsService.createContextAttibutes(
-          ctx.context, mbean, response.value as AttributeValues)
+          ctx.context,
+          mbean,
+          response.value as AttributeValues,
+        )
 
         /* Replace the context in the contexts array */
         const newContexts = [...contexts]
@@ -213,8 +213,8 @@ export const ContextsDash: React.FunctionComponent = () => {
    * of the data
    */
   const columns: TableProps['cells'] = []
-  columns.push({title: 'Context', transforms: [wrappable]})
-  columns.push({title: 'State', transforms: [wrappable]})
+  columns.push({ title: 'Context', transforms: [wrappable] })
+  columns.push({ title: 'State', transforms: [wrappable] })
 
   const rows: TableProps['rows'] = []
   for (const ctx of contexts) {
@@ -240,21 +240,23 @@ export const ContextsDash: React.FunctionComponent = () => {
     <React.Fragment>
       <ToolbarItem>
         <Button
-          variant="secondary"
+          variant='secondary'
           isSmall={true}
           isDisabled={!isStartEnabled()}
           icon={React.createElement(PlayIcon)}
-          onClick={onStartClicked}>
+          onClick={onStartClicked}
+        >
           Start
         </Button>
       </ToolbarItem>
       <ToolbarItem>
         <Button
-          variant="secondary"
+          variant='secondary'
           isSmall={true}
           isDisabled={!isSuspendEnabled()}
           icon={React.createElement(AsleepIcon)}
-          onClick={onSuspendClicked}>
+          onClick={onSuspendClicked}
+        >
           Suspend
         </Button>
       </ToolbarItem>
@@ -283,34 +285,33 @@ export const ContextsDash: React.FunctionComponent = () => {
   )
 
   const dropdownItems = [
-    <DropdownItem
-      key='action'
-      componentID='deleteAction'>
+    <DropdownItem key='action' componentID='deleteAction'>
       <Button
-        variant="control"
+        variant='control'
         isSmall={true}
         isDisabled={!isDeleteEnabled()}
         icon={React.createElement(Remove2Icon)}
-        onClick={onDeleteClicked}>
+        onClick={onDeleteClicked}
+      >
         Delete
       </Button>
-    </DropdownItem>
+    </DropdownItem>,
   ]
 
   return (
     <Card isFullHeight>
-      <Toolbar id="toolbar-items">
+      <Toolbar id='toolbar-items'>
         <ToolbarContent>
           {toolbarButtons}
           <ToolbarItem>
             <Dropdown
               autoFocus={true}
-              toggle={<KebabToggle id="toggle-kebab" onToggle={onDropdownToggle} />}
+              toggle={<KebabToggle id='toggle-kebab' onToggle={onDropdownToggle} />}
               isOpen={isOpen}
               dropdownItems={dropdownItems}
             />
           </ToolbarItem>
-          <ToolbarItem variant="separator" />
+          <ToolbarItem variant='separator' />
         </ToolbarContent>
       </Toolbar>
       <Table
@@ -326,7 +327,8 @@ export const ContextsDash: React.FunctionComponent = () => {
         aria-label='Contexts'
         variant={'compact'}
         cells={columns}
-        rows={rows}>
+        rows={rows}
+      >
         <TableHeader />
         <TableBody />
       </Table>

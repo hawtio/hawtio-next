@@ -8,7 +8,7 @@ import { OperationForm } from './OperationForm'
 import './Operations.css'
 
 export const Operations: React.FunctionComponent = () => {
-  const {selectedNode} = useContext(PluginNodeSelectionContext)
+  const { selectedNode } = useContext(PluginNodeSelectionContext)
 
   if (!selectedNode || !selectedNode.objectName || !selectedNode.mbean) {
     return null

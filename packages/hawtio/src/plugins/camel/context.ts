@@ -3,7 +3,7 @@ import { TreeViewDataItem } from '@patternfly/react-core'
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
 import { workspace, MBeanNode, MBeanTree } from '@hawtiosrc/plugins/shared'
 import { pluginName, pluginPath, jmxDomain } from './globals'
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from 'react-router-dom'
 import { eventService, EVENT_REFRESH } from '@hawtiosrc/core'
 
 /**
@@ -40,7 +40,7 @@ export function useCamelTree() {
       navigate('jmx')
       eventService.notify({
         type: 'warning',
-        message: 'No Camel domain detected in target. Redirecting to back to jmx.'
+        message: 'No Camel domain detected in target. Redirecting to back to jmx.',
       })
     }
   }

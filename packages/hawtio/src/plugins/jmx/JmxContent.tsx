@@ -43,10 +43,15 @@ export const JmxContent: React.FunctionComponent = () => {
   const mBeanApplicable = (node: MBeanNode) => node.objectName
 
   const allNavItems = [
-    { id: 'attributes', title: 'Attributes', component: Attributes, isApplicable: mBeanApplicable},
+    { id: 'attributes', title: 'Attributes', component: Attributes, isApplicable: mBeanApplicable },
     { id: 'operations', title: 'Operations', component: Operations, isApplicable: mBeanApplicable },
     { id: 'chart', title: 'Chart', component: Chart, isApplicable: mBeanApplicable },
-    { id: 'contexts', title: 'Contexts', component: Contexts, isApplicable: (node: MBeanNode) => node.id.includes('Contexts')},
+    {
+      id: 'contexts',
+      title: 'Contexts',
+      component: Contexts,
+      isApplicable: (node: MBeanNode) => node.id.includes('Contexts'),
+    },
   ]
 
   /* Filter the nav items to those applicable to the selected node */
@@ -86,7 +91,7 @@ export const JmxContent: React.FunctionComponent = () => {
             </Routes>
           </React.Fragment>
         )}
-        {(navItems.length === 0 && !selectedNode.objectName) && <JmxContentMBeans />}
+        {navItems.length === 0 && !selectedNode.objectName && <JmxContentMBeans />}
       </PageSection>
     </React.Fragment>
   )

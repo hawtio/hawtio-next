@@ -33,7 +33,7 @@ export interface OperationFormProps {
 }
 
 export const OperationForm: React.FunctionComponent<OperationFormProps> = props => {
-  const {selectedNode} = useContext(PluginNodeSelectionContext)
+  const { selectedNode } = useContext(PluginNodeSelectionContext)
   const { name, operation } = props
   const [isExpanded, setIsExpanded] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)

@@ -3,7 +3,7 @@ import React, { ChangeEvent, useContext, useState } from 'react'
 import { PluginTreeViewToolbar, MBeanNode } from '@hawtiosrc/plugins/shared'
 import { MBeanTreeContext } from './context'
 import './JmxTreeView.css'
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from 'react-router-dom'
 import { pluginPath } from './globals'
 
 export const JmxTreeView: React.FunctionComponent = () => {

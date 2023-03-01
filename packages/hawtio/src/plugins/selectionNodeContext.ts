@@ -5,7 +5,7 @@ import { MBeanNode } from '@hawtiosrc/plugins/shared'
  * Custom React hook for using JMX MBean tree.
  */
 export function usePluginNodeSelected() {
-  const [ selectedNode, setSelectedNode ] = useState<MBeanNode | null>(null)
+  const [selectedNode, setSelectedNode] = useState<MBeanNode | null>(null)
   return { selectedNode, setSelectedNode }
 }
 
