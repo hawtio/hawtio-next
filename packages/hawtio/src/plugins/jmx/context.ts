@@ -2,6 +2,7 @@ import { createContext, useEffect, useState, useContext } from 'react'
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
 import { workspace, MBeanNode, MBeanTree } from '@hawtiosrc/plugins/shared'
 import { pluginName } from './globals'
+import { eventService, EVENT_REFRESH } from '@hawtiosrc/core'
 
 /**
  * Custom React hook for using JMX MBean tree.
@@ -17,7 +18,17 @@ export function useMBeanTree() {
       setTree(tree)
       setLoaded(true)
     }
+
+    const listener = () => {
+      setSelectedNode(null)
+      setLoaded(false)
+      loadTree()
+    }
+    eventService.onRefresh(listener)
+
     loadTree()
+
+    return () => eventService.removeListener(EVENT_REFRESH, listener)
   }, [])
 
   return { tree, loaded, selectedNode, setSelectedNode }

@@ -16,11 +16,7 @@ import { useCamelTree, CamelContext } from './context'
 import './Camel.css'
 
 export const Camel: React.FunctionComponent = () => {
-  //
-  // TODO - consider whether refresh() will be needed
-  //
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { tree, loaded, refresh, selectedNode, setSelectedNode } = useCamelTree()
+  const { tree, loaded, selectedNode, setSelectedNode } = useCamelTree()
 
   if (!loaded) {
     return (

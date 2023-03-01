@@ -12,15 +12,13 @@ import {
   Text,
   Title,
 } from '@patternfly/react-core'
+import './CamelContent.css'
 import { CubesIcon } from '@patternfly/react-icons'
 import React, { useContext } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { CamelContext } from './context'
-import { JmxContentMBeans, NodeProps } from '@hawtiosrc/plugins/shared/components'
-import { Attributes } from '@hawtiosrc/plugins/shared/components/attributes'
-import { Operations } from '@hawtiosrc/plugins/shared/components/operations'
-import { Chart } from '@hawtiosrc/plugins/shared/components/chart'
-import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
+import { Attributes, Operations, Chart, JmxContentMBeans, MBeanNode } from '@hawtiosrc/plugins/shared'
+import { ContextsDash } from './contextsdash'
 import * as ccs from './camel-content-service'
 
 export const CamelContent: React.FunctionComponent = () => {
@@ -43,30 +41,34 @@ export const CamelContent: React.FunctionComponent = () => {
   interface NavItem {
     id: string,
     title: string,
-    component: React.FunctionComponent<NodeProps>,
+    component: React.FunctionComponent,
     isApplicable(node: MBeanNode): boolean
   }
 
   /**
    * Test if nav should contain general mbean tabs
    */
-  const mBeanApplicable = (node: MBeanNode) => !ccs.isContextsFolder(node) && !ccs.isRoutesFolder(node) && !ccs.isRouteNode(node)
+  const mBeanApplicable = (node: MBeanNode) => ccs.hasMBean(node) && !ccs.isContextsFolder(node) && !ccs.isRoutesFolder(node) && !ccs.isRouteNode(node)
 
-  const navItems: NavItem[] = [
+  const allNavItems: NavItem[] = [
+    { id: 'contexts', title: 'Contexts', component: ContextsDash, isApplicable: (node: MBeanNode) => ccs.isContextsFolder(node) },
     { id: 'attributes', title: 'Attributes', component: Attributes, isApplicable: mBeanApplicable },
     { id: 'operations', title: 'Operations', component: Operations, isApplicable: mBeanApplicable },
     { id: 'chart', title: 'Chart', component: Chart, isApplicable: mBeanApplicable }
   ]
 
-  const camelNav = (
+  /* Filter the nav items to those applicable to the selected node */
+  const navItems = allNavItems.filter(nav => nav.isApplicable(selectedNode))
+
+  const camelNav = navItems.length > 0 && (
     <Nav aria-label='Camel Nav' variant='tertiary'>
       <NavList>
         {navItems.map(nav => (
-          nav.isApplicable(selectedNode) &&
             (<NavItem key={nav.id} isActive={pathname === nav.id}>
               <NavLink to={{ pathname: nav.id, search }}>{nav.title}</NavLink>
             </NavItem>)
-        ))}
+            )
+          )}
       </NavList>
     </Nav>
   )
@@ -82,18 +84,18 @@ export const CamelContent: React.FunctionComponent = () => {
           <Title headingLevel='h1'>{selectedNode.name}</Title>
           <Text component='small'>{selectedNode.objectName}</Text>
         </PageSection>
-        {selectedNode.objectName && <PageNavigation>{camelNav}</PageNavigation>}
+        {navItems.length > 0 && <PageNavigation>{camelNav}</PageNavigation>}
       </PageGroup>
-      <PageSection>
-        {selectedNode.objectName && (
+      <PageSection className={'camel-main'}>
+        {navItems.length > 0 && (
           <React.Fragment>
             <Routes>
               {camelRoutes}
-              <Route key='root' path='/' element={<Navigate to={'attributes'} />} />
+              <Route key='root' path='/' element={<Navigate to={navItems[0].id} />} />
             </Routes>
           </React.Fragment>
         )}
-        {!selectedNode.objectName && <JmxContentMBeans />}
+        {(navItems.length === 0 && !selectedNode.objectName) && <JmxContentMBeans />}
       </PageSection>
     </React.Fragment>
   )

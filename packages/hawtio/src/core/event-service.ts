@@ -14,11 +14,12 @@ export type Notification = {
 export type EventListener = () => void
 export type NotificationListener = (notification: Notification) => void
 
-export type HawtioEvent = 'notify' | 'login' | 'logout'
+export type HawtioEvent = 'notify' | 'login' | 'logout' | 'refresh'
 
 export const EVENT_NOTIFY: HawtioEvent = 'notify'
 export const EVENT_LOGIN: HawtioEvent = 'login'
 export const EVENT_LOGOUT: HawtioEvent = 'logout'
+export const EVENT_REFRESH: HawtioEvent = 'refresh'
 
 const DEFAULT_DURATION = 8000
 
@@ -29,6 +30,8 @@ export interface IEventService {
   onLogin(listener: EventListener): void
   logout(): void
   onLogout(listener: EventListener): void
+  refresh(): void
+  onRefresh(listener: EventListener): void
 }
 
 class EventService implements IEventService {
@@ -60,6 +63,14 @@ class EventService implements IEventService {
 
   onLogout(listener: EventListener): void {
     this.eventEmitter.on(EVENT_LOGOUT, listener)
+  }
+
+  refresh(): void {
+    this.eventEmitter.emit(EVENT_REFRESH)
+  }
+
+  onRefresh(listener: EventListener): void {
+    this.eventEmitter.on(EVENT_REFRESH, listener)
   }
 
   removeListener(event: HawtioEvent, listener: EventListener | NotificationListener) {

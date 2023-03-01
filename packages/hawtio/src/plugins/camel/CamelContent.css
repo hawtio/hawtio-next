@@ -1,4 +1,4 @@
 
-jmx-header {
-  width: 100%;
+.camel-main > article {
+  overflow: auto;
 }

@@ -1,10 +1,10 @@
 import { Logger } from '@hawtiosrc/core'
 
 export const jmxDomain = 'org.apache.camel'
+export const pluginPath = 'camel'
 export const pluginName = 'hawtio-camel'
 export const log = Logger.get(pluginName)
 
-export const camelContextsId = 'camel-contexts'
 export const camelContexts = 'Camel Contexts'
 
 export const camelCtx = 'context'
