@@ -289,7 +289,7 @@ const Icons = {
 /**
  * Reorders objects by the given key according to the given order of values.
  */
-export function reorderObjects(objs: object[], key: string, order: string[]) {
+function reorderObjects(objs: object[], key: string, order: string[]) {
   if (!checkReorderNeeded(objs, key, order)) {
     return
   }
@@ -307,7 +307,7 @@ export function reorderObjects(objs: object[], key: string, order: string[]) {
 /**
  * Checks whether the given objects need to be reordered.
  */
-export function checkReorderNeeded(objs: object[], key: string, order: string[]): boolean {
+function checkReorderNeeded(objs: object[], key: string, order: string[]): boolean {
   if (objs.length === 0 || order.length === 0) {
     return false
   }

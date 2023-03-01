@@ -1,3 +1,3 @@
 export * from './tree'
 export * from './node'
-export * from './registry'
+export * from './processor-registry'

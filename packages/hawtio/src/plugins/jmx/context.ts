@@ -6,7 +6,7 @@ import { pluginName } from './globals'
  * Custom React hook for using JMX MBean tree.
  */
 export function useMBeanTree() {
-  const [tree, setTree] = useState<MBeanTree>(MBeanTree.createEmptyTree(pluginName))
+  const [tree, setTree] = useState(MBeanTree.createEmpty(pluginName))
   const [loaded, setLoaded] = useState(false)
   const [node, setNode] = useState<MBeanNode | null>(null)
 
@@ -29,7 +29,7 @@ type MBeanTreeContext = {
 }
 
 export const MBeanTreeContext = createContext<MBeanTreeContext>({
-  tree: MBeanTree.createEmptyTree(pluginName),
+  tree: MBeanTree.createEmpty(pluginName),
   node: null,
   setNode: () => {
     /* no-op */

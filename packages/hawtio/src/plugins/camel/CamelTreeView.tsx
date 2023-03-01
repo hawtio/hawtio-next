@@ -3,6 +3,7 @@ import { TreeView, TreeViewDataItem } from '@patternfly/react-core'
 import React, { ChangeEvent, useContext, useState } from 'react'
 import './CamelTreeView.css'
 import { CamelContext } from './context'
+import { log } from './globals'
 
 /**
  * Expansion requires more than 2 states since the expandAll
@@ -26,11 +27,9 @@ enum ExpansionValue {
 
 export const CamelTreeView: React.FunctionComponent = () => {
   const { tree, node, setNode } = useContext(CamelContext)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [expanded, setExpanded] = useState(ExpansionValue.Default)
   const [filteredTree, setFilteredTree] = useState(tree.getTree())
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onSearch = (event: ChangeEvent<HTMLInputElement>) => {
     // Ensure no node from the 'old' filtered is lingering
     setNode(null)
@@ -41,9 +40,7 @@ export const CamelTreeView: React.FunctionComponent = () => {
       setFilteredTree(tree.getTree())
     } else {
       setFilteredTree(
-        MBeanTree.createFilteredTree(tree.getTree(), (node: MBeanNode) =>
-          node.name.toLowerCase().includes(input.toLowerCase()),
-        ),
+        MBeanTree.filter(tree.getTree(), (node: MBeanNode) => node.name.toLowerCase().includes(input.toLowerCase())),
       )
       setExpanded(ExpansionValue.ExpandAll)
     }
@@ -51,16 +48,16 @@ export const CamelTreeView: React.FunctionComponent = () => {
 
   const onSelect = (event: React.MouseEvent<Element, MouseEvent>, item: TreeViewDataItem) => {
     //TODO
-    console.log('Select TODO')
+    log.info('Select TODO')
     setNode(item as MBeanNode)
   }
 
   const getActiveItems = (): TreeViewDataItem[] => {
     if (!node) {
-      console.log('Getting Active Items: NONE')
+      log.info('Getting Active Items: NONE')
       return []
     } else {
-      console.log('Getting Active Items: ' + node.id)
+      log.info('Getting Active Items:', node.id)
       return [node as TreeViewDataItem]
     }
   }
