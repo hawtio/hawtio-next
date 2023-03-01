@@ -19,21 +19,21 @@ import { AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
 import React, { useEffect, useState, useContext } from 'react'
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
 import { log } from '../globals'
-import { contextsService, ContextDashAttributes } from './contexts-service'
+import { contextsService, ContextAttributes } from './contexts-service'
 import { eventService } from '@hawtiosrc/core'
 import { workspace } from '@hawtiosrc/plugins/shared'
 
-export const ContextsDash: React.FunctionComponent = () => {
+export const Contexts: React.FunctionComponent = () => {
   const { selectedNode } = useContext(PluginNodeSelectionContext)
   const [isReading, setIsReading] = useState(true)
 
-  const emptyCtxs: ContextDashAttributes[] = []
+  const emptyCtxs: ContextAttributes[] = []
   const [contexts, setContexts] = useState(emptyCtxs)
   const [selectedCtxId, setSelectedCtxId] = useState<string[]>([])
   const [isOpen, setIsOpen] = useState(false)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false)
 
-  const onSelectContext = (ctx: ContextDashAttributes, isSelecting: boolean) => {
+  const onSelectContext = (ctx: ContextAttributes, isSelecting: boolean) => {
     const otherSelectedCtx = selectedCtxId.filter(c => c !== ctx.context)
     setSelectedCtxId(isSelecting ? [...otherSelectedCtx, ctx.context] : [...otherSelectedCtx])
   }
@@ -42,7 +42,7 @@ export const ContextsDash: React.FunctionComponent = () => {
     setSelectedCtxId(isSelecting ? contexts.map(c => c.context) : [])
   }
 
-  const isContextSelected = (ctx: ContextDashAttributes) => {
+  const isContextSelected = (ctx: ContextAttributes) => {
     return selectedCtxId.includes(ctx.context)
   }
 
@@ -177,7 +177,7 @@ export const ContextsDash: React.FunctionComponent = () => {
         log.debug('Scheduler - Contexts:', response.value)
 
         /* Replace the context in the existing set with the new one */
-        const newCtx: ContextDashAttributes = contextsService.createContextAttibutes(
+        const newCtx: ContextAttributes = contextsService.createContextAttibutes(
           ctx.context,
           mbean,
           response.value as AttributeValues,

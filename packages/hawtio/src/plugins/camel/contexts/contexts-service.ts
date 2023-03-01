@@ -2,11 +2,11 @@ import { log } from '../globals'
 import { IRequest, IResponseFn } from 'jolokia.js'
 import { jolokiaService, AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
-import { isObject } from '@hawtiosrc/util/objects'
 
 export interface ContextAttributes {
-  Context: string
-  [key: string]: string
+  context: string
+  mbean: string
+  state: string
 }
 
 class ContextsService {
@@ -14,15 +14,9 @@ class ContextsService {
 
   createContextAttibutes(context: string, mbean: string, attributes: AttributeValues): ContextAttributes {
     const actx: ContextAttributes = {
-      Context: context,
-      MBean: mbean,
-    }
-
-    for (const [key, value] of Object.entries(attributes)) {
-      if (key === 'CamelId') continue // Not required as we have Context
-
-      const v = value === null ? '' : value
-      actx[key] = isObject(v) ? JSON.stringify(v) : String(v)
+      context: context,
+      mbean: mbean,
+      state: attributes ? (attributes['State'] as string) : 'Not Found',
     }
 
     return actx
@@ -55,6 +49,22 @@ class ContextsService {
     log.debug('Unregister all handles:', this.handles)
     this.handles.forEach(handle => jolokiaService.unregister(handle))
     this.handles = []
+  }
+
+  startContext(context: ContextAttributes): Promise<unknown> {
+    return this.executeOperationOnContext('start()', context)
+  }
+
+  suspendContext(context: ContextAttributes): Promise<unknown> {
+    return this.executeOperationOnContext('suspend()', context)
+  }
+
+  stopContext(context: ContextAttributes): Promise<unknown> {
+    return this.executeOperationOnContext('stop()', context)
+  }
+
+  executeOperationOnContext(operation: string, context: ContextAttributes): Promise<unknown> {
+    return jolokiaService.execute(context.mbean, operation)
   }
 }
 
