@@ -19,13 +19,13 @@ import { MBeanTreeContext } from './context'
 import { Chart } from '@hawtiosrc/plugins/shared/components/chart'
 import { Operations } from '@hawtiosrc/plugins/shared/components/operations'
 import { Attributes } from '@hawtiosrc/plugins/shared/components/attributes'
-import { JmxContentMBeans, NodeProps } from '@hawtiosrc/plugins/shared/components'
+import { JmxContentMBeans } from '@hawtiosrc/plugins/shared/components'
 
 export const JmxContent: React.FunctionComponent = () => {
-  const { node, setNode } = useContext(MBeanTreeContext)
+  const { selectedNode } = useContext(MBeanTreeContext)
   const { pathname, search } = useLocation()
 
-  if (!node) {
+  if (!selectedNode) {
     return (
       <PageSection variant={PageSectionVariants.light} isFilled>
         <EmptyState variant={EmptyStateVariant.full}>
@@ -56,25 +56,21 @@ export const JmxContent: React.FunctionComponent = () => {
     </Nav>
   )
 
-  const nodeProps: NodeProps = {
-    node: node
-  }
-
   const mbeanRoutes = navItems.map(nav => (
-    <Route key={nav.id} path={nav.id} element={React.createElement(nav.component, nodeProps)} />
+    <Route key={nav.id} path={nav.id} element={React.createElement(nav.component)} />
   ))
 
   return (
     <React.Fragment>
       <PageGroup>
         <PageSection variant={PageSectionVariants.light}>
-          <Title headingLevel='h1'>{node.name}</Title>
-          <Text component='small'>{node.objectName}</Text>
+          <Title headingLevel='h1'>{selectedNode.name}</Title>
+          <Text component='small'>{selectedNode.objectName}</Text>
         </PageSection>
-        {node.objectName && <PageNavigation>{mbeanNav}</PageNavigation>}
+        {selectedNode.objectName && <PageNavigation>{mbeanNav}</PageNavigation>}
       </PageGroup>
       <PageSection>
-        {node.objectName && (
+        {selectedNode.objectName && (
           <React.Fragment>
             <Routes>
               {mbeanRoutes}
@@ -82,7 +78,7 @@ export const JmxContent: React.FunctionComponent = () => {
             </Routes>
           </React.Fragment>
         )}
-        {!node.objectName && <JmxContentMBeans node={node} setNode={setNode} />}
+        {!selectedNode.objectName && <JmxContentMBeans />}
       </PageSection>
     </React.Fragment>
   )

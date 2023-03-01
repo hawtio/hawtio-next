@@ -1,4 +1,4 @@
-import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
+import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import {
   jmxDomain,
   camelContextsId,

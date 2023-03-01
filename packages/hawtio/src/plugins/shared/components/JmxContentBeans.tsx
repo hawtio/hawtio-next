@@ -1,3 +1,4 @@
+import { useContext } from 'react'
 import {
   Card,
   CardBody,
@@ -5,21 +6,17 @@ import {
 } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
 import { OnRowClick, Table, TableBody, TableHeader, TableProps } from '@patternfly/react-table'
-import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
+import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
 
-interface JmxContentBeansProps {
-  node: MBeanNode,
-  setNode: (node: MBeanNode) => void
-}
+export const JmxContentMBeans: React.FunctionComponent = () => {
+  const { selectedNode, setSelectedNode } = useContext(PluginNodeSelectionContext)
 
-export const JmxContentMBeans: React.FunctionComponent<JmxContentBeansProps> = (props: JmxContentBeansProps) => {
-
-  if (!props.node) {
+  if (!selectedNode) {
     return null
   }
 
   const columns: TableProps['cells'] = ['MBean', 'Object Name']
-  const rows: TableProps['rows'] = (props.node.children || []).map(child => [child.name, child.objectName || '-'])
+  const rows: TableProps['rows'] = (selectedNode.children || []).map(child => [child.name, child.objectName || '-'])
 
   if (rows.length === 0) {
     return (
@@ -35,9 +32,9 @@ export const JmxContentMBeans: React.FunctionComponent<JmxContentBeansProps> = (
 
   const selectChild: OnRowClick = (_event, row) => {
     const clicked = row[0]
-    const selected = props.node.children?.find(child => child.name === clicked)
-    if (selected) {
-      props.setNode(selected)
+    const child = selectedNode.children?.find(c => c.name === clicked)
+    if (child) {
+      setSelectedNode(child)
     }
   }
 

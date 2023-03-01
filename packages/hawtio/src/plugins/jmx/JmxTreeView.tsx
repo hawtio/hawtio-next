@@ -1,12 +1,11 @@
 import { TreeView, TreeViewDataItem } from '@patternfly/react-core'
 import React, { ChangeEvent, useContext, useState } from 'react'
-import { PluginTreeViewToolbar } from '@hawtiosrc/plugins/shared'
-import { MBeanNode } from '@hawtiosrc/plugins/shared'
+import { PluginTreeViewToolbar, MBeanNode } from '@hawtiosrc/plugins/shared'
 import { MBeanTreeContext } from './context'
 import './JmxTreeView.css'
 
 export const JmxTreeView: React.FunctionComponent = () => {
-  const { tree, node, setNode } = useContext(MBeanTreeContext)
+  const { tree, selectedNode, setSelectedNode } = useContext(MBeanTreeContext)
   const [expanded, setExpanded] = useState(false)
   const [filteredTree, setFilteredTree] = useState(tree.getTree())
 
@@ -20,7 +19,7 @@ export const JmxTreeView: React.FunctionComponent = () => {
   }
 
   const onSelect = (event: React.MouseEvent<Element, MouseEvent>, item: TreeViewDataItem) => {
-    setNode(item as MBeanNode)
+    setSelectedNode(item as MBeanNode)
   }
 
   const lookupSearchInTree = (search: string, tree?: MBeanNode[]): MBeanNode[] => {
@@ -52,7 +51,7 @@ export const JmxTreeView: React.FunctionComponent = () => {
       data={filteredTree}
       hasGuides={true}
       hasSelectableNodes={true}
-      activeItems={node ? [node] : []}
+      activeItems={selectedNode ? [selectedNode] : []}
       allExpanded={expanded}
       onSelect={onSelect}
       toolbar={<PluginTreeViewToolbar onSearch={onSearch} onSetExpanded={setExpanded} />}

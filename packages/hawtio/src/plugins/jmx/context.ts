@@ -1,4 +1,5 @@
-import { createContext, useEffect, useState } from 'react'
+import { createContext, useEffect, useState, useContext } from 'react'
+import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
 import { workspace, MBeanNode, MBeanTree } from '@hawtiosrc/plugins/shared'
 import { pluginName } from './globals'
 
@@ -8,7 +9,7 @@ import { pluginName } from './globals'
 export function useMBeanTree() {
   const [tree, setTree] = useState(MBeanTree.createEmpty(pluginName))
   const [loaded, setLoaded] = useState(false)
-  const [node, setNode] = useState<MBeanNode | null>(null)
+  const { selectedNode, setSelectedNode } = useContext(PluginNodeSelectionContext)
 
   useEffect(() => {
     const loadTree = async () => {
@@ -19,19 +20,19 @@ export function useMBeanTree() {
     loadTree()
   }, [])
 
-  return { tree, loaded, node, setNode }
+  return { tree, loaded, selectedNode, setSelectedNode }
 }
 
 type MBeanTreeContext = {
   tree: MBeanTree
-  node: MBeanNode | null
-  setNode: (selected: MBeanNode) => void
+  selectedNode: MBeanNode | null
+  setSelectedNode: (selected: MBeanNode | null) => void
 }
 
 export const MBeanTreeContext = createContext<MBeanTreeContext>({
   tree: MBeanTree.createEmpty(pluginName),
-  node: null,
-  setNode: () => {
+  selectedNode: null,
+  setSelectedNode: () => {
     /* no-op */
   },
 })

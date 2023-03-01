@@ -24,10 +24,10 @@ import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import * as ccs from './camel-content-service'
 
 export const CamelContent: React.FunctionComponent = () => {
-  const { node, setNode } = useContext(CamelContext)
+  const { selectedNode } = useContext(CamelContext)
   const { pathname, search } = useLocation()
 
-  if (!node) {
+  if (!selectedNode) {
     return (
       <PageSection variant={PageSectionVariants.light} isFilled>
         <EmptyState variant={EmptyStateVariant.full}>
@@ -62,7 +62,7 @@ export const CamelContent: React.FunctionComponent = () => {
     <Nav aria-label='Camel Nav' variant='tertiary'>
       <NavList>
         {navItems.map(nav => (
-          nav.isApplicable(node) &&
+          nav.isApplicable(selectedNode) &&
             (<NavItem key={nav.id} isActive={pathname === nav.id}>
               <NavLink to={{ pathname: nav.id, search }}>{nav.title}</NavLink>
             </NavItem>)
@@ -71,25 +71,21 @@ export const CamelContent: React.FunctionComponent = () => {
     </Nav>
   )
 
-  const nodeProps: NodeProps = {
-    node: node
-  }
-
   const camelRoutes = navItems.map(nav => (
-    <Route key={nav.id} path={nav.id} element={React.createElement(nav.component, nodeProps)} />
+    <Route key={nav.id} path={nav.id} element={React.createElement(nav.component)} />
   ))
 
   return (
     <React.Fragment>
       <PageGroup>
         <PageSection variant={PageSectionVariants.light}>
-          <Title headingLevel='h1'>{node.name}</Title>
-          <Text component='small'>{node.objectName}</Text>
+          <Title headingLevel='h1'>{selectedNode.name}</Title>
+          <Text component='small'>{selectedNode.objectName}</Text>
         </PageSection>
-        {node.objectName && <PageNavigation>{camelNav}</PageNavigation>}
+        {selectedNode.objectName && <PageNavigation>{camelNav}</PageNavigation>}
       </PageGroup>
       <PageSection>
-        {node.objectName && (
+        {selectedNode.objectName && (
           <React.Fragment>
             <Routes>
               {camelRoutes}
@@ -97,7 +93,7 @@ export const CamelContent: React.FunctionComponent = () => {
             </Routes>
           </React.Fragment>
         )}
-        {!node.objectName && <JmxContentMBeans node={node} setNode={setNode} />}
+        {!selectedNode.objectName && <JmxContentMBeans />}
       </PageSection>
     </React.Fragment>
   )

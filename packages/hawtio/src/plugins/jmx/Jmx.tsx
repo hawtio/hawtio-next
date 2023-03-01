@@ -16,7 +16,7 @@ import { JmxContent } from './JmxContent'
 import { JmxTreeView } from './JmxTreeView'
 
 export const Jmx: React.FunctionComponent = () => {
-  const { tree, loaded, node, setNode } = useMBeanTree()
+  const { tree, loaded, selectedNode, setSelectedNode } = useMBeanTree()
 
   if (!loaded) {
     return (
@@ -40,7 +40,7 @@ export const Jmx: React.FunctionComponent = () => {
   }
 
   return (
-    <MBeanTreeContext.Provider value={{ tree, node, setNode }}>
+    <MBeanTreeContext.Provider value={{ tree, selectedNode, setSelectedNode }}>
       <Split className='jmx-split' sizes={[30, 70]} minSize={200} gutterSize={5}>
         <div>
           <JmxTreeView />

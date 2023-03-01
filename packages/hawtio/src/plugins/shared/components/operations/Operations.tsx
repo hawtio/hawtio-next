@@ -2,19 +2,20 @@ import { isEmpty } from '@hawtiosrc/util/objects'
 import { Card, CardBody, DataList, Text } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
 import React, { useContext } from 'react'
-import { NodeProps } from '../NodeProps'
+import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
 import { createOperations } from './operation'
 import { OperationForm } from './OperationForm'
 import './Operations.css'
 
-export const Operations: React.FunctionComponent<NodeProps> = (props) => {
+export const Operations: React.FunctionComponent = () => {
+  const {selectedNode} = useContext(PluginNodeSelectionContext)
 
-  if (!props.node || !props.node.objectName || !props.node.mbean) {
+  if (!selectedNode || !selectedNode.objectName || !selectedNode.mbean) {
     return null
   }
 
-  const objectName = props.node.objectName
-  const mbean = props.node.mbean
+  const objectName = selectedNode.objectName
+  const mbean = selectedNode.mbean
 
   if (isEmpty(mbean.op)) {
     return (
@@ -33,7 +34,7 @@ export const Operations: React.FunctionComponent<NodeProps> = (props) => {
   const OperationList = () => (
     <DataList id='jmx-operation-list' aria-label='operation list' isCompact>
       {operations.map(op => (
-        <OperationForm node={props.node} key={op.name} name={op.name} operation={op} />
+        <OperationForm key={op.name} name={op.name} operation={op} />
       ))}
     </DataList>
   )

@@ -22,12 +22,14 @@ import { log } from './globals'
 import { HawtioHeader } from './HawtioHeader'
 import { HawtioLoading } from './HawtioLoading'
 import { HawtioSidebar } from './HawtioSidebar'
+import { PluginNodeSelectionContext, usePluginNodeSelected } from '@hawtiosrc/plugins'
 
 export const HawtioPage: React.FunctionComponent = () => {
   const { username, isLogin, userLoaded } = useUser()
   const { plugins, pluginsLoaded } = usePlugins()
   const navigate = useNavigate()
   const { search } = useLocation()
+  const { selectedNode, setSelectedNode } = usePluginNodeSelected()
 
   if (!userLoaded || !pluginsLoaded) {
     return <HawtioLoading />
@@ -62,16 +64,19 @@ export const HawtioPage: React.FunctionComponent = () => {
     <PageContext.Provider value={{ username, plugins }}>
       <BackgroundImage src={backgroundImages} />
       <Page header={<HawtioHeader />} sidebar={<HawtioSidebar />} isManagedSidebar>
-        <Routes>
-          {/* plugins */}
-          {plugins.map(plugin => (
-            <Route key={plugin.id} path={`${plugin.path}/*`} element={React.createElement(plugin.component)} />
-          ))}
-          <Route key='help' path='help/*' element={<HawtioHelp />} />
-          <Route key='preferences' path='preferences/*' element={<HawtioPreferences />} />
+        {/* Provider for handling selected node shared between the plugins */}
+        <PluginNodeSelectionContext.Provider value={{ selectedNode, setSelectedNode }}>
+          <Routes>
+            {/* plugins */}
+            {plugins.map(plugin => (
+              <Route key={plugin.id} path={`${plugin.path}/*`} element={React.createElement(plugin.component)} />
+            ))}
+            <Route key='help' path='help/*' element={<HawtioHelp />} />
+            <Route key='preferences' path='preferences/*' element={<HawtioPreferences />} />
 
-          <Route key='root' index element={defaultPage} />
-        </Routes>
+            <Route key='root' index element={defaultPage} />
+          </Routes>
+        </PluginNodeSelectionContext.Provider>
         <HawtioNotification />
       </Page>
     </PageContext.Provider>

@@ -26,13 +26,13 @@ enum ExpansionValue {
 }
 
 export const CamelTreeView: React.FunctionComponent = () => {
-  const { tree, node, setNode } = useContext(CamelContext)
+  const { tree, selectedNode, setSelectedNode } = useContext(CamelContext)
   const [expanded, setExpanded] = useState(ExpansionValue.Default)
   const [filteredTree, setFilteredTree] = useState(tree.getTree())
 
   const onSearch = (event: ChangeEvent<HTMLInputElement>) => {
     // Ensure no node from the 'old' filtered is lingering
-    setNode(null)
+    setSelectedNode(null)
     setExpanded(ExpansionValue.Default)
 
     const input = event.target.value
@@ -47,18 +47,14 @@ export const CamelTreeView: React.FunctionComponent = () => {
   }
 
   const onSelect = (event: React.MouseEvent<Element, MouseEvent>, item: TreeViewDataItem) => {
-    //TODO
-    log.info('Select TODO')
-    setNode(item as MBeanNode)
+    setSelectedNode(item as MBeanNode)
   }
 
   const getActiveItems = (): TreeViewDataItem[] => {
-    if (!node) {
-      log.info('Getting Active Items: NONE')
+    if (!selectedNode) {
       return []
     } else {
-      log.info('Getting Active Items:', node.id)
-      return [node as TreeViewDataItem]
+      return [selectedNode as TreeViewDataItem]
     }
   }
 
