@@ -1,19 +1,21 @@
+import { resetLocalStorage, retrieveValueFromLocalStorage, saveToLocalStorage } from '@hawtiosrc/util/localStorage'
 import { Button, CardBody, Form, FormGroup, FormSection, Switch } from '@patternfly/react-core'
 import React, { useState } from 'react'
 
 export const HomePreferences: React.FunctionComponent = () => {
-  const LOCAL_STORAGE_SHOW_VERTICAL_NAVIGATION_BY_DEFAULT = 'preferences.showVerticalNavigationByDefault'
-
+  const STORAGE_KEY_SHOW_VERTICAL_NAVIGATION_BY_DEFAULT = 'preferences.showVerticalNavigationByDefault'
+  
   const showVerticalNavigationByDefaultInitialValueFromStorage =
-    localStorage.getItem(LOCAL_STORAGE_SHOW_VERTICAL_NAVIGATION_BY_DEFAULT) !== null
-      ? localStorage.getItem(LOCAL_STORAGE_SHOW_VERTICAL_NAVIGATION_BY_DEFAULT) === 'true'
+    retrieveValueFromLocalStorage(STORAGE_KEY_SHOW_VERTICAL_NAVIGATION_BY_DEFAULT) !== null
+      ? retrieveValueFromLocalStorage(STORAGE_KEY_SHOW_VERTICAL_NAVIGATION_BY_DEFAULT) === 'true'
       : true
 
   const [defaultVerticalNavState, setDefaultVerticalNavState] = 
     useState(showVerticalNavigationByDefaultInitialValueFromStorage)
 
   const reset = () => {
-    //TODO - Create reset service
+    setDefaultVerticalNavState(true);
+    resetLocalStorage();
   }
 
   const UIForm = () => (
@@ -23,7 +25,7 @@ export const HomePreferences: React.FunctionComponent = () => {
         labelOff='Hide vertical navigation'
         isChecked={defaultVerticalNavState}
         onChange={value => {
-          localStorage.setItem(LOCAL_STORAGE_SHOW_VERTICAL_NAVIGATION_BY_DEFAULT, String(value));
+          saveToLocalStorage(STORAGE_KEY_SHOW_VERTICAL_NAVIGATION_BY_DEFAULT, String(value));
           return setDefaultVerticalNavState(value)
         }}
       />

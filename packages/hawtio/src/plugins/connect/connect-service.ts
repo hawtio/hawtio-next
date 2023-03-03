@@ -10,8 +10,8 @@ export type ConnectionTestResult = {
   message: string
 }
 
-const STORAGE_KEY_CONNECTIONS = 'connect.connections'
-const STORAGE_KEY_CURRENT_CONNECTION = 'connect.currentConnection'
+export const STORAGE_KEY_CONNECTIONS = 'connect.connections'
+export const STORAGE_KEY_CURRENT_CONNECTION = 'connect.currentConnection'
 
 export const PARAM_KEY_CONNECTION = 'con'
 
