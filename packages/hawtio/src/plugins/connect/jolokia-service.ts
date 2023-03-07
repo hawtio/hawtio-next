@@ -3,6 +3,7 @@ import { eventService } from '@hawtiosrc/core'
 import { getCookie } from '@hawtiosrc/util/cookies'
 import {
   escapeMBeanPath,
+  onBulkSuccess,
   onListSuccess,
   onSearchSuccess,
   onSimpleSuccess,
@@ -20,6 +21,7 @@ import Jolokia, {
   IListOptions,
   IOptions,
   IRequest,
+  IResponse,
   IResponseFn,
   ISearchOptions,
   ISimpleOptions,
@@ -78,6 +80,7 @@ export interface IJolokiaService {
   readAttribute(mbean: string, attribute: string): Promise<unknown>
   execute(mbean: string, operation: string, args?: unknown[]): Promise<unknown>
   search(mbeanPattern: string): Promise<string[]>
+  bulkRequest(requests: IRequest[]): Promise<IResponse[]>
   register(request: IRequest, callback: IResponseFn): Promise<number>
   unregister(handle: number): void
 }
@@ -382,6 +385,24 @@ class JolokiaService implements IJolokiaService {
         mbeanPattern,
         onSearchSuccess((response: string[]) => resolve(response)),
       )
+    })
+  }
+
+  async bulkRequest(requests: IRequest[]): Promise<IResponse[]> {
+    const jolokia = await this.jolokia
+    return new Promise(resolve => {
+      const bulkResponse: IResponse[] = []
+      jolokia.request(
+        requests,
+        onBulkSuccess((response: IResponse) => {
+          bulkResponse.push(response)
+          // Resolve only when all the responses from the bulk request are collected
+          if (bulkResponse.length === requests.length) {
+            resolve(bulkResponse)
+          }
+        }),
+      )
+      resolve(bulkResponse)
     })
   }
 
