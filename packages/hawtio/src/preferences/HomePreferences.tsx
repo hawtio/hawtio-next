@@ -1,48 +1,85 @@
-import { Button, CardBody, Form, FormGroup, FormSection, Switch } from '@patternfly/react-core'
+import { Button, CardBody, Form, FormGroup, FormSection, Modal, ModalVariant, Switch } from '@patternfly/react-core'
 import React, { useState } from 'react'
-import { log } from './globals'
+import { useNavigate } from 'react-router-dom'
+import { preferencesService } from './preferences-service'
 
-export const HomePreferences: React.FunctionComponent = () => {
-  const [defaultVerticalNavState, setDefaultVerticalNavState] = useState(true)
+export const HomePreferences: React.FunctionComponent = () => (
+  <CardBody>
+    <Form isHorizontal>
+      <FormSection title='UI' titleElement='h2'>
+        <UIForm />
+      </FormSection>
+      <FormSection title='Reset' titleElement='h2'>
+        <ResetForm />
+      </FormSection>
+    </Form>
+  </CardBody>
+)
 
-  const reset = () => {
-    // TODO: impl
-    log.info('TODO - Reset settings')
+const UIForm: React.FunctionComponent = () => {
+  const [showVerticalNav, setShowVerticalNav] = useState(preferencesService.isShowVerticalNavByDefault())
+
+  const handleShowVerticalNavChange = (value: boolean) => {
+    setShowVerticalNav(value)
+    preferencesService.saveShowVerticalNavByDefault(value)
   }
 
-  const UIForm = () => (
+  return (
     <FormGroup label='Default vertical nav state' fieldId='ui-form-vertical-nav-switch'>
       <Switch
         label='Show vertical navigation'
         labelOff='Hide vertical navigation'
-        isChecked={defaultVerticalNavState}
-        onChange={setDefaultVerticalNavState}
+        isChecked={showVerticalNav}
+        onChange={handleShowVerticalNavChange}
       />
     </FormGroup>
   )
+}
 
-  const ResetForm = () => (
+const ResetForm: React.FunctionComponent = () => {
+  const navigate = useNavigate()
+  const [isConfirmResetOpen, setIsConfirmResetOpen] = useState(false)
+
+  const reset = () => {
+    preferencesService.reset()
+    // Reload page after reset
+    navigate(0)
+  }
+
+  const confirmReset = () => {
+    setIsConfirmResetOpen(!isConfirmResetOpen)
+  }
+
+  const ConfirmResetModal = () => (
+    <Modal
+      variant={ModalVariant.small}
+      title='Reset settings'
+      titleIconVariant='danger'
+      isOpen={isConfirmResetOpen}
+      onClose={confirmReset}
+      actions={[
+        <Button key='reset' variant='danger' onClick={reset}>
+          Reset
+        </Button>,
+        <Button key='cancel' variant='link' onClick={confirmReset}>
+          Cancel
+        </Button>,
+      ]}
+    >
+      You are about to reset all the Hawtio settings.
+    </Modal>
+  )
+
+  return (
     <FormGroup
       label='Reset settings'
       fieldId='reset-form-reset'
       helperText="Clear all custom settings stored in your browser's local storage and reset to defaults."
     >
-      <Button variant='danger' onClick={reset}>
+      <Button variant='danger' onClick={confirmReset}>
         Reset
       </Button>
+      <ConfirmResetModal />
     </FormGroup>
-  )
-
-  return (
-    <CardBody>
-      <Form isHorizontal>
-        <FormSection title='UI' titleElement='h2'>
-          <UIForm />
-        </FormSection>
-        <FormSection title='Reset' titleElement='h2'>
-          <ResetForm />
-        </FormSection>
-      </Form>
-    </CardBody>
   )
 }
