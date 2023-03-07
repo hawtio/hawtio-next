@@ -2,7 +2,7 @@ import React from 'react'
 import { render, screen, cleanup } from '@testing-library/react'
 import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { routesService } from './routes-service'
-import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
+import { emptyParent, MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import fs from 'fs'
 import path from 'path'
 import { parseXML } from '@hawtiosrc/util/xml'
@@ -11,7 +11,6 @@ import { IconNames } from './icons'
 jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
 
 describe('routes-service', () => {
-  const owner = 'test-tree'
   let contextNode: MBeanNode
   let routesNode: MBeanNode
   let simpleRouteNode: MBeanNode
@@ -35,16 +34,16 @@ describe('routes-service', () => {
   })
 
   beforeEach(() => {
-    contextNode = new MBeanNode(owner, 'SampleCamel', 'sample-camel-1', true)
+    contextNode = new MBeanNode(emptyParent, 'SampleCamel', 'sample-camel-1', true)
     contextNode.objectName = 'org.apache.camel:context=SampleCamel,type=context,name="SampleCamel"'
 
-    routesNode = new MBeanNode(owner, 'Routes', 'routes-2', true)
+    routesNode = new MBeanNode(emptyParent, 'Routes', 'routes-2', true)
     routesNode.addProperty('type', 'routes')
 
-    simpleRouteNode = new MBeanNode(owner, 'simple', testRouteId, false)
+    simpleRouteNode = new MBeanNode(emptyParent, 'simple', testRouteId, false)
 
     routesNode.adopt(simpleRouteNode)
-    contextNode.adopt(contextNode)
+    contextNode.adopt(routesNode)
   })
 
   test('processRouteXml', async () => {
