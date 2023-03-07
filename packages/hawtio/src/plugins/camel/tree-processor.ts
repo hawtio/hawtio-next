@@ -1,26 +1,22 @@
-import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { MBeanNode, MBeanTree, TreeProcessor } from '@hawtiosrc/plugins/shared'
 import React from 'react'
 import * as ccs from './camel-content-service'
-import { camelContexts, camelCtx, components, dataformats, endpoints, jmxDomain, routes } from './globals'
+import {
+  jmxDomain,
+  camelContexts,
+  contextsType,
+  contextNodeType,
+  routesType,
+  endpointsType,
+  endpointNodeType,
+  componentsType,
+  componentNodeType,
+  dataformatsType,
+  domainNodeType,
+  mbeansType,
+} from './globals'
 import { getIcon, IconNames } from './icons'
 import { routesService } from './routes-service'
-
-/**
- * Fetch the camel version and add it to the tree to avoid making a blocking call
- * elsewhere.
- */
-async function retrieveCamelVersion(contextNode: MBeanNode | null) {
-  if (!contextNode) return
-
-  if (!contextNode.objectName) {
-    contextNode.addProperty('version', 'Camel Version not available')
-    return
-  }
-
-  const camelVersion = await jolokiaService.readAttribute(contextNode.objectName, 'CamelVersion')
-  contextNode.addProperty('version', camelVersion as string)
-}
 
 function adoptChild(parent: MBeanNode | null, child: MBeanNode | null, type: string, childIcon: React.ReactNode) {
   if (!parent || !child) return
@@ -47,21 +43,23 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
 
   domainNode.icon = getIcon(IconNames.CamelIcon)
   domainNode.expandedIcon = domainNode.icon
+  ccs.setType(domainNode, domainNodeType)
 
   // Detach current children from domain node
-  const contexts = domainNode.removeChildren()
+  const oldContexts = domainNode.removeChildren()
 
   // Create the initial contexts group node
-  const groupNode = domainNode.getOrCreate(camelContexts, true)
-  groupNode.icon = getIcon(IconNames.CamelIcon)
-  groupNode.expandedIcon = domainNode.icon
-  groupNode.addProperty('class', 'org-apache-camel-context-folder')
-  groupNode.addProperty('key', camelContexts)
-  ccs.setType(groupNode, camelCtx)
-  ccs.setDomain(groupNode)
+  const groupCtxsNode = domainNode.getOrCreate(camelContexts, true)
+  groupCtxsNode.icon = getIcon(IconNames.CamelIcon)
+  groupCtxsNode.expandedIcon = domainNode.icon
+  groupCtxsNode.addProperty('class', 'org-apache-camel-context-folder')
+  groupCtxsNode.addProperty('key', camelContexts)
+  groupCtxsNode.addProperty('name', camelContexts)
+  ccs.setType(groupCtxsNode, contextsType)
+  ccs.setDomain(groupCtxsNode)
 
-  contexts.forEach((context: MBeanNode) => {
-    const contextCategory = context.get(camelCtx)
+  oldContexts.forEach((context: MBeanNode) => {
+    const contextCategory = context.get(contextNodeType)
     let newCtxNode: MBeanNode | null = null
     if (contextCategory && contextCategory.childCount() === 1) {
       newCtxNode = contextCategory.getIndex(0)
@@ -69,45 +67,51 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
 
     if (!newCtxNode) return
 
-    // Stash the camel version as a separate property
-    retrieveCamelVersion(newCtxNode)
+    ccs.setType(newCtxNode, contextNodeType)
+    ccs.setDomain(newCtxNode)
+    // Set the camel version as a property on the context
+    ccs.setCamelVersion(newCtxNode)
 
     const endPointFolderIcon = getIcon(IconNames.EndpointsFolderIcon)
     const endPointIcon = getIcon(IconNames.EndpointsNodeIcon)
     const routeIcon = getIcon(IconNames.CamelRouteIcon)
 
-    const routesNode = context.get(routes)
-    adoptChild(newCtxNode, routesNode, routes, endPointFolderIcon)
+    const routesNode = context.get(routesType)
+    adoptChild(newCtxNode, routesNode, routesType, endPointFolderIcon)
     setChildIcon(routesNode, routeIcon)
-
     routesService.transformXml(newCtxNode, routesNode)
 
-    const endpointsNode = context.get(endpoints)
-    adoptChild(newCtxNode, endpointsNode, endpoints, endPointFolderIcon)
+    const endpointsNode = context.get(endpointsType)
+    adoptChild(newCtxNode, endpointsNode, endpointsType, endPointFolderIcon)
     setChildIcon(endpointsNode, endPointIcon)
+    ccs.setChildProperties(endpointsNode, endpointNodeType)
 
-    const componentsNode = context.get(components)
-    adoptChild(newCtxNode, componentsNode, components, endPointFolderIcon)
+    const componentsNode = context.get(componentsType)
+    adoptChild(newCtxNode, componentsNode, componentsType, endPointFolderIcon)
     setChildIcon(componentsNode, endPointIcon)
+    ccs.setChildProperties(componentsNode, componentNodeType)
 
-    const dataFormatsNode = context.get(dataformats)
-    adoptChild(newCtxNode, dataFormatsNode, dataformats, endPointFolderIcon)
+    const dataFormatsNode = context.get(dataformatsType)
+    adoptChild(newCtxNode, dataFormatsNode, dataformatsType, endPointFolderIcon)
 
     //
     // Add all other entries which are not one of
     // context/routes/endpoints/components/dataformats as MBeans
     //
-    const mBeansNode = (newCtxNode as MBeanNode).getOrCreate('~MBeans', true)
+    const mBeansNode = (newCtxNode as MBeanNode).getOrCreate(mbeansType, true)
+    ccs.setType(mBeansNode, mbeansType)
+    ccs.setDomain(mBeansNode)
+
     context
       .getChildren()
       .filter(
         child =>
           !(
-            child.name === camelCtx ||
-            child.name === routes ||
-            child.name === endpoints ||
-            child.name === components ||
-            child.name === dataformats
+            child.name === contextNodeType ||
+            child.name === routesType ||
+            child.name === endpointsType ||
+            child.name === componentsType ||
+            child.name === dataformatsType
           ),
       )
       .forEach(child => mBeansNode.adopt(child))
@@ -115,6 +119,6 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
     mBeansNode.sort(false)
 
     // Finally add the new context to the group of contexts node
-    groupNode.adopt(newCtxNode)
+    groupCtxsNode.adopt(newCtxNode)
   })
 }

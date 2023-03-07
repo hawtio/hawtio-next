@@ -29,12 +29,18 @@ export interface OptimisedJmxMBean extends IJmxMBean {
   opByString?: { [name: string]: unknown }
 }
 
+export const emptyParent = null
+
+export interface FilterFunc {
+  (node: MBeanNode): boolean
+}
+
 export class MBeanNode implements TreeViewDataItem {
-  owner: string
   id: string
   name: string
   icon: React.ReactNode
   expandedIcon?: React.ReactNode
+  parent: MBeanNode | null
   children?: MBeanNode[]
   properties?: Record<string, string>
 
@@ -42,9 +48,13 @@ export class MBeanNode implements TreeViewDataItem {
   objectName?: string
   mbean?: OptimisedJmxMBean
 
-  constructor(owner: string, id: string, name: string, folder: boolean) {
+  constructor(parent: MBeanNode | null, id: string, name: string, folder: boolean) {
     this.id = id
     this.name = name
+
+    if (this === parent) throw Error('Node cannot be its own parent')
+
+    this.parent = parent
     if (folder) {
       this.icon = Icons.folder
       this.expandedIcon = Icons.folderOpen
@@ -52,8 +62,6 @@ export class MBeanNode implements TreeViewDataItem {
     } else {
       this.icon = Icons.mbean
     }
-
-    this.owner = owner
   }
 
   populateMBean(propList: string, mbean: OptimisedJmxMBean) {
@@ -113,7 +121,6 @@ export class MBeanNode implements TreeViewDataItem {
   create(name: string, folder: boolean): MBeanNode {
     // this method should be invoked on a folder node
     if (this.children === undefined) {
-      log.warn(`node "${this.name}" should be a folder`)
       // re-init as folder
       this.icon = Icons.folder
       this.expandedIcon = Icons.folderOpen
@@ -121,7 +128,7 @@ export class MBeanNode implements TreeViewDataItem {
     }
 
     const id = escapeDots(name) + '-' + (this.children.length + 1)
-    const newChild = new MBeanNode(this.owner, id, name, folder)
+    const newChild = new MBeanNode(this, id, name, folder)
     this.children.push(newChild)
     return newChild
   }
@@ -139,6 +146,11 @@ export class MBeanNode implements TreeViewDataItem {
 
     const remove: MBeanNode[] = this.children
     this.children = []
+
+    for (const r of remove) {
+      r.parent = null
+    }
+
     return remove
   }
 
@@ -167,7 +179,16 @@ export class MBeanNode implements TreeViewDataItem {
     }
   }
 
-  findDescendant(filter: (node: MBeanNode) => boolean): MBeanNode | null {
+  navigate(...namePath: string[]): MBeanNode | null {
+    if (namePath.length === 0) return this // path is empty so return this node
+
+    const child = this.get(namePath[0])
+    if (!child) return null
+
+    return child.navigate(...namePath.slice(1))
+  }
+
+  findDescendant(filter: FilterFunc): MBeanNode | null {
     if (filter(this)) {
       return this
     }
@@ -183,7 +204,41 @@ export class MBeanNode implements TreeViewDataItem {
     return answer
   }
 
-  filterClone(filter: (node: MBeanNode) => boolean): MBeanNode | null {
+  /**
+   * Returns the chain of nodes forming the tree branch of ancestors
+   * @method findAncestors
+   * @for Node
+   * @return {MBeanNode[]}
+   */
+  findAncestors(): MBeanNode[] {
+    const chain: MBeanNode[] = []
+    let ancestor: MBeanNode | null = this.parent
+    while (ancestor !== null) {
+      chain.unshift(ancestor)
+      ancestor = ancestor.parent
+    }
+
+    return chain
+  }
+
+  /**
+   * Returns the first node in the tree branch of ancestors that satisfies the given filter
+   * @method findAncestor
+   * @for Node
+   * @return {MBeanNode}
+   */
+  findAncestor(filter: FilterFunc): MBeanNode | null {
+    let ancestor: MBeanNode | null = this.parent
+    while (ancestor !== null) {
+      if (filter(ancestor)) return ancestor
+
+      ancestor = ancestor.parent
+    }
+
+    return null
+  }
+
+  filterClone(filter: FilterFunc): MBeanNode | null {
     const copyChildren: MBeanNode[] = []
     if (this.children) {
       this.children.forEach(child => {
@@ -201,7 +256,7 @@ export class MBeanNode implements TreeViewDataItem {
       return null
     }
 
-    const copy = new MBeanNode(this.owner, this.id, this.name, copyChildren.length > 0)
+    const copy = new MBeanNode(this, this.id, this.name, copyChildren.length > 0)
     if (copyChildren.length > 0) {
       copy.children = copyChildren
     }
@@ -215,6 +270,9 @@ export class MBeanNode implements TreeViewDataItem {
       this.children = []
     }
 
+    if (this === child) throw Error('Node cannot be its own child')
+
+    child.parent = this
     this.children.push(child)
   }
 
