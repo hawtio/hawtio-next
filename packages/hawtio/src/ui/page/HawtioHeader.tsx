@@ -1,6 +1,7 @@
 import { PUBLIC_USER, userService } from '@hawtiosrc/auth'
 import { DEFAULT_APP_NAME, useHawtconfig } from '@hawtiosrc/core'
 import { hawtioLogo, userAvatar } from '@hawtiosrc/img'
+import { preferencesService } from '@hawtiosrc/preferences'
 import { HawtioAbout } from '@hawtiosrc/ui/about'
 import {
   Avatar,
@@ -26,7 +27,7 @@ import { PageContext } from './context'
 import './HawtioHeader.css'
 
 export const HawtioHeader: React.FunctionComponent = () => {
-  const [navOpen, setNavOpen] = useState(true)
+  const [navOpen, setNavOpen] = useState(preferencesService.isShowVerticalNavByDefault())
 
   const onNavToggle = () => setNavOpen(!navOpen)
 

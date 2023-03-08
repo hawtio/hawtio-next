@@ -11,7 +11,7 @@ export type ConnectionTestResult = {
 }
 
 const STORAGE_KEY_CONNECTIONS = 'connect.connections'
-const STORAGE_KEY_CURRENT_CONNECTION = 'connect.currentConnection'
+const SESSION_KEY_CURRENT_CONNECTION = 'connect.currentConnection'
 
 export const PARAM_KEY_CONNECTION = 'con'
 
@@ -44,12 +44,12 @@ class ConnectService implements IConnectService {
     log.debug('Checking search params:', searchParams.toString())
     let conn = searchParams.get(PARAM_KEY_CONNECTION)
     if (conn) {
-      sessionStorage.setItem(STORAGE_KEY_CURRENT_CONNECTION, JSON.stringify(conn))
+      sessionStorage.setItem(SESSION_KEY_CURRENT_CONNECTION, JSON.stringify(conn))
       return conn
     }
 
     // Check remote connection from session storage
-    conn = sessionStorage.getItem(STORAGE_KEY_CURRENT_CONNECTION)
+    conn = sessionStorage.getItem(SESSION_KEY_CURRENT_CONNECTION)
     return conn ? JSON.parse(conn) : null
   }
 
