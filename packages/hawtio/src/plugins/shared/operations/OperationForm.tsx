@@ -24,7 +24,7 @@ import {
 import React, { useContext, useState } from 'react'
 import { Operation } from './operation'
 import { operationService } from './operation-service'
-import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
+import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/selectionNodeContext'
 import './OperationForm.css'
 
 export interface OperationFormProps {

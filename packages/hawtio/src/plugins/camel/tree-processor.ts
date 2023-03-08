@@ -1,4 +1,4 @@
-import { MBeanNode, MBeanTree, TreeProcessor } from '@hawtiosrc/plugins/shared'
+import { MBeanNode, MBeanTree, TreeProcessor } from '@hawtiosrc/plugins/shared/tree'
 import React from 'react'
 import * as ccs from './camel-content-service'
 import {
