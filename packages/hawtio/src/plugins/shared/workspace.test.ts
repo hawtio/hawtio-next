@@ -36,4 +36,29 @@ describe('workspace', () => {
       workspace.treeContainsDomainAndProperties('quartz', { id: 'SomeRandomChild', name: 'NoThisChildIsNotHere' }),
     ).resolves.toBeFalsy()
   })
+
+  test('parseMBean', () => {
+    const testdata = [
+      { on: 'jolokia:type=Config', r: { attributes: { type: 'Config' }, domain: 'jolokia' } },
+      {
+        on: 'jdk.management.jfr:type=FlightRecorder',
+        r: { attributes: { type: 'FlightRecorder' }, domain: 'jdk.management.jfr' },
+      },
+      {
+        on: 'jboss.threads:name="XNIO-1",type=thread-pool',
+        r: { attributes: { name: '"XNIO-1"', type: 'thread-pool' }, domain: 'jboss.threads' },
+      },
+      {
+        on: 'org.apache.camel:context=SampleCamelLog4J,type=context,name="SampleCamelLog4J"',
+        r: {
+          attributes: { context: 'SampleCamelLog4J', name: '"SampleCamelLog4J"', type: 'context' },
+          domain: 'org.apache.camel',
+        },
+      },
+    ]
+
+    for (const td of testdata) {
+      expect(workspace.parseMBean(td.on)).toEqual(td.r)
+    }
+  })
 })

@@ -1,7 +1,8 @@
 import { eventService, Logger } from '@hawtiosrc/core'
 import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { isString } from '@hawtiosrc/util/strings'
-import { IErrorResponse, ISimpleOptions } from 'jolokia.js'
+import { IErrorResponse, IJmxOperation, IJmxOperations, ISimpleOptions } from 'jolokia.js'
+import { isArray } from '@hawtiosrc/util/objects'
 import { is, object } from 'superstruct'
 import { pluginName } from './globals'
 import { MBeanNode, MBeanTree, OptimisedJmxDomain, OptimisedJmxDomains, OptimisedJmxMBean } from './tree'
@@ -128,6 +129,90 @@ class Workspace {
     }
 
     return true
+  }
+
+  parseMBean(mbean: string) {
+    const answer: { domain: string; attributes: Record<string, string> } = {
+      domain: '',
+      attributes: {},
+    }
+    let parts: string[] = mbean.split(':')
+    if (parts.length > 1) {
+      answer.domain = parts[0]
+      parts = parts.filter((v: string) => v !== answer.domain)
+      const parts2 = parts.join(':')
+      answer.attributes = {}
+      const nameValues = parts2.split(',')
+      nameValues.forEach((p: string) => {
+        let nameValue = p.split('=')
+        const name = nameValue[0].trim()
+        nameValue = nameValue.filter((v: string) => v !== name)
+        answer.attributes[name] = nameValue.join('=').trim()
+      })
+    }
+    return answer
+  }
+
+  hasInvokeRights(node: MBeanNode, ...methods: string[]): boolean {
+    if (!node) return true
+
+    const mbean = node.mbean
+    if (!mbean) return true
+
+    let canInvoke = true
+    if (mbean.canInvoke !== undefined) canInvoke = mbean.canInvoke
+
+    if (canInvoke && methods && methods.length > 0) {
+      const opsByString = mbean.opByString
+      const ops = mbean.op
+      if (opsByString && ops) {
+        canInvoke = this.resolveCanInvokeInOps(ops, opsByString, methods)
+      }
+    }
+    return canInvoke
+  }
+
+  /**
+   * Returns true only if all relevant operations can be invoked.
+   */
+  private resolveCanInvokeInOps(
+    ops: IJmxOperations,
+    opsByString: { [name: string]: unknown },
+    methods: string[],
+  ): boolean {
+    let canInvoke = true
+    methods.forEach(method => {
+      if (!canInvoke) {
+        return
+      }
+      let op = null
+      if (method.endsWith(')')) {
+        op = opsByString[method]
+      } else {
+        op = ops[method]
+      }
+      if (!op) {
+        log.debug('Could not find method:', method, 'to check permissions, skipping')
+        return
+      }
+      canInvoke = this.resolveCanInvoke(op)
+    })
+    return canInvoke
+  }
+
+  private resolveCanInvoke(op: unknown): boolean {
+    // for single method
+    if (!isArray(op)) {
+      const operation = op as IJmxOperation
+      return operation.canInvoke !== undefined ? operation.canInvoke : true
+    }
+
+    const operation = op as IJmxOperation[]
+
+    // for overloaded methods
+    // returns true only if all overloaded methods can be invoked (i.e. canInvoke=true)
+    const cantInvoke = operation.find((o: IJmxOperation) => o.canInvoke !== undefined && !o.canInvoke)
+    return cantInvoke === undefined
   }
 }
 
