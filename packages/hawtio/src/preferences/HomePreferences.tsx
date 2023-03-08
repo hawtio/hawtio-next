@@ -1,4 +1,14 @@
-import { Button, CardBody, Form, FormGroup, FormSection, Modal, ModalVariant, Switch } from '@patternfly/react-core'
+import {
+  Alert,
+  Button,
+  CardBody,
+  Form,
+  FormGroup,
+  FormSection,
+  Modal,
+  ModalVariant,
+  Switch,
+} from '@patternfly/react-core'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { preferencesService } from './preferences-service'
@@ -70,16 +80,21 @@ const ResetForm: React.FunctionComponent = () => {
     </Modal>
   )
 
+  const resetSuccess = preferencesService.isResetSuccess()
+
   return (
-    <FormGroup
-      label='Reset settings'
-      fieldId='reset-form-reset'
-      helperText="Clear all custom settings stored in your browser's local storage and reset to defaults."
-    >
-      <Button variant='danger' onClick={confirmReset}>
-        Reset
-      </Button>
-      <ConfirmResetModal />
-    </FormGroup>
+    <React.Fragment>
+      <FormGroup
+        label='Reset settings'
+        fieldId='reset-form-reset'
+        helperText="Clear all custom settings stored in your browser's local storage and reset to defaults."
+      >
+        <Button variant='danger' onClick={confirmReset}>
+          Reset
+        </Button>
+        <ConfirmResetModal />
+      </FormGroup>
+      {resetSuccess && <Alert variant='success' isInline title='Settings reset successfully!' />}
+    </React.Fragment>
   )
 }

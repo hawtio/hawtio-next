@@ -15,6 +15,7 @@ interface IPreferencesService {
   isShowVerticalNavByDefault(): boolean
   saveShowVerticalNavByDefault(value: boolean): void
   reset(): void
+  isResetSuccess(): boolean
 }
 
 class PreferencesService implements IPreferencesService {
@@ -48,6 +49,17 @@ class PreferencesService implements IPreferencesService {
     Object.entries(backup).forEach(([key, value]) => localStorage.setItem(key, value))
 
     sessionStorage.setItem(SESSION_KEY_RESET_SUCCESS, 'true')
+  }
+
+  isResetSuccess(): boolean {
+    const value = sessionStorage.getItem(SESSION_KEY_RESET_SUCCESS)
+
+    // This alert is one-time only, so clean up after read every time.
+    // Not cleaning up immediately because React renders twice in development env,
+    // so otherwise the alert is always wiped out before real rendering.
+    setTimeout(() => sessionStorage.removeItem(SESSION_KEY_RESET_SUCCESS), 1000)
+
+    return value ? JSON.parse(value) : false
   }
 }
 
