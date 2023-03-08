@@ -19,6 +19,7 @@ import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { CamelContext } from './context'
 import { Attributes, Operations, Chart, JmxContentMBeans, MBeanNode } from '@hawtiosrc/plugins/shared'
 import { Contexts } from './contexts'
+import { Exchanges } from './exchanges'
 import * as ccs from './camel-content-service'
 
 export const CamelContent: React.FunctionComponent = () => {
@@ -48,8 +49,9 @@ export const CamelContent: React.FunctionComponent = () => {
   /**
    * Test if nav should contain general mbean tabs
    */
-  const mBeanApplicable = (node: MBeanNode) =>
-    ccs.hasMBean(node) && !ccs.isContextsFolder(node) && !ccs.isRoutesFolder(node) && !ccs.isRouteNode(node)
+  const mBeanApplicable = (node: MBeanNode) => {
+    return ccs.hasMBean(node) && !ccs.isContextsFolder(node) && !ccs.isRoutesFolder(node) && !ccs.isRouteXmlNode(node)
+  }
 
   const allNavItems: NavItem[] = [
     {
@@ -61,6 +63,12 @@ export const CamelContent: React.FunctionComponent = () => {
     { id: 'attributes', title: 'Attributes', component: Attributes, isApplicable: mBeanApplicable },
     { id: 'operations', title: 'Operations', component: Operations, isApplicable: mBeanApplicable },
     { id: 'chart', title: 'Chart', component: Chart, isApplicable: mBeanApplicable },
+    {
+      id: 'exchanges',
+      title: 'Exchanges',
+      component: Exchanges,
+      isApplicable: (node: MBeanNode) => ccs.hasExchange(node),
+    },
   ]
 
   /* Filter the nav items to those applicable to the selected node */

@@ -9,6 +9,7 @@ import {
   jmxDomain,
   routesType,
   mbeansType,
+  routeNodeType,
 } from './globals'
 import * as ccs from './camel-content-service'
 import { camelTreeProcessor } from './tree-processor'
@@ -59,7 +60,7 @@ describe('tree-processor', () => {
     /* Force a delay to allow the camel version to be retrieved */
     setTimeout(() => {
       const domainNode: MBeanNode = tree.get(jmxDomain) as MBeanNode
-      expect(tree.get(jmxDomain)).toBeDefined()
+      expect(domainNode).not.toBeNull()
       expect(domainNode.childCount()).toBe(1)
 
       const contextsNode: MBeanNode = domainNode.getIndex(0) as MBeanNode
@@ -88,6 +89,14 @@ describe('tree-processor', () => {
         expect(n.name).toBe(t)
         expect(ccs.getCamelVersion(n)).toBe(CAMEL_MODEL_VERSION)
         expect(n.childCount()).toBeGreaterThan(0)
+      }
+
+      const routesNode = contextNode.get(routesType) as MBeanNode
+      for (const c of routesNode.getChildren()) {
+        expect(c).toBeDefined()
+        expect(ccs.hasDomain(c)).toBeTruthy()
+        console.log('Property of ' + c.name + ' : ' + c.getProperty('type'))
+        expect(ccs.hasType(c, routeNodeType)).toBeTruthy()
       }
 
       done()

@@ -14,6 +14,7 @@ import {
   dataformatsType,
   domainNodeType,
   mbeansType,
+  routeNodeType,
 } from './globals'
 import { getIcon, IconNames } from './icons'
 import { routesService } from './routes-service'
@@ -79,6 +80,7 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
     const routesNode = context.get(routesType)
     adoptChild(newCtxNode, routesNode, routesType, endPointFolderIcon)
     setChildIcon(routesNode, routeIcon)
+    ccs.setChildProperties(routesNode, routeNodeType)
     routesService.transformXml(newCtxNode, routesNode)
 
     const endpointsNode = context.get(endpointsType)
