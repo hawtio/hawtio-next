@@ -2,7 +2,8 @@ import { useUser } from '@hawtiosrc/auth/hooks'
 import { usePlugins } from '@hawtiosrc/core'
 import { HawtioHelp } from '@hawtiosrc/help/HawtioHelp'
 import { backgroundImages } from '@hawtiosrc/img'
-import { HawtioPreferences } from '@hawtiosrc/preferences/HawtioPreferences'
+import { PluginNodeSelectionContext, usePluginNodeSelected } from '@hawtiosrc/plugins'
+import { HawtioPreferences, preferencesService } from '@hawtiosrc/preferences'
 import {
   BackgroundImage,
   EmptyState,
@@ -22,7 +23,6 @@ import { log } from './globals'
 import { HawtioHeader } from './HawtioHeader'
 import { HawtioLoading } from './HawtioLoading'
 import { HawtioSidebar } from './HawtioSidebar'
-import { PluginNodeSelectionContext, usePluginNodeSelected } from '@hawtiosrc/plugins'
 
 export const HawtioPage: React.FunctionComponent = () => {
   const { username, isLogin, userLoaded } = useUser()
@@ -60,10 +60,17 @@ export const HawtioPage: React.FunctionComponent = () => {
     defaultPage = <HawtioHome />
   }
 
+  const showVerticalNavByDefault = preferencesService.isShowVerticalNavByDefault()
+
   return (
     <PageContext.Provider value={{ username, plugins }}>
       <BackgroundImage src={backgroundImages} />
-      <Page header={<HawtioHeader />} sidebar={<HawtioSidebar />} isManagedSidebar>
+      <Page
+        header={<HawtioHeader />}
+        sidebar={<HawtioSidebar />}
+        isManagedSidebar
+        defaultManagedSidebarIsOpen={showVerticalNavByDefault}
+      >
         {/* Provider for handling selected node shared between the plugins */}
         <PluginNodeSelectionContext.Provider value={{ selectedNode, setSelectedNode }}>
           <Routes>

@@ -1,7 +1,5 @@
 import { log } from './globals'
 
-export type DefaultVerticalNavState = 'show' | 'hide'
-
 const STORAGE_KEY_SHOW_VERTICAL_NAV_BY_DEFAULT = 'preferences.showVerticalNavByDefault'
 
 const SESSION_KEY_RESET_SUCCESS = 'preferences.resetSuccess'
