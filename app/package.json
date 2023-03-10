@@ -14,7 +14,7 @@
     "@hawtio/react": "workspace:*",
     "react": "^18.2.0",
     "react-scripts": "5.0.1",
-    "web-vitals": "^3.1.1"
+    "web-vitals": "^3.3.0"
   },
   "devDependencies": {
     "@hawtio/backend-middleware": "^1.0.3"
