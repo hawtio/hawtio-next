@@ -3,6 +3,8 @@ import React, { useState } from 'react'
 import { RESET } from './connections'
 import { useConnections } from './context'
 import { log } from './globals'
+import { preferencesService } from '../../preferences/preferences-service'
+import { useNavigate } from 'react-router-dom'
 
 const DEFAULT_UPDATE_RATE = 5000
 const DEFAULT_MAX_DEPTH = 7
@@ -10,23 +12,48 @@ const DEFAULT_MAX_COLLECTION_SIZE = 50000
 
 export const ConnectPreferences: React.FunctionComponent = () => {
   const { dispatch } = useConnections()
+  const navigate = useNavigate();
 
-  const [updateRate, setUpdateRate] = useState(DEFAULT_UPDATE_RATE)
-  const [maxDepth, setMaxDepth] = useState(DEFAULT_MAX_DEPTH)
-  const [maxCollectionSize, setMaxCollectionSize] = useState(DEFAULT_MAX_COLLECTION_SIZE)
+  const [updateRate, setUpdateRate] = useState(preferencesService.getJolokiaUpdateRate())
+  const [maxDepth, setMaxDepth] = useState(preferencesService.getJolokiaMaxDepth())
+  const [maxCollectionSize, setMaxCollectionSize] = useState(preferencesService.getJolokiaMaxCollectionSize())
 
-  const onUpdateRateChanged = (updateRate: string) => setUpdateRate(parseInt(updateRate))
+  const onUpdateRateChanged = (updateRate: string) => {
+    const intValue = parseInt(updateRate)
 
-  const onMaxDepthChanged = (maxDepth: string) => setMaxDepth(parseInt(maxDepth))
+    if(intValue) {
+      preferencesService.saveJolokiaUpdateRate(intValue)
+      setUpdateRate(intValue)
+    }
+  }
 
-  const onMaxCollectionSizeChanged = (maxCollectionSize: string) => setMaxCollectionSize(parseInt(maxCollectionSize))
+  const onMaxDepthChanged = (maxDepth: string) => {
+    const intValue = parseInt(maxDepth)
 
+    if(intValue) {
+      preferencesService.saveJolokiaMaxDepth(intValue)
+      setMaxDepth(intValue)
+    }
+  }
+
+  const onMaxCollectionSizeChanged = (maxCollectionSize: string) => {
+    const intValue = parseInt(maxCollectionSize)
+
+    if(intValue) {
+      preferencesService.saveJolokiaMaxCollectionSize(intValue)
+      setMaxCollectionSize(intValue)
+    }
+  }
+  
   const applyJolokia = () => {
-    // TODO: impl
-    log.info('TODO - Apply Jolokia settings')
+    //Page reload will apply currently stored preferences into jolokla
+    navigate(0)
   }
 
   const reset = () => {
+    //Page reload after settings have been reset will default jolokla settings to default
+    preferencesService.reset();
+    navigate(0);
     log.debug('Clear saved connections')
     dispatch({ type: RESET })
   }

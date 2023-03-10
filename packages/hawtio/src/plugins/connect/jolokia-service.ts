@@ -1,5 +1,6 @@
 import { userService } from '@hawtiosrc/auth'
 import { eventService } from '@hawtiosrc/core'
+import { preferencesService } from '@hawtiosrc/preferences'
 import { getCookie } from '@hawtiosrc/util/cookies'
 import {
   escapeMBeanPath,
@@ -34,8 +35,8 @@ import { func, is, object } from 'superstruct'
 import { connectService, PARAM_KEY_CONNECTION } from './connect-service'
 import { log } from './globals'
 
-const DEFAULT_MAX_DEPTH = 7
-const DEFAULT_MAX_COLLECTION_SIZE = 50000
+export const DEFAULT_MAX_DEPTH = 7
+export const DEFAULT_MAX_COLLECTION_SIZE = 50000
 const DEFAULT_JOLOKIA_OPTIONS: IOptions = {
   method: 'POST',
   mimeType: 'application/json',
@@ -45,7 +46,7 @@ const DEFAULT_JOLOKIA_OPTIONS: IOptions = {
   canonicalProperties: false,
   ignoreErrors: true,
 } as const
-const DEFAULT_UPDATE_RATE = 5000
+export const DEFAULT_UPDATE_RATE = 5000
 
 const JOLOKIA_PATHS = ['jolokia', '/hawtio/jolokia', '/jolokia'] as const
 
@@ -421,8 +422,7 @@ class JolokiaService implements IJolokiaService {
   }
 
   loadUpdateRate(): number {
-    const updateRate = localStorage.getItem(STORAGE_KEY_UPDATE_RATE)
-    return updateRate ? parseInt(updateRate) : DEFAULT_UPDATE_RATE
+    return preferencesService.getJolokiaUpdateRate();
   }
 
   saveUpdateRate(updateRate: number) {
