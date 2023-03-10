@@ -61,9 +61,9 @@ class PreferencesService implements IPreferencesService {
       currentStorageJolokiaOptions 
         ? JSON.parse(currentStorageJolokiaOptions)
         : {}
-    currentJolokiaUpdateOptions['maxDepth'] = JSON.stringify(value)
+    currentJolokiaUpdateOptions['maxDepth'] = value
     
-    localStorage.setItem(STORAGE_KEY_JOLOKIA_OPTIONS, currentJolokiaUpdateOptions)
+    localStorage.setItem(STORAGE_KEY_JOLOKIA_OPTIONS, JSON.stringify(currentJolokiaUpdateOptions))
   }
 
   getJolokiaMaxCollectionSize(): number {
@@ -83,9 +83,9 @@ class PreferencesService implements IPreferencesService {
       currentStorageJolokiaOptions 
         ? JSON.parse(currentStorageJolokiaOptions)
         : {}
-    currentJolokiaUpdateOptions['maxCollectionSize'] = JSON.stringify(value)
+    currentJolokiaUpdateOptions['maxCollectionSize'] = value
     
-    localStorage.setItem(STORAGE_KEY_JOLOKIA_OPTIONS, currentJolokiaUpdateOptions)
+    localStorage.setItem(STORAGE_KEY_JOLOKIA_OPTIONS, JSON.stringify(currentJolokiaUpdateOptions))
   }
 
   reset() {
