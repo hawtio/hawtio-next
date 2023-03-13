@@ -1,6 +1,6 @@
 import { escapeDots, escapeTags } from '@hawtiosrc/util/jolokia'
 import { stringSorter } from '@hawtiosrc/util/strings'
-import { emptyParent, MBeanNode, OptimisedJmxDomain, OptimisedJmxDomains, FilterFunc } from './node'
+import { MBeanNode, OptimisedJmxDomain, OptimisedJmxDomains, FilterFunc } from './node'
 import { log } from '../globals'
 import { treeProcessorRegistry } from './processor-registry'
 
@@ -68,7 +68,7 @@ export class MBeanTree {
     }
 
     const id = escapeDots(name)
-    const newNode = new MBeanNode(emptyParent, id, name, true)
+    const newNode = new MBeanNode(null, id, name, true)
     this.tree.push(newNode)
     return newNode
   }

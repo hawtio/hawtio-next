@@ -29,8 +29,6 @@ export interface OptimisedJmxMBean extends IJmxMBean {
   opByString?: { [name: string]: unknown }
 }
 
-export const emptyParent = null
-
 export interface FilterFunc {
   (node: MBeanNode): boolean
 }
@@ -48,6 +46,14 @@ export class MBeanNode implements TreeViewDataItem {
   objectName?: string
   mbean?: OptimisedJmxMBean
 
+  /**
+   * A new node
+   * @constructor
+   * @param {MBeanNode|null} parent - The parent of the new node. Otherwise, for a singleton node use null.
+   * @param {string} id - The unique identifier of the new node.
+   * @param {string} name - The name of the new node.
+   * @param {boolean} folder - Whether this new node is a folder, ie. has children
+   */
   constructor(parent: MBeanNode | null, id: string, name: string, folder: boolean) {
     this.id = id
     this.name = name

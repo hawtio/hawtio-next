@@ -1,4 +1,4 @@
-import { emptyParent, MBeanNode } from './node'
+import { MBeanNode } from './node'
 import { treeProcessorRegistry } from './processor-registry'
 import { MBeanTree } from './tree'
 
@@ -32,13 +32,13 @@ describe('MBeanTree', () => {
 })
 
 function createNode(id: string, name: string, objectName: string): MBeanNode {
-  const node = new MBeanNode(emptyParent, id, name, false)
+  const node = new MBeanNode(null, id, name, false)
   node.objectName = objectName
   return node
 }
 
 function createFolder(id: string, name: string, children: MBeanNode[]): MBeanNode {
-  const folder = new MBeanNode(emptyParent, id, name, true)
+  const folder = new MBeanNode(null, id, name, true)
   folder.children = children
   return folder
 }
