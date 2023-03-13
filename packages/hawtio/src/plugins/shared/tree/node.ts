@@ -118,6 +118,42 @@ export class MBeanNode implements TreeViewDataItem {
     return this.children ? this.children : []
   }
 
+  matches(properties: Record<string, string>): boolean {
+    const entries = properties ? Object.entries(properties) : []
+    if (entries.length === 0) return false
+
+    // Escape any regex special characters
+    const escapeRegex = (str: string) => str.replace(/([.*+?^=!:${}()|[\]/\\])/g, '\\$1')
+
+    let mCount = entries.length
+    for (const [key, value] of entries) {
+      /*
+       * The * is used as the wildcard to remove it, escape the rest and rejoin
+       * with the correct regex syntax
+       */
+      const rule = value.split('*').map(escapeRegex).join('.*')
+      const re = new RegExp(`^${rule}$`, 'i')
+      let nodeValue
+      switch (key) {
+        case 'name':
+          nodeValue = this.name
+          break
+        default:
+          nodeValue = this.getProperty(key)
+          if (!nodeValue) return false // this node lacks this property
+          break
+      }
+
+      if (nodeValue.match(re)) {
+        mCount--
+      } else {
+        return false
+      }
+    }
+
+    return mCount === 0
+  }
+
   create(name: string, folder: boolean): MBeanNode {
     // this method should be invoked on a folder node
     if (this.children === undefined) {
@@ -182,7 +218,12 @@ export class MBeanNode implements TreeViewDataItem {
   navigate(...namePath: string[]): MBeanNode | null {
     if (namePath.length === 0) return this // path is empty so return this node
 
-    const child = this.get(namePath[0])
+    let child: MBeanNode | null = null
+    if (namePath[0].includes('*')) {
+      child = this.children?.find(node => node.matches({ name: namePath[0] })) || null
+    } else {
+      child = this.get(namePath[0])
+    }
     if (!child) return null
 
     return child.navigate(...namePath.slice(1))

@@ -27,7 +27,7 @@ export async function getExchanges(node: MBeanNode, serviceName: string): Promis
   const ctxNode = findContext(node)
   if (!ctxNode) return Promise.resolve([])
 
-  const service = ctxNode.navigate(mbeansType, 'services', serviceName) as MBeanNode
+  const service = ctxNode.navigate(mbeansType, 'services', serviceName + '*') as MBeanNode
   if (!service) return Promise.resolve([])
 
   const response = await jolokiaService.execute(service.objectName as string, 'browse()')
@@ -45,7 +45,7 @@ export async function unblockExchange(node: MBeanNode, exchange: Exchange): Prom
   // TODO Do we need to reject here if context cannot be found?
   if (!ctxNode) return Promise.resolve(null)
 
-  const service = ctxNode.navigate(mbeansType, 'services', BLOCKED_SERVICE) as MBeanNode
+  const service = ctxNode.navigate(mbeansType, 'services', BLOCKED_SERVICE + '*') as MBeanNode
   // TODO Do we need to reject here if service cannot be found?
   if (!service) return Promise.resolve(null)
 
@@ -63,7 +63,7 @@ export async function canBrowseInflightExchanges(node: MBeanNode): Promise<boole
   const ctxNode = findContext(node)
   if (!ctxNode) return Promise.resolve(false)
 
-  const service = ctxNode.navigate(mbeansType, 'services', INFLIGHT_SERVICE) as MBeanNode
+  const service = ctxNode.navigate(mbeansType, 'services', INFLIGHT_SERVICE + '*') as MBeanNode
   if (!service) return Promise.resolve(false)
 
   const response = await jolokiaService.readAttribute(service.objectName as string, 'InflightBrowseEnabled')
