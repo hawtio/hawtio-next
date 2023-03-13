@@ -2,7 +2,7 @@ import React from 'react'
 import { render, screen, cleanup } from '@testing-library/react'
 import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { routesService } from './routes-service'
-import { emptyParent, MBeanNode } from '@hawtiosrc/plugins/shared/tree'
+import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import fs from 'fs'
 import path from 'path'
 import { parseXML } from '@hawtiosrc/util/xml'
@@ -34,13 +34,13 @@ describe('routes-service', () => {
   })
 
   beforeEach(() => {
-    contextNode = new MBeanNode(emptyParent, 'SampleCamel', 'sample-camel-1', true)
+    contextNode = new MBeanNode(null, 'SampleCamel', 'sample-camel-1', true)
     contextNode.objectName = 'org.apache.camel:context=SampleCamel,type=context,name="SampleCamel"'
 
-    routesNode = new MBeanNode(emptyParent, 'Routes', 'routes-2', true)
+    routesNode = new MBeanNode(null, 'Routes', 'routes-2', true)
     routesNode.addProperty('type', 'routes')
 
-    simpleRouteNode = new MBeanNode(emptyParent, 'simple', testRouteId, false)
+    simpleRouteNode = new MBeanNode(null, 'simple', testRouteId, false)
 
     routesNode.adopt(simpleRouteNode)
     contextNode.adopt(routesNode)

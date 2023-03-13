@@ -1,4 +1,4 @@
-import { emptyParent, Icons, MBeanNode, PropertyList } from './node'
+import { Icons, MBeanNode, PropertyList } from './node'
 import { workspace } from '../workspace'
 import { MBeanTree } from './tree'
 import { domainNodeType } from '@hawtiosrc/plugins/camel/globals'
@@ -74,7 +74,7 @@ describe('MBeanNode', () => {
       canInvoke: true,
     }
 
-    const node1 = new MBeanNode(emptyParent, 'test.node', 'test.node', false)
+    const node1 = new MBeanNode(null, 'test.node', 'test.node', false)
     node1.populateMBean('context=SampleContext,type=context,name="SampleCamel"', mbean)
     expect(node1.icon).toBe(Icons.folder)
     expect(node1.expandedIcon).toBe(Icons.folderOpen)
@@ -101,7 +101,7 @@ describe('MBeanNode', () => {
 
     // When canInvoke is false
     mbean.canInvoke = false
-    const node2 = new MBeanNode(emptyParent, 'test.node', 'test.node', false)
+    const node2 = new MBeanNode(null, 'test.node', 'test.node', false)
     node2.populateMBean('context=SampleContext,type=context,name="SampleCamel"', mbean)
 
     const child2 = node2.children?.[0].children?.[0].children?.[0]
@@ -237,24 +237,24 @@ describe('MBeanNode', () => {
 
 describe('PropertyList', () => {
   test('objectName', () => {
-    const node = new MBeanNode(emptyParent, 'org.apache.camel', 'org.apache.camel', false)
+    const node = new MBeanNode(null, 'org.apache.camel', 'org.apache.camel', false)
     const propList = new PropertyList(node, 'context=SampleContext,type=context,name="SampleCamel"')
     expect(propList.objectName()).toEqual('org.apache.camel:context=SampleContext,type=context,name="SampleCamel"')
   })
 
   test('getPaths', () => {
-    const node1 = new MBeanNode(emptyParent, 'java.lang', 'java.lang', false)
+    const node1 = new MBeanNode(null, 'java.lang', 'java.lang', false)
     const propList1 = new PropertyList(node1, 'name=Metaspace,type=MemoryPool')
     expect(propList1.getPaths()).toEqual(['MemoryPool', 'Metaspace'])
 
-    const node2 = new MBeanNode(emptyParent, 'org.apache.camel', 'org.apache.camel', false)
+    const node2 = new MBeanNode(null, 'org.apache.camel', 'org.apache.camel', false)
     const propList2 = new PropertyList(node2, 'context=SampleContext,type=context,name="SampleCamel"')
     expect(propList2.getPaths()).toEqual(['SampleContext', 'context', 'SampleCamel'])
   })
 
   test('getPaths for special domains', () => {
     // osgi.compendium
-    const osgiCompendiumNode = new MBeanNode(emptyParent, 'osgi.compendium', 'osgi.compendium', false)
+    const osgiCompendiumNode = new MBeanNode(null, 'osgi.compendium', 'osgi.compendium', false)
     const osgiCompendiumPropList = new PropertyList(
       osgiCompendiumNode,
       'name=Name1,framework=Framework1,service=Service1,version=Version1',
@@ -262,7 +262,7 @@ describe('PropertyList', () => {
     expect(osgiCompendiumPropList.getPaths()).toEqual(['Service1', 'Version1', 'Framework1', 'Name1'])
 
     // osgi.core
-    const osgiCoreNode = new MBeanNode(emptyParent, 'osgi.core', 'osgi.core', false)
+    const osgiCoreNode = new MBeanNode(null, 'osgi.core', 'osgi.core', false)
     const osgiCorePropList = new PropertyList(
       osgiCoreNode,
       'name=Name1,framework=Framework1,type=Type1,version=Version1',
