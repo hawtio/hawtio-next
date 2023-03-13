@@ -1,6 +1,7 @@
 import { emptyParent, Icons, MBeanNode, PropertyList } from './node'
 import { workspace } from '../workspace'
 import { MBeanTree } from './tree'
+import { domainNodeType } from '@hawtiosrc/plugins/camel/globals'
 
 jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
 
@@ -144,12 +145,40 @@ describe('MBeanNode', () => {
     expect(comp.parent).toBe(sc)
   })
 
+  test('matches', async () => {
+    const domainNode = tree.get('org.apache.camel') as MBeanNode
+    expect(domainNode).not.toBeNull()
+    domainNode.addProperty('type', domainNodeType)
+    domainNode.addProperty('domain', domainNode.name)
+
+    expect(domainNode.matches({})).toBeFalsy()
+    expect(domainNode.matches({ name: '' })).toBeFalsy()
+    expect(domainNode.matches({ name: 'org2.*' })).toBeFalsy()
+    expect(domainNode.matches({ name: 'org.apache.camel' })).toBeTruthy()
+    expect(domainNode.matches({ name: 'org.apache.c*' })).toBeTruthy()
+    expect(domainNode.matches({ name: '*apache.camel' })).toBeTruthy()
+    expect(domainNode.matches({ name: '*apache.c*' })).toBeTruthy()
+    expect(domainNode.matches({ name: '*ap*e.c*' })).toBeTruthy()
+
+    expect(domainNode.matches({ name: 'org.apache.camel', type: domainNodeType })).toBeTruthy()
+    expect(domainNode.matches({ name: 'org.apache.camel', type: 'Camel*' })).toBeTruthy()
+    expect(domainNode.matches({ name: 'org.apache.camel', type: 'Camel*', domain: 'invalid' })).toBeFalsy()
+    expect(domainNode.matches({ name: 'org.apache.camel', type: 'Camel*', domain: domainNode.name })).toBeTruthy()
+
+    expect(domainNode.matches({ name: 'org.apache.camel', invalid: 'Camel*' })).toBeFalsy()
+  })
+
   test('navigate', async () => {
     const domainNode = tree.get('org.apache.camel') as MBeanNode
     expect(domainNode).not.toBeNull()
 
-    const path = ['SampleCamel', 'components', 'quartz']
-    const qNode = domainNode.navigate(...path) as MBeanNode
+    let path = ['SampleCamel', 'components', 'quartz']
+    let qNode = domainNode.navigate(...path) as MBeanNode
+    expect(qNode).not.toBeNull()
+    expect(qNode.id).toBe('quartz-1')
+
+    path = ['SampleCame*', 'c*ponents', '*artz']
+    qNode = domainNode.navigate(...path) as MBeanNode
     expect(qNode).not.toBeNull()
     expect(qNode.id).toBe('quartz-1')
   })
