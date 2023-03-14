@@ -1574,9 +1574,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@craco/craco@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "@craco/craco@npm:7.0.0"
+"@craco/craco@npm:^7.1.0":
+  version: 7.1.0
+  resolution: "@craco/craco@npm:7.1.0"
   dependencies:
     autoprefixer: ^10.4.12
     cosmiconfig: ^7.0.1
@@ -1589,7 +1589,7 @@ __metadata:
     react-scripts: ^5.0.0
   bin:
     craco: dist/bin/craco.js
-  checksum: d8371d5508a586ea00070d66010e632c8dab2761c2dd51163003e5b4e62e044f5931b081c3d19f02eea187fd970f9ddffeeaefcae004962e63286682e41e86b1
+  checksum: d534d1ea7814e7bd9f2e2aef17821fcdb1d9cac8308e8eb04809f8f3371180086b8f673dedce1ffbefba9ded566e91e4c9663464e488bf6291461091cbd95c4e
   languageName: node
   linkType: hard
 
@@ -4446,7 +4446,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "app@workspace:app"
   dependencies:
-    "@craco/craco": ^7.0.0
+    "@craco/craco": ^7.1.0
     "@hawtio/backend-middleware": ^1.0.3
     "@hawtio/react": "workspace:*"
     react: ^18.2.0

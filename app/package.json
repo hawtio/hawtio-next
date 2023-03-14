@@ -10,7 +10,7 @@
     "deploy": "yarn build && cp build/index.html build/200.html && surge build/ hawtio-next.surge.sh"
   },
   "dependencies": {
-    "@craco/craco": "^7.0.0",
+    "@craco/craco": "^7.1.0",
     "@hawtio/react": "workspace:*",
     "react": "^18.2.0",
     "react-scripts": "5.0.1",
