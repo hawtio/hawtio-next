@@ -1,4 +1,5 @@
 const { hawtioBackend } = require('@hawtio/backend-middleware')
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
 
 module.exports = {
   webpack: {
@@ -13,6 +14,12 @@ module.exports = {
             warning.details.includes('source-map-loader')
           )
         },
+      ],
+      plugins: [
+        new MonacoWebpackPlugin({
+          languages: ['xml'],
+          globalAPI: true,
+        }),
       ],
     },
   },

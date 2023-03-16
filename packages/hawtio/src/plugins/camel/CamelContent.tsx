@@ -22,6 +22,8 @@ import { Contexts } from './contexts'
 import { Exchanges } from './exchanges'
 import { TypeConverters } from './type-converters'
 import * as ccs from './camel-content-service'
+import { CamelRoutes } from '@hawtiosrc/plugins/camel/routes/CamelRoutes'
+import { Source } from '@hawtiosrc/plugins/camel/routes/Source'
 
 export const CamelContent: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
@@ -61,6 +63,21 @@ export const CamelContent: React.FunctionComponent = () => {
       component: Contexts,
       isApplicable: (node: MBeanNode) => ccs.isContextsFolder(node),
     },
+    {
+      id: 'routes',
+      title: 'Routes',
+      component: CamelRoutes,
+      isApplicable: (node: MBeanNode) => ccs.isRoutesFolder(node),
+    },
+    {
+      id: 'source',
+      title: 'Source',
+      component: Source,
+      isApplicable: (node: MBeanNode) =>
+        !ccs.isEndpointNode(node) &&
+        !ccs.isEndpointsFolder(node) &&
+        (ccs.isRouteNode(node) || ccs.isRoutesFolder(node)),
+    },
     { id: 'attributes', title: 'Attributes', component: Attributes, isApplicable: mBeanApplicable },
     { id: 'operations', title: 'Operations', component: Operations, isApplicable: mBeanApplicable },
     { id: 'chart', title: 'Chart', component: Chart, isApplicable: mBeanApplicable },
@@ -93,7 +110,7 @@ export const CamelContent: React.FunctionComponent = () => {
     </Nav>
   )
 
-  const camelRoutes = navItems.map(nav => (
+  const camelNavRoutes = navItems.map(nav => (
     <Route key={nav.id} path={nav.id} element={React.createElement(nav.component)} />
   ))
 
@@ -106,11 +123,12 @@ export const CamelContent: React.FunctionComponent = () => {
         </PageSection>
         {navItems.length > 0 && <PageNavigation>{camelNav}</PageNavigation>}
       </PageGroup>
+
       <PageSection className={'camel-main'}>
         {navItems.length > 0 && (
           <React.Fragment>
             <Routes>
-              {camelRoutes}
+              {camelNavRoutes}
               <Route key='root' path='/' element={<Navigate to={navItems[0].id} />} />
             </Routes>
           </React.Fragment>

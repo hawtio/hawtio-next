@@ -1,11 +1,24 @@
 import React from 'react'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
-import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
+import { AttributeValues, jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { log, routeXmlNodeType } from './globals'
 import { schemaService } from './schema-service'
 import * as ccs from './camel-content-service'
 import * as icons from './icons'
 import { parseXML } from '@hawtiosrc/util/xml'
+
+export type CamelRoute = {
+  objectName: string
+  RouteId: string
+  State: string
+  Uptime: string
+  ExchangesCompleted: number
+  ExchangesFailed: number
+  FailuresHandled: number
+  ExchangesTotal: number
+  ExchangesInflight: number
+  MeanProcessingTime: number
+}
 
 class RoutesService {
   private getIcon(nodeSettingsOrXmlNode: Record<string, unknown> | Element): React.ReactNode {
@@ -133,6 +146,50 @@ class RoutesService {
           log.error(`Failed to process route xml for ${routeNode.name}: ` + error)
         })
     })
+  }
+
+  async getRoutesAttributes(routeFolder: MBeanNode | null): Promise<CamelRoute[]> {
+    if (!routeFolder) return []
+
+    const children = routeFolder.getChildren()
+    if (children.length === 0) return []
+
+    const routes: CamelRoute[] = []
+    for (const child of children) {
+      if (!child.objectName) continue
+
+      const attributes: AttributeValues = await jolokiaService.readAttributes(child.objectName as string)
+      routes.push(this.createCamelRoute(child.objectName as string, attributes))
+    }
+    return routes
+  }
+
+  createCamelRoute(objName: string, attr: AttributeValues) {
+    const route: CamelRoute = {
+      objectName: objName,
+      ExchangesCompleted: attr['ExchangesCompleted'] as number,
+      ExchangesTotal: attr['ExchangesTotal'] as number,
+      ExchangesInflight: attr['ExchangesInflight'] as number,
+      RouteId: attr['RouteId'] as string,
+      State: attr['State'] as string,
+      Uptime: attr['Uptime'] as string,
+      ExchangesFailed: attr['ExchangesFailed'] as number,
+      FailuresHandled: attr['FailuresHandled'] as number,
+      MeanProcessingTime: attr['MeanProcessingTime'] as number,
+    }
+
+    return route
+  }
+  async startRoute(objName: string) {
+    await jolokiaService.execute(objName, 'start()')
+  }
+
+  async stopRoute(objName: string) {
+    await jolokiaService.execute(objName, 'stop()')
+  }
+
+  async deleteRoute(objName: string) {
+    await jolokiaService.execute(objName, 'remove()')
   }
 }
 
