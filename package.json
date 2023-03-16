@@ -51,5 +51,8 @@
   "packageManager": "yarn@3.4.1",
   "engines": {
     "yarn": ">=3.4.1"
+  },
+  "dependencies": {
+    "monaco-editor-webpack-plugin": "^7.0.1"
   }
 }
