@@ -146,6 +146,41 @@ export function hasExchange(node: MBeanNode): boolean {
   )
 }
 
+export function findTypeConverter(node: MBeanNode): MBeanNode | null {
+  if (!node) return null
+
+  const ctxNode = findContext(node)
+  if (!ctxNode) return null
+
+  const result = ctxNode.navigate(mbeansType, 'services')
+  if (!result || !result.children) return null
+
+  const typeConvertor = result.getChildren().find(m => m.name.endsWith('TypeConverter'))
+  return !typeConvertor ? null : typeConvertor
+}
+
+export function canListTypeConverters(node: MBeanNode): boolean {
+  const tc = findTypeConverter(node)
+  if (!tc) return false
+
+  return workspace.hasInvokeRights(tc as MBeanNode, 'listTypeConverters')
+}
+
+export function hasTypeConverter(node: MBeanNode): boolean {
+  return (
+    node &&
+    !isRouteNode(node) &&
+    !isRouteXmlNode(node) &&
+    !isEndpointsFolder(node) &&
+    !isEndpointNode(node) &&
+    !isComponentsFolder(node) &&
+    !isComponentNode(node) &&
+    (isContext(node) || isRoutesFolder(node)) &&
+    isCamelVersionEQGT_2_13(node) &&
+    canListTypeConverters(node)
+  )
+}
+
 /**
  * Fetch the camel version and add it to the tree to avoid making a blocking call
  * elsewhere.
