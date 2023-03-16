@@ -17,14 +17,14 @@ import { Table, TableBody, TableHeader, TableProps, wrappable } from '@patternfl
 import { IResponse } from 'jolokia.js'
 import { AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
 import React, { useEffect, useState, useContext } from 'react'
-import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
+import { CamelContext } from '@hawtiosrc/plugins/camel/context'
 import { log } from '../globals'
 import { contextsService, ContextAttributes } from './contexts-service'
 import { eventService } from '@hawtiosrc/core'
 import { workspace } from '@hawtiosrc/plugins/shared'
 
 export const Contexts: React.FunctionComponent = () => {
-  const { selectedNode } = useContext(PluginNodeSelectionContext)
+  const { selectedNode } = useContext(CamelContext)
   const [isReading, setIsReading] = useState(true)
 
   const emptyCtxs: ContextAttributes[] = []

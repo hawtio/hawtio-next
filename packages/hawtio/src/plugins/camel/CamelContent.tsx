@@ -20,6 +20,7 @@ import { CamelContext } from './context'
 import { Attributes, Operations, Chart, JmxContentMBeans, MBeanNode } from '@hawtiosrc/plugins/shared'
 import { Contexts } from './contexts'
 import { Exchanges } from './exchanges'
+import { TypeConverters } from './type-converters'
 import * as ccs from './camel-content-service'
 
 export const CamelContent: React.FunctionComponent = () => {
@@ -68,6 +69,12 @@ export const CamelContent: React.FunctionComponent = () => {
       title: 'Exchanges',
       component: Exchanges,
       isApplicable: (node: MBeanNode) => ccs.hasExchange(node),
+    },
+    {
+      id: 'type-converters',
+      title: 'Type Converters',
+      component: TypeConverters,
+      isApplicable: (node: MBeanNode) => ccs.hasTypeConverter(node),
     },
   ]
 

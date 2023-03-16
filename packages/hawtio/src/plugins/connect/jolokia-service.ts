@@ -370,6 +370,16 @@ class JolokiaService implements IJolokiaService {
     })
   }
 
+  async writeAttribute(mbean: string, attribute: string, value: unknown): Promise<unknown> {
+    const jolokia = await this.jolokia
+    return new Promise(resolve => {
+      jolokia.request(
+        { type: 'write', mbean, attribute, value },
+        onSuccess(response => resolve(response.value as unknown)),
+      )
+    })
+  }
+
   async execute(mbean: string, operation: string, args: unknown[] = []): Promise<unknown> {
     const jolokia = await this.jolokia
     return new Promise((resolve, reject) => {
