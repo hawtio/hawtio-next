@@ -437,45 +437,31 @@ class JolokiaService implements IJolokiaService {
 
   loadMaxDepth(): number {
     const currentStorageJolokiaOptions = localStorage.getItem(STORAGE_KEY_JOLOKIA_OPTIONS)
-    const currentJolokiaUpdateOptions = 
-      currentStorageJolokiaOptions 
-        ? JSON.parse(currentStorageJolokiaOptions)
-        : {}
-    return currentJolokiaUpdateOptions['maxDepth']
-        ? currentJolokiaUpdateOptions['maxDepth']
-        : DEFAULT_MAX_DEPTH
+    const currentJolokiaUpdateOptions = currentStorageJolokiaOptions ? JSON.parse(currentStorageJolokiaOptions) : {}
+    return currentJolokiaUpdateOptions['maxDepth'] ? currentJolokiaUpdateOptions['maxDepth'] : DEFAULT_MAX_DEPTH
   }
 
   saveMaxDepth(value: number): void {
     const currentStorageJolokiaOptions = localStorage.getItem(STORAGE_KEY_JOLOKIA_OPTIONS)
-    const currentJolokiaUpdateOptions = 
-      currentStorageJolokiaOptions 
-        ? JSON.parse(currentStorageJolokiaOptions)
-        : {}
+    const currentJolokiaUpdateOptions = currentStorageJolokiaOptions ? JSON.parse(currentStorageJolokiaOptions) : {}
     currentJolokiaUpdateOptions['maxDepth'] = value
-    
+
     localStorage.setItem(STORAGE_KEY_JOLOKIA_OPTIONS, JSON.stringify(currentJolokiaUpdateOptions))
   }
 
   loadMaxCollectionSize(): number {
     const currentStorageJolokiaOptions = localStorage.getItem(STORAGE_KEY_JOLOKIA_OPTIONS)
-    const currentJolokiaUpdateOptions = 
-      currentStorageJolokiaOptions 
-        ? JSON.parse(currentStorageJolokiaOptions)
-        : {}
+    const currentJolokiaUpdateOptions = currentStorageJolokiaOptions ? JSON.parse(currentStorageJolokiaOptions) : {}
     return currentJolokiaUpdateOptions['maxCollectionSize']
-        ? currentJolokiaUpdateOptions['maxCollectionSize']
-        : DEFAULT_MAX_DEPTH
+      ? currentJolokiaUpdateOptions['maxCollectionSize']
+      : DEFAULT_MAX_DEPTH
   }
 
   saveMaxCollectionSize(value: number): void {
     const currentStorageJolokiaOptions = localStorage.getItem(STORAGE_KEY_JOLOKIA_OPTIONS)
-    const currentJolokiaUpdateOptions = 
-      currentStorageJolokiaOptions 
-        ? JSON.parse(currentStorageJolokiaOptions)
-        : {}
+    const currentJolokiaUpdateOptions = currentStorageJolokiaOptions ? JSON.parse(currentStorageJolokiaOptions) : {}
     currentJolokiaUpdateOptions['maxCollectionSize'] = value
-    
+
     localStorage.setItem(STORAGE_KEY_JOLOKIA_OPTIONS, JSON.stringify(currentJolokiaUpdateOptions))
   }
 }
