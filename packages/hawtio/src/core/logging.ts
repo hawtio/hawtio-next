@@ -2,6 +2,9 @@ import { stringSorter } from '@hawtiosrc/util/strings'
 import jsLogger, { GlobalLogger, ILogger, ILogLevel } from 'js-logger'
 import { is, object, type } from 'superstruct'
 
+// Necessary for external plugins to compile with --dts option
+export * from 'js-logger'
+
 export const STORAGE_KEY_LOG_LEVEL = 'core.logging.logLevel'
 export const STORAGE_KEY_CHILD_LOGGERS = 'core.logging.childLoggers'
 
