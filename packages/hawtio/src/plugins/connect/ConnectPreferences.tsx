@@ -17,7 +17,7 @@ export const ConnectPreferences: React.FunctionComponent = () => {
   const onUpdateRateChanged = (updateRate: string) => {
     const intValue = parseInt(updateRate)
 
-    if(intValue) {
+    if (intValue) {
       jolokiaService.saveUpdateRate(intValue)
       setUpdateRate(intValue)
     }
@@ -26,7 +26,7 @@ export const ConnectPreferences: React.FunctionComponent = () => {
   const onMaxDepthChanged = (maxDepth: string) => {
     const intValue = parseInt(maxDepth)
 
-    if(intValue) {
+    if (intValue) {
       jolokiaService.saveMaxDepth(intValue)
       setMaxDepth(intValue)
     }
@@ -35,12 +35,12 @@ export const ConnectPreferences: React.FunctionComponent = () => {
   const onMaxCollectionSizeChanged = (maxCollectionSize: string) => {
     const intValue = parseInt(maxCollectionSize)
 
-    if(intValue) {
+    if (intValue) {
       jolokiaService.saveMaxCollectionSize(intValue)
       setMaxCollectionSize(intValue)
     }
   }
-  
+
   const applyJolokia = () => {
     //Page reload will apply currently stored preferences into jolokla
     navigate(0)

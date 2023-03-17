@@ -58,8 +58,8 @@ class MockJolokiaService implements IJolokiaService {
   loadMaxDepth(): number {
     return 0
   }
-  
-  saveMaxDepth(value: number): void  {
+
+  saveMaxDepth(value: number): void {
     //no-op
   }
 
@@ -67,7 +67,7 @@ class MockJolokiaService implements IJolokiaService {
     return 0
   }
 
-  saveMaxCollectionSize(value: number): void  {
+  saveMaxCollectionSize(value: number): void {
     //no-op
   }
 }
