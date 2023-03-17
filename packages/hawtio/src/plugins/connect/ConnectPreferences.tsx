@@ -10,9 +10,10 @@ export const ConnectPreferences: React.FunctionComponent = () => {
   const { dispatch } = useConnections()
   const navigate = useNavigate()
 
+  const jolokiaStoredOptions = jolokiaService.loadJolokiaOptionsFromStorage()
   const [updateRate, setUpdateRate] = useState(jolokiaService.loadUpdateRate())
-  const [maxDepth, setMaxDepth] = useState(jolokiaService.loadMaxDepth())
-  const [maxCollectionSize, setMaxCollectionSize] = useState(jolokiaService.loadMaxCollectionSize())
+  const [maxDepth, setMaxDepth] = useState(jolokiaStoredOptions.maxDepth)
+  const [maxCollectionSize, setMaxCollectionSize] = useState(jolokiaStoredOptions.maxCollectionSize)
 
   const onUpdateRateChanged = (updateRate: string) => {
     const intValue = parseInt(updateRate)
