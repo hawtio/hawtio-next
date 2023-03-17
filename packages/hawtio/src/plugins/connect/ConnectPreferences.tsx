@@ -3,26 +3,22 @@ import React, { useState } from 'react'
 import { RESET } from './connections'
 import { useConnections } from './context'
 import { log } from './globals'
-import { preferencesService } from '../../preferences/preferences-service'
+import { jolokiaService } from '../connect/jolokia-service'
 import { useNavigate } from 'react-router-dom'
-
-const DEFAULT_UPDATE_RATE = 5000
-const DEFAULT_MAX_DEPTH = 7
-const DEFAULT_MAX_COLLECTION_SIZE = 50000
 
 export const ConnectPreferences: React.FunctionComponent = () => {
   const { dispatch } = useConnections()
   const navigate = useNavigate();
 
-  const [updateRate, setUpdateRate] = useState(preferencesService.getJolokiaUpdateRate())
-  const [maxDepth, setMaxDepth] = useState(preferencesService.getJolokiaMaxDepth())
-  const [maxCollectionSize, setMaxCollectionSize] = useState(preferencesService.getJolokiaMaxCollectionSize())
+  const [updateRate, setUpdateRate] = useState(jolokiaService.loadUpdateRate())
+  const [maxDepth, setMaxDepth] = useState(jolokiaService.loadMaxDepth())
+  const [maxCollectionSize, setMaxCollectionSize] = useState(jolokiaService.loadMaxCollectionSize())
 
   const onUpdateRateChanged = (updateRate: string) => {
     const intValue = parseInt(updateRate)
 
     if(intValue) {
-      preferencesService.saveJolokiaUpdateRate(intValue)
+      jolokiaService.saveUpdateRate(intValue)
       setUpdateRate(intValue)
     }
   }
@@ -31,7 +27,7 @@ export const ConnectPreferences: React.FunctionComponent = () => {
     const intValue = parseInt(maxDepth)
 
     if(intValue) {
-      preferencesService.saveJolokiaMaxDepth(intValue)
+      jolokiaService.saveMaxDepth(intValue)
       setMaxDepth(intValue)
     }
   }
@@ -40,7 +36,7 @@ export const ConnectPreferences: React.FunctionComponent = () => {
     const intValue = parseInt(maxCollectionSize)
 
     if(intValue) {
-      preferencesService.saveJolokiaMaxCollectionSize(intValue)
+      jolokiaService.saveMaxCollectionSize(intValue)
       setMaxCollectionSize(intValue)
     }
   }
@@ -51,11 +47,9 @@ export const ConnectPreferences: React.FunctionComponent = () => {
   }
 
   const reset = () => {
-    //Page reload after settings have been reset will default jolokla settings to default
-    preferencesService.reset();
-    navigate(0);
     log.debug('Clear saved connections')
     dispatch({ type: RESET })
+    navigate(0)
   }
 
   const JolokiaForm = () => (
