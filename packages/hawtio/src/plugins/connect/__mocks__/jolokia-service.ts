@@ -46,6 +46,30 @@ class MockJolokiaService implements IJolokiaService {
   unregister(handle: number) {
     // no-op
   }
+
+  loadUpdateRate(): number {
+    return 0
+  }
+
+  saveUpdateRate(value: number): void {
+    //no-op
+  }
+
+  loadMaxDepth(): number {
+    return 0
+  }
+  
+  saveMaxDepth(value: number): void  {
+    //no-op
+  }
+
+  loadMaxCollectionSize(): number {
+    return 0
+  }
+
+  saveMaxCollectionSize(value: number): void  {
+    //no-op
+  }
 }
 
 export const jolokiaService = new MockJolokiaService()

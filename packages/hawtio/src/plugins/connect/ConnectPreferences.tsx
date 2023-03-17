@@ -66,12 +66,13 @@ export const ConnectPreferences: React.FunctionComponent = () => {
         <TextInput id='jolokia-form-max-depth-input' type='number' value={maxDepth} onChange={onMaxDepthChanged} />
       </FormGroup>
       <FormGroup label='Max collection size' fieldId='jolokia-form-max-collection-size'>
-        <TextInput
-          id='jolokia-form-max-collection-size-input'
-          type='number'
-          value={maxCollectionSize}
-          onChange={onMaxCollectionSizeChanged}
-        />
+        {TextInput({
+            id:'jolokia-form-max-collection-size-input',
+            type:'number',
+            value:maxCollectionSize,
+            onChange:onMaxCollectionSizeChanged
+          })
+        }
       </FormGroup>
       <FormGroup fieldId='jolokia-form-apply' helperText='Restart Hawtio with the new values in effect.'>
         <Button onClick={applyJolokia}>Apply</Button>
