@@ -1,6 +1,6 @@
 import { TreeView, TreeViewDataItem } from '@patternfly/react-core'
 import React, { ChangeEvent, useContext, useState } from 'react'
-import { PluginTreeViewToolbar, MBeanNode } from '@hawtiosrc/plugins/shared'
+import { PluginTreeViewToolbar, MBeanNode, MBeanTree } from '@hawtiosrc/plugins/shared'
 import { MBeanTreeContext } from './context'
 import './JmxTreeView.css'
 import { useNavigate } from 'react-router-dom'
@@ -13,9 +13,11 @@ export const JmxTreeView: React.FunctionComponent = () => {
   const navigate = useNavigate()
 
   const onSearch = (event: ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.value) setFilteredTree(tree.getTree())
+    const input = event.target.value
 
-    const treeElements = lookupSearchInTree(event.target.value, tree.getTree())
+    if (!input) setFilteredTree(tree.getTree())
+
+    const treeElements = MBeanTree.filter(tree.getTree(), node => node.name.toLowerCase().includes(input.toLowerCase()))
 
     if (treeElements.length === 0) setFilteredTree(tree.getTree())
     else setFilteredTree(treeElements)
@@ -25,29 +27,6 @@ export const JmxTreeView: React.FunctionComponent = () => {
     setSelectedNode(item as MBeanNode)
     /* On change of node selection update the url to the base plugin path */
     navigate(pluginPath)
-  }
-
-  const lookupSearchInTree = (search: string, tree?: MBeanNode[]): MBeanNode[] => {
-    if (!tree || tree?.length === 0) return []
-
-    let results: MBeanNode[] = []
-
-    for (const parentNode of tree) {
-      if (parentNode.name.toLowerCase().includes(search.toLowerCase())) {
-        results = results.concat(parentNode)
-      } else {
-        const resultsInSubtree = lookupSearchInTree(search, parentNode.children)
-
-        if (resultsInSubtree.length !== 0) {
-          const parentNodeCloned = Object.assign({}, parentNode)
-          parentNodeCloned.children = resultsInSubtree
-
-          results = results.concat(parentNodeCloned)
-        }
-      }
-    }
-
-    return results
   }
 
   return (
