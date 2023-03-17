@@ -1,4 +1,3 @@
-import { DEFAULT_MAX_DEPTH, DEFAULT_UPDATE_RATE, STORAGE_KEY_JOLOKIA_OPTIONS, STORAGE_KEY_UPDATE_RATE } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { log } from './globals'
 
 const STORAGE_KEY_SHOW_VERTICAL_NAV_BY_DEFAULT = 'preferences.showVerticalNavByDefault'

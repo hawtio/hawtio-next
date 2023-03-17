@@ -1,6 +1,5 @@
 import { userService } from '@hawtiosrc/auth'
 import { eventService } from '@hawtiosrc/core'
-import { preferencesService } from '@hawtiosrc/preferences'
 import { getCookie } from '@hawtiosrc/util/cookies'
 import {
   escapeMBeanPath,
@@ -85,7 +84,7 @@ export interface IJolokiaService {
   register(request: IRequest, callback: IResponseFn): Promise<number>
   unregister(handle: number): void
   loadUpdateRate(): number
-  saveUpdateRate(value: string): void
+  saveUpdateRate(value: number): void
   loadMaxDepth(): number
   saveMaxDepth(value: number): void
   loadMaxCollectionSize(): number
@@ -432,7 +431,7 @@ class JolokiaService implements IJolokiaService {
     return value ? parseInt(JSON.parse(value)) : DEFAULT_UPDATE_RATE
   }
 
-  saveUpdateRate(value: string): void {
+  saveUpdateRate(value: number): void {
     localStorage.setItem(STORAGE_KEY_UPDATE_RATE, JSON.stringify(value))
   }
 

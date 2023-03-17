@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 
 export const ConnectPreferences: React.FunctionComponent = () => {
   const { dispatch } = useConnections()
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const [updateRate, setUpdateRate] = useState(jolokiaService.loadUpdateRate())
   const [maxDepth, setMaxDepth] = useState(jolokiaService.loadMaxDepth())
