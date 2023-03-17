@@ -203,6 +203,12 @@ class ConnectService implements IConnectService {
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
   }
+
+  import(connectionsJson: string) {
+    const connections = JSON.parse(connectionsJson) as Connections
+    this.saveConnections(connections)
+    this.loadConnections()
+  }
 }
 
 export const connectService = new ConnectService()
