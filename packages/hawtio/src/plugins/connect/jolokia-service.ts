@@ -307,7 +307,7 @@ class JolokiaService implements IJolokiaService {
   }
 
   private async loadJolokiaOptions(): Promise<IOptions> {
-    let opts = { ...DEFAULT_JOLOKIA_OPTIONS, ...this.loadJolokiaOptionsFromStorage() }
+    const opts = { ...DEFAULT_JOLOKIA_OPTIONS, ...this.loadJolokiaOptionsFromStorage() }
 
     const jolokiaUrl = await this.jolokiaUrl
     if (jolokiaUrl) {
