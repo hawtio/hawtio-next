@@ -24,15 +24,33 @@ export class MBeanTree {
   }
 
   static filter(originalTree: MBeanNode[], filter: FilterFunc): MBeanNode[] {
-    const filteredTree: MBeanNode[] = []
-    for (const node of originalTree) {
-      const copy = node.filterClone(filter)
-      if (copy) {
-        filteredTree.push(copy)
+    //Filter behaviour is the following:
+    // 1) If there is a hit in a parent bean, bring everything under the parent
+    // 2) If there is no hit in the parent, but there is in a sub bean
+    //    2.1) Bring beans from the hit to the highest parent
+    //    2.2) Bring beans in the hit and all sub beans
+    // 3) Else, it wont return anything.
+
+    if (!originalTree || originalTree?.length === 0) return []
+
+    let results: MBeanNode[] = []
+
+    for (const parentNode of originalTree) {
+      if (filter(parentNode)) {
+        results = results.concat(parentNode)
+      } else {
+        const resultsInSubtree = MBeanTree.filter(parentNode.children || [], filter)
+
+        if (resultsInSubtree.length !== 0) {
+          const parentNodeCloned = Object.assign({}, parentNode)
+          parentNodeCloned.children = resultsInSubtree
+
+          results = results.concat(parentNodeCloned)
+        }
       }
     }
 
-    return filteredTree
+    return results
   }
 
   private constructor(private id: string) {}
