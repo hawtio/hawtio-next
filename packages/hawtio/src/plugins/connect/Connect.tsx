@@ -18,6 +18,7 @@ import {
   PageSectionVariants,
   Text,
   TextContent,
+  TextInput,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
@@ -105,6 +106,7 @@ const ConnectToolbar: React.FunctionComponent = () => {
   const { connections } = useContext(ConnectContext)
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false)
 
   const initialConnection: Connection = {
     name: '',
@@ -118,8 +120,48 @@ const ConnectToolbar: React.FunctionComponent = () => {
     setIsAddOpen(!isAddOpen)
   }
 
+  const importConnectionPopUp = () => {
+    setIsImportModalOpen(true)
+  }
+
   const exportConnections = () => {
     connectService.export(connections)
+  }
+
+  const ImportConnectionsModal: React.FunctionComponent = () => {
+    const [importModalText, setImportModalText] = useState('')
+
+    const importConnections = () => {
+      connectService.import(importModalText)
+    }
+    const closeModal = () => {
+      setIsImportModalOpen(false)
+    }
+
+    return (
+      <Modal
+        variant={ModalVariant.small}
+        title='Reset settings'
+        titleIconVariant='danger'
+        isOpen={isImportModalOpen}
+        onClose={closeModal}
+        actions={[
+          <Button key='import' variant='primary' onClick={importConnections}>
+            Import
+          </Button>,
+          <Button key='cancel' variant='link' onClick={closeModal}>
+            Cancel
+          </Button>,
+        ]}
+      >
+        Note: This will override your current connections!
+        <TextInput
+          placeholder='Please paste the JSON text with your connections settings'
+          value={importModalText}
+          onChange={setImportModalText}
+        />
+      </Modal>
+    )
   }
 
   return (
@@ -137,7 +179,7 @@ const ConnectToolbar: React.FunctionComponent = () => {
             isOpen={isDropdownOpen}
             toggle={<KebabToggle onToggle={() => setIsDropdownOpen(!isDropdownOpen)} />}
             dropdownItems={[
-              <DropdownItem key='connect-toolbar-dropdown-import' isDisabled>
+              <DropdownItem key='connect-toolbar-dropdown-import' onClick={importConnectionPopUp}>
                 Import connections
               </DropdownItem>,
               <DropdownItem key='connect-toolbar-dropdown-export' onClick={exportConnections}>
@@ -148,6 +190,7 @@ const ConnectToolbar: React.FunctionComponent = () => {
         </ToolbarItem>
       </ToolbarContent>
       <ConnectModal mode='add' isOpen={isAddOpen} onClose={handleAddToggle} input={initialConnection} />
+      <ImportConnectionsModal />
     </Toolbar>
   )
 }
