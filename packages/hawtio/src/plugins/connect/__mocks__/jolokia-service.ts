@@ -1,5 +1,5 @@
 import { IRequest, IResponse, IResponseFn, ISimpleOptions } from 'jolokia.js'
-import { AttributeValues, IJolokiaService, JolokiaListMethod } from '../jolokia-service'
+import { AttributeValues, IJolokiaService, IJolokiaStoredOptions, JolokiaListMethod } from '../jolokia-service'
 import jmxCamelResponse from './jmx-camel-tree.json'
 
 class MockJolokiaService implements IJolokiaService {
@@ -45,6 +45,29 @@ class MockJolokiaService implements IJolokiaService {
 
   unregister(handle: number) {
     // no-op
+  }
+
+  loadUpdateRate(): number {
+    return 0
+  }
+
+  saveUpdateRate(value: number): void {
+    //no-op
+  }
+
+  loadJolokiaOptionsFromStorage(): IJolokiaStoredOptions {
+    return {
+      maxDepth: 0,
+      maxCollectionSize: 0,
+    }
+  }
+
+  saveMaxDepth(value: number): void {
+    //no-op
+  }
+
+  saveMaxCollectionSize(value: number): void {
+    //no-op
   }
 }
 

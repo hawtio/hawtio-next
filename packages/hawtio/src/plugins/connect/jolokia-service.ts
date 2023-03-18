@@ -34,8 +34,8 @@ import { func, is, object } from 'superstruct'
 import { connectService, PARAM_KEY_CONNECTION } from './connect-service'
 import { log } from './globals'
 
-const DEFAULT_MAX_DEPTH = 7
-const DEFAULT_MAX_COLLECTION_SIZE = 50000
+export const DEFAULT_MAX_DEPTH = 7
+export const DEFAULT_MAX_COLLECTION_SIZE = 50000
 const DEFAULT_JOLOKIA_OPTIONS: IOptions = {
   method: 'POST',
   mimeType: 'application/json',
@@ -45,7 +45,8 @@ const DEFAULT_JOLOKIA_OPTIONS: IOptions = {
   canonicalProperties: false,
   ignoreErrors: true,
 } as const
-const DEFAULT_UPDATE_RATE = 5000
+
+export const DEFAULT_UPDATE_RATE = 5000
 
 const JOLOKIA_PATHS = ['jolokia', '/hawtio/jolokia', '/jolokia'] as const
 
@@ -69,6 +70,11 @@ export interface JolokiaConfig {
   mbean: string
 }
 
+export interface IJolokiaStoredOptions {
+  maxDepth: number
+  maxCollectionSize: number
+}
+
 export const STORAGE_KEY_JOLOKIA_OPTIONS = 'connect.jolokia.options'
 export const STORAGE_KEY_UPDATE_RATE = 'connect.jolokia.updateRate'
 
@@ -83,6 +89,11 @@ export interface IJolokiaService {
   bulkRequest(requests: IRequest[]): Promise<IResponse[]>
   register(request: IRequest, callback: IResponseFn): Promise<number>
   unregister(handle: number): void
+  loadUpdateRate(): number
+  saveUpdateRate(value: number): void
+  loadJolokiaOptionsFromStorage(): IJolokiaStoredOptions
+  saveMaxDepth(value: number): void
+  saveMaxCollectionSize(value: number): void
 }
 
 class JolokiaService implements IJolokiaService {
@@ -296,11 +307,8 @@ class JolokiaService implements IJolokiaService {
   }
 
   private async loadJolokiaOptions(): Promise<IOptions> {
-    let opts = { ...DEFAULT_JOLOKIA_OPTIONS }
-    const stored = localStorage.getItem(STORAGE_KEY_JOLOKIA_OPTIONS)
-    if (stored) {
-      opts = Object.assign(opts, JSON.parse(stored))
-    }
+    const opts = { ...DEFAULT_JOLOKIA_OPTIONS, ...this.loadJolokiaOptionsFromStorage() }
+
     const jolokiaUrl = await this.jolokiaUrl
     if (jolokiaUrl) {
       opts.url = jolokiaUrl
@@ -421,12 +429,41 @@ class JolokiaService implements IJolokiaService {
   }
 
   loadUpdateRate(): number {
-    const updateRate = localStorage.getItem(STORAGE_KEY_UPDATE_RATE)
-    return updateRate ? parseInt(updateRate) : DEFAULT_UPDATE_RATE
+    const value = localStorage.getItem(STORAGE_KEY_UPDATE_RATE)
+    return value ? parseInt(JSON.parse(value)) : DEFAULT_UPDATE_RATE
   }
 
-  saveUpdateRate(updateRate: number) {
-    localStorage.setItem(STORAGE_KEY_UPDATE_RATE, String(updateRate))
+  saveUpdateRate(value: number): void {
+    localStorage.setItem(STORAGE_KEY_UPDATE_RATE, JSON.stringify(value))
+  }
+
+  loadJolokiaOptionsFromStorage(): IJolokiaStoredOptions {
+    const currentStorageJolokiaOptions = localStorage.getItem(STORAGE_KEY_JOLOKIA_OPTIONS)
+    const currentJolokiaUpdateOptions = currentStorageJolokiaOptions ? JSON.parse(currentStorageJolokiaOptions) : {}
+    const jolokiaOptions = {
+      maxDepth: currentJolokiaUpdateOptions['maxDepth'] ? currentJolokiaUpdateOptions['maxDepth'] : DEFAULT_MAX_DEPTH,
+      maxCollectionSize: currentJolokiaUpdateOptions['maxCollectionSize']
+        ? currentJolokiaUpdateOptions['maxCollectionSize']
+        : DEFAULT_MAX_DEPTH,
+    }
+
+    return jolokiaOptions
+  }
+
+  saveMaxDepth(value: number): void {
+    const currentStorageJolokiaOptions = localStorage.getItem(STORAGE_KEY_JOLOKIA_OPTIONS)
+    const currentJolokiaUpdateOptions = currentStorageJolokiaOptions ? JSON.parse(currentStorageJolokiaOptions) : {}
+    currentJolokiaUpdateOptions['maxDepth'] = value
+
+    localStorage.setItem(STORAGE_KEY_JOLOKIA_OPTIONS, JSON.stringify(currentJolokiaUpdateOptions))
+  }
+
+  saveMaxCollectionSize(value: number): void {
+    const currentStorageJolokiaOptions = localStorage.getItem(STORAGE_KEY_JOLOKIA_OPTIONS)
+    const currentJolokiaUpdateOptions = currentStorageJolokiaOptions ? JSON.parse(currentStorageJolokiaOptions) : {}
+    currentJolokiaUpdateOptions['maxCollectionSize'] = value
+
+    localStorage.setItem(STORAGE_KEY_JOLOKIA_OPTIONS, JSON.stringify(currentJolokiaUpdateOptions))
   }
 }
 
