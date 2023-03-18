@@ -6,8 +6,16 @@ import { log } from './globals'
 import { jolokiaService } from '../connect/jolokia-service'
 import { useNavigate } from 'react-router-dom'
 
-export const ConnectPreferences: React.FunctionComponent = () => {
-  const { dispatch } = useConnections()
+export const ConnectPreferences: React.FunctionComponent = () => (
+  <CardBody>
+    <Form isHorizontal>
+      <JolokiaForm />
+      <ResetForm />
+    </Form>
+  </CardBody>
+)
+
+const JolokiaForm: React.FunctionComponent = () => {
   const navigate = useNavigate()
 
   const jolokiaStoredOptions = jolokiaService.loadJolokiaOptionsFromStorage()
@@ -43,17 +51,11 @@ export const ConnectPreferences: React.FunctionComponent = () => {
   }
 
   const applyJolokia = () => {
-    //Page reload will apply currently stored preferences into jolokla
+    // Page reload will apply currently stored preferences into Jolokia
     navigate(0)
   }
 
-  const reset = () => {
-    log.debug('Clear saved connections')
-    dispatch({ type: RESET })
-    navigate(0)
-  }
-
-  const JolokiaForm = () => (
+  return (
     <FormSection title='Jolokia' titleElement='h2'>
       <FormGroup label='Update rate' fieldId='jolokia-form-update-rate'>
         <TextInput
@@ -79,8 +81,19 @@ export const ConnectPreferences: React.FunctionComponent = () => {
       </FormGroup>
     </FormSection>
   )
+}
 
-  const ResetForm = () => (
+const ResetForm: React.FunctionComponent = () => {
+  const { dispatch } = useConnections()
+  const navigate = useNavigate()
+
+  const reset = () => {
+    log.debug('Clear saved connections')
+    dispatch({ type: RESET })
+    navigate(0)
+  }
+
+  return (
     <FormSection title='Reset' titleElement='h2'>
       <FormGroup
         label='Clear saved connections'
@@ -92,14 +105,5 @@ export const ConnectPreferences: React.FunctionComponent = () => {
         </Button>
       </FormGroup>
     </FormSection>
-  )
-
-  return (
-    <CardBody>
-      <Form isHorizontal>
-        <JolokiaForm />
-        <ResetForm />
-      </Form>
-    </CardBody>
   )
 }
