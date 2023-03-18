@@ -1,10 +1,20 @@
-import { Button, CardBody, Form, FormGroup, FormSection, TextInput } from '@patternfly/react-core'
+import {
+  Alert,
+  Button,
+  CardBody,
+  Form,
+  FormGroup,
+  FormSection,
+  Modal,
+  ModalVariant,
+  TextInput,
+} from '@patternfly/react-core'
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { jolokiaService } from '../connect/jolokia-service'
 import { RESET } from './connections'
 import { useConnections } from './context'
 import { log } from './globals'
-import { jolokiaService } from '../connect/jolokia-service'
-import { useNavigate } from 'react-router-dom'
 
 export const ConnectPreferences: React.FunctionComponent = () => (
   <CardBody>
@@ -85,25 +95,53 @@ const JolokiaForm: React.FunctionComponent = () => {
 
 const ResetForm: React.FunctionComponent = () => {
   const { dispatch } = useConnections()
-  const navigate = useNavigate()
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
+  const [isClearSuccess, setIsClearSuccess] = useState(false)
 
-  const reset = () => {
+  const clear = () => {
     log.debug('Clear saved connections')
     dispatch({ type: RESET })
-    navigate(0)
+    setIsClearSuccess(true)
+    setIsConfirmModalOpen(false)
   }
+
+  const confirmClear = () => {
+    setIsConfirmModalOpen(!isConfirmModalOpen)
+  }
+
+  const ConfirmClearModal = () => (
+    <Modal
+      variant={ModalVariant.small}
+      title='Clear saved connections'
+      titleIconVariant='danger'
+      isOpen={isConfirmModalOpen}
+      onClose={confirmClear}
+      actions={[
+        <Button key='reset' variant='danger' onClick={clear}>
+          Clear
+        </Button>,
+        <Button key='cancel' variant='link' onClick={confirmClear}>
+          Cancel
+        </Button>,
+      ]}
+    >
+      You are about to clear all saved connection settings.
+    </Modal>
+  )
 
   return (
     <FormSection title='Reset' titleElement='h2'>
       <FormGroup
         label='Clear saved connections'
         fieldId='reset-form-clear'
-        helperText="Clear all saved connection settings stored in your browser's local storage."
+        helperText='Clear all saved connection settings stored in your browser local storage.'
       >
-        <Button variant='danger' onClick={reset}>
+        <Button variant='danger' onClick={confirmClear}>
           Clear
         </Button>
+        <ConfirmClearModal />
       </FormGroup>
+      {isClearSuccess && <Alert variant='success' isInline title='Connections cleared successfully!' />}
     </FormSection>
   )
 }
