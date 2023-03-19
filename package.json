@@ -24,7 +24,7 @@
     "test": "yarn test:hawtio",
     "test:all": "yarn workspaces foreach -v -i -pt run test",
     "test:hawtio": "yarn workspace @hawtio/react test",
-    "lint": "yarn eslint packages/hawtio/src/ packages/hawtio/utils/ app/src/",
+    "lint": "yarn eslint packages/hawtio/src/ packages/hawtio/scripts/ app/src/",
     "lint:fix": "yarn lint --fix",
     "format:check": "yarn prettier --check .",
     "format:fix": "yarn prettier --write .",

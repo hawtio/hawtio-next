@@ -1,5 +1,5 @@
 /*.js
-!/packages/hawtio/utils/*.js
+!/packages/hawtio/scripts/*.js
 /*.cjs
 /app/*.js
 /app/*.cjs
