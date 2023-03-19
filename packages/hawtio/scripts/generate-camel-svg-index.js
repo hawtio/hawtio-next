@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /* jshint node: true */
-const fs = import('fs')
-const path = import('path')
+const fs = require('fs')
+const path = require('path')
 
 const ROOT = '..'
 const svgdir = path.resolve(__dirname, ROOT, 'src', 'plugins', 'camel', 'icons', 'svg')
