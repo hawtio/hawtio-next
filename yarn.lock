@@ -1997,6 +1997,7 @@ __metadata:
   resolution: "@hawtio/react@workspace:packages/hawtio"
   dependencies:
     "@hawtio/camel-model": ^3.20.2-1
+    "@patternfly/react-code-editor": ^4.82.113
     "@patternfly/react-core": ^4.267.6
     "@patternfly/react-table": ^4.112.6
     "@testing-library/jest-dom": ^5.16.5
@@ -2016,9 +2017,11 @@ __metadata:
     jolokia.js: 1.7.2
     jquery: ^3.6.4
     js-logger: ^1.6.1
+    monaco-editor: ^0.36.1
     react: ^18.2.0
     react-dom: ^18.2.0
     react-markdown: ^8.0.6
+    react-monaco-editor: ^0.51.0
     react-router-dom: ^6.9.0
     react-split: ^2.0.14
     replace: ^1.2.2
@@ -2751,6 +2754,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@patternfly/react-code-editor@npm:^4.82.113":
+  version: 4.82.115
+  resolution: "@patternfly/react-code-editor@npm:4.82.115"
+  dependencies:
+    "@patternfly/react-core": ^4.276.8
+    "@patternfly/react-icons": ^4.93.6
+    "@patternfly/react-styles": ^4.92.6
+    react-dropzone: 9.0.0
+    tslib: ^2.0.0
+  peerDependencies:
+    react: ^16.8 || ^17 || ^18
+    react-dom: ^16.8 || ^17 || ^18
+    react-monaco-editor: ^0.51.0
+  checksum: ed7ea6742106e3f912e129c205c15346d0831631a1da3e84d74ce052de86ae4fc1775bd6b8312229866ceb2e4fbd852adc787b218bf95b6610e509a3732b7ad2
+  languageName: node
+  linkType: hard
+
 "@patternfly/react-core@npm:^4.267.6, @patternfly/react-core@npm:^4.276.6":
   version: 4.276.6
   resolution: "@patternfly/react-core@npm:4.276.6"
@@ -2766,6 +2786,24 @@ __metadata:
     react: ^16.8 || ^17 || ^18
     react-dom: ^16.8 || ^17 || ^18
   checksum: 7410064a0f5944ef3eafadf565d2f72b9a64e91a44f94bca74e3dc1bd8ab1901a3d40143d851d5254fd3b81ee879dac162fb8493dd66054f1fcd721e4a2bb8d6
+  languageName: node
+  linkType: hard
+
+"@patternfly/react-core@npm:^4.276.8":
+  version: 4.276.8
+  resolution: "@patternfly/react-core@npm:4.276.8"
+  dependencies:
+    "@patternfly/react-icons": ^4.93.6
+    "@patternfly/react-styles": ^4.92.6
+    "@patternfly/react-tokens": ^4.94.6
+    focus-trap: 6.9.2
+    react-dropzone: 9.0.0
+    tippy.js: 5.1.2
+    tslib: ^2.0.0
+  peerDependencies:
+    react: ^16.8 || ^17 || ^18
+    react-dom: ^16.8 || ^17 || ^18
+  checksum: e17806345aa9972867e8a9854cb3067ac7f9b06006bfd833b4ba3d3c71c2f8c76765b30b5511c3a214a254dc5c41ac53c6040ced726c65fcc3b0e0ec162051f7
   languageName: node
   linkType: hard
 
@@ -4448,6 +4486,7 @@ __metadata:
     "@craco/craco": ^7.1.0
     "@hawtio/backend-middleware": ^1.0.3
     "@hawtio/react": "workspace:*"
+    monaco-editor-webpack-plugin: ^7.0.1
     react: ^18.2.0
     react-scripts: 5.0.1
     web-vitals: ^3.3.0
@@ -10724,7 +10763,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loader-utils@npm:^2.0.0, loader-utils@npm:^2.0.4":
+"loader-utils@npm:^2.0.0, loader-utils@npm:^2.0.2, loader-utils@npm:^2.0.4":
   version: 2.0.4
   resolution: "loader-utils@npm:2.0.4"
   dependencies:
@@ -11501,6 +11540,25 @@ __metadata:
   bin:
     mkdirp: bin/cmd.js
   checksum: 0c91b721bb12c3f9af4b77ebf73604baf350e64d80df91754dc509491ae93bf238581e59c7188360cec7cb62fc4100959245a42cfe01834efedc5e9d068376c2
+  languageName: node
+  linkType: hard
+
+"monaco-editor-webpack-plugin@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "monaco-editor-webpack-plugin@npm:7.0.1"
+  dependencies:
+    loader-utils: ^2.0.2
+  peerDependencies:
+    monaco-editor: ">= 0.31.0"
+    webpack: ^4.5.0 || 5.x
+  checksum: 436814c724d5033254519ef8203f0df600d15c6bf0a3bf48a42ea678086becb56ed5685df2bca4cd4107855ecf8cea73722e52b63573edba5c020ff51b4f2d31
+  languageName: node
+  linkType: hard
+
+"monaco-editor@npm:^0.36.1":
+  version: 0.36.1
+  resolution: "monaco-editor@npm:0.36.1"
+  checksum: 75e7cfbe03b4cb964e550c8021d6b2cc4f5265ee17703ddda7a63a26492a95fdbfaf34aa3e50004930ff8afb1422ae2b1dc0b9d3f122d558bdf1a335403937fd
   languageName: node
   linkType: hard
 
@@ -13450,6 +13508,19 @@ __metadata:
     "@types/react": ">=16"
     react: ">=16"
   checksum: 59fd5dcd089df0cd9098755e3063d8fcf4b4635b1ac2d5e05fcda9923769724476396abdf2afb80fb8e7589a951deac50d6f89c4740d5ec6decd34076122c80c
+  languageName: node
+  linkType: hard
+
+"react-monaco-editor@npm:^0.51.0":
+  version: 0.51.0
+  resolution: "react-monaco-editor@npm:0.51.0"
+  dependencies:
+    prop-types: ^15.8.1
+  peerDependencies:
+    "@types/react": ">=17 <= 18"
+    monaco-editor: ^0.34.1
+    react: ">=17 <= 18"
+  checksum: 93920bc51b16d047145284d69f6a973da6b307480425ac7ce69ce8248d83b5ffa1029a2f42f32754a84663c2ff1ee9b66226aac20c0d0cea6025744eed6568f6
   languageName: node
   linkType: hard
 

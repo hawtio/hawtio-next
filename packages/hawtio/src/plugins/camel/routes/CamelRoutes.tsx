@@ -25,7 +25,6 @@ export const CamelRoutes: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
   const [routes, setRoutes] = useState<CamelRoute[]>([])
   const [reload, setReload] = useState<boolean>(false)
-  // const [selected, setSelected] = useState<Map<string, boolean>>(new Map())
   const [selected, setSelected] = useState<string[]>([])
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false)

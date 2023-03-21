@@ -46,31 +46,36 @@ describe('routes-service', () => {
     contextNode.adopt(routesNode)
   })
 
+  test('getRoutesXml', async () => {
+    const xml = await routesService.getRoutesXml(contextNode)
+    expect(xml).not.toBeNull()
+  })
+
   test('processRouteXml', async () => {
-    const route = await routesService.processRouteXml(contextNode, simpleRouteNode)
+    const route = routesService.processRouteXml(sampleRoutesXml, simpleRouteNode)
     expect(route).not.toBeNull()
     expect((route as Element).id).toBe(testRouteId)
   })
 
-  test('processRouteXml no contextNode', async () => {
+  test('getRoutesXml no contextNode', async () => {
     const nullCtx: MBeanNode | null = null
-    const route = await routesService.processRouteXml(nullCtx, simpleRouteNode)
+    const route = await routesService.getRoutesXml(nullCtx)
     expect(route).toBeNull()
   })
 
-  test('processRouteXml no mbean', async () => {
+  test('getRoutesXml no mbean', async () => {
     contextNode.objectName = undefined
     const t = async () => {
-      await routesService.processRouteXml(contextNode, simpleRouteNode)
+      await routesService.getRoutesXml(contextNode)
     }
 
     await expect(t).rejects.toThrow('Cannot process route xml as mbean name not available')
   })
 
-  test('processRouteXml wrong mbean', async () => {
+  test('getRoutesXml wrong mbean', async () => {
     contextNode.objectName = 'wrong:mbean:name'
     const t = async () => {
-      await routesService.processRouteXml(contextNode, simpleRouteNode)
+      await routesService.getRoutesXml(contextNode)
     }
 
     await expect(t).rejects.toThrow('Failed to extract any xml from mbean: ' + contextNode.objectName)

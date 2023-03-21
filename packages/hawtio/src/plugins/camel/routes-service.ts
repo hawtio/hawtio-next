@@ -88,7 +88,6 @@ class RoutesService {
    */
   loadRouteChildren(routeNode: MBeanNode, routeXml: Element) {
     routeNode.addProperty('xml', routeXml.outerHTML)
-
     for (const childXml of routeXml.children) {
       const child = this.loadRouteChild(routeNode, childXml)
       if (child) routeNode.adopt(child)
@@ -96,14 +95,11 @@ class RoutesService {
   }
 
   /**
-   * Looks up the route XML for the given context and selected route and
-   * processes the selected route's XML with the given function
-   * @method processRouteXml
-   * @param contextNode the camel parent context
-   * @param routeNode the actual route to be examined
+   * Gets routes xml from the context node
+   * @param contextNode
    */
-  async processRouteXml(contextNode: MBeanNode | null, routeNode: MBeanNode | null): Promise<Element | null> {
-    if (!contextNode || !routeNode) {
+  async getRoutesXml(contextNode: MBeanNode | null): Promise<string | null> {
+    if (!contextNode) {
       return null
     }
 
@@ -123,6 +119,21 @@ class RoutesService {
       throw new Error('Failed to extract any xml from mbean: ' + mbeanName)
     }
 
+    contextNode.addProperty('xml', xml as string)
+    return xml as string
+  }
+  /**
+   * Looks up the route XML for the given context and selected route and
+   * processes the selected route's XML with the given function
+   * @method processRouteXml
+   * @param xml
+   * @param routeNode the actual route to be examined
+   */
+  processRouteXml(xml: string, routeNode: MBeanNode | null): Element | null {
+    if (!routeNode) {
+      throw new Error('Route node not available')
+    }
+
     const doc: XMLDocument = parseXML(xml as string)
     const route = doc.getElementById(routeNode.name)
     if (!route || route?.tagName?.toLowerCase() !== 'route') {
@@ -135,16 +146,19 @@ class RoutesService {
     if (!contextNode || !routesNode || routesNode.getProperty('type') !== 'routes') {
       return
     }
-
-    routesNode.getChildren().forEach((routeNode: MBeanNode) => {
-      this.processRouteXml(contextNode, routeNode)
-        .then(routeXml => {
-          if (!routeXml) return
-          this.loadRouteChildren(routeNode, routeXml)
-        })
-        .catch(error => {
+    // routesNode.addProperty('xml', routeXml.outerHTML)
+    this.getRoutesXml(contextNode).then(xml => {
+      if (!xml) return
+      routesNode.addProperty('xml', xml)
+      routesNode.getChildren().forEach((routeNode: MBeanNode) => {
+        try {
+          const xmlNode = this.processRouteXml(xml, routeNode)
+          if (!xmlNode) return
+          this.loadRouteChildren(routeNode, xmlNode)
+        } catch (error) {
           log.error(`Failed to process route xml for ${routeNode.name}: ` + error)
-        })
+        }
+      })
     })
   }
 
