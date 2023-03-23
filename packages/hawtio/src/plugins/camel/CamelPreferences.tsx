@@ -14,7 +14,7 @@ const CamelPreferencesForm: React.FunctionComponent = () => {
   const [camelPreferences, setCamelPreferences] = useState(camelPreferencesService.loadCamelPreferences())
 
   const updatePreferences = (value: boolean | number, key: keyof ICamelPreferences): void => {
-    const updatedPreferences = { ...camelPreferences, ...{ key: value } }
+    const updatedPreferences = { ...camelPreferences, ...{ [key]: value } }
 
     camelPreferencesService.saveCamelPreferences(updatedPreferences)
     setCamelPreferences(updatedPreferences)
@@ -31,9 +31,9 @@ const CamelPreferencesForm: React.FunctionComponent = () => {
     }
   }
 
-  const updateCheckboxValueFor = (key: keyof ICamelPreferences): ((value: boolean, _: any) => void) => {
+  const updateCheckboxValueFor = (key: keyof ICamelPreferences): ((value: boolean, _: React.FormEvent) => void) => {
     //Utility function generator to reduce boilerplate
-    return (value: boolean, _: any) => {
+    return (value: boolean, _: React.FormEvent) => {
       updatePreferences(value, key)
     }
   }
