@@ -194,7 +194,13 @@ export const Contexts: React.FunctionComponent = () => {
   }, [selectedNode, contexts])
 
   if (!selectedNode) {
-    return null
+    return (
+      <Card>
+        <CardBody>
+          <Text component='p'>No selection has been made</Text>
+        </CardBody>
+      </Card>
+    )
   }
 
   if (isReading) {

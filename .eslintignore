@@ -5,9 +5,6 @@
 /app/*.cjs
 /**/ignore/**
 
-# Ignore generated camel model (need to fix generator to fix all the linting errors)
-/packages/hawtio/src/plugins/camel/model/camelModel.ts
-
 jest.config.ts
 tsup.config.ts
 

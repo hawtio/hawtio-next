@@ -7,4 +7,4 @@ dist
 **/ignore/**
 
 # Ignore generated camel model (need to fix generator to fix all the linting errors)
-/packages/camel-model/src/camelModel.ts
+/packages/camel-model/src/*.json
