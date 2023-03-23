@@ -1,6 +1,6 @@
 import { CardBody, Checkbox, Form, FormGroup, FormSection, TextInput } from '@patternfly/react-core'
 import React, { useState } from 'react'
-import { storageService } from './camel-preferences-storage-service'
+import { camelPreferencesService } from './camel-preferences-service'
 
 export const CamelPreferences: React.FunctionComponent = () => (
   <CardBody>
@@ -12,25 +12,25 @@ export const CamelPreferences: React.FunctionComponent = () => (
 
 const CamelPreferencesForm: React.FunctionComponent = () => {
   const [isHideOptionDocumentation, setIsHideOptionDocumentation] = useState(
-    storageService.loadIsHideOptionDocumentation(),
+    camelPreferencesService.loadIsHideOptionDocumentation(),
   )
   const [isHideDefaultOptionValues, setIsHideDefaultOptionValues] = useState(
-    storageService.loadIsHideDefaultOptionValues(),
+    camelPreferencesService.loadIsHideDefaultOptionValues(),
   )
   const [isHideUnusedOptionValues, setIsHideUnusedOptionValues] = useState(
-    storageService.loadIsHideUnusedOptionValues(),
+    camelPreferencesService.loadIsHideUnusedOptionValues(),
   )
   const [isIncludeTraceDebugStreams, setIsIncludeTraceDebugStreams] = useState(
-    storageService.loadIsIncludeTraceDebugStreams(),
+    camelPreferencesService.loadIsIncludeTraceDebugStreams(),
   )
   const [maximumTraceDebugBodyLength, setMaximumTraceDebugBodyLength] = useState(
-    storageService.loadMaximumTraceDebugBodyLength(),
+    camelPreferencesService.loadMaximumTraceDebugBodyLength(),
   )
-  const [maximumLabelWidth, setMaximumLabelWidth] = useState(storageService.loadMaximumLabelWidth())
-  const [isIgnoreIDForLabel, setIsIgnoreIDForLabel] = useState(storageService.loadIsIgnoreIDForLabel())
-  const [isShowInflightCounter, setIsShowInflightCounter] = useState(storageService.loadIsShowInflightCounter())
+  const [maximumLabelWidth, setMaximumLabelWidth] = useState(camelPreferencesService.loadMaximumLabelWidth())
+  const [isIgnoreIDForLabel, setIsIgnoreIDForLabel] = useState(camelPreferencesService.loadIsIgnoreIDForLabel())
+  const [isShowInflightCounter, setIsShowInflightCounter] = useState(camelPreferencesService.loadIsShowInflightCounter())
   const [routeMetricMaximumSeconds, setRouteMetricMaximumSeconds] = useState(
-    storageService.loadRouteMetricMaximumSeconds(),
+    camelPreferencesService.loadRouteMetricMaximumSeconds(),
   )
 
   const onBooleanValueUpdated = (
@@ -59,63 +59,63 @@ const CamelPreferencesForm: React.FunctionComponent = () => {
     onBooleanValueUpdated(
       value,
       value => setIsHideOptionDocumentation(value),
-      value => storageService.setIsHideOptionDocumentation(value),
+      value => camelPreferencesService.setIsHideOptionDocumentation(value),
     )
 
   const onIsHideDefaultOptionValuesChange = (value: boolean) =>
     onBooleanValueUpdated(
       value,
       value => setIsHideDefaultOptionValues(value),
-      value => storageService.setIsHideDefaultOptionValues(value),
+      value => camelPreferencesService.setIsHideDefaultOptionValues(value),
     )
 
   const onIsHideUnusedOptionValuesChange = (value: boolean) =>
     onBooleanValueUpdated(
       value,
       value => setIsHideUnusedOptionValues(value),
-      value => storageService.setIsHideUnusedOptionValues(value),
+      value => camelPreferencesService.setIsHideUnusedOptionValues(value),
     )
 
   const onIsIncludeTraceDebugStreamsChange = (value: boolean) =>
     onBooleanValueUpdated(
       value,
       value => setIsIncludeTraceDebugStreams(value),
-      value => storageService.setIsIncludeTraceDebugStreams(value),
+      value => camelPreferencesService.setIsIncludeTraceDebugStreams(value),
     )
 
   const onMaximumTraceDebugBodyLengthChange = (value: string) =>
     onNumberValueUpdated(
       value,
       value => setMaximumTraceDebugBodyLength(value),
-      value => storageService.setMaximumTraceDebugBodyLength(value),
+      value => camelPreferencesService.setMaximumTraceDebugBodyLength(value),
     )
 
   const onMaximumLabelWidthChange = (value: string) =>
     onNumberValueUpdated(
       value,
       value => setMaximumLabelWidth(value),
-      value => storageService.setMaximumLabelWidth(value),
+      value => camelPreferencesService.setMaximumLabelWidth(value),
     )
 
   const onIsIgnoreIDForLabelChange = (value: boolean) =>
     onBooleanValueUpdated(
       value,
       value => setIsIgnoreIDForLabel(value),
-      value => storageService.setIsIgnoreIDForLabel(value),
+      value => camelPreferencesService.setIsIgnoreIDForLabel(value),
     )
 
   const onIsShowInflightCounterChange = (value: boolean) =>
     onBooleanValueUpdated(
       value,
       value => setIsShowInflightCounter(value),
-      value => storageService.setIsShowInflightCounter(value),
+      value => camelPreferencesService.setIsShowInflightCounter(value),
     )
 
   const onRouteMetricMaximumSecondsChange = (value: string) =>
     onNumberValueUpdated(
       value,
       value => setRouteMetricMaximumSeconds(value),
-      value => storageService.setRouteMetricMaximumSeconds(value),
+      value => camelPreferencesService.setRouteMetricMaximumSeconds(value),
     )
 
   return (
