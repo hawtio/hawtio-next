@@ -1,4 +1,4 @@
-### Camel
+## Camel
 
 Click [Camel](camel/contexts) in the top navigation bar to view all the running Camel Contexts in the current JVM. (The selection will not appear on the navigation bar if there is no Camel running).
 
