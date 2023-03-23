@@ -1,6 +1,6 @@
 import { escapeDots, escapeTags } from '@hawtiosrc/util/jolokia'
 import { stringSorter } from '@hawtiosrc/util/strings'
-import { MBeanNode, OptimisedJmxDomain, OptimisedJmxDomains, FilterFunc } from './node'
+import { MBeanNode, OptimisedJmxDomain, OptimisedJmxDomains, FilterFunc, ForEachFunc } from './node'
 import { log } from '../globals'
 import { treeProcessorRegistry } from './processor-registry'
 
@@ -123,6 +123,33 @@ export class MBeanTree {
       }
     })
     return answer
+  }
+
+  private descendentByPathEntry(pathEntry: string): MBeanNode | null {
+    return this.findDescendant(node => {
+      const match = node.name === pathEntry || node.matches({ name: pathEntry })
+      return match
+    })
+  }
+
+  navigate(...namePath: string[]): MBeanNode | null {
+    if (namePath.length === 0) return null // path is empty so return nothing
+    const child: MBeanNode | null = this.descendentByPathEntry(namePath[0])
+    return !child ? null : child.navigate(...namePath.slice(1))
+  }
+
+  /**
+   * Perform a function on each node in the given path
+   * where the namePath drills down to descendants of this tree
+   */
+  forEach(namePath: string[], eachFn: ForEachFunc) {
+    if (namePath.length === 0) return // path empty so nothing to do
+
+    const child: MBeanNode | null = this.descendentByPathEntry(namePath[0])
+    if (!child) return
+
+    eachFn(child)
+    child.forEach(namePath.slice(1), eachFn)
   }
 
   /**

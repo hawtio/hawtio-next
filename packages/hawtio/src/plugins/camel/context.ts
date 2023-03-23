@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState, useContext } from 'react'
+import { createContext, useEffect, useState, useContext, useRef } from 'react'
 import { TreeViewDataItem } from '@patternfly/react-core'
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
 import { workspace, MBeanNode, MBeanTree } from '@hawtiosrc/plugins/shared'
@@ -15,22 +15,42 @@ export function useCamelTree() {
   const { selectedNode, setSelectedNode } = useContext(PluginNodeSelectionContext)
   const navigate = useNavigate()
 
+  /*
+   * Need to preserve the selected node between re-renders since the
+   * populateTree function called via the refresh listener does not
+   * cache the value and stores it as null
+   */
+  const refSelectedNode = useRef<MBeanNode | null>()
+  refSelectedNode.current = selectedNode
+
   const populateTree = async () => {
     const wkspTree: MBeanTree = await workspace.getTree()
     const rootNode = wkspTree.findDescendant(node => node.name === jmxDomain)
     if (rootNode) {
+      /*
+       * Using the camel domain node from the original tree means it is the same
+       * node as that that appears in the workspace tree
+       */
       const subTree: MBeanTree = MBeanTree.createFromNodes(pluginName, [rootNode])
       setTree(subTree)
       if (rootNode && rootNode.children && rootNode.children.length > 0) {
-        const r: TreeViewDataItem = rootNode as TreeViewDataItem
-        const c: TreeViewDataItem = rootNode.children[0] as TreeViewDataItem
-        c.defaultExpanded = true
-        r.defaultExpanded = true
-        if (selectedNode) {
-          setSelectedNode(selectedNode)
+        const path: string[] = []
+        if (refSelectedNode.current) {
+          path.push(...refSelectedNode.current.path())
         } else {
-          setSelectedNode(rootNode.children[0])
+          path.push(...rootNode.getChildren()[0].path())
         }
+
+        // Expand the nodes to redisplay the path
+        rootNode.forEach(path, (node: MBeanNode) => {
+          const tvd = node as TreeViewDataItem
+          tvd.defaultExpanded = true
+        })
+
+        // Ensure the new version of the selected node is selected
+        const newSelected = rootNode.navigate(...path)
+        if (newSelected) setSelectedNode(newSelected)
+
         /* On population of tree, ensure the url path is returned to the base plugin path */
         navigate(pluginPath)
       }
@@ -52,7 +72,6 @@ export function useCamelTree() {
     }
 
     const listener = () => {
-      setSelectedNode(null)
       setLoaded(false)
       loadTree()
     }
