@@ -1,11 +1,11 @@
-import { hawtio } from '@hawtiosrc/core'
+import { hawtio, HawtioPlugin } from '@hawtiosrc/core'
 import { helpRegistry } from '@hawtiosrc/help/registry'
 import { workspace } from '@hawtiosrc/plugins/shared'
+import { pluginPath } from './globals'
 import help from './help.md'
 import { Jmx } from './Jmx'
-import { pluginPath } from './globals'
 
-export const jmx = () => {
+export const jmx: HawtioPlugin = () => {
   hawtio.addPlugin({
     id: 'jmx',
     title: 'JMX',

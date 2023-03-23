@@ -2,11 +2,18 @@ import '@hawtio/react/dist/index.css'
 import '@patternfly/react-core/dist/styles/base.css'
 import './index.css'
 
-import { hawtio, Hawtio, registerPlugins } from '@hawtio/react'
+import { configManager, hawtio, Hawtio, registerPlugins } from '@hawtio/react'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { registerExamples } from './examples'
 import { reportWebVitals } from './reportWebVitals'
+
+// Configure the console
+const configure = () => {
+  configManager.addProductInfo('Test App', '1.0.0')
+  hawtio.addUrl('plugin')
+}
+configure()
 
 // Bootstrap Hawtio
 registerPlugins()
