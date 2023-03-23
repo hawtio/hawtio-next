@@ -21,6 +21,6 @@ export const camel = () => {
   })
 
   treeProcessorRegistry.add('camel', camelTreeProcessor)
-  helpRegistry.add('camel', 'Camel', help, 11)
+  helpRegistry.add('camel', 'Camel', help, 13)
   // preferencesRegistry.add('camel', 'Camel', ConnectPreferences, 11)
 }
