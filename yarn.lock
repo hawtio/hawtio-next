@@ -1997,6 +1997,7 @@ __metadata:
   resolution: "@hawtio/react@workspace:packages/hawtio"
   dependencies:
     "@hawtio/camel-model": ^3.20.2-1
+    "@module-federation/utilities": ^1.4.0
     "@patternfly/react-code-editor": ^4.82.113
     "@patternfly/react-core": ^4.276.8
     "@patternfly/react-table": ^4.113.0
@@ -2695,6 +2696,25 @@ __metadata:
   version: 2.0.4
   resolution: "@leichtgewicht/ip-codec@npm:2.0.4"
   checksum: 468de1f04d33de6d300892683d7c8aecbf96d1e2c5fe084f95f816e50a054d45b7c1ebfb141a1447d844b86a948733f6eebd92234da8581c84a1ad4de2946a2d
+  languageName: node
+  linkType: hard
+
+"@module-federation/utilities@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "@module-federation/utilities@npm:1.4.0"
+  peerDependencies:
+    next: ^12 || ^13
+    react: ^16 || ^17 || ^18
+    react-dom: ^16 || ^17 || ^18
+    webpack: ^5.40.0
+  peerDependenciesMeta:
+    next:
+      optional: true
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: aa707a873c0dc208a6bccc34a025b7ea58dbec7bd3f24a29cfd3559bde4de8e6e36cc66e842d2b59f36fe69c7024710304f97da780f67759c5ce9f08a80bb8e2
   languageName: node
   linkType: hard
 

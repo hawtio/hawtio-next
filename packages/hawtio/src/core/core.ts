@@ -1,6 +1,10 @@
+import { importRemote, ImportRemoteOptions } from '@module-federation/utilities'
 import $ from 'jquery'
 import { log } from './globals'
 
+/**
+ * Internal representation of a Hawtio plugin.
+ */
 export interface Plugin {
   id: string
   title: string
@@ -17,9 +21,17 @@ export interface Plugin {
   isActive: () => Promise<boolean>
 }
 
+/**
+ * A collection of internal Hawtio plugins with IDs as keys.
+ */
 type Plugins = {
   [id: string]: Plugin
 }
+
+/**
+ * Type definition of the entry point for a Hawtio plugin.
+ */
+export type HawtioPlugin = () => void
 
 /**
  * Hawtio core service.
@@ -87,24 +99,61 @@ class HawtioCore {
   /**
    * Bootstraps Hawtio.
    */
-  bootstrap() {
-    this.loadPlugins(plugins => {
-      log.info('Plugins loaded:', plugins)
-    })
+  async bootstrap() {
+    log.info('Bootstrapping Hawtio...')
+    await this.loadPlugins()
     log.info('Bootstrapped Hawtio')
   }
 
   /**
-   * Downloads plugins at any configured URLs and bootstraps the app.
+   * Downloads plugins from any configured URLs and load them.
+   * It is invoked at Hawtio's bootstrapping.
    *
-   * It is invoked from Hawtio's bootstrapping.
+   * This plugin mechanism is implemented based on Webpack Module Federation.
+   * https://module-federation.github.io/
    */
-  private loadPlugins(callback: (plugins: Plugins) => void): void {
-    log.info('Bootstrapping Hawtio...')
+  private async loadPlugins() {
+    if (this.urls.length === 0) {
+      log.info('No URLs provided to load external plugins')
+      return
+    }
 
-    // TODO: Load external plugins
+    log.info('Plugins before loading:', this.plugins)
 
-    callback(this.plugins)
+    // Load external plugins from all URLs
+    await Promise.all(this.urls.map(this.loadExternalPlugins))
+
+    log.info('Plugins after loaded:', this.plugins)
+  }
+
+  /**
+   * Loads external plugins from the given URL. The URL endpoint is expected to
+   * return an array of ImportRemoteOptions from '@module-federation/utilities'.
+   */
+  private async loadExternalPlugins(url: string) {
+    log.debug('Trying url:', url)
+    try {
+      const res = await fetch(url)
+      if (!res.ok) {
+        log.error('Failed to fetch url:', url, '-', res.status, res.statusText)
+        return
+      }
+
+      const remotes = (await res.json()) as ImportRemoteOptions[]
+      log.debug('Loaded remotes from url:', url, '=', remotes)
+
+      // Load plugins
+      await Promise.all(
+        remotes.map(async remote => {
+          log.debug('Loading', remote)
+          const { plugin } = await importRemote<{ plugin: HawtioPlugin }>(remote)
+          plugin()
+          log.debug('Loaded', remote)
+        }),
+      )
+    } catch (err) {
+      log.error('Error fetching url:', url, '-', err)
+    }
   }
 
   getPlugins(): Plugin[] {

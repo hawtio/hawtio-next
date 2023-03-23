@@ -1,4 +1,4 @@
-import { hawtio } from '@hawtiosrc/core'
+import { hawtio, HawtioPlugin } from '@hawtiosrc/core'
 import { helpRegistry } from '@hawtiosrc/help/registry'
 import { preferencesRegistry } from '@hawtiosrc/preferences/registry'
 import { Connect } from './Connect'
@@ -6,7 +6,7 @@ import { ConnectPreferences } from './ConnectPreferences'
 import help from './help.md'
 import { isActive } from './init'
 
-export const connect = () => {
+export const connect: HawtioPlugin = () => {
   hawtio.addPlugin({
     id: 'connect',
     title: 'Connect',
