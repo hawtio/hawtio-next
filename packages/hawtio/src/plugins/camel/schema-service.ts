@@ -1,4 +1,4 @@
-import { apacheCamelModel, apacheCamelModelVersion } from '@hawtio/camel-model'
+import { definitions, apacheCamelModelVersion } from '@hawtio/camel-model'
 import { cloneObject, isObject } from '@hawtiosrc/util/objects'
 import { log } from './globals'
 
@@ -52,7 +52,7 @@ class SchemaService {
 
   getSchema(nodeIdOrDefinition: Record<string, unknown> | string): Record<string, unknown> | null {
     if (typeof nodeIdOrDefinition === 'string' || nodeIdOrDefinition instanceof String)
-      return this.lookupDefinition(nodeIdOrDefinition as string, apacheCamelModel)
+      return this.lookupDefinition(nodeIdOrDefinition as string, definitions)
     else return nodeIdOrDefinition
   }
 }

@@ -1,0 +1,1398 @@
+{
+  "languages": {
+    "constant": {
+      "type": "object",
+      "title": "Constant",
+      "group": "language,core",
+      "icon": "generic24.png",
+      "description": "A fixed value set only once during the route startup.",
+      "properties": {
+        "expression": {
+          "kind": "value",
+          "type": "string",
+          "description": "The expression value in your chosen language syntax",
+          "title": "Expression",
+          "required": true,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "csimple": {
+      "type": "object",
+      "title": "CSimple",
+      "group": "language,java",
+      "icon": "generic24.png",
+      "description": "Evaluate a compiled simple expression.",
+      "properties": {
+        "expression": {
+          "kind": "value",
+          "type": "string",
+          "description": "The expression value in your chosen language syntax",
+          "title": "Expression",
+          "required": true,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "datasonnet": {
+      "type": "object",
+      "title": "DataSonnet",
+      "group": "language,transformation",
+      "icon": "generic24.png",
+      "description": "To use DataSonnet scripts for message transformations.",
+      "properties": {
+        "expression": {
+          "kind": "value",
+          "type": "string",
+          "description": "The expression value in your chosen language syntax",
+          "title": "Expression",
+          "required": true,
+          "deprecated": false
+        },
+        "bodyMediaType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "The String representation of the message\u0027s body MediaType",
+          "title": "Body Media Type",
+          "required": false,
+          "deprecated": false
+        },
+        "outputMediaType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "The String representation of the MediaType to output",
+          "title": "Output Media Type",
+          "required": false,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "exchangeProperty": {
+      "type": "object",
+      "title": "ExchangeProperty",
+      "group": "language,core",
+      "icon": "generic24.png",
+      "description": "Gets a property from the Exchange.",
+      "properties": {
+        "expression": {
+          "kind": "value",
+          "type": "string",
+          "description": "The expression value in your chosen language syntax",
+          "title": "Expression",
+          "required": true,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "expression": {
+      "type": "object",
+      "title": "Expression",
+      "group": "language",
+      "icon": "generic24.png",
+      "description": "A useful base class for an expression",
+      "properties": {
+        "expression": {
+          "kind": "value",
+          "type": "string",
+          "description": "The expression value in your chosen language syntax",
+          "title": "Expression",
+          "required": true,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "groovy": {
+      "type": "object",
+      "title": "Groovy",
+      "group": "language,script",
+      "icon": "generic24.png",
+      "description": "Evaluates a Groovy script.",
+      "properties": {
+        "expression": {
+          "kind": "value",
+          "type": "string",
+          "description": "The expression value in your chosen language syntax",
+          "title": "Expression",
+          "required": true,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "header": {
+      "type": "object",
+      "title": "Header",
+      "group": "language,core",
+      "icon": "generic24.png",
+      "description": "Gets a header from the Exchange.",
+      "properties": {
+        "expression": {
+          "kind": "value",
+          "type": "string",
+          "description": "The expression value in your chosen language syntax",
+          "title": "Expression",
+          "required": true,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "hl7terser": {
+      "type": "object",
+      "title": "HL7 Terser",
+      "group": "language,hl7",
+      "icon": "generic24.png",
+      "description": "Get the value of a HL7 message field specified by terse location specification syntax.",
+      "properties": {
+        "expression": {
+          "kind": "value",
+          "type": "string",
+          "description": "The expression value in your chosen language syntax",
+          "title": "Expression",
+          "required": true,
+          "deprecated": false
+        },
+        "headerName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of header to use as input, instead of the message body It has as higher precedent than the propertyName if both are set.",
+          "title": "Header Name",
+          "required": false,
+          "deprecated": false
+        },
+        "propertyName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of property to use as input, instead of the message body. It has a lower precedent than the headerName if both are set.",
+          "title": "Property Name",
+          "required": false,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "joor": {
+      "type": "object",
+      "title": "jOOR",
+      "group": "language",
+      "icon": "generic24.png",
+      "description": "Evaluates a jOOR (Java compiled once at runtime) expression.",
+      "properties": {
+        "expression": {
+          "kind": "value",
+          "type": "string",
+          "description": "The expression value in your chosen language syntax",
+          "title": "Expression",
+          "required": true,
+          "deprecated": false
+        },
+        "preCompile": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether the expression should be pre compiled once during initialization phase. If this is turned off, then the expression is reloaded and compiled on each evaluation.",
+          "title": "Pre Compile",
+          "required": false,
+          "deprecated": false
+        },
+        "singleQuotes": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether single quotes can be used as replacement for double quotes. This is convenient when you need to work with strings inside strings.",
+          "title": "Single Quotes",
+          "required": false,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "jq": {
+      "type": "object",
+      "title": "JQ",
+      "group": "language,json",
+      "icon": "generic24.png",
+      "description": "Evaluates a JQ expression against a JSON message body.",
+      "properties": {
+        "expression": {
+          "kind": "value",
+          "type": "string",
+          "description": "The expression value in your chosen language syntax",
+          "title": "Expression",
+          "required": true,
+          "deprecated": false
+        },
+        "headerName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of header to use as input, instead of the message body It has as higher precedent than the propertyName if both are set.",
+          "title": "Header Name",
+          "required": false,
+          "deprecated": false
+        },
+        "propertyName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of property to use as input, instead of the message body. It has a lower precedent than the headerName if both are set.",
+          "title": "Property Name",
+          "required": false,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "js": {
+      "type": "object",
+      "title": "JavaScript",
+      "group": "language,javascript",
+      "icon": "generic24.png",
+      "description": "Evaluates a JavaScript expression.",
+      "properties": {
+        "expression": {
+          "kind": "value",
+          "type": "string",
+          "description": "The expression value in your chosen language syntax",
+          "title": "Expression",
+          "required": true,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "jsonpath": {
+      "type": "object",
+      "title": "JSONPath",
+      "group": "language,json",
+      "icon": "generic24.png",
+      "description": "Evaluates a JSONPath expression against a JSON message body.",
+      "properties": {
+        "expression": {
+          "kind": "value",
+          "type": "string",
+          "description": "The expression value in your chosen language syntax",
+          "title": "Expression",
+          "required": true,
+          "deprecated": false
+        },
+        "suppressExceptions": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to suppress exceptions such as PathNotFoundException.",
+          "title": "Suppress Exceptions",
+          "required": false,
+          "deprecated": false
+        },
+        "allowSimple": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to allow in inlined Simple exceptions in the JSONPath expression",
+          "title": "Allow Simple",
+          "required": false,
+          "deprecated": false
+        },
+        "allowEasyPredicate": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to allow using the easy predicate parser to pre-parse predicates.",
+          "title": "Allow Easy Predicate",
+          "required": false,
+          "deprecated": false
+        },
+        "writeAsString": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to write the output of each row/element as a JSON String value instead of a Map/POJO value.",
+          "title": "Write As String",
+          "required": false,
+          "deprecated": false
+        },
+        "unpackArray": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to unpack a single element json-array into an object.",
+          "title": "Unpack Array",
+          "required": false,
+          "deprecated": false
+        },
+        "option": {
+          "kind": "attribute",
+          "type": "enum",
+          "enum": [
+            "DEFAULT_PATH_LEAF_TO_NULL",
+            "ALWAYS_RETURN_LIST",
+            "AS_PATH_LIST",
+            "SUPPRESS_EXCEPTIONS",
+            "REQUIRE_PROPERTIES"
+          ],
+          "description": "To configure additional options on JSONPath. Multiple values can be separated by comma.",
+          "title": "Option",
+          "required": false,
+          "deprecated": false
+        },
+        "headerName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of header to use as input, instead of the message body It has as higher precedent than the propertyName if both are set.",
+          "title": "Header Name",
+          "required": false,
+          "deprecated": false
+        },
+        "propertyName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of property to use as input, instead of the message body. It has a lower precedent than the headerName if both are set.",
+          "title": "Property Name",
+          "required": false,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "language": {
+      "type": "object",
+      "title": "Language",
+      "group": "language,core",
+      "icon": "generic24.png",
+      "description": "Evaluates a custom language.",
+      "properties": {
+        "language": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "The name of the language to use",
+          "title": "Language",
+          "required": true,
+          "deprecated": false
+        },
+        "expression": {
+          "kind": "value",
+          "type": "string",
+          "description": "The expression value in your chosen language syntax",
+          "title": "Expression",
+          "required": true,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "method": {
+      "type": "object",
+      "title": "Bean Method",
+      "group": "language,core,java",
+      "icon": "generic24.png",
+      "description": "Calls a Java bean method.",
+      "properties": {
+        "ref": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Reference to an existing bean (bean id) to lookup in the registry",
+          "title": "Ref",
+          "required": false,
+          "deprecated": false
+        },
+        "method": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of method to call",
+          "title": "Method",
+          "required": false,
+          "deprecated": false
+        },
+        "beanType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Class name (fully qualified) of the bean to use Will lookup in registry and if there is a single instance of the same type, then the existing bean is used, otherwise a new bean is created (requires a default no-arg constructor).",
+          "title": "Bean Type",
+          "required": false,
+          "deprecated": false
+        },
+        "scope": {
+          "kind": "attribute",
+          "type": "enum",
+          "defaultValue": "Singleton",
+          "enum": [
+            "Singleton",
+            "Request",
+            "Prototype"
+          ],
+          "description": "Scope of bean. When using singleton scope (default) the bean is created or looked up only once and reused for the lifetime of the endpoint. The bean should be thread-safe in case concurrent threads is calling the bean at the same time. When using request scope the bean is created or looked up once per request (exchange). This can be used if you want to store state on a bean while processing a request and you want to call the same bean instance multiple times while processing the request. The bean does not have to be thread-safe as the instance is only called from the same request. When using prototype scope, then the bean will be looked up or created per call. However in case of lookup then this is delegated to the bean registry such as Spring or CDI (if in use), which depends on their configuration can act as either singleton or prototype scope. So when using prototype scope then this depends on the bean registry implementation.",
+          "title": "Scope",
+          "required": false,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "mvel": {
+      "type": "object",
+      "title": "MVEL",
+      "group": "language,java",
+      "icon": "generic24.png",
+      "description": "Evaluates a MVEL template.",
+      "properties": {
+        "expression": {
+          "kind": "value",
+          "type": "string",
+          "description": "The expression value in your chosen language syntax",
+          "title": "Expression",
+          "required": true,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "ognl": {
+      "type": "object",
+      "title": "OGNL",
+      "group": "language,java",
+      "icon": "generic24.png",
+      "description": "Evaluates an OGNL expression (Apache Commons OGNL).",
+      "properties": {
+        "expression": {
+          "kind": "value",
+          "type": "string",
+          "description": "The expression value in your chosen language syntax",
+          "title": "Expression",
+          "required": true,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "python": {
+      "type": "object",
+      "title": "Python",
+      "group": "language,python",
+      "icon": "generic24.png",
+      "description": "Evaluates a Python expression.",
+      "properties": {
+        "expression": {
+          "kind": "value",
+          "type": "string",
+          "description": "The expression value in your chosen language syntax",
+          "title": "Expression",
+          "required": true,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "ref": {
+      "type": "object",
+      "title": "Ref",
+      "group": "language,core",
+      "icon": "generic24.png",
+      "description": "Uses an existing expression from the registry.",
+      "properties": {
+        "expression": {
+          "kind": "value",
+          "type": "string",
+          "description": "The expression value in your chosen language syntax",
+          "title": "Expression",
+          "required": true,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "simple": {
+      "type": "object",
+      "title": "Simple",
+      "group": "language,core,java",
+      "icon": "generic24.png",
+      "description": "Evaluates a Camel simple expression.",
+      "properties": {
+        "expression": {
+          "kind": "value",
+          "type": "string",
+          "description": "The expression value in your chosen language syntax",
+          "title": "Expression",
+          "required": true,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "spel": {
+      "type": "object",
+      "title": "SpEL",
+      "group": "language,spring",
+      "icon": "generic24.png",
+      "description": "Evaluates a Spring expression (SpEL).",
+      "properties": {
+        "expression": {
+          "kind": "value",
+          "type": "string",
+          "description": "The expression value in your chosen language syntax",
+          "title": "Expression",
+          "required": true,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "tokenize": {
+      "type": "object",
+      "title": "Tokenize",
+      "group": "language,core",
+      "icon": "generic24.png",
+      "description": "Tokenize text payloads using delimiter patterns.",
+      "properties": {
+        "token": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "The (start) token to use as tokenizer, for example you can use the new line token. You can use simple language as the token to support dynamic tokens.",
+          "title": "Token",
+          "required": true,
+          "deprecated": false
+        },
+        "endToken": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "The end token to use as tokenizer if using start/end token pairs. You can use simple language as the token to support dynamic tokens.",
+          "title": "End Token",
+          "required": false,
+          "deprecated": false
+        },
+        "inheritNamespaceTagName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "To inherit namespaces from a root/parent tag name when using XML You can use simple language as the tag name to support dynamic names.",
+          "title": "Inherit Namespace Tag Name",
+          "required": false,
+          "deprecated": false
+        },
+        "regex": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "If the token is a regular expression pattern. The default value is false",
+          "title": "Regex",
+          "required": false,
+          "deprecated": false
+        },
+        "xml": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether the input is XML messages. This option must be set to true if working with XML payloads.",
+          "title": "Xml",
+          "required": false,
+          "deprecated": false
+        },
+        "includeTokens": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to include the tokens in the parts when using pairs The default value is false",
+          "title": "Include Tokens",
+          "required": false,
+          "deprecated": false
+        },
+        "group": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "To group N parts together, for example to split big files into chunks of 1000 lines. You can use simple language as the group to support dynamic group sizes.",
+          "title": "Group",
+          "required": false,
+          "deprecated": false
+        },
+        "groupDelimiter": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the delimiter to use when grouping. If this has not been set then token will be used as the delimiter.",
+          "title": "Group Delimiter",
+          "required": false,
+          "deprecated": false
+        },
+        "skipFirst": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "To skip the very first element",
+          "title": "Skip First",
+          "required": false,
+          "deprecated": false
+        },
+        "headerName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of header to use as input, instead of the message body It has as higher precedent than the propertyName if both are set.",
+          "title": "Header Name",
+          "required": false,
+          "deprecated": false
+        },
+        "propertyName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of property to use as input, instead of the message body. It has a lower precedent than the headerName if both are set.",
+          "title": "Property Name",
+          "required": false,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "xpath": {
+      "type": "object",
+      "title": "XPath",
+      "group": "language,core,xml",
+      "icon": "generic24.png",
+      "description": "Evaluates an XPath expression against an XML payload.",
+      "properties": {
+        "expression": {
+          "kind": "value",
+          "type": "string",
+          "description": "The expression value in your chosen language syntax",
+          "title": "Expression",
+          "required": true,
+          "deprecated": false
+        },
+        "documentType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of class for document type The default value is org.w3c.dom.Document",
+          "title": "Document Type",
+          "required": false,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "enum",
+          "defaultValue": "NODESET",
+          "enum": [
+            "NUMBER",
+            "STRING",
+            "BOOLEAN",
+            "NODESET",
+            "NODE"
+          ],
+          "description": "Sets the class name of the result type (type from output) The default result type is NodeSet",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
+        "saxon": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to use Saxon.",
+          "title": "Saxon",
+          "required": false,
+          "deprecated": false
+        },
+        "factoryRef": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "References to a custom XPathFactory to lookup in the registry",
+          "title": "Factory Ref",
+          "required": false,
+          "deprecated": false
+        },
+        "objectModel": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "The XPath object model to use",
+          "title": "Object Model",
+          "required": false,
+          "deprecated": false
+        },
+        "logNamespaces": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to log namespaces which can assist during troubleshooting",
+          "title": "Log Namespaces",
+          "required": false,
+          "deprecated": false
+        },
+        "threadSafety": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Whether to enable thread-safety for the returned result of the xpath expression. This applies to when using NODESET as the result type, and the returned set has multiple elements. In this situation there can be thread-safety issues if you process the NODESET concurrently such as from a Camel Splitter EIP in parallel processing mode. This option prevents concurrency issues by doing defensive copies of the nodes. It is recommended to turn this option on if you are using camel-saxon or Saxon in your application. Saxon has thread-safety issues which can be prevented by turning this option on.",
+          "title": "Thread Safety",
+          "required": false,
+          "deprecated": false
+        },
+        "preCompile": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to enable pre-compiling the xpath expression during initialization phase. pre-compile is enabled by default. This can be used to turn off, for example in cases the compilation phase is desired at the starting phase, such as if the application is ahead of time compiled (for example with camel-quarkus) which would then load the xpath factory of the built operating system, and not a JVM runtime.",
+          "title": "Pre Compile",
+          "required": false,
+          "deprecated": false
+        },
+        "namespace": {
+          "kind": "element",
+          "type": "array",
+          "description": "Injects the XML Namespaces of prefix - uri mappings",
+          "title": "Namespace",
+          "required": false,
+          "deprecated": false
+        },
+        "headerName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of header to use as input, instead of the message body It has as higher precedent than the propertyName if both are set.",
+          "title": "Header Name",
+          "required": false,
+          "deprecated": false
+        },
+        "propertyName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of property to use as input, instead of the message body. It has a lower precedent than the headerName if both are set.",
+          "title": "Property Name",
+          "required": false,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "xquery": {
+      "type": "object",
+      "title": "XQuery",
+      "group": "language,xml",
+      "icon": "generic24.png",
+      "description": "Evaluates an XQuery expressions against an XML payload.",
+      "properties": {
+        "expression": {
+          "kind": "value",
+          "type": "string",
+          "description": "The expression value in your chosen language syntax",
+          "title": "Expression",
+          "required": true,
+          "deprecated": false
+        },
+        "resultType": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class of the result type (type from output)",
+          "title": "Result Type",
+          "required": false,
+          "deprecated": false
+        },
+        "type": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the class name of the result type (type from output) The default result type is NodeSet",
+          "title": "Type",
+          "required": false,
+          "deprecated": false
+        },
+        "configurationRef": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Reference to a saxon configuration instance in the registry to use for xquery (requires camel-saxon). This may be needed to add custom functions to a saxon configuration, so these custom functions can be used in xquery expressions.",
+          "title": "Configuration Ref",
+          "required": false,
+          "deprecated": false
+        },
+        "namespace": {
+          "kind": "element",
+          "type": "array",
+          "description": "Injects the XML Namespaces of prefix - uri mappings",
+          "title": "Namespace",
+          "required": false,
+          "deprecated": false
+        },
+        "headerName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of header to use as input, instead of the message body It has as higher precedent than the propertyName if both are set.",
+          "title": "Header Name",
+          "required": false,
+          "deprecated": false
+        },
+        "propertyName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of property to use as input, instead of the message body. It has a lower precedent than the headerName if both are set.",
+          "title": "Property Name",
+          "required": false,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    },
+    "xtokenize": {
+      "type": "object",
+      "title": "XML Tokenize",
+      "group": "language,core,xml",
+      "icon": "generic24.png",
+      "description": "Tokenize XML payloads.",
+      "properties": {
+        "mode": {
+          "kind": "attribute",
+          "type": "enum",
+          "enum": [
+            "i",
+            "w",
+            "u",
+            "t"
+          ],
+          "description": "The extraction mode. The available extraction modes are: i - injecting the contextual namespace bindings into the extracted token (default) w - wrapping the extracted token in its ancestor context u - unwrapping the extracted token to its child content t - extracting the text content of the specified element",
+          "title": "Mode",
+          "required": false,
+          "deprecated": false
+        },
+        "group": {
+          "kind": "attribute",
+          "type": "integer",
+          "description": "To group N parts together",
+          "title": "Group",
+          "required": false,
+          "deprecated": false
+        },
+        "namespace": {
+          "kind": "element",
+          "type": "array",
+          "description": "Injects the XML Namespaces of prefix - uri mappings",
+          "title": "Namespace",
+          "required": false,
+          "deprecated": false
+        },
+        "headerName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of header to use as input, instead of the message body It has as higher precedent than the propertyName if both are set.",
+          "title": "Header Name",
+          "required": false,
+          "deprecated": false
+        },
+        "propertyName": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Name of property to use as input, instead of the message body. It has a lower precedent than the headerName if both are set.",
+          "title": "Property Name",
+          "required": false,
+          "deprecated": false
+        },
+        "trim": {
+          "kind": "attribute",
+          "type": "boolean",
+          "defaultValue": "true",
+          "description": "Whether to trim the value to remove leading and trailing whitespaces and line breaks",
+          "title": "Trim",
+          "required": false,
+          "deprecated": false
+        },
+        "id": {
+          "kind": "attribute",
+          "type": "string",
+          "description": "Sets the id of this node",
+          "title": "Id",
+          "required": false,
+          "deprecated": false
+        }
+      }
+    }
+  }
+}
