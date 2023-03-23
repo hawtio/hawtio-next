@@ -41,7 +41,7 @@ const PREFERENCES_DEFAULT_VALUES: Record<string, boolean | number> = {
   [STORAGE_KEY_ROUTE_METRIC_MAXIMUM_SECONDS]: 10,
 }
 
-class CamelPreferencesStorageService implements ICamelStorage {
+class CamelPreferencesService implements ICamelStorage {
   setIsHideOptionDocumentation(value: boolean): void {
     this.saveValueToStorage(STORAGE_KEY_IS_HIDE_OPTION_DOCUMENTATION, value)
   }
@@ -126,4 +126,4 @@ class CamelPreferencesStorageService implements ICamelStorage {
   }
 }
 
-export const storageService = new CamelPreferencesStorageService()
+export const camelPreferencesService = new CamelPreferencesService()
