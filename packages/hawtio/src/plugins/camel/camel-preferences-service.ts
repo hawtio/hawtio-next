@@ -86,7 +86,9 @@ class CamelPreferencesService implements ICamelStorage {
   }
 
   private loadFromStorage(): Partial<ICamelPreferences> {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY_CAMEL_PREFERENCES) || '')
+    const localStorageData = localStorage.getItem(STORAGE_KEY_CAMEL_PREFERENCES)
+
+    return localStorageData ? JSON.parse(localStorageData) : {}
   }
 }
 
