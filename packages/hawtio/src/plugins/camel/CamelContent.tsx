@@ -19,6 +19,7 @@ import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { CamelContext } from './context'
 import { Attributes, Operations, Chart, JmxContentMBeans, MBeanNode } from '@hawtiosrc/plugins/shared'
 import { Contexts } from './contexts'
+import { Endpoints } from './endpoints'
 import { Exchanges } from './exchanges'
 import { TypeConverters } from './type-converters'
 import * as ccs from './camel-content-service'
@@ -99,6 +100,12 @@ export const CamelContent: React.FunctionComponent = () => {
       title: 'Type Converters',
       component: TypeConverters,
       isApplicable: (node: MBeanNode) => ccs.hasTypeConverter(node),
+    },
+    {
+      id: 'endpoints',
+      title: 'Endpoints',
+      component: Endpoints,
+      isApplicable: (node: MBeanNode) => ccs.isEndpointsFolder(node),
     },
   ]
 

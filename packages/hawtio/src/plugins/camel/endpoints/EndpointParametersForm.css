@@ -1,0 +1,7 @@
+.endpoint-parameter-number-input {
+  width: 100%;
+}
+
+.endpoint-parameter-number-input input {
+  text-align: center !important;
+}
