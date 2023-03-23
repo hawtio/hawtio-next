@@ -172,15 +172,30 @@ describe('MBeanNode', () => {
     const domainNode = tree.get('org.apache.camel') as MBeanNode
     expect(domainNode).not.toBeNull()
 
-    let path = ['SampleCamel', 'components', 'quartz']
+    let path = ['org.apache.camel', 'SampleCamel', 'components', 'quartz']
     let qNode = domainNode.navigate(...path) as MBeanNode
     expect(qNode).not.toBeNull()
     expect(qNode.id).toBe('quartz-1')
 
-    path = ['SampleCame*', 'c*ponents', '*artz']
+    path = ['org.apache.camel', 'SampleCame*', 'c*ponents', '*artz']
     qNode = domainNode.navigate(...path) as MBeanNode
     expect(qNode).not.toBeNull()
     expect(qNode.id).toBe('quartz-1')
+  })
+
+  test('forEach', async () => {
+    const domainNode = tree.get('org.apache.camel') as MBeanNode
+    expect(domainNode).not.toBeNull()
+
+    let path = ['org.apache.camel', 'SampleCamel', 'components', 'quartz']
+    let counter = 0
+    domainNode.forEach(path, _ => (counter = counter + 1))
+    expect(counter).toEqual(path.length)
+
+    path = ['org.apache.camel', 'SampleCame*', 'c*ponents', '*artz']
+    counter = 0
+    domainNode.forEach(path, _ => (counter = counter + 1))
+    expect(counter).toEqual(path.length)
   })
 
   test('findAncestors', async () => {

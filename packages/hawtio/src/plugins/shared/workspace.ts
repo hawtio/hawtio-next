@@ -1,10 +1,10 @@
 import { eventService, Logger } from '@hawtiosrc/core'
 import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
-import { isString } from '@hawtiosrc/util/strings'
-import { IErrorResponse, IJmxOperation, IJmxOperations, ISimpleOptions } from 'jolokia.js'
+import { isString, parseBoolean } from '@hawtiosrc/util/strings'
+import { IErrorResponse, IJmxOperation, IJmxOperations, IResponse, ISimpleOptions } from 'jolokia.js'
 import { isArray } from '@hawtiosrc/util/objects'
 import { is, object } from 'superstruct'
-import { pluginName } from './globals'
+import { HAWTIO_REGISTRY_MBEAN, HAWTIO_TREE_WATCHER_MBEAN, pluginName } from './globals'
 import { MBeanNode, MBeanTree, OptimisedJmxDomain, OptimisedJmxDomains, OptimisedJmxMBean } from './tree'
 
 const log = Logger.get(`${pluginName}-workspace`)
@@ -13,6 +13,10 @@ export type MBeanCache = { [propertyList: string]: string }
 
 class Workspace {
   private tree: Promise<MBeanTree>
+  private pluginRegisterHandle?: number
+  private pluginUpdateCounter?: number
+  private treeWatchRegisterHandle?: number
+  private treeWatcherCounter?: number
 
   constructor() {
     this.tree = this.loadTree()
@@ -31,10 +35,15 @@ class Workspace {
     }
     const value = await jolokiaService.list(options)
 
-    // TODO: this.jolokiaStatus.xhr = null
     const domains = this.unwindResponseWithRBACCache(value)
     log.debug('JMX tree loaded:', domains)
-    return MBeanTree.createFromDomains(pluginName, domains)
+
+    const tree = MBeanTree.createFromDomains(pluginName, domains)
+
+    this.maybeMonitorPlugins()
+    this.maybeMonitorTree()
+
+    return tree
   }
 
   refreshTree() {
@@ -44,6 +53,86 @@ class Workspace {
         eventService.refresh()
       })
     })
+  }
+
+  private maybeUpdatePlugins(response: IResponse): void {
+    const counter = response.value
+    if (!this.pluginUpdateCounter) {
+      this.pluginUpdateCounter = counter as number
+      return
+    }
+    if (this.pluginUpdateCounter !== response.value) {
+      if (parseBoolean(localStorage['autoRefresh'])) {
+        window.location.reload()
+      }
+    }
+  }
+
+  private maybeReloadTree(response: IResponse): void {
+    const counter = response.value
+    if (!this.treeWatcherCounter) {
+      this.treeWatcherCounter = counter as number
+      return
+    }
+    if (this.treeWatcherCounter !== counter) {
+      this.treeWatcherCounter = counter as number
+      this.refreshTree()
+    }
+  }
+
+  /**
+   * If the Registry plugin is available then register
+   * a callback to refresh the active app plugins in use
+   */
+  private async maybeMonitorPlugins() {
+    const hasRegistry = await this.treeContainsDomainAndProperties('hawtio', { type: 'Registry' })
+
+    if (hasRegistry) {
+      if (!this.pluginRegisterHandle) {
+        this.pluginRegisterHandle = await jolokiaService.register(
+          {
+            type: 'read',
+            mbean: HAWTIO_REGISTRY_MBEAN,
+            attribute: 'UpdateCounter',
+          },
+          (response: IResponse) => this.maybeUpdatePlugins(response),
+        )
+      }
+    } else {
+      if (this.pluginRegisterHandle) {
+        jolokiaService.unregister(this.pluginRegisterHandle)
+        this.pluginRegisterHandle = undefined
+        this.pluginUpdateCounter = undefined
+      }
+    }
+  }
+
+  /**
+   * If the TreeWatcher plugin is available then register
+   * a callback to reload the tree in order to refresh
+   * the changes.
+   */
+  private async maybeMonitorTree() {
+    const hasTreeWatcher = await this.treeContainsDomainAndProperties('hawtio', { type: 'TreeWatcher' })
+
+    if (hasTreeWatcher) {
+      if (!this.treeWatchRegisterHandle) {
+        this.treeWatchRegisterHandle = await jolokiaService.register(
+          {
+            type: 'read',
+            mbean: HAWTIO_TREE_WATCHER_MBEAN,
+            attribute: 'Counter',
+          },
+          (response: IResponse) => this.maybeReloadTree(response),
+        )
+      }
+    } else {
+      if (this.treeWatchRegisterHandle) {
+        jolokiaService.unregister(this.treeWatchRegisterHandle)
+        this.treeWatchRegisterHandle = undefined
+        this.treeWatcherCounter = undefined
+      }
+    }
   }
 
   /**

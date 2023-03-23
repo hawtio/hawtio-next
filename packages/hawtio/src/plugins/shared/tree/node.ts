@@ -33,6 +33,10 @@ export interface FilterFunc {
   (node: MBeanNode): boolean
 }
 
+export interface ForEachFunc {
+  (node: MBeanNode): void
+}
+
 export class MBeanNode implements TreeViewDataItem {
   id: string
   name: string
@@ -221,18 +225,43 @@ export class MBeanNode implements TreeViewDataItem {
     }
   }
 
+  path(): string[] {
+    const path = [this.name]
+    let p = this.parent
+    while (p) {
+      path.unshift(p.name)
+      p = p.parent
+    }
+
+    return path
+  }
+
+  private getDescendentOrThis(pathEntry: string): MBeanNode | null {
+    if (pathEntry === this.name || this.matches({ name: pathEntry })) return this
+
+    return this.findDescendant(node => node.name === pathEntry || node.matches({ name: pathEntry })) || null
+  }
+
   navigate(...namePath: string[]): MBeanNode | null {
     if (namePath.length === 0) return this // path is empty so return this node
 
-    let child: MBeanNode | null = null
-    if (namePath[0].includes('*')) {
-      child = this.children?.find(node => node.matches({ name: namePath[0] })) || null
-    } else {
-      child = this.get(namePath[0])
-    }
-    if (!child) return null
+    const child: MBeanNode | null = this.getDescendentOrThis(namePath[0])
+    return !child ? null : child.navigate(...namePath.slice(1))
+  }
 
-    return child.navigate(...namePath.slice(1))
+  /**
+   * Perform a function on each node in the given path
+   * where the namePath drills down to descendants from
+   * this node
+   */
+  forEach(namePath: string[], eachFn: ForEachFunc) {
+    if (namePath.length === 0) return // path empty so nothing to do
+
+    const child: MBeanNode | null = this.getDescendentOrThis(namePath[0])
+    if (!child) return
+
+    eachFn(child)
+    child.forEach(namePath.slice(1), eachFn)
   }
 
   findDescendant(filter: FilterFunc): MBeanNode | null {

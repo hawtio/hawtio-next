@@ -93,3 +93,8 @@ export function stringSorter(a: string, b: string): number {
   }
   return 0
 }
+
+export function parseBoolean(value: string) {
+  if (!value) return false
+  return JSON.parse(value)
+}

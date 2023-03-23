@@ -1,9 +1,16 @@
+import { workspace } from '../workspace'
 import { MBeanNode } from './node'
 import { treeProcessorRegistry } from './processor-registry'
 import { MBeanTree } from './tree'
 
+jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
+
 describe('MBeanTree', () => {
-  beforeEach(() => {
+  let wkspTree: MBeanTree
+
+  beforeEach(async () => {
+    wkspTree = await workspace.getTree()
+    workspace.refreshTree()
     treeProcessorRegistry.reset()
   })
 
@@ -28,6 +35,30 @@ describe('MBeanTree', () => {
       'test:name=node1': node1,
       'test:name=node2': node2,
     })
+  })
+
+  test('navigate', async () => {
+    let path = ['org.apache.camel', 'SampleCamel', 'components', 'quartz']
+    let qNode = wkspTree.navigate(...path) as MBeanNode
+    expect(qNode).not.toBeNull()
+    expect(qNode.id).toBe('quartz-1')
+
+    path = ['org.apache.camel', 'SampleCame*', 'c*ponents', '*artz']
+    qNode = wkspTree.navigate(...path) as MBeanNode
+    expect(qNode).not.toBeNull()
+    expect(qNode.id).toBe('quartz-1')
+  })
+
+  test('forEach', async () => {
+    let path = ['org.apache.camel', 'SampleCamel', 'components', 'quartz']
+    let counter = 0
+    wkspTree.forEach(path, _ => (counter = counter + 1))
+    expect(counter).toEqual(path.length)
+
+    path = ['org.apache.camel', 'SampleCame*', 'c*ponents', '*artz']
+    counter = 0
+    wkspTree.forEach(path, _ => (counter = counter + 1))
+    expect(counter).toEqual(path.length)
   })
 })
 

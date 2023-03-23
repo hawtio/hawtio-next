@@ -1,6 +1,6 @@
 import { MBeanNode, MBeanTree, PluginTreeViewToolbar } from '@hawtiosrc/plugins/shared'
 import { TreeView, TreeViewDataItem } from '@patternfly/react-core'
-import React, { ChangeEvent, useContext, useState } from 'react'
+import React, { ChangeEvent, useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './CamelTreeView.css'
 import { CamelContext } from './context'
@@ -31,6 +31,15 @@ export const CamelTreeView: React.FunctionComponent = () => {
   const [expanded, setExpanded] = useState(ExpansionValue.Default)
   const [filteredTree, setFilteredTree] = useState(tree.getTree())
   const navigate = useNavigate()
+
+  /**
+   * Listen for changes to the tree that may occur as a result
+   * of events being monitored by the Tree:Watcher in workspace
+   * eg. new endpoint being created
+   */
+  useEffect(() => {
+    setFilteredTree(tree.getTree())
+  }, [tree])
 
   const onSearch = (event: ChangeEvent<HTMLInputElement>) => {
     // Ensure no node from the 'old' filtered is lingering
