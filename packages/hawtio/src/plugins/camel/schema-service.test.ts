@@ -1,5 +1,5 @@
 import { schemaService } from './schema-service'
-import { apacheCamelModel } from '@hawtio/camel-model'
+import * as camelSchema from '@hawtio/camel-model'
 import { isObject } from '@hawtiosrc/util/objects'
 import path from 'path'
 import fs from 'fs'
@@ -33,7 +33,7 @@ describe('schema-service', () => {
   })
 
   test('lookupDefinition of routes', () => {
-    const routeDefn: Record<string, unknown> | null = schemaService.lookupDefinition('routes', apacheCamelModel)
+    const routeDefn: Record<string, unknown> | null = schemaService.lookupDefinition('routes', camelSchema.definitions)
     expect(routeDefn).not.toBeNull()
     const rd: Record<string, unknown> = routeDefn as Record<string, unknown>
     expect(rd.type).toBe('object')
