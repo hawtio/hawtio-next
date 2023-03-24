@@ -2,6 +2,7 @@ import {
   Alert,
   Button,
   CardBody,
+  Checkbox,
   Form,
   FormGroup,
   FormSection,
@@ -30,6 +31,7 @@ const JolokiaForm: React.FunctionComponent = () => {
 
   const jolokiaStoredOptions = jolokiaService.loadJolokiaOptionsFromStorage()
   const [updateRate, setUpdateRate] = useState(jolokiaService.loadUpdateRate())
+  const [autoRefresh, setAutoRefresh] = useState(jolokiaService.loadAutoRefresh())
   const [maxDepth, setMaxDepth] = useState(jolokiaStoredOptions.maxDepth)
   const [maxCollectionSize, setMaxCollectionSize] = useState(jolokiaStoredOptions.maxCollectionSize)
 
@@ -49,6 +51,11 @@ const JolokiaForm: React.FunctionComponent = () => {
       jolokiaService.saveMaxDepth(intValue)
       setMaxDepth(intValue)
     }
+  }
+
+  const onAutoRefreshChanged = (autoRefresh: boolean) => {
+    jolokiaService.saveAutoRefresh(autoRefresh)
+    setAutoRefresh(autoRefresh)
   }
 
   const onMaxCollectionSizeChanged = (maxCollectionSize: string) => {
@@ -85,6 +92,9 @@ const JolokiaForm: React.FunctionComponent = () => {
           value={maxCollectionSize}
           onChange={onMaxCollectionSizeChanged}
         />
+      </FormGroup>
+      <FormGroup label='Auto refresh' fieldId='jolokia-form-auto-refresh'>
+        <Checkbox id='jolokia-form-auto-refresh-input' isChecked={autoRefresh} onChange={onAutoRefreshChanged} />
       </FormGroup>
       <FormGroup fieldId='jolokia-form-apply' helperText='Restart Hawtio with the new values in effect.'>
         <Button onClick={applyJolokia}>Apply</Button>

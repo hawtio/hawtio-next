@@ -11,6 +11,7 @@ import {
   onSuccess,
 } from '@hawtiosrc/util/jolokia'
 import { isObject } from '@hawtiosrc/util/objects'
+import { parseBoolean } from '@hawtiosrc/util/strings'
 import Jolokia, {
   IAjaxErrorFn,
   IErrorResponse,
@@ -47,6 +48,7 @@ const DEFAULT_JOLOKIA_OPTIONS: IOptions = {
 } as const
 
 export const DEFAULT_UPDATE_RATE = 5000
+export const DEFAULT_AUTO_REFRESH = false
 
 const JOLOKIA_PATHS = ['jolokia', '/hawtio/jolokia', '/jolokia'] as const
 
@@ -77,6 +79,7 @@ export interface IJolokiaStoredOptions {
 
 export const STORAGE_KEY_JOLOKIA_OPTIONS = 'connect.jolokia.options'
 export const STORAGE_KEY_UPDATE_RATE = 'connect.jolokia.updateRate'
+export const STORAGE_KEY_AUTO_REFRESH = 'connect.jolokia.autoRefresh'
 
 export interface IJolokiaService {
   getJolokiaUrl(): Promise<string | null>
@@ -445,6 +448,15 @@ class JolokiaService implements IJolokiaService {
 
   saveUpdateRate(value: number): void {
     localStorage.setItem(STORAGE_KEY_UPDATE_RATE, JSON.stringify(value))
+  }
+
+  loadAutoRefresh(): boolean {
+    const value = localStorage.getItem(STORAGE_KEY_AUTO_REFRESH)
+    return value ? parseBoolean(value) : DEFAULT_AUTO_REFRESH
+  }
+
+  saveAutoRefresh(value: boolean): void {
+    localStorage.setItem(STORAGE_KEY_AUTO_REFRESH, JSON.stringify(value))
   }
 
   loadJolokiaOptionsFromStorage(): IJolokiaStoredOptions {
