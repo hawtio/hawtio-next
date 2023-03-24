@@ -1,4 +1,4 @@
-import { isString, toString, trimQuotes } from './strings'
+import { isString, parseBoolean, toString, trimQuotes } from './strings'
 
 describe('strings', () => {
   test('isString', () => {
@@ -27,5 +27,18 @@ describe('strings', () => {
 
     // it should not cause exception when null is passed
     expect(trimQuotes(null as never)).toBeNull()
+  })
+
+  test('parseBoolean()', () => {
+    expect(parseBoolean('true')).toBeTruthy()
+    expect(parseBoolean('TRUE')).toBeTruthy()
+    expect(parseBoolean('tRuE')).toBeTruthy()
+    expect(parseBoolean('1')).toBeTruthy()
+
+    expect(parseBoolean('')).toBeFalsy()
+    expect(parseBoolean('false')).toBeFalsy()
+    expect(parseBoolean('FALSE')).toBeFalsy()
+    expect(parseBoolean('FaLsE')).toBeFalsy()
+    expect(parseBoolean('0')).toBeFalsy()
   })
 })

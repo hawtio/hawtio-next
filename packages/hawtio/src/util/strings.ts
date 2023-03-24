@@ -94,7 +94,8 @@ export function stringSorter(a: string, b: string): number {
   return 0
 }
 
-export function parseBoolean(value: string) {
+export function parseBoolean(value: string): boolean {
   if (!value) return false
-  return JSON.parse(value)
+
+  return /^true$/i.test(value) || parseInt(value) === 1
 }

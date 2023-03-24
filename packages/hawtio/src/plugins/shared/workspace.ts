@@ -1,6 +1,6 @@
 import { eventService, Logger } from '@hawtiosrc/core'
 import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
-import { isString, parseBoolean } from '@hawtiosrc/util/strings'
+import { isString } from '@hawtiosrc/util/strings'
 import { IErrorResponse, IJmxOperation, IJmxOperations, IResponse, ISimpleOptions } from 'jolokia.js'
 import { isArray } from '@hawtiosrc/util/objects'
 import { is, object } from 'superstruct'
@@ -62,7 +62,7 @@ class Workspace {
       return
     }
     if (this.pluginUpdateCounter !== response.value) {
-      if (parseBoolean(localStorage['autoRefresh'])) {
+      if (jolokiaService.loadAutoRefresh()) {
         window.location.reload()
       }
     }
