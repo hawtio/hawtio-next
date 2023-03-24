@@ -1,6 +1,6 @@
 import { CardBody, Checkbox, Form, FormGroup, FormSection, TextInput } from '@patternfly/react-core'
 import React, { useState } from 'react'
-import { camelPreferencesService, ICamelPreferences } from './camel-preferences-service'
+import { camelPreferencesService, CamelOptions } from './camel-preferences-service'
 
 export const CamelPreferences: React.FunctionComponent = () => (
   <CardBody>
@@ -13,14 +13,14 @@ export const CamelPreferences: React.FunctionComponent = () => (
 const CamelPreferencesForm: React.FunctionComponent = () => {
   const [camelPreferences, setCamelPreferences] = useState(camelPreferencesService.loadCamelPreferences())
 
-  const updatePreferences = (value: boolean | number, key: keyof ICamelPreferences): void => {
+  const updatePreferences = (value: boolean | number, key: keyof CamelOptions): void => {
     const updatedPreferences = { ...camelPreferences, ...{ [key]: value } }
 
     camelPreferencesService.saveCamelPreferences(updatedPreferences)
     setCamelPreferences(updatedPreferences)
   }
 
-  const updateNumberValueFor = (key: keyof ICamelPreferences): ((value: string) => void) => {
+  const updateNumberValueFor = (key: keyof CamelOptions): ((value: string) => void) => {
     //Returning an arrow function to reduce boilerplate
     return (value: string) => {
       const intValue = parseInt(value)
@@ -31,7 +31,7 @@ const CamelPreferencesForm: React.FunctionComponent = () => {
     }
   }
 
-  const updateCheckboxValueFor = (key: keyof ICamelPreferences): ((value: boolean, _: React.FormEvent) => void) => {
+  const updateCheckboxValueFor = (key: keyof CamelOptions): ((value: boolean, _: React.FormEvent) => void) => {
     //Utility function generator to reduce boilerplate
     return (value: boolean, _: React.FormEvent) => {
       updatePreferences(value, key)
