@@ -15,7 +15,7 @@ export type CamelOptions = {
   routeMetricMaximumSeconds: number
 }
 
-const CAMEL_PREFERENCES_DEFAULT_VALUES: CamelOptions = {
+export const CAMEL_PREFERENCES_DEFAULT_VALUES: CamelOptions = {
   isHideOptionDocumentation: false,
   isHideDefaultOptionValues: false,
   isHideUnusedOptionValues: false,
