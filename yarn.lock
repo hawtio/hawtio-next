@@ -1998,7 +1998,7 @@ __metadata:
   dependencies:
     "@hawtio/camel-model": ^3.20.2-1
     "@patternfly/react-code-editor": ^4.82.113
-    "@patternfly/react-core": ^4.267.6
+    "@patternfly/react-core": ^4.276.8
     "@patternfly/react-table": ^4.112.6
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^14.0.0
@@ -2030,7 +2030,7 @@ __metadata:
     tsup: ^6.7.0
     typescript: ^4.9.5
   peerDependencies:
-    "@patternfly/react-core": ^4.267.6
+    "@patternfly/react-core": ^4.276.8
     react: ^16.8 || ^17 || ^18
     react-dom: ^16.8 || ^17 || ^18
   languageName: unknown
@@ -2771,7 +2771,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-core@npm:^4.267.6, @patternfly/react-core@npm:^4.276.6":
+"@patternfly/react-core@npm:^4.276.6":
   version: 4.276.6
   resolution: "@patternfly/react-core@npm:4.276.6"
   dependencies:
