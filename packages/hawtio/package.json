@@ -35,7 +35,7 @@
     "@hawtio/camel-model": "^3.20.2-1",
     "@patternfly/react-code-editor": "^4.82.113",
     "@patternfly/react-core": "^4.276.8",
-    "@patternfly/react-table": "^4.112.6",
+    "@patternfly/react-table": "^4.113.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
