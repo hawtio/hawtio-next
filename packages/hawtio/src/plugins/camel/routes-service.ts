@@ -21,7 +21,7 @@ export type CamelRoute = {
 }
 
 class RoutesService {
-  private getIcon(nodeSettingsOrXmlNode: Record<string, unknown> | Element): React.ReactNode {
+  getIcon(nodeSettingsOrXmlNode: Record<string, unknown> | Element): React.ReactNode {
     let nodeSettings: Record<string, unknown> | null = null
 
     if (nodeSettingsOrXmlNode instanceof Element) {
