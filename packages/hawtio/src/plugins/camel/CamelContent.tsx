@@ -24,6 +24,7 @@ import { TypeConverters } from './type-converters'
 import * as ccs from './camel-content-service'
 import { CamelRoutes } from '@hawtiosrc/plugins/camel/routes/CamelRoutes'
 import { Source } from '@hawtiosrc/plugins/camel/routes/Source'
+import { RouteDiagram } from '@hawtiosrc/plugins/camel/route-diagram/RouteDiagram'
 
 export const CamelContent: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
@@ -77,6 +78,12 @@ export const CamelContent: React.FunctionComponent = () => {
         !ccs.isEndpointNode(node) &&
         !ccs.isEndpointsFolder(node) &&
         (ccs.isRouteNode(node) || ccs.isRoutesFolder(node)),
+    },
+    {
+      id: 'routeDiagram',
+      title: 'Route Diagram',
+      component: RouteDiagram,
+      isApplicable: (node: MBeanNode) => ccs.isRouteNode(node) || ccs.isRoutesFolder(node),
     },
     { id: 'attributes', title: 'Attributes', component: Attributes, isApplicable: mBeanApplicable },
     { id: 'operations', title: 'Operations', component: Operations, isApplicable: mBeanApplicable },

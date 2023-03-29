@@ -1,0 +1,21 @@
+<routes xmlns="http://camel.apache.org/schema/spring">
+  <route id="route1" sourceLineNumber="14" sourceLocation="SampleCamelRouter.java">
+    <from sourceLineNumber="14" sourceLocation="SampleCamelRouter.java" uri="direct:a"/>
+    <choice id="choice1" sourceLineNumber="15" sourceLocation="SampleCamelRouter.java">
+      <when id="when1" sourceLineNumber="16" sourceLocation="SampleCamelRouter.java">
+        <simple>'${body} == Hello Camel! - cron'</simple>
+        <log id="log1" message="from cron" sourceLineNumber="17" sourceLocation="SampleCamelRouter.java"/>
+        <to id="to1" sourceLineNumber="18" sourceLocation="SampleCamelRouter.java" uri="stream:out"/>
+      </when>
+      <when id="when2" sourceLineNumber="19" sourceLocation="SampleCamelRouter.java">
+        <simple>${body} == 'Hello Camel! - simple'</simple>
+        <log id="log2" message="from cron" sourceLineNumber="20" sourceLocation="SampleCamelRouter.java"/>
+        <to id="to2" sourceLineNumber="21" sourceLocation="SampleCamelRouter.java" uri="stream:out"/>
+      </when>
+      <otherwise id="otherwise1">
+        <log id="log3" message="from otherwise" sourceLineNumber="23" sourceLocation="SampleCamelRouter.java"/>
+        <to id="to3" sourceLineNumber="24" sourceLocation="SampleCamelRouter.java" uri="stream:out"/>
+      </otherwise>
+    </choice>
+  </route>
+</routes>

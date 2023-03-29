@@ -1,0 +1,47 @@
+.react-flow__node-camel {
+  height: 80px;
+  width: 350px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+.react-flow__node-camel .camelNodeContent {
+  border: 2px solid #8a8d90;
+  background-color: #fafafa;
+  padding: 5px;
+  height: 80px;
+  min-width: 150px;
+  border-radius: 10px;
+
+  font-size: small;
+}
+.react-flow__node-camel .icon {
+  flex-grow: inherit;
+  align-items: center;
+  justify-content: space-between;
+  display: flex;
+}
+
+.react-flow__node-camel img {
+  margin-top: 5px;
+  margin-left: 5px;
+  width: 30px;
+}
+
+.react-flow__node-camel .number {
+  align-items: center;
+}
+.react-flow__node-camel .camelNodeLabel {
+}
+
+.routeDiagram {
+  flex-grow: 1;
+  position: relative;
+  height: 80vh;
+}
+
+.routeDiagramPage {
+  height: 90vh;
+  width: 70vw;
+}
