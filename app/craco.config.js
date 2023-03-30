@@ -40,21 +40,29 @@ module.exports = {
         }),
       ],
     },
-    configure: {
-      output: {
-        publicPath: 'auto',
-      },
-      ignoreWarnings: [
-        // For suppressing sourcemap warnings coming from some dependencies
-        function ignoreSourcemapsloaderWarnings(warning) {
-          return (
-            warning.module &&
-            warning.module.resource.includes('node_modules') &&
-            warning.details &&
-            warning.details.includes('source-map-loader')
-          )
-        },
-      ],
+    configure: webpackConfig => {
+      // Required for Module Federation
+      webpackConfig.output.publicPath = 'auto'
+
+      // For suppressing sourcemap warnings coming from some dependencies
+      webpackConfig.ignoreWarnings = [/Failed to parse source map/]
+
+      // MiniCssExtractPlugin - Ignore order as otherwise conflicting order warning is raised
+      const miniCssExtractPlugin = webpackConfig.plugins.find(p => p.constructor.name === 'MiniCssExtractPlugin')
+      if (miniCssExtractPlugin) {
+        miniCssExtractPlugin.options.ignoreOrder = true
+      }
+
+      // ***** Debugging *****
+      /*
+      const fs = require('fs')
+      const util = require('node:util')
+      const out = `output = ${util.inspect(webpackConfig.output)}\n\nplugins = ${util.inspect(webpackConfig.plugins)}`
+      fs.writeFile('__webpackConfig__.txt', out, err => err && console.error(err))
+      */
+      // ***** Debugging *****
+
+      return webpackConfig
     },
   },
   jest: {
