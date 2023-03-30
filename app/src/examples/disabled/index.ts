@@ -1,7 +1,7 @@
-import { hawtio } from '@hawtio/react'
+import { hawtio, HawtioPlugin } from '@hawtio/react'
 import { DisabledExample } from './Disabled'
 
-export const registerDisabled = () => {
+export const registerDisabled: HawtioPlugin = () => {
   hawtio.addPlugin({
     id: 'disabled',
     title: 'Disabled',

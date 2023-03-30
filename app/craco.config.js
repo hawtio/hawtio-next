@@ -1,11 +1,51 @@
-const { hawtioBackend } = require('@hawtio/backend-middleware')
+const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPlugin')
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
+const { dependencies } = require('./package.json')
+const { hawtioBackend } = require('@hawtio/backend-middleware')
 
 module.exports = {
   webpack: {
+    plugins: {
+      add: [
+        new ModuleFederationPlugin({
+          name: 'app',
+          filename: 'remoteEntry.js',
+          exposes: {
+            './remote': './src/examples/remote',
+          },
+          shared: {
+            ...dependencies,
+            react: {
+              singleton: true,
+              requiredVersion: dependencies['react'],
+            },
+            'react-dom': {
+              singleton: true,
+              requiredVersion: dependencies['react-dom'],
+            },
+            'react-router-dom': {
+              singleton: true,
+              requiredVersion: dependencies['react-router-dom'],
+            },
+            '@hawtio/react': {
+              singleton: true,
+              // Hardcoding needed because it cannot handle yarn 'workspace:*' version
+              requiredVersion: '^0.2.0-dev.4',
+            },
+          },
+        }),
+        new MonacoWebpackPlugin({
+          languages: ['xml'],
+          globalAPI: true,
+        }),
+      ],
+    },
     configure: {
+      output: {
+        publicPath: 'auto',
+      },
       ignoreWarnings: [
-        // For suppressing sourcemap warnings coming from superstruct
+        // For suppressing sourcemap warnings coming from some dependencies
         function ignoreSourcemapsloaderWarnings(warning) {
           return (
             warning.module &&
@@ -14,12 +54,6 @@ module.exports = {
             warning.details.includes('source-map-loader')
           )
         },
-      ],
-      plugins: [
-        new MonacoWebpackPlugin({
-          languages: ['xml'],
-          globalAPI: true,
-        }),
       ],
     },
   },
@@ -62,12 +96,22 @@ module.exports = {
       const username = 'developer'
       const login = true
       const proxyEnabled = true
+      // TODO: Currently self-hosting remotes don't work despite no errors thrown
+      const plugin = [
+        {
+          url: 'http://localhost:3000',
+          scope: 'app',
+          module: './remote',
+          pluginEntry: 'registerRemote',
+        },
+      ]
 
       // Hawtio backend API mock
       devServer.app.get('/hawtio/user', (req, res) => res.send(`"${username}"`))
       devServer.app.post('/hawtio/auth/login', (req, res) => res.send(String(login)))
       devServer.app.get('/hawtio/auth/logout', (req, res) => res.redirect('/hawtio/login'))
       devServer.app.get('/hawtio/proxy/enabled', (req, res) => res.send(String(proxyEnabled)))
+      devServer.app.get('/hawtio/plugin', (req, res) => res.send(JSON.stringify(plugin)))
 
       middlewares.push({
         name: 'hawtio-backend',
