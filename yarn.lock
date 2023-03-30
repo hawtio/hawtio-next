@@ -1981,7 +1981,7 @@ __metadata:
   dependencies:
     "@typescript-eslint/eslint-plugin": ^5.50.0
     "@typescript-eslint/parser": ^5.50.0
-    concurrently: ^8.0.0
+    concurrently: ^8.0.1
     cz-conventional-changelog: 3.3.0
     eslint: ^8.33.0
     eslint-config-prettier: ^8.8.0
@@ -5684,23 +5684,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"concurrently@npm:^8.0.0":
-  version: 8.0.0
-  resolution: "concurrently@npm:8.0.0"
+"concurrently@npm:^8.0.1":
+  version: 8.0.1
+  resolution: "concurrently@npm:8.0.1"
   dependencies:
     chalk: ^4.1.2
     date-fns: ^2.29.3
     lodash: ^4.17.21
     rxjs: ^7.8.0
-    shell-quote: ^1.7.4
+    shell-quote: ^1.8.0
     spawn-command: 0.0.2-1
     supports-color: ^8.1.1
     tree-kill: ^1.2.2
-    yargs: ^17.6.2
+    yargs: ^17.7.1
   bin:
     conc: dist/bin/concurrently.js
     concurrently: dist/bin/concurrently.js
-  checksum: 1f30fb3568d15165890c3bb5773bf530dd8b1a1d4914b808fbbf13405bc3c72c7d5d2a472df1618269ef6af3d8bc62e4268085e8e0b007b54fb2ab13edfdd923
+  checksum: cce10ab1bbd7fd099300234637cdbc8e12622a5fe53f8dd31dcd9562d9803f25d3d0410bdb6fffd54e8f4e11b852366c03994bd319843cce70e449c8a8a69526
   languageName: node
   linkType: hard
 
@@ -14407,7 +14407,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"shell-quote@npm:^1.7.4":
+"shell-quote@npm:^1.8.0":
   version: 1.8.0
   resolution: "shell-quote@npm:1.8.0"
   checksum: 6ef7c5e308b9c77eedded882653a132214fa98b4a1512bb507588cf6cd2fc78bfee73e945d0c3211af028a1eabe09c6a19b96edd8977dc149810797e93809749
@@ -16770,7 +16770,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs@npm:^17.6.2":
+"yargs@npm:^17.7.1":
   version: 17.7.1
   resolution: "yargs@npm:17.7.1"
   dependencies:
