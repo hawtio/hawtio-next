@@ -33,6 +33,12 @@ type Plugins = {
  */
 export type HawtioPlugin = () => void
 
+export interface HawtioRemote extends ImportRemoteOptions {
+  pluginEntry?: string
+}
+
+const DEFAULT_PLUGIN_ENTRY = 'plugin'
+
 /**
  * Hawtio core service.
  *
@@ -118,17 +124,17 @@ class HawtioCore {
       return
     }
 
-    log.info('Plugins before loading:', this.plugins)
+    log.info(Object.keys(this.plugins).length, 'plugins before loading:', this.plugins)
 
     // Load external plugins from all URLs
     await Promise.all(this.urls.map(this.loadExternalPlugins))
 
-    log.info('Plugins after loaded:', this.plugins)
+    log.info(Object.keys(this.plugins).length, 'plugins after loaded:', this.plugins)
   }
 
   /**
    * Loads external plugins from the given URL. The URL endpoint is expected to
-   * return an array of ImportRemoteOptions from '@module-federation/utilities'.
+   * return an array of HawtioRemote objects.
    */
   private async loadExternalPlugins(url: string) {
     log.debug('Trying url:', url)
@@ -139,16 +145,20 @@ class HawtioCore {
         return
       }
 
-      const remotes = (await res.json()) as ImportRemoteOptions[]
+      const remotes = (await res.json()) as HawtioRemote[]
       log.debug('Loaded remotes from url:', url, '=', remotes)
 
       // Load plugins
       await Promise.all(
         remotes.map(async remote => {
-          log.debug('Loading', remote)
-          const { plugin } = await importRemote<{ plugin: HawtioPlugin }>(remote)
-          plugin()
-          log.debug('Loaded', remote)
+          log.debug('Loading remote', remote)
+          try {
+            const plugin = await importRemote<{ [entry: string]: HawtioPlugin }>(remote)
+            plugin[remote.pluginEntry || DEFAULT_PLUGIN_ENTRY]()
+            log.debug('Loaded remote', remote)
+          } catch (err) {
+            log.error('Error loading remote:', remote, '-', err)
+          }
         }),
       )
     } catch (err) {
