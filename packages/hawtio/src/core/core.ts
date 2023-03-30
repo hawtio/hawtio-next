@@ -1,5 +1,6 @@
 import { importRemote, ImportRemoteOptions } from '@module-federation/utilities'
 import $ from 'jquery'
+import { eventService } from './event-service'
 import { log } from './globals'
 
 /**
@@ -124,12 +125,20 @@ class HawtioCore {
       return
     }
 
-    log.info(Object.keys(this.plugins).length, 'plugins before loading:', this.plugins)
+    const numBefore = Object.keys(this.plugins).length
+    log.info(numBefore, 'plugins before loading:', { ...this.plugins })
 
     // Load external plugins from all URLs
     await Promise.all(this.urls.map(this.loadExternalPlugins))
 
-    log.info(Object.keys(this.plugins).length, 'plugins after loaded:', this.plugins)
+    const numAfter = Object.keys(this.plugins).length
+    log.info(numAfter, 'plugins after loaded:', this.plugins)
+
+    // Notify plugins update
+    if (numBefore !== numAfter) {
+      log.debug('Notify plugins update')
+      eventService.pluginsUpdated()
+    }
   }
 
   /**
