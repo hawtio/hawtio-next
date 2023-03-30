@@ -28,4 +28,11 @@ describe('EventService', () => {
     eventService.logout()
     expect(mockListener).toBeCalled()
   })
+
+  test('plugins updated', () => {
+    const mockListener = jest.fn()
+    eventService.onPluginsUpdated(mockListener)
+    eventService.pluginsUpdated()
+    expect(mockListener).toBeCalled()
+  })
 })

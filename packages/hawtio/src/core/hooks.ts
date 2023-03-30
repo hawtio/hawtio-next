@@ -1,4 +1,4 @@
-import { configManager, Hawtconfig, hawtio, Plugin } from '@hawtiosrc/core'
+import { configManager, eventService, EVENT_PLUGINS_UPDATED, Hawtconfig, hawtio, Plugin } from '@hawtiosrc/core'
 import { useEffect, useState } from 'react'
 import { log } from './globals'
 
@@ -20,6 +20,10 @@ export function usePlugins() {
       setPluginsLoaded(true)
     }
     loadPlugins()
+
+    // Reload plugins when they are updated elsewhere
+    eventService.onPluginsUpdated(loadPlugins)
+    return () => eventService.removeListener(EVENT_PLUGINS_UPDATED, loadPlugins)
   }, [])
 
   return { plugins, pluginsLoaded }

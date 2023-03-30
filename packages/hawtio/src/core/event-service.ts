@@ -14,24 +14,33 @@ export type Notification = {
 export type EventListener = () => void
 export type NotificationListener = (notification: Notification) => void
 
-export type HawtioEvent = 'notify' | 'login' | 'logout' | 'refresh'
+export type HawtioEvent = 'notify' | 'login' | 'logout' | 'refresh' | 'pluginsUpdated'
 
 export const EVENT_NOTIFY: HawtioEvent = 'notify'
 export const EVENT_LOGIN: HawtioEvent = 'login'
 export const EVENT_LOGOUT: HawtioEvent = 'logout'
 export const EVENT_REFRESH: HawtioEvent = 'refresh'
+export const EVENT_PLUGINS_UPDATED: HawtioEvent = 'pluginsUpdated'
 
 const DEFAULT_DURATION = 8000
 
 export interface IEventService {
   notify(notification: Notification): void
   onNotify(listener: NotificationListener): void
+
   login(): void
   onLogin(listener: EventListener): void
+
   logout(): void
   onLogout(listener: EventListener): void
+
   refresh(): void
   onRefresh(listener: EventListener): void
+
+  pluginsUpdated(): void
+  onPluginsUpdated(listener: EventListener): void
+
+  removeListener(event: HawtioEvent, listener: EventListener | NotificationListener): void
 }
 
 class EventService implements IEventService {
@@ -49,28 +58,36 @@ class EventService implements IEventService {
     log.debug('Number of listeners on', EVENT_NOTIFY, '=', this.eventEmitter.listenerCount(EVENT_NOTIFY))
   }
 
-  login(): void {
+  login() {
     this.eventEmitter.emit(EVENT_LOGIN)
   }
 
-  onLogin(listener: EventListener): void {
+  onLogin(listener: EventListener) {
     this.eventEmitter.on(EVENT_LOGIN, listener)
   }
 
-  logout(): void {
+  logout() {
     this.eventEmitter.emit(EVENT_LOGOUT)
   }
 
-  onLogout(listener: EventListener): void {
+  onLogout(listener: EventListener) {
     this.eventEmitter.on(EVENT_LOGOUT, listener)
   }
 
-  refresh(): void {
+  refresh() {
     this.eventEmitter.emit(EVENT_REFRESH)
   }
 
-  onRefresh(listener: EventListener): void {
+  onRefresh(listener: EventListener) {
     this.eventEmitter.on(EVENT_REFRESH, listener)
+  }
+
+  pluginsUpdated() {
+    this.eventEmitter.emit(EVENT_PLUGINS_UPDATED)
+  }
+
+  onPluginsUpdated(listener: EventListener) {
+    this.eventEmitter.on(EVENT_PLUGINS_UPDATED, listener)
   }
 
   removeListener(event: HawtioEvent, listener: EventListener | NotificationListener) {
