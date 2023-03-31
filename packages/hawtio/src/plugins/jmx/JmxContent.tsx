@@ -21,6 +21,7 @@ import { Chart } from '@hawtiosrc/plugins/shared/chart'
 import { Operations } from '@hawtiosrc/plugins/shared/operations'
 import { Attributes } from '@hawtiosrc/plugins/shared/attributes'
 import { JmxContentMBeans, MBeanNode } from '@hawtiosrc/plugins/shared'
+import { AttributeTable } from '../shared/attributes/AttributeTable'
 
 export const JmxContent: React.FunctionComponent = () => {
   const { selectedNode } = useContext(MBeanTreeContext)
@@ -40,6 +41,7 @@ export const JmxContent: React.FunctionComponent = () => {
   }
 
   const mBeanApplicable = (node: MBeanNode) => node.objectName
+  const mBeanCollectionApplicable = (node: MBeanNode) => node?.children?.some(child => child.objectName)
 
   const allNavItems = [
     { id: 'attributes', title: 'Attributes', component: Attributes, isApplicable: mBeanApplicable },
@@ -84,7 +86,8 @@ export const JmxContent: React.FunctionComponent = () => {
             </Routes>
           </React.Fragment>
         )}
-        {navItems.length === 0 && !selectedNode.objectName && <JmxContentMBeans />}
+        {navItems.length === 0 && !selectedNode.objectName && mBeanCollectionApplicable(selectedNode) && <AttributeTable />}
+        {navItems.length === 0 && !selectedNode.objectName && !mBeanCollectionApplicable(selectedNode) && <JmxContentMBeans />}
       </PageSection>
     </React.Fragment>
   )
