@@ -41,7 +41,7 @@ export const JmxContent: React.FunctionComponent = () => {
   }
 
   const mBeanApplicable = (node: MBeanNode) => node.objectName
-  const mBeanCollectionApplicable = (node: MBeanNode) => node?.children?.some(child => child.objectName)
+  const mBeanCollectionApplicable = (node: MBeanNode) => node?.children?.every(child => child.objectName)
 
   const allNavItems = [
     { id: 'attributes', title: 'Attributes', component: Attributes, isApplicable: mBeanApplicable },
