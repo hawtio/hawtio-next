@@ -64,8 +64,7 @@ export const RouteDiagram: React.FunctionComponent = () => {
       setEdges(eds => addEdge({ ...params, type: ConnectionLineType.SmoothStep, animated: true }, eds)),
     [setEdges],
   )
-  console.log('edges', edges)
-  console.log('nds', nodes)
+
   return (
     <Page className='routeDiagramPage'>
       <div className='routeDiagram'>
