@@ -6,6 +6,7 @@ import { AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { attributeService } from './attribute-service'
 import './AttributeTable.css'
 import { NodeNameTable } from './NodeNameTable'
+import { tidyLabels } from '../util/helpers'
 
 export const AttributeTable: React.FunctionComponent = () => {
   const { selectedNode } = useContext(PluginNodeSelectionContext)
@@ -47,14 +48,6 @@ export const AttributeTable: React.FunctionComponent = () => {
       </Card>
     )
   }
-
-  const tidyLabels = (str: string) =>
-    str
-      .replace(/([a-z])([A-Z])/g, '$1 $2')
-      .replace(/\b([A-Z]+)([A-Z])([a-z])/, '$1 $2$3')
-      .replace(/^./, function (str) {
-        return str.toUpperCase()
-      })
 
   const columns: TableProps['cells'] = Object.keys(attributes[0]).map(label => tidyLabels(label))
   const rows: TableProps['rows'] = attributes.map(attribute =>

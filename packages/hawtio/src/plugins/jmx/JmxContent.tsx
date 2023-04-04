@@ -90,17 +90,15 @@ export const JmxContent: React.FunctionComponent = () => {
           <Title headingLevel='h1'>{selectedNode.name}</Title>
           <Text component='small'>{selectedNode.objectName}</Text>
         </PageSection>
-        {navItems.length > 0 && <PageNavigation>{mbeanNav}</PageNavigation>}
+        <PageNavigation>{mbeanNav}</PageNavigation>
       </PageGroup>
       <PageSection className={'jmx-main'}>
-        {navItems.length > 0 && (
-          <React.Fragment>
-            <Routes>
-              {mbeanRoutes}
-              <Route key='root' path='/' element={<Navigate to={navItems[0].id} />} />
-            </Routes>
-          </React.Fragment>
-        )}
+        <React.Fragment>
+          <Routes>
+            {mbeanRoutes}
+            <Route key='root' path='/' element={<Navigate to={navItems[0].id} />} />
+          </Routes>
+        </React.Fragment>
       </PageSection>
     </React.Fragment>
   )
