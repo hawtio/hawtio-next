@@ -234,7 +234,6 @@ class VisualizationService {
         siblingNodes = siblings
       } else {
         siblingNodes = [nodes.length - 1]
-        console.log(siblingNodes, [nodes.length - 1], nodes)
       }
     }
     return siblingNodes
