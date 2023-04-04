@@ -41,11 +41,25 @@ export const JmxContent: React.FunctionComponent = () => {
     )
   }
 
-  const mBeanApplicable = (node: MBeanNode) => node.objectName
-  const mBeanCollectionApplicable = (node: MBeanNode) => node?.children?.every(child => child.objectName)
+  const mBeanApplicable = (node: MBeanNode) => Boolean(node.objectName)
+  const mBeanCollectionApplicable = (node: MBeanNode) => Boolean(node.children?.every(child => child.objectName))
+  const parentMBeanApplicable = (node: MBeanNode) => !node.parent
+  const DEFAULT = (node: MBeanNode) => true
+
+  const tableSelector: (node: MBeanNode) => React.FunctionComponent = (node: MBeanNode) => {
+    const tablePriorityList: { condition: (node: MBeanNode) => boolean; element: React.FunctionComponent }[] = [
+      { condition: mBeanApplicable, element: Attributes },
+      { condition: mBeanCollectionApplicable, element: AttributeTable },
+      { condition: parentMBeanApplicable, element: NodeNameTable },
+      { condition: DEFAULT, element: JmxContentMBeans },
+    ]
+
+    //Find first
+    return tablePriorityList.filter(entry => entry.condition(node))[0].element
+  }
 
   const allNavItems = [
-    { id: 'attributes', title: 'Attributes', component: Attributes, isApplicable: mBeanApplicable },
+    { id: 'attributes', title: 'Attributes', component: tableSelector(selectedNode), isApplicable: DEFAULT },
     { id: 'operations', title: 'Operations', component: Operations, isApplicable: mBeanApplicable },
     { id: 'chart', title: 'Chart', component: Chart, isApplicable: mBeanApplicable },
   ]
@@ -87,17 +101,6 @@ export const JmxContent: React.FunctionComponent = () => {
             </Routes>
           </React.Fragment>
         )}
-        {navItems.length === 0 && !selectedNode.objectName && mBeanCollectionApplicable(selectedNode) && (
-          <AttributeTable />
-        )}
-        {navItems.length === 0 &&
-          !selectedNode.objectName &&
-          !mBeanCollectionApplicable(selectedNode) &&
-          !selectedNode.parent && <NodeNameTable />}
-        {navItems.length === 0 &&
-          !selectedNode.objectName &&
-          !mBeanCollectionApplicable(selectedNode) &&
-          selectedNode.parent && <JmxContentMBeans />}
       </PageSection>
     </React.Fragment>
   )
