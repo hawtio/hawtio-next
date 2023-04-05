@@ -75,9 +75,7 @@ export const AttributeTable: React.FunctionComponent = () => {
 
   const labels = Object.keys(attributes[0])
   const columns: TableProps['cells'] = labels.map(label => humanizeLabels(label))
-  const rows: TableProps['rows'] = attributes.map(attribute =>
-    [...labels].map(label => JSON.stringify(attribute[label])),
-  )
+  const rows: TableProps['rows'] = attributes.map(attribute => labels.map(label => JSON.stringify(attribute[label])))
 
   return (
     <Card isFullHeight>
