@@ -5,8 +5,8 @@ import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/selectionNodeCont
 import { AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { attributeService } from './attribute-service'
 import './AttributeTable.css'
-import { tidyLabels } from '../util/helpers'
-import { JmxContentMBeans } from '../JmxContentMBeans'
+import { JmxContentMBeans } from '@hawtiosrc/plugins/shared/JmxContentMBeans'
+import { humanizeLabels } from '@hawtiosrc/util/strings'
 
 export const AttributeTable: React.FunctionComponent = () => {
   const { selectedNode } = useContext(PluginNodeSelectionContext)
@@ -74,7 +74,7 @@ export const AttributeTable: React.FunctionComponent = () => {
   }
 
   const labels = Object.keys(attributes[0])
-  const columns: TableProps['cells'] = labels.map(label => tidyLabels(label))
+  const columns: TableProps['cells'] = labels.map(label => humanizeLabels(label))
   const rows: TableProps['rows'] = attributes.map(attribute =>
     [...labels].map(label => JSON.stringify(attribute[label])),
   )

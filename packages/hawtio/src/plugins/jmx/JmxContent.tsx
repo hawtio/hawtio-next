@@ -19,9 +19,8 @@ import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { MBeanTreeContext } from './context'
 import { Chart } from '@hawtiosrc/plugins/shared/chart'
 import { Operations } from '@hawtiosrc/plugins/shared/operations'
-import { Attributes } from '@hawtiosrc/plugins/shared/attributes'
+import { Attributes, AttributeTable } from '@hawtiosrc/plugins/shared/attributes'
 import { JmxContentMBeans, MBeanNode } from '@hawtiosrc/plugins/shared'
-import { AttributeTable } from '../shared/attributes/AttributeTable'
 
 export const JmxContent: React.FunctionComponent = () => {
   const { selectedNode } = useContext(MBeanTreeContext)
