@@ -106,8 +106,8 @@ export function parseBoolean(value: string): boolean {
  * @param str The property to transform
  * @returns The property with its proper spaces
  */
-export const humanizeLabels = (str: string) =>
-  str
+export function humanizeLabels(str: string): string {
+  return str
     .split('-')
     .map(str => str[0].toUpperCase() + str.slice(1))
     .join(' ')
@@ -117,3 +117,4 @@ export const humanizeLabels = (str: string) =>
     .replace(/^./, function (str) {
       return str.toUpperCase()
     })
+}
