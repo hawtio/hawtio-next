@@ -82,6 +82,7 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
     setChildIcon(routesNode, routeIcon)
     ccs.setChildProperties(routesNode, routeNodeType)
     routesService.transformXml(newCtxNode, routesNode)
+    routesNode?.addProperty(contextNodeType, newCtxNode.objectName ?? '')
 
     const endpointsNode = context.get(endpointsType)
     adoptChild(newCtxNode, endpointsNode, endpointsType, endPointFolderIcon)

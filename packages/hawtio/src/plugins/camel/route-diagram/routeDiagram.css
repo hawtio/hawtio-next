@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: center;
 }
-.react-flow__node-camel .camelNodeContent {
+.react-flow__node-camel .camel-node-content {
   border: 2px solid #8a8d90;
   background-color: #fafafa;
   padding: 5px;
@@ -22,6 +22,11 @@
   justify-content: space-between;
   display: flex;
 }
+.react-flow__node-camel .inflights {
+  color: #0f4a85;
+  margin-top: -60px;
+  margin-left: 15px;
+}
 
 .react-flow__node-camel img {
   margin-top: 5px;
@@ -32,16 +37,22 @@
 .react-flow__node-camel .number {
   align-items: center;
 }
-.react-flow__node-camel .camelNodeLabel {
+.node-tooltip {
+  background-color: white;
+  border: solid 1px black;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: x-small;
 }
 
-.routeDiagram {
+.route-diagram {
   flex-grow: 1;
   position: relative;
   height: 80vh;
 }
 
-.routeDiagramPage {
+.route-diagram-page {
   height: 90vh;
   width: 70vw;
+  background-color: white;
 }
