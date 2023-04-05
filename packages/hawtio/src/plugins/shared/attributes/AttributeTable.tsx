@@ -5,8 +5,8 @@ import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/selectionNodeCont
 import { AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { attributeService } from './attribute-service'
 import './AttributeTable.css'
-import { NodeNameTable } from './NodeNameTable'
 import { tidyLabels } from '../util/helpers'
+import { JmxContentMBeans } from '../JmxContentMBeans'
 
 export const AttributeTable: React.FunctionComponent = () => {
   const { selectedNode } = useContext(PluginNodeSelectionContext)
@@ -49,14 +49,35 @@ export const AttributeTable: React.FunctionComponent = () => {
     )
   }
 
-  const columns: TableProps['cells'] = Object.keys(attributes[0]).map(label => tidyLabels(label))
-  const rows: TableProps['rows'] = attributes.map(attribute =>
-    Object.values(attribute).flatMap(value => JSON.stringify(value)),
-  )
+  const checkIfAllMBeansHaveSameAttributes = (attributes: AttributeValues[]) => {
+    if (attributes.length <= 1) {
+      return true
+    }
 
-  if (columns.length === 0 || rows.length === 0) {
-    return <NodeNameTable />
+    const firstAttributeElements = attributes[0].length
+
+    if (!attributes.every(attribute => attribute.length === firstAttributeElements)) {
+      return false
+    }
+
+    return attributes.every(attribute =>
+      Object.keys(attribute).every(label => Object.keys(attributes[0]).includes(label)),
+    )
   }
+
+  if (
+    attributes.some(attribute => Object.keys(attribute).length === 0) ||
+    attributes.some(attribute => Object.values(attribute).length === 0) ||
+    !checkIfAllMBeansHaveSameAttributes(attributes)
+  ) {
+    return <JmxContentMBeans />
+  }
+
+  const labels = Object.keys(attributes[0])
+  const columns: TableProps['cells'] = labels.map(label => tidyLabels(label))
+  const rows: TableProps['rows'] = attributes.map(attribute =>
+    [...labels].map(label => JSON.stringify(attribute[label])),
+  )
 
   return (
     <Card isFullHeight>

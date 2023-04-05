@@ -22,7 +22,6 @@ import { Operations } from '@hawtiosrc/plugins/shared/operations'
 import { Attributes } from '@hawtiosrc/plugins/shared/attributes'
 import { JmxContentMBeans, MBeanNode } from '@hawtiosrc/plugins/shared'
 import { AttributeTable } from '../shared/attributes/AttributeTable'
-import { NodeNameTable } from '../shared/attributes/NodeNameTable'
 
 export const JmxContent: React.FunctionComponent = () => {
   const { selectedNode } = useContext(MBeanTreeContext)
@@ -43,14 +42,12 @@ export const JmxContent: React.FunctionComponent = () => {
 
   const mBeanApplicable = (node: MBeanNode) => Boolean(node.objectName)
   const mBeanCollectionApplicable = (node: MBeanNode) => Boolean(node.children?.every(child => child.objectName))
-  const parentMBeanApplicable = (node: MBeanNode) => !node.parent
   const DEFAULT = (node: MBeanNode) => true
 
   const tableSelector: (node: MBeanNode) => React.FunctionComponent = (node: MBeanNode) => {
     const tablePriorityList: { condition: (node: MBeanNode) => boolean; element: React.FunctionComponent }[] = [
       { condition: mBeanApplicable, element: Attributes },
       { condition: mBeanCollectionApplicable, element: AttributeTable },
-      { condition: parentMBeanApplicable, element: NodeNameTable },
       { condition: DEFAULT, element: JmxContentMBeans },
     ]
 
