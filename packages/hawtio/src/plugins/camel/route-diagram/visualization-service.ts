@@ -1,7 +1,7 @@
 import { schemaService } from '@hawtiosrc/plugins/camel/schema-service'
-import { routesService } from '@hawtiosrc/plugins/camel/routes-service'
+import { routesService, RouteStats, Statistics } from '@hawtiosrc/plugins/camel/routes-service'
 import { parseXML } from '@hawtiosrc/util/xml'
-import { Edge, Position, Node } from 'reactflow'
+import { Edge, Node, Position } from 'reactflow'
 import { ReactNode } from 'react'
 import dagre from 'dagre'
 
@@ -18,6 +18,8 @@ export type CamelNodeData = {
   tooltip: string
   type: string
   uri: string
+  routeId: string
+  stats?: Statistics
 }
 
 class VisualizationService {
@@ -85,22 +87,49 @@ class VisualizationService {
     const nodes: CamelNodeData[] = []
     const links: Edge[] = []
     const doc: XMLDocument = parseXML(xml as string)
+
     const allRoutes = doc.getElementsByTagName('route')
 
     for (const route of allRoutes) {
-      const routeId = route.getAttribute('id')
+      const routeId = route.id
       if (!selectedRouteId || !routeId || selectedRouteId === routeId) {
-        this.addRouteXmlChildren(route, nodes, links, '')
+        this.addRouteXmlChildren(route, nodes, links, routeId, '')
       }
     }
-    const camelNodes = nodes.map(node => ({ id: node.id, data: node, position: { x: 0, y: 0 }, type: 'camel' }))
+    //parse stats
+    const camelNodes = nodes.map(node => ({
+      id: node.id,
+      data: node,
+      position: {
+        x: 0,
+        y: 0,
+      },
+      type: 'camel',
+    }))
     const edges = links.map(edge => ({ ...edge, markerEnd: { type: 'arrow' }, type: this.edgeType, animated: true }))
     return { camelNodes, edges }
   }
+
+  updateStats(statsXml: string, nodes: Node<CamelNodeData>[]): Node<CamelNodeData>[] {
+    const stats: RouteStats[] = routesService.processRoutesStats(statsXml)
+
+    return nodes.map(node => {
+      const routeStat = stats.find(s => s.id === node.data.routeId)
+      if (node.data.type === 'from') {
+        const newData = { ...node.data, stats: routeStat }
+        return { ...node, data: newData }
+      }
+      const pStats = routeStat?.processorStats.find(p => node.data.cid === p.id)
+      const newData = { ...node.data, stats: pStats }
+      return { ...node, data: newData }
+    })
+  }
+
   addRouteXmlChildren(
     parent: Element,
     nodes: CamelNodeData[],
     links: Edge[],
+    routeId: string,
     parentId: string,
     parentNode: CamelNodeData | null = null,
   ) {
@@ -172,6 +201,7 @@ class VisualizationService {
           tooltip: tooltip,
           type: nodeId,
           uri: uri ?? '',
+          routeId: routeId,
         }
         if (rid) {
           node.cid = rid
@@ -212,7 +242,7 @@ class VisualizationService {
         }
       }
 
-      const siblings = this.addRouteXmlChildren(route, nodes, links, id, node)
+      const siblings = this.addRouteXmlChildren(route, nodes, links, routeId, id, node)
       if (parenNodeName === 'choice') {
         siblingNodes = siblingNodes.concat(siblings)
       } else if (

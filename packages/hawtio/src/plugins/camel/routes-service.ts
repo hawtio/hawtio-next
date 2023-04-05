@@ -1,7 +1,7 @@
 import React from 'react'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import { AttributeValues, jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
-import { log, routeXmlNodeType } from './globals'
+import { contextNodeType, log, routeXmlNodeType } from './globals'
 import { schemaService } from './schema-service'
 import * as ccs from './camel-content-service'
 import * as icons from './icons'
@@ -10,7 +10,7 @@ import { parseXML } from '@hawtiosrc/util/xml'
 export type CamelRoute = {
   objectName: string
   RouteId: string
-  State: string
+  State: string | null
   Uptime: string
   ExchangesCompleted: number
   ExchangesFailed: number
@@ -18,6 +18,44 @@ export type CamelRoute = {
   ExchangesTotal: number
   ExchangesInflight: number
   MeanProcessingTime: number
+}
+
+export interface Statistics {
+  id: string
+  state: string
+  exchangesInflight?: string
+  exchangesCompleted?: string
+  failuresHandled?: string
+  redeliveries?: string
+  externalRedeliveries?: string
+  minProcessingTime?: string
+  maxProcessingTime?: string
+  deltaProcessingTime?: string
+  meanProcessingTime?: string
+  startTimestamp?: string
+  resetTimestamp?: string
+  lastExchangeFailureExchangeId?: string
+  lastExchangeFailureTimestamp?: string
+  lastExchangeCreatedTimestamp?: string
+  firstExchangeFailureExchangeId?: string
+  firstExchangeFailureTimestamp?: string
+  lastProcessingTime?: string
+  exchangesFailed?: string
+  totalProcessingTime?: string
+  firstExchangeCompletedTimestamp?: string
+  firstExchangeCompletedExchangeId?: string
+  lastExchangeCompletedTimestamp?: string
+  lastExchangeCompletedExchangeId?: string
+}
+
+export type ProcessorStats = Statistics & {
+  index?: string
+  sourceLineNumber?: string
+}
+
+export type RouteStats = Statistics & {
+  sourceLocation: string
+  processorStats: ProcessorStats[]
 }
 
 class RoutesService {
@@ -122,6 +160,7 @@ class RoutesService {
     contextNode.addProperty('xml', xml as string)
     return xml as string
   }
+
   /**
    * Looks up the route XML for the given context and selected route and
    * processes the selected route's XML with the given function
@@ -194,6 +233,7 @@ class RoutesService {
 
     return route
   }
+
   async startRoute(objName: string) {
     await jolokiaService.execute(objName, 'start()')
   }
@@ -204,6 +244,64 @@ class RoutesService {
 
   async deleteRoute(objName: string) {
     await jolokiaService.execute(objName, 'remove()')
+  }
+
+  async dumpRoutesStatsXML(routesNode: MBeanNode): Promise<string | null> {
+    let xml = null
+    const routeNodeOperation = 'dumpRouteStatsAsXml'
+    const routesFolderOperation = 'dumpRoutesStatsAsXml'
+
+    const mbeanName = routesNode.getProperty(contextNodeType)
+    const operationForMBean = mbeanName ? routesFolderOperation : routeNodeOperation
+    const mbeanToQuery = mbeanName ? mbeanName : routesNode.objectName ?? ''
+
+    try {
+      xml = await jolokiaService.execute(mbeanToQuery, operationForMBean, [true, true])
+    } catch (error) {
+      throw new Error('Failed to dump routes stats from mbean: ' + mbeanName + error)
+    }
+    if (!xml) {
+      throw new Error('Failed to extract any xml from mbean: ' + mbeanName)
+    }
+    return xml as string
+  }
+
+  processRoutesStats(statsXml: string): RouteStats[] {
+    const doc: XMLDocument = parseXML(statsXml)
+    const routesStats: RouteStats[] = []
+    const allRoutes = doc.getElementsByTagName('routeStat')
+    for (const route of allRoutes) {
+      routesStats.push(this.createRouteStats(route))
+    }
+    return routesStats
+  }
+
+  createProcessorStats(routeid: string, pDoc: Element): ProcessorStats {
+    let res: ProcessorStats = {
+      id: '',
+      index: '',
+      state: '',
+    }
+
+    for (const atr of pDoc.getAttributeNames()) {
+      res = { ...res, [atr]: pDoc.getAttribute(atr) }
+    }
+    return res as ProcessorStats
+  }
+
+  createRouteStats(pDoc: Element): RouteStats {
+    const procStats = pDoc.getElementsByTagName('processorStat')
+    const processorStats: ProcessorStats[] = []
+
+    for (const pStat of procStats) {
+      processorStats.push(this.createProcessorStats(pDoc.id, pStat))
+    }
+    let routeStats: RouteStats = { id: '', processorStats: processorStats, sourceLocation: '', state: '' }
+
+    for (const atr of pDoc.getAttributeNames()) {
+      routeStats = { ...routeStats, [atr]: pDoc.getAttribute(atr) }
+    }
+    return routeStats
   }
 }
 
