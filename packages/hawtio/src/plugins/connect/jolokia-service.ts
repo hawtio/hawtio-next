@@ -466,7 +466,7 @@ class JolokiaService implements IJolokiaService {
       maxDepth: currentJolokiaUpdateOptions['maxDepth'] ? currentJolokiaUpdateOptions['maxDepth'] : DEFAULT_MAX_DEPTH,
       maxCollectionSize: currentJolokiaUpdateOptions['maxCollectionSize']
         ? currentJolokiaUpdateOptions['maxCollectionSize']
-        : DEFAULT_MAX_DEPTH,
+        : DEFAULT_MAX_COLLECTION_SIZE,
     }
 
     return jolokiaOptions
