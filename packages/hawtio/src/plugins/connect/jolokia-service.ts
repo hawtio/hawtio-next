@@ -72,7 +72,7 @@ export interface JolokiaConfig {
   mbean: string
 }
 
-export interface IJolokiaStoredOptions {
+export interface JolokiaStoredOptions {
   maxDepth: number
   maxCollectionSize: number
 }
@@ -94,9 +94,10 @@ export interface IJolokiaService {
   unregister(handle: number): void
   loadUpdateRate(): number
   saveUpdateRate(value: number): void
-  loadJolokiaOptionsFromStorage(): IJolokiaStoredOptions
-  saveMaxDepth(value: number): void
-  saveMaxCollectionSize(value: number): void
+  loadAutoRefresh(): boolean
+  saveAutoRefresh(value: boolean): void
+  loadJolokiaStoredOptions(): JolokiaStoredOptions
+  saveJolokiaStoredOptions(options: JolokiaStoredOptions): void
 }
 
 class JolokiaService implements IJolokiaService {
@@ -310,7 +311,7 @@ class JolokiaService implements IJolokiaService {
   }
 
   private async loadJolokiaOptions(): Promise<IOptions> {
-    const opts = { ...DEFAULT_JOLOKIA_OPTIONS, ...this.loadJolokiaOptionsFromStorage() }
+    const opts = { ...DEFAULT_JOLOKIA_OPTIONS, ...this.loadJolokiaStoredOptions() }
 
     const jolokiaUrl = await this.jolokiaUrl
     if (jolokiaUrl) {
@@ -437,10 +438,6 @@ class JolokiaService implements IJolokiaService {
     jolokia.unregister(handle)
   }
 
-  saveJolokiaOptions(params: IOptions) {
-    localStorage.setItem(STORAGE_KEY_JOLOKIA_OPTIONS, JSON.stringify(params))
-  }
-
   loadUpdateRate(): number {
     const value = localStorage.getItem(STORAGE_KEY_UPDATE_RATE)
     return value ? parseInt(JSON.parse(value)) : DEFAULT_UPDATE_RATE
@@ -459,33 +456,16 @@ class JolokiaService implements IJolokiaService {
     localStorage.setItem(STORAGE_KEY_AUTO_REFRESH, JSON.stringify(value))
   }
 
-  loadJolokiaOptionsFromStorage(): IJolokiaStoredOptions {
-    const currentStorageJolokiaOptions = localStorage.getItem(STORAGE_KEY_JOLOKIA_OPTIONS)
-    const currentJolokiaUpdateOptions = currentStorageJolokiaOptions ? JSON.parse(currentStorageJolokiaOptions) : {}
-    const jolokiaOptions = {
-      maxDepth: currentJolokiaUpdateOptions['maxDepth'] ? currentJolokiaUpdateOptions['maxDepth'] : DEFAULT_MAX_DEPTH,
-      maxCollectionSize: currentJolokiaUpdateOptions['maxCollectionSize']
-        ? currentJolokiaUpdateOptions['maxCollectionSize']
-        : DEFAULT_MAX_COLLECTION_SIZE,
-    }
-
-    return jolokiaOptions
+  loadJolokiaStoredOptions(): JolokiaStoredOptions {
+    const item = localStorage.getItem(STORAGE_KEY_JOLOKIA_OPTIONS)
+    const options: JolokiaStoredOptions = item ? JSON.parse(item) : {}
+    const maxDepth = options.maxDepth || DEFAULT_MAX_DEPTH
+    const maxCollectionSize = options.maxCollectionSize || DEFAULT_MAX_COLLECTION_SIZE
+    return { maxDepth, maxCollectionSize }
   }
 
-  saveMaxDepth(value: number): void {
-    const currentStorageJolokiaOptions = localStorage.getItem(STORAGE_KEY_JOLOKIA_OPTIONS)
-    const currentJolokiaUpdateOptions = currentStorageJolokiaOptions ? JSON.parse(currentStorageJolokiaOptions) : {}
-    currentJolokiaUpdateOptions['maxDepth'] = value
-
-    localStorage.setItem(STORAGE_KEY_JOLOKIA_OPTIONS, JSON.stringify(currentJolokiaUpdateOptions))
-  }
-
-  saveMaxCollectionSize(value: number): void {
-    const currentStorageJolokiaOptions = localStorage.getItem(STORAGE_KEY_JOLOKIA_OPTIONS)
-    const currentJolokiaUpdateOptions = currentStorageJolokiaOptions ? JSON.parse(currentStorageJolokiaOptions) : {}
-    currentJolokiaUpdateOptions['maxCollectionSize'] = value
-
-    localStorage.setItem(STORAGE_KEY_JOLOKIA_OPTIONS, JSON.stringify(currentJolokiaUpdateOptions))
+  saveJolokiaStoredOptions(options: JolokiaStoredOptions) {
+    localStorage.setItem(STORAGE_KEY_JOLOKIA_OPTIONS, JSON.stringify(options))
   }
 }
 

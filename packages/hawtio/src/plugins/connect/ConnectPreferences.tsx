@@ -29,7 +29,7 @@ export const ConnectPreferences: React.FunctionComponent = () => (
 const JolokiaForm: React.FunctionComponent = () => {
   const navigate = useNavigate()
 
-  const jolokiaStoredOptions = jolokiaService.loadJolokiaOptionsFromStorage()
+  const jolokiaStoredOptions = jolokiaService.loadJolokiaStoredOptions()
   const [updateRate, setUpdateRate] = useState(jolokiaService.loadUpdateRate())
   const [autoRefresh, setAutoRefresh] = useState(jolokiaService.loadAutoRefresh())
   const [maxDepth, setMaxDepth] = useState(jolokiaStoredOptions.maxDepth)
@@ -48,7 +48,7 @@ const JolokiaForm: React.FunctionComponent = () => {
     const intValue = parseInt(maxDepth)
 
     if (intValue) {
-      jolokiaService.saveMaxDepth(intValue)
+      jolokiaService.saveJolokiaStoredOptions({ maxDepth: intValue, maxCollectionSize })
       setMaxDepth(intValue)
     }
   }
@@ -62,7 +62,7 @@ const JolokiaForm: React.FunctionComponent = () => {
     const intValue = parseInt(maxCollectionSize)
 
     if (intValue) {
-      jolokiaService.saveMaxCollectionSize(intValue)
+      jolokiaService.saveJolokiaStoredOptions({ maxDepth, maxCollectionSize: intValue })
       setMaxCollectionSize(intValue)
     }
   }
