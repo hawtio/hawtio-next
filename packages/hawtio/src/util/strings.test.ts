@@ -49,5 +49,9 @@ describe('strings', () => {
     expect(humanizeLabels('MBeanHTML')).toEqual('MBean HTML')
 
     expect(humanizeLabels('object-name')).toEqual('Object Name')
+    expect(humanizeLabels('double--dashes')).toEqual('Double Dashes')
+    expect(humanizeLabels('mbean-name')).toEqual('MBean Name')
+
+    expect(humanizeLabels('-Object-Name-')).toEqual('Object Name')
   })
 })

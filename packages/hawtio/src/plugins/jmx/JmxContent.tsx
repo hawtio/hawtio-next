@@ -50,7 +50,6 @@ export const JmxContent: React.FunctionComponent = () => {
       { condition: DEFAULT, element: JmxContentMBeans },
     ]
 
-    //Find first
     return tablePriorityList.filter(entry => entry.condition(node))[0].element
   }
 

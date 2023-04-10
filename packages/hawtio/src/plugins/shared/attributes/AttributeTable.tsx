@@ -10,7 +10,7 @@ import { humanizeLabels } from '@hawtiosrc/util/strings'
 
 export const AttributeTable: React.FunctionComponent = () => {
   const { selectedNode } = useContext(PluginNodeSelectionContext)
-  const [attributes, setAttributes] = useState<AttributeValues[]>([{}])
+  const [attributesList, setAttributesList] = useState<AttributeValues[]>([{}])
   const [isReading, setIsReading] = useState<boolean>(false)
 
   useEffect(() => {
@@ -18,8 +18,8 @@ export const AttributeTable: React.FunctionComponent = () => {
       return
     }
 
-    const childrenMbeansAttributes: AttributeValues[] = []
     const readAttributes = async () => {
+      const childrenMbeansAttributes: AttributeValues[] = []
       setIsReading(true)
       if (selectedNode.children)
         for (const mbean of selectedNode.children) {
@@ -29,7 +29,7 @@ export const AttributeTable: React.FunctionComponent = () => {
             childrenMbeansAttributes.push(attrs)
           }
         }
-      setAttributes([...childrenMbeansAttributes])
+      setAttributesList([...childrenMbeansAttributes])
       setIsReading(false)
     }
     readAttributes()
@@ -49,33 +49,35 @@ export const AttributeTable: React.FunctionComponent = () => {
     )
   }
 
-  const checkIfAllMBeansHaveSameAttributes = (attributes: AttributeValues[]) => {
-    if (attributes.length <= 1) {
+  const checkIfAllMBeansHaveSameAttributes = (attributesList: AttributeValues[]) => {
+    if (attributesList.length <= 1) {
       return true
     }
 
-    const firstAttributeElements = attributes[0].length
+    const firstMBeanAttributesElements = attributesList[0].length
 
-    if (!attributes.every(attribute => attribute.length === firstAttributeElements)) {
+    if (!attributesList.every(mbeanAttributes => mbeanAttributes.length === firstMBeanAttributesElements)) {
       return false
     }
 
-    return attributes.every(attribute =>
-      Object.keys(attribute).every(label => Object.keys(attributes[0]).includes(label)),
-    )
+    const labelSet: Set<string> = new Set()
+    Object.keys(attributesList[0]).forEach(label => labelSet.add(label))
+
+    return attributesList.every(attribute => Object.keys(attribute).every(label => labelSet.has(label)))
   }
 
   if (
-    attributes.some(attribute => Object.keys(attribute).length === 0) ||
-    attributes.some(attribute => Object.values(attribute).length === 0) ||
-    !checkIfAllMBeansHaveSameAttributes(attributes)
+    attributesList.some(attribute => Object.entries(attribute).length === 0) ||
+    !checkIfAllMBeansHaveSameAttributes(attributesList)
   ) {
     return <JmxContentMBeans />
   }
 
-  const labels = Object.keys(attributes[0])
+  const labels = Object.keys(attributesList[0])
   const columns: TableProps['cells'] = labels.map(label => humanizeLabels(label))
-  const rows: TableProps['rows'] = attributes.map(attribute => labels.map(label => JSON.stringify(attribute[label])))
+  const rows: TableProps['rows'] = attributesList.map(attribute =>
+    labels.map(label => JSON.stringify(attribute[label])),
+  )
 
   return (
     <Card isFullHeight>

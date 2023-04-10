@@ -109,12 +109,13 @@ export function parseBoolean(value: string): boolean {
 export function humanizeLabels(str: string): string {
   return str
     .split('-')
-    .map(str => str[0].toUpperCase() + str.slice(1))
+    .filter(str => str.length !== 0)
+    .map(str => str.replace(/^./, str => str.toUpperCase()))
     .join(' ')
     .replace(/([a-z])([A-Z])/g, '$1 $2')
     .replace(/\b([A-Z]+)([A-Z])([a-z])/, '$1 $2$3')
     .replace('M Bean', 'MBean')
-    .replace(/^./, function (str) {
-      return str.toUpperCase()
-    })
+    .replace('Mbean', 'MBean')
+    .replace(/^./, str => str.toUpperCase())
+    .trim()
 }
