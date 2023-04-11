@@ -101,7 +101,7 @@ export function parseBoolean(value: string): boolean {
 }
 
 /**
- * Will format a property to a standart human readable string with its spaces.
+ * Will format a property to a standard human readable string with its spaces.
  * It will respect MBean and leave it together
  * @param str The property to transform
  * @returns The property with its proper spaces

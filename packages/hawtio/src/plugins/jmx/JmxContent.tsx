@@ -41,20 +41,19 @@ export const JmxContent: React.FunctionComponent = () => {
 
   const mBeanApplicable = (node: MBeanNode) => Boolean(node.objectName)
   const mBeanCollectionApplicable = (node: MBeanNode) => Boolean(node.children?.every(child => child.objectName))
-  const DEFAULT = (node: MBeanNode) => true
+  const ALWAYS = (node: MBeanNode) => true
 
   const tableSelector: (node: MBeanNode) => React.FunctionComponent = (node: MBeanNode) => {
     const tablePriorityList: { condition: (node: MBeanNode) => boolean; element: React.FunctionComponent }[] = [
       { condition: mBeanApplicable, element: Attributes },
       { condition: mBeanCollectionApplicable, element: AttributeTable },
-      { condition: DEFAULT, element: JmxContentMBeans },
     ]
 
-    return tablePriorityList.filter(entry => entry.condition(node))[0].element
+    return tablePriorityList.find(entry => entry.condition(node))?.element ?? JmxContentMBeans
   }
 
   const allNavItems = [
-    { id: 'attributes', title: 'Attributes', component: tableSelector(selectedNode), isApplicable: DEFAULT },
+    { id: 'attributes', title: 'Attributes', component: tableSelector(selectedNode), isApplicable: ALWAYS },
     { id: 'operations', title: 'Operations', component: Operations, isApplicable: mBeanApplicable },
     { id: 'chart', title: 'Chart', component: Chart, isApplicable: mBeanApplicable },
   ]

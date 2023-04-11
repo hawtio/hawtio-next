@@ -63,7 +63,7 @@ export const AttributeTable: React.FunctionComponent = () => {
     const labelSet: Set<string> = new Set()
     Object.keys(attributesList[0]).forEach(label => labelSet.add(label))
 
-    return attributesList.every(attribute => Object.keys(attribute).every(label => labelSet.has(label)))
+    return attributesList.every(attributes => Object.keys(attributes).every(label => labelSet.has(label)))
   }
 
   if (
