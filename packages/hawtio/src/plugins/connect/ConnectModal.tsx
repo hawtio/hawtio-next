@@ -1,4 +1,4 @@
-import { isBlank } from '@hawtiosrc/util/strings'
+import { isBlank } from '__root__/util/strings'
 import {
   ActionGroup,
   Button,

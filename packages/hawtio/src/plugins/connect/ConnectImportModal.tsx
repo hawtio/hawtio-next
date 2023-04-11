@@ -1,4 +1,4 @@
-import { eventService } from '@hawtiosrc/core'
+import { eventService } from '__root__/core'
 import { Button, FileUpload, Modal, ModalVariant } from '@patternfly/react-core'
 import { useContext, useState } from 'react'
 import { ConnectContext } from './context'

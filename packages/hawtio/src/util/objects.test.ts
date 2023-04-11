@@ -15,7 +15,9 @@ describe('objects', () => {
   })
 
   test('isString', () => {
+    expect(isString(undefined)).toBe(false)
     expect(isString(null)).toBe(false)
+    expect(isString({})).toBe(false)
     expect(isString(1)).toBe(false)
     expect(isString(true)).toBe(false)
     expect(isString(false)).toBe(false)
@@ -25,6 +27,7 @@ describe('objects', () => {
       /* no-op */
     }
     expect(isString(fn)).toBe(false)
+    expect(isString('')).toBe(true)
     expect(isString('hello')).toBe(true)
   })
 })

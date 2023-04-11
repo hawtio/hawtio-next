@@ -1,4 +1,4 @@
-import { stringSorter } from '@hawtiosrc/util/strings'
+import { stringSorter } from '__root__/util/strings'
 import jsLogger, { GlobalLogger, ILogger, ILogLevel } from 'js-logger'
 import { is, object, type } from 'superstruct'
 

@@ -2,7 +2,7 @@ import { useContext } from 'react'
 import { Card, CardBody, Text } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
 import { OnRowClick, Table, TableBody, TableHeader, TableProps } from '@patternfly/react-table'
-import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/selectionNodeContext'
+import { PluginNodeSelectionContext } from '__root__/plugins/selectionNodeContext'
 import './JmxContentMBeans.css'
 
 export const JmxContentMBeans: React.FunctionComponent = () => {

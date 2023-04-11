@@ -1,7 +1,8 @@
 import { configManager } from './core'
 
-export * from './core'
 export * from './Hawtio'
+export * from './core'
+export type { HawtioPlugin } from './core'
 export { helpRegistry } from './help'
 export * from './plugins'
 export { preferencesRegistry } from './preferences'

@@ -32,6 +32,11 @@ module.exports = {
               // Hardcoding needed because it cannot handle yarn 'workspace:*' version
               requiredVersion: '^0.2.0-dev.4',
             },
+            '@hawtio/react-plugins': {
+              singleton: true,
+              // Hardcoding needed because it cannot handle yarn 'workspace:*' version
+              requiredVersion: '^0.2.0-dev.0',
+            },
           },
         }),
         new MonacoWebpackPlugin({

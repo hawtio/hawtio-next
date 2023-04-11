@@ -1,4 +1,4 @@
-import { configManager, eventService, EVENT_PLUGINS_UPDATED, Hawtconfig, hawtio, Plugin } from '@hawtiosrc/core'
+import { configManager, eventService, EVENT_PLUGINS_UPDATED, Hawtconfig, hawtio, Plugin } from '__root__/core'
 import { useEffect, useState } from 'react'
 import { log } from './globals'
 

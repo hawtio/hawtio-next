@@ -1,9 +1,8 @@
-import { Icons, MBeanNode, PropertyList } from './node'
 import { workspace } from '../workspace'
+import { Icons, MBeanNode, PropertyList } from './node'
 import { MBeanTree } from './tree'
-import { domainNodeType } from '@hawtiosrc/plugins/camel/globals'
 
-jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
+jest.mock('__root__/plugins/connect/jolokia-service')
 
 describe('MBeanNode', () => {
   let tree: MBeanTree
@@ -148,7 +147,7 @@ describe('MBeanNode', () => {
   test('matches', async () => {
     const domainNode = tree.get('org.apache.camel') as MBeanNode
     expect(domainNode).not.toBeNull()
-    domainNode.addProperty('type', domainNodeType)
+    domainNode.addProperty('type', 'Camel Domain')
     domainNode.addProperty('domain', domainNode.name)
 
     expect(domainNode.matches({})).toBeFalsy()
@@ -160,7 +159,7 @@ describe('MBeanNode', () => {
     expect(domainNode.matches({ name: '*apache.c*' })).toBeTruthy()
     expect(domainNode.matches({ name: '*ap*e.c*' })).toBeTruthy()
 
-    expect(domainNode.matches({ name: 'org.apache.camel', type: domainNodeType })).toBeTruthy()
+    expect(domainNode.matches({ name: 'org.apache.camel', type: 'Camel Domain' })).toBeTruthy()
     expect(domainNode.matches({ name: 'org.apache.camel', type: 'Camel*' })).toBeTruthy()
     expect(domainNode.matches({ name: 'org.apache.camel', type: 'Camel*', domain: 'invalid' })).toBeFalsy()
     expect(domainNode.matches({ name: 'org.apache.camel', type: 'Camel*', domain: domainNode.name })).toBeTruthy()

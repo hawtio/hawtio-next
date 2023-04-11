@@ -1,5 +1,5 @@
 import { createContext, useState } from 'react'
-import { MBeanNode } from '@hawtiosrc/plugins/shared'
+import { MBeanNode } from '__root__/plugins/shared'
 
 /**
  * Custom React hook for using JMX MBean tree.

@@ -1,5 +1,5 @@
-import { HawtioPlugin } from '@hawtiosrc/core'
-import { treeProcessorRegistry } from '@hawtiosrc/plugins/shared'
+import { HawtioPlugin } from '__root__/core'
+import { treeProcessorRegistry } from '__root__/plugins/shared'
 import { rbacTreeProcessor } from './tree-processor'
 
 export const rbac: HawtioPlugin = () => {

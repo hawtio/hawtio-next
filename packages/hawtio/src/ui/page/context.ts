@@ -1,4 +1,4 @@
-import { Plugin } from '@hawtiosrc/core'
+import { Plugin } from '__root__/core'
 import { createContext } from 'react'
 
 export type PageContext = {

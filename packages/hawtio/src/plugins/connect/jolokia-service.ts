@@ -1,6 +1,6 @@
-import { userService } from '@hawtiosrc/auth'
-import { eventService } from '@hawtiosrc/core'
-import { getCookie } from '@hawtiosrc/util/cookies'
+import { userService } from '__root__/auth'
+import { eventService } from '__root__/core'
+import { getCookie } from '__root__/util/cookies'
 import {
   escapeMBeanPath,
   onBulkSuccess,
@@ -9,9 +9,9 @@ import {
   onSimpleSuccess,
   onSimpleSuccessAndError,
   onSuccess,
-} from '@hawtiosrc/util/jolokia'
-import { isObject } from '@hawtiosrc/util/objects'
-import { parseBoolean } from '@hawtiosrc/util/strings'
+} from '__root__/util/jolokia'
+import { isObject } from '__root__/util/objects'
+import { parseBoolean } from '__root__/util/strings'
 import Jolokia, {
   IAjaxErrorFn,
   IErrorResponse,

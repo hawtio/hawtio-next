@@ -1,8 +1,8 @@
-import { PUBLIC_USER, userService } from '@hawtiosrc/auth'
-import { DEFAULT_APP_NAME, useHawtconfig } from '@hawtiosrc/core'
-import { hawtioLogo, userAvatar } from '@hawtiosrc/img'
-import { preferencesService } from '@hawtiosrc/preferences'
-import { HawtioAbout } from '@hawtiosrc/ui/about'
+import { PUBLIC_USER, userService } from '__root__/auth'
+import { DEFAULT_APP_NAME, useHawtconfig } from '__root__/core'
+import { hawtioLogo, userAvatar } from '__root__/img'
+import { preferencesService } from '__root__/preferences'
+import { HawtioAbout } from '__root__/ui/about'
 import {
   Avatar,
   Brand,

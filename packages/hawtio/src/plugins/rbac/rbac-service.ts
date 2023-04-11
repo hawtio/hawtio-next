@@ -1,5 +1,5 @@
-import { jolokiaService } from '@hawtiosrc/plugins/connect'
-import { isBlank } from '@hawtiosrc/util/strings'
+import { jolokiaService } from '__root__/plugins/connect'
+import { isBlank } from '__root__/util/strings'
 import { log } from './globals'
 
 const ACL_MBEAN_PATTERN = '*:type=security,area=jmx,*'

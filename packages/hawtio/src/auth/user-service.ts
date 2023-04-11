@@ -1,4 +1,4 @@
-import { eventService } from '@hawtiosrc/core'
+import { eventService } from '__root__/core'
 import { log, PATH_LOGOUT, PATH_USER, PUBLIC_USER } from './globals'
 
 export interface IUserService {

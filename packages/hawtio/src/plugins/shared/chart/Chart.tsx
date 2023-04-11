@@ -8,7 +8,7 @@ import {
 } from '@patternfly/react-core'
 import { ClipboardCheckIcon } from '@patternfly/react-icons'
 import { useContext } from 'react'
-import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/selectionNodeContext'
+import { PluginNodeSelectionContext } from '__root__/plugins/selectionNodeContext'
 
 export const Chart: React.FunctionComponent = () => {
   const { selectedNode } = useContext(PluginNodeSelectionContext)

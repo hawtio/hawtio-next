@@ -1,5 +1,5 @@
-import { escapeDots, escapeTags } from '@hawtiosrc/util/jolokia'
-import { stringSorter } from '@hawtiosrc/util/strings'
+import { escapeDots, escapeTags } from '__root__/util/jolokia'
+import { stringSorter } from '__root__/util/strings'
 import { MBeanNode, OptimisedJmxDomain, OptimisedJmxDomains, FilterFunc, ForEachFunc } from './node'
 import { log } from '../globals'
 import { treeProcessorRegistry } from './processor-registry'

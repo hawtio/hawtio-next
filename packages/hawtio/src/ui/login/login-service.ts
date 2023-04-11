@@ -1,4 +1,4 @@
-import { eventService } from '@hawtiosrc/core'
+import { eventService } from '__root__/core'
 import { log } from './globals'
 
 const PATH_LOGIN = 'auth/login'

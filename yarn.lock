@@ -1992,12 +1992,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hawtio/react@workspace:*, @hawtio/react@workspace:packages/hawtio":
+"@hawtio/react-plugins@workspace:*, @hawtio/react-plugins@workspace:packages/plugins":
   version: 0.0.0-use.local
-  resolution: "@hawtio/react@workspace:packages/hawtio"
+  resolution: "@hawtio/react-plugins@workspace:packages/plugins"
   dependencies:
     "@hawtio/camel-model": ^3.20.2-1
-    "@module-federation/utilities": ^1.5.0
+    "@hawtio/react": "workspace:^"
     "@patternfly/react-code-editor": ^4.82.113
     "@patternfly/react-core": ^4.276.8
     "@patternfly/react-table": ^4.113.0
@@ -2008,12 +2008,11 @@ __metadata:
     "@types/dagre-layout": ^0.8.2
     "@types/jest": ^29.5.0
     "@types/node": ^18.15.11
-    "@types/react": ^18.0.35
+    "@types/react": ^18.0.34
     "@types/react-dom": ^18.0.11
     "@types/react-router-dom": ^5.3.3
     dagre: ^0.8.5
     eslint-config-react-app: ^7.0.1
-    eventemitter3: ^5.0.0
     jest: ^29.5.0
     jest-environment-jsdom: ^29.5.0
     jest-fetch-mock: ^3.0.3
@@ -2024,11 +2023,51 @@ __metadata:
     monaco-editor: ^0.37.1
     react: ^18.2.0
     react-dom: ^18.2.0
-    react-markdown: ^8.0.7
+    react-markdown: ^8.0.6
     react-monaco-editor: ^0.52.0
     react-router-dom: ^6.10.0
     react-split: ^2.0.14
     reactflow: ^11.6.1
+    replace: ^1.2.2
+    ts-jest: ^29.1.0
+    tsup: ^6.7.0
+    typescript: ^4.9.5
+  peerDependencies:
+    "@patternfly/react-core": ^4.276.8
+    react: ^16.8 || ^17 || ^18
+    react-dom: ^16.8 || ^17 || ^18
+  languageName: unknown
+  linkType: soft
+
+"@hawtio/react@workspace:*, @hawtio/react@workspace:^, @hawtio/react@workspace:packages/hawtio":
+  version: 0.0.0-use.local
+  resolution: "@hawtio/react@workspace:packages/hawtio"
+  dependencies:
+    "@module-federation/utilities": ^1.5.0
+    "@patternfly/react-core": ^4.276.8
+    "@patternfly/react-table": ^4.113.0
+    "@testing-library/jest-dom": ^5.16.5
+    "@testing-library/react": ^14.0.0
+    "@testing-library/user-event": ^14.4.3
+    "@types/jest": ^29.5.0
+    "@types/node": ^18.15.11
+    "@types/react": ^18.0.35
+    "@types/react-dom": ^18.0.11
+    "@types/react-router-dom": ^5.3.3
+    eslint-config-react-app: ^7.0.1
+    eventemitter3: ^5.0.0
+    jest: ^29.5.0
+    jest-environment-jsdom: ^29.5.0
+    jest-fetch-mock: ^3.0.3
+    jest-watch-typeahead: ^2.2.2
+    jolokia.js: 1.7.2
+    jquery: ^3.6.4
+    js-logger: ^1.6.1
+    react: ^18.2.0
+    react-dom: ^18.2.0
+    react-markdown: ^8.0.7
+    react-router-dom: ^6.10.0
+    react-split: ^2.0.14
     replace: ^1.2.2
     superstruct: ^1.0.3
     ts-jest: ^29.1.0
@@ -4073,7 +4112,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^18.0.35":
+"@types/react@npm:^18.0.34, @types/react@npm:^18.0.35":
   version: 18.0.35
   resolution: "@types/react@npm:18.0.35"
   dependencies:
@@ -4880,6 +4919,7 @@ __metadata:
     "@craco/craco": ^7.1.0
     "@hawtio/backend-middleware": ^1.0.3
     "@hawtio/react": "workspace:*"
+    "@hawtio/react-plugins": "workspace:*"
     monaco-editor-webpack-plugin: ^7.0.1
     react: ^18.2.0
     react-dom: ^18.2.0
@@ -13988,7 +14028,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-markdown@npm:^8.0.7":
+"react-markdown@npm:^8.0.6, react-markdown@npm:^8.0.7":
   version: 8.0.7
   resolution: "react-markdown@npm:8.0.7"
   dependencies:

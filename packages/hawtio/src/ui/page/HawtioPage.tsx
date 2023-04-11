@@ -1,9 +1,9 @@
-import { useUser } from '@hawtiosrc/auth/hooks'
-import { usePlugins } from '@hawtiosrc/core'
-import { HawtioHelp } from '@hawtiosrc/help/HawtioHelp'
-import { backgroundImages } from '@hawtiosrc/img'
-import { PluginNodeSelectionContext, usePluginNodeSelected } from '@hawtiosrc/plugins'
-import { HawtioPreferences, preferencesService } from '@hawtiosrc/preferences'
+import { useUser } from '__root__/auth/hooks'
+import { usePlugins } from '__root__/core'
+import { HawtioHelp } from '__root__/help/HawtioHelp'
+import { backgroundImages } from '__root__/img'
+import { PluginNodeSelectionContext, usePluginNodeSelected } from '__root__/plugins'
+import { HawtioPreferences, preferencesService } from '__root__/preferences'
 import {
   BackgroundImage,
   EmptyState,

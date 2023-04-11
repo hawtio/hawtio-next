@@ -1,4 +1,5 @@
-import { configManager, hawtio, Hawtio, registerPlugins } from '@hawtio/react'
+import { configManager, hawtio, Hawtio, registerCorePlugins } from '@hawtio/react'
+import { registerPlugins } from '@hawtio/react-plugins'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { registerExamples } from './examples'
@@ -11,9 +12,12 @@ const configure = () => {
 }
 configure()
 
-// Bootstrap Hawtio
+// Register builtin plugins
+registerCorePlugins()
 registerPlugins()
+// Register example plugins
 registerExamples()
+// Bootstrap Hawtio
 hawtio.bootstrap()
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)

@@ -1,4 +1,4 @@
-import { Logger } from '@hawtiosrc/core'
+import { Logger } from '__root__/core'
 
 export const pluginName = 'hawtio-shared'
 export const log = Logger.get(pluginName)

@@ -1,8 +1,8 @@
 import { createContext, useEffect, useState, useContext, useRef } from 'react'
-import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
-import { workspace, MBeanNode, MBeanTree } from '@hawtiosrc/plugins/shared'
+import { PluginNodeSelectionContext } from '__root__/plugins'
+import { workspace, MBeanNode, MBeanTree } from '__root__/plugins/shared'
 import { pluginName, pluginPath } from './globals'
-import { eventService, EVENT_REFRESH } from '@hawtiosrc/core'
+import { eventService, EVENT_REFRESH } from '__root__/core'
 import { TreeViewDataItem } from '@patternfly/react-core'
 import { useNavigate } from 'react-router-dom'
 

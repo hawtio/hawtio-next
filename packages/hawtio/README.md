@@ -4,8 +4,7 @@ A Hawtio reimplementation based on TypeScript + React.
 This project reimplements the following Hawtio JS components in one project:
 
 - [hawtio-core](https://github.com/hawtio/hawtio-core)
-- [hawtio-integration](https://github.com/hawtio/hawtio-integration)
-- [hawtio-oauth](https://github.com/hawtio/hawtio-oauth)
+- Connect, JMX, and RBAC plugins from [hawtio-integration](https://github.com/hawtio/hawtio-integration)
 
 ## Install
 
@@ -28,12 +27,13 @@ yarn add @hawtio/react
 import '@hawtio/react/dist/index.css'
 import '@patternfly/react-core/dist/styles/base.css'
 
-import { hawtio, Hawtio, registerPlugins } from '@hawtio/react'
+import { configManager, hawtio, Hawtio, registerCorePlugins } from '@hawtio/react'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 
+// Register builtin plugins
+registerCorePlugins()
 // Bootstrap Hawtio
-registerPlugins()
 hawtio.bootstrap()
 
 const root = ReactDOM.createRoot(

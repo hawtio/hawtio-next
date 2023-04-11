@@ -12,15 +12,15 @@ import {
   Text,
   Title,
 } from '@patternfly/react-core'
-import './JmxContent.css'
 import { CubesIcon } from '@patternfly/react-icons'
+import { JmxContentMBeans, MBeanNode } from '__root__/plugins/shared'
+import { AttributeTable, Attributes } from '__root__/plugins/shared/attributes'
+import { Chart } from '__root__/plugins/shared/chart'
+import { Operations } from '__root__/plugins/shared/operations'
 import React, { useContext } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import './JmxContent.css'
 import { MBeanTreeContext } from './context'
-import { Chart } from '@hawtiosrc/plugins/shared/chart'
-import { Operations } from '@hawtiosrc/plugins/shared/operations'
-import { Attributes, AttributeTable } from '@hawtiosrc/plugins/shared/attributes'
-import { JmxContentMBeans, MBeanNode } from '@hawtiosrc/plugins/shared'
 
 export const JmxContent: React.FunctionComponent = () => {
   const { selectedNode } = useContext(MBeanTreeContext)

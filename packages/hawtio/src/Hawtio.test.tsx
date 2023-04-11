@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { Hawtio } from './Hawtio'
 
-jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
+jest.mock('__root__/plugins/connect/jolokia-service')
 
 describe('Hawtio', () => {
   test('renders page', async () => {

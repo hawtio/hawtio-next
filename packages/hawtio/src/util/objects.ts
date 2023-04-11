@@ -12,7 +12,7 @@ export function isEmpty(obj: object): boolean {
 }
 
 export function isString(value: unknown): value is string {
-  return typeof value === 'string' || value instanceof String
+  return value != null && typeof value.valueOf() === 'string'
 }
 
 export function isArray<T>(obj: T | T[]): obj is T[] {

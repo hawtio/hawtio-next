@@ -1,6 +1,6 @@
-import { hawtio, HawtioPlugin } from '@hawtiosrc/core'
-import { helpRegistry } from '@hawtiosrc/help/registry'
-import { preferencesRegistry } from '@hawtiosrc/preferences/registry'
+import { hawtio, HawtioPlugin } from '__root__/core'
+import { helpRegistry } from '__root__/help/registry'
+import { preferencesRegistry } from '__root__/preferences/registry'
 import { Connect } from './Connect'
 import { ConnectPreferences } from './ConnectPreferences'
 import help from './help.md'
@@ -19,3 +19,4 @@ export const connect: HawtioPlugin = () => {
 }
 
 export { JolokiaListMethod, jolokiaService } from './jolokia-service'
+export type { AttributeValues } from './jolokia-service'

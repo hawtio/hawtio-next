@@ -1,5 +1,5 @@
-import { DEFAULT_APP_NAME, useHawtconfig } from '@hawtiosrc/core'
-import { backgroundImages, hawtioLogo } from '@hawtiosrc/img'
+import { DEFAULT_APP_NAME, useHawtconfig } from '__root__/core'
+import { backgroundImages, hawtioLogo } from '__root__/img'
 import { ListItem, ListVariant, LoginFooterItem, LoginForm, LoginPage } from '@patternfly/react-core'
 import { ExclamationCircleIcon } from '@patternfly/react-icons'
 import React, { useState } from 'react'
