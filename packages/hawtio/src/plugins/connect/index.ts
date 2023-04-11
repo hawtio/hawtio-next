@@ -19,4 +19,4 @@ export const connect: HawtioPlugin = () => {
 }
 
 export { JolokiaListMethod, jolokiaService } from './jolokia-service'
-export type { AttributeValues } from './jolokia-service'
+export type { AttributeValues, IJolokiaService, JolokiaStoredOptions } from './jolokia-service'

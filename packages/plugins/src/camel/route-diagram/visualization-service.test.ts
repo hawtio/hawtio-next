@@ -3,7 +3,14 @@ import path from 'path'
 import { RouteStats } from '../routes-service'
 import { visualizationService } from './visualization-service'
 
-jest.mock('@hawtio/react')
+jest.mock('@hawtio/react', () => {
+  const originalModule = jest.requireActual('@hawtio/react')
+  return {
+    __esModule: true,
+    ...originalModule,
+    jolokiaService: jest.fn(),
+  }
+})
 
 describe('visualization-service', () => {
   const routesXmlPath = path.resolve(__dirname, '../testdata', 'camel-choice-route.xml')

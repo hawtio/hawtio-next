@@ -15,7 +15,14 @@ import {
 } from './globals'
 import { camelTreeProcessor } from './tree-processor'
 
-jest.mock('@hawtio/react')
+jest.mock('@hawtio/react', () => {
+  const originalModule = jest.requireActual('@hawtio/react')
+  return {
+    __esModule: true,
+    ...originalModule,
+    jolokiaService: jest.fn(),
+  }
+})
 
 const CAMEL_MODEL_VERSION = '3.20.2'
 

@@ -7,7 +7,14 @@ import React from 'react'
 import { IconNames } from './icons'
 import { routesService } from './routes-service'
 
-jest.mock('@hawtio/react')
+jest.mock('@hawtio/react', () => {
+  const originalModule = jest.requireActual('@hawtio/react')
+  return {
+    __esModule: true,
+    ...originalModule,
+    jolokiaService: jest.fn(),
+  }
+})
 
 describe('routes-service', () => {
   let contextNode: MBeanNode

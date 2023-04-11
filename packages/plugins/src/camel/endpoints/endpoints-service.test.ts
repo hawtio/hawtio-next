@@ -9,8 +9,14 @@ import * as es from './endpoints-service'
 const routesXmlPath = path.resolve(__dirname, '..', 'testdata', 'camel-sample-app-routes.xml')
 const sampleRoutesXml = fs.readFileSync(routesXmlPath, { encoding: 'utf8', flag: 'r' })
 
-jest.mock('@hawtio/react')
-
+jest.mock('@hawtio/react', () => {
+  const originalModule = jest.requireActual('@hawtio/react')
+  return {
+    __esModule: true,
+    ...originalModule,
+    jolokiaService: jest.fn(),
+  }
+})
 jolokiaService.execute = jest.fn(async (mbean: string, operation: string, args?: unknown[]): Promise<unknown> => {
   if (
     mbean === 'org.apache.camel:context=SampleCamel,type=context,name="SampleCamel"' &&

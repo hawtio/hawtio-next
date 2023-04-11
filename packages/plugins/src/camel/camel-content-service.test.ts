@@ -2,7 +2,14 @@ import { MBeanNode } from '@hawtio/react'
 import { jmxDomain, endpointNodeType, endpointsType, contextNodeType } from './globals'
 import * as ccs from './camel-content-service'
 
-jest.mock('@hawtio/react')
+jest.mock('@hawtio/react', () => {
+  const originalModule = jest.requireActual('@hawtio/react')
+  return {
+    __esModule: true,
+    ...originalModule,
+    jolokiaService: jest.fn(),
+  }
+})
 
 describe('camel-content-service', () => {
   test('syncChildProperties', async () => {
