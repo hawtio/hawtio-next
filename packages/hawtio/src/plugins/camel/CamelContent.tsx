@@ -1,5 +1,5 @@
 import { eventService } from '@hawtiosrc/core'
-import { Attributes, JmxContentMBeans, MBeanNode, Operations } from '@hawtiosrc/plugins/shared'
+import { Attributes, Chart, JmxContentMBeans, MBeanNode, Operations } from '@hawtiosrc/plugins/shared'
 import {
   EmptyState,
   EmptyStateIcon,
@@ -151,7 +151,7 @@ export const CamelContent: React.FunctionComponent = () => {
       component: <TypeConverters />,
       isApplicable: ccs.hasTypeConverter,
     },
-    //{ id: 'chart', title: 'Chart', component: <Chart />, isApplicable: isDefaultApplicable },
+    { id: 'chart', title: 'Chart', component: <Chart />, isApplicable: isDefaultApplicable },
     // Applicable for same criteria as trace
     { id: 'profile', title: 'Profile', component: <Profile />, isApplicable: ccs.canTrace },
     { id: 'trace', title: 'Trace', component: <Trace />, isApplicable: ccs.canTrace },
