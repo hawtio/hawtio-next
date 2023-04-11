@@ -22,7 +22,7 @@
     "build:hawtio": "yarn workspace @hawtio/react build",
     "build:hawtio:watch": "yarn workspace @hawtio/react build:watch",
     "test": "yarn test:hawtio",
-    "test:all": "yarn workspaces foreach -v -i -pt run test",
+    "test:all": "yarn workspaces foreach -v -i -pt --exclude @hawtio/next-root run test",
     "test:hawtio": "yarn workspace @hawtio/react test",
     "test:hawtio:watch": "yarn workspace @hawtio/react test:watch",
     "lint": "yarn eslint packages/hawtio/src/ packages/camel-model/src packages/hawtio/scripts/ app/src/",
