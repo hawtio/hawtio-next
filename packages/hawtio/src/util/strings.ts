@@ -109,7 +109,7 @@ export function parseBoolean(value: string): boolean {
 export function humanizeLabels(str: string): string {
   return str
     .split('-')
-    .filter(str => str.length !== 0)
+    .filter(str => isBlank(str))
     .map(str => str.replace(/^./, str => str.toUpperCase()))
     .join(' ')
     .replace(/([a-z])([A-Z])/g, '$1 $2')
