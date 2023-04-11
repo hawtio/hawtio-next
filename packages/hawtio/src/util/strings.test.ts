@@ -53,5 +53,9 @@ describe('strings', () => {
     expect(humanizeLabels('mbean-name')).toEqual('MBean Name')
 
     expect(humanizeLabels('-Object-Name-')).toEqual('Object Name')
+
+    expect(humanizeLabels('')).toEqual('')
+    expect(humanizeLabels('            ')).toEqual('')
+    expect(humanizeLabels('Object       Name')).toEqual('Object Name')
   })
 })

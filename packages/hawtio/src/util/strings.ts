@@ -117,5 +117,6 @@ export function humanizeLabels(str: string): string {
     .replace('M Bean', 'MBean')
     .replace('Mbean', 'MBean')
     .replace(/^./, str => str.toUpperCase())
+    .replace(/ +/, ' ')
     .trim()
 }
