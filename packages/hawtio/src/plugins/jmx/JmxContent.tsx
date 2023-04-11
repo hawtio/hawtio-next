@@ -1,4 +1,6 @@
 import {
+  Card,
+  CardBody,
   EmptyState,
   EmptyStateIcon,
   EmptyStateVariant,
@@ -14,17 +16,26 @@ import {
 } from '@patternfly/react-core'
 import './JmxContent.css'
 import { CubesIcon } from '@patternfly/react-icons'
-import React, { useContext } from 'react'
+import React, { FunctionComponent, useContext } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import { MBeanTreeContext } from './context'
 import { Chart } from '@hawtiosrc/plugins/shared/chart'
 import { Operations } from '@hawtiosrc/plugins/shared/operations'
 import { Attributes, AttributeTable } from '@hawtiosrc/plugins/shared/attributes'
 import { JmxContentMBeans, MBeanNode } from '@hawtiosrc/plugins/shared'
+import { PluginNodeSelectionContext } from '../selectionNodeContext'
+import { isObject } from '@hawtiosrc/util/objects'
 
 export const JmxContent: React.FunctionComponent = () => {
-  const { selectedNode } = useContext(MBeanTreeContext)
+  const { selectedNode, selectedNodeAttributes, isReadingAttributes } = useContext(PluginNodeSelectionContext)
   const { pathname, search } = useLocation()
+
+  const isReadingAttributesCard: FunctionComponent = () => (
+    <Card>
+      <CardBody>
+        <Text component='p'>Reading attributes...</Text>
+      </CardBody>
+    </Card>
+  )
 
   if (!selectedNode) {
     return (
@@ -39,12 +50,15 @@ export const JmxContent: React.FunctionComponent = () => {
     )
   }
 
-  const mBeanApplicable = (node: MBeanNode) => Boolean(node.objectName)
-  const mBeanCollectionApplicable = (node: MBeanNode) => Boolean(node.children?.every(child => child.objectName))
+  const loadingAttributes = (node: MBeanNode) => isReadingAttributes
+  const mBeanApplicable = (node: MBeanNode) => isObject(selectedNodeAttributes.nodeData)
+  const mBeanCollectionApplicable = (node: MBeanNode) =>
+    Object.values(selectedNodeAttributes.children).every(nodeAttributes => isObject(nodeAttributes))
   const ALWAYS = (node: MBeanNode) => true
 
   const tableSelector: (node: MBeanNode) => React.FunctionComponent = (node: MBeanNode) => {
     const tablePriorityList: { condition: (node: MBeanNode) => boolean; element: React.FunctionComponent }[] = [
+      { condition: loadingAttributes, element: isReadingAttributesCard },
       { condition: mBeanApplicable, element: Attributes },
       { condition: mBeanCollectionApplicable, element: AttributeTable },
     ]

@@ -29,7 +29,7 @@ export const HawtioPage: React.FunctionComponent = () => {
   const { plugins, pluginsLoaded } = usePlugins()
   const navigate = useNavigate()
   const { search } = useLocation()
-  const { selectedNode, setSelectedNode } = usePluginNodeSelected()
+  const { selectedNode, setSelectedNode, selectedNodeAttributes, isReadingAttributes } = usePluginNodeSelected()
 
   if (!userLoaded || !pluginsLoaded) {
     return <HawtioLoading />
@@ -72,7 +72,9 @@ export const HawtioPage: React.FunctionComponent = () => {
         defaultManagedSidebarIsOpen={showVerticalNavByDefault}
       >
         {/* Provider for handling selected node shared between the plugins */}
-        <PluginNodeSelectionContext.Provider value={{ selectedNode, setSelectedNode }}>
+        <PluginNodeSelectionContext.Provider
+          value={{ selectedNode, setSelectedNode, selectedNodeAttributes, isReadingAttributes }}
+        >
           <Routes>
             {/* plugins */}
             {plugins.map(plugin => (

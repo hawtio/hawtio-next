@@ -1,52 +1,23 @@
-import { useContext, useEffect, useState } from 'react'
-import { Card, CardBody, Text } from '@patternfly/react-core'
+import { useContext } from 'react'
+import { Card } from '@patternfly/react-core'
 import { Table, TableBody, TableHeader, TableProps } from '@patternfly/react-table'
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/selectionNodeContext'
 import { AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
-import { attributeService } from './attribute-service'
 import './AttributeTable.css'
 import { JmxContentMBeans } from '@hawtiosrc/plugins/shared/JmxContentMBeans'
 import { humanizeLabels } from '@hawtiosrc/util/strings'
+import { MBeanAttributes } from '@hawtiosrc/plugins/selection-node-data-service'
+import { isObject } from '@hawtiosrc/util/objects'
 
 export const AttributeTable: React.FunctionComponent = () => {
-  const { selectedNode } = useContext(PluginNodeSelectionContext)
-  const [attributesList, setAttributesList] = useState<AttributeValues[]>([{}])
-  const [isReading, setIsReading] = useState<boolean>(false)
+  const { selectedNode, selectedNodeAttributes } = useContext(PluginNodeSelectionContext)
 
-  useEffect(() => {
-    if (!selectedNode) {
-      return
-    }
-
-    const readAttributes = async () => {
-      const childrenMbeansAttributes: AttributeValues[] = []
-      setIsReading(true)
-      if (selectedNode.children)
-        for (const mbean of selectedNode.children) {
-          const objectName = mbean.objectName
-          if (objectName) {
-            const attrs = await attributeService.read(objectName)
-            childrenMbeansAttributes.push(attrs)
-          }
-        }
-      setAttributesList([...childrenMbeansAttributes])
-      setIsReading(false)
-    }
-    readAttributes()
-  }, [selectedNode])
+  const attributesList: AttributeValues[] = Object.values(selectedNodeAttributes.children)
+    .filter((mbeanAttribute): mbeanAttribute is MBeanAttributes => isObject(mbeanAttribute))
+    .map(mbeanAttribute => mbeanAttribute.data)
 
   if (!selectedNode) {
     return null
-  }
-
-  if (isReading) {
-    return (
-      <Card>
-        <CardBody>
-          <Text component='p'>Reading attributes...</Text>
-        </CardBody>
-      </Card>
-    )
   }
 
   const checkIfAllMBeansHaveSameAttributes = (attributesList: AttributeValues[]) => {
