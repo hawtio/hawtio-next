@@ -16,7 +16,7 @@
     "start": "concurrently -n hawtio,app \"yarn build:hawtio:watch\" \"yarn start:app\"",
     "start:app": "yarn workspace app start",
     "build": "yarn build:hawtio",
-    "build:all": "yarn workspaces foreach -v -i -pt run build",
+    "build:all": "yarn workspaces foreach -v -i -pt --exclude @hawtio/next-root run build",
     "build:app": "yarn workspace app build",
     "build:camel-model": "yarn workspace @hawtio/camel-model build",
     "build:hawtio": "yarn workspace @hawtio/react build",
