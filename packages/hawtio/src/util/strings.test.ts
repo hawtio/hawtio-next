@@ -1,4 +1,4 @@
-import { isString, parseBoolean, toString, trimQuotes } from './strings'
+import { humanizeLabels, isString, parseBoolean, toString, trimQuotes } from './strings'
 
 describe('strings', () => {
   test('isString', () => {
@@ -40,5 +40,22 @@ describe('strings', () => {
     expect(parseBoolean('FALSE')).toBeFalsy()
     expect(parseBoolean('FaLsE')).toBeFalsy()
     expect(parseBoolean('0')).toBeFalsy()
+  })
+
+  test('humanizeLabels()', () => {
+    expect(humanizeLabels('ObjectName')).toEqual('Object Name')
+    expect(humanizeLabels('XHTTPRequest')).toEqual('XHTTP Request')
+    expect(humanizeLabels('MBeanName')).toEqual('MBean Name')
+    expect(humanizeLabels('MBeanHTML')).toEqual('MBean HTML')
+
+    expect(humanizeLabels('object-name')).toEqual('Object Name')
+    expect(humanizeLabels('double--dashes')).toEqual('Double Dashes')
+    expect(humanizeLabels('mbean-name')).toEqual('MBean Name')
+
+    expect(humanizeLabels('-Object-Name-')).toEqual('Object Name')
+
+    expect(humanizeLabels('')).toEqual('')
+    expect(humanizeLabels('            ')).toEqual('')
+    expect(humanizeLabels('Object       Name')).toEqual('Object Name')
   })
 })

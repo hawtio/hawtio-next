@@ -99,3 +99,24 @@ export function parseBoolean(value: string): boolean {
 
   return /^true$/i.test(value) || parseInt(value) === 1
 }
+
+/**
+ * Will format a property to a standard human readable string with its spaces.
+ * It will respect MBean and leave it together
+ * @param str The property to transform
+ * @returns The property with its proper spaces
+ */
+export function humanizeLabels(str: string): string {
+  return str
+    .split('-')
+    .filter(str => !isBlank(str))
+    .map(str => str.replace(/^./, str => str.toUpperCase()))
+    .join(' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/\b([A-Z]+)([A-Z])([a-z])/, '$1 $2$3')
+    .replace('M Bean', 'MBean')
+    .replace('Mbean', 'MBean')
+    .replace(/^./, str => str.toUpperCase())
+    .replace(/ +/, ' ')
+    .trim()
+}
