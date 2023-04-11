@@ -1,4 +1,4 @@
-import { JmxContentMBeans, MBeanNode } from '@hawtiosrc/plugins/shared'
+import { Chart, JmxContentMBeans, MBeanNode } from '@hawtiosrc/plugins/shared'
 import { AttributeTable, Attributes } from '@hawtiosrc/plugins/shared/attributes'
 import { Operations } from '@hawtiosrc/plugins/shared/operations'
 import {
@@ -41,6 +41,8 @@ export const JmxContent: React.FunctionComponent = () => {
 
   const mBeanApplicable = (node: MBeanNode) => Boolean(node.objectName)
   const mBeanCollectionApplicable = (node: MBeanNode) => Boolean(node.children?.every(child => child.objectName))
+  const hasAnyApplicableMBean = (node: MBeanNode) =>
+    Boolean(node.objectName) || Boolean(node.children?.some(child => child.objectName))
   const ALWAYS = (node: MBeanNode) => true
 
   const tableSelector: (node: MBeanNode) => React.FunctionComponent = (node: MBeanNode) => {
@@ -55,7 +57,7 @@ export const JmxContent: React.FunctionComponent = () => {
   const allNavItems = [
     { id: 'attributes', title: 'Attributes', component: tableSelector(selectedNode), isApplicable: ALWAYS },
     { id: 'operations', title: 'Operations', component: Operations, isApplicable: mBeanApplicable },
-    //{ id: 'chart', title: 'Chart', component: Chart, isApplicable: mBeanApplicable },
+    { id: 'chart', title: 'Chart', component: Chart, isApplicable: hasAnyApplicableMBean },
   ]
 
   /* Filter the nav items to those applicable to the selected node */

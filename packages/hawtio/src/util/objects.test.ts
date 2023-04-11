@@ -1,4 +1,4 @@
-import { isObject, isString } from './objects'
+import { isNumber, isObject, isString } from './objects'
 
 describe('objects', () => {
   test('isObject', () => {
@@ -26,5 +26,24 @@ describe('objects', () => {
     }
     expect(isString(fn)).toBe(false)
     expect(isString('hello')).toBe(true)
+  })
+
+  test('isNumber', () => {
+    expect(isNumber(0)).toBe(true)
+    expect(isNumber(-1232)).toBe(true)
+    expect(isNumber(324)).toBe(true)
+    expect(isNumber(32.3)).toBe(true)
+    expect(isNumber(-21312.4)).toBe(true)
+
+    expect(isNumber('0')).toBe(false)
+    expect(isNumber('3')).toBe(false)
+    expect(isNumber('434')).toBe(false)
+    expect(isNumber('-1')).toBe(false)
+    expect(isNumber([])).toBe(false)
+    expect(isNumber([1])).toBe(false)
+    expect(isNumber({})).toBe(false)
+    expect(isNumber(true)).toBe(false)
+    expect(isNumber(false)).toBe(false)
+    expect(isNumber(NaN)).toBe(false)
   })
 })

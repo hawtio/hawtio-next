@@ -18,3 +18,7 @@ export function isString(value: unknown): value is string {
 export function isArray<T>(obj: T | T[]): obj is T[] {
   return Array.isArray(obj)
 }
+
+export function isNumber(value: unknown): value is number {
+  return typeof value === 'number' && !Number.isNaN(value)
+}
