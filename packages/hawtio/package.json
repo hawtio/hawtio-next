@@ -2,8 +2,8 @@
   "name": "@hawtio/react",
   "version": "0.2.0-dev.6",
   "description": "A Hawtio reimplementation based on TypeScript + React.",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index",
+  "types": "./dist/index",
   "author": "Hawtio developer team",
   "license": "Apache-2.0",
   "files": [

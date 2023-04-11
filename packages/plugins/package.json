@@ -2,8 +2,8 @@
   "name": "@hawtio/react-plugins",
   "version": "0.2.0-dev.0",
   "description": "The collection of Hawtio.next builtin plugins",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index",
+  "types": "./dist/index",
   "author": "Hawtio developer team",
   "license": "Apache-2.0",
   "files": [
