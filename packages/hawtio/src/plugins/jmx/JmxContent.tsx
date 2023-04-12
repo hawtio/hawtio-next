@@ -24,6 +24,8 @@ import { Attributes, AttributeTable } from '@hawtiosrc/plugins/shared/attributes
 import { JmxContentMBeans, MBeanNode } from '@hawtiosrc/plugins/shared'
 import { PluginNodeSelectionContext } from '../selectionNodeContext'
 import { isObject } from '@hawtiosrc/util/objects'
+import { MBeanAttributeData, MBeanAttributes } from '../selection-node-data-service'
+import { AttributeValues } from '../connect/jolokia-service'
 
 export const JmxContent: React.FunctionComponent = () => {
   const { selectedNode, selectedNodeAttributes, isReadingAttributes } = useContext(PluginNodeSelectionContext)
@@ -50,30 +52,52 @@ export const JmxContent: React.FunctionComponent = () => {
     )
   }
 
-  const loadingAttributes = (node: MBeanNode) => isReadingAttributes
-  const mBeanApplicable = (node: MBeanNode) => isObject(selectedNodeAttributes.nodeData)
-  const mBeanCollectionApplicable = (node: MBeanNode) =>
-    Object.values(selectedNodeAttributes.children).every(nodeAttributes => isObject(nodeAttributes))
-  const ALWAYS = (node: MBeanNode) => true
+  const checkIfAllChildrenInDataHaveSameAttributes = (mbeanAttributes: MBeanAttributeData) => {
+    const attributesList: AttributeValues[] = Object.values(selectedNodeAttributes.children)
+      .filter((mbeanAttribute): mbeanAttribute is MBeanAttributes => isObject(mbeanAttribute))
+      .map(mbeanAttribute => mbeanAttribute.data)
 
-  const tableSelector: (node: MBeanNode) => React.FunctionComponent = (node: MBeanNode) => {
-    const tablePriorityList: { condition: (node: MBeanNode) => boolean; element: React.FunctionComponent }[] = [
+    if (attributesList.length <= 1) {
+      return true
+    }
+
+    const firstMBeanAttributesElements = attributesList[0].length
+
+    if (!attributesList.every(mbeanAttributes => mbeanAttributes.length === firstMBeanAttributesElements)) {
+      return false
+    }
+
+    const labelSet: Set<string> = new Set()
+    Object.keys(attributesList[0]).forEach(label => labelSet.add(label))
+
+    return attributesList.every(attributes => Object.keys(attributes).every(label => labelSet.has(label)))
+  }
+
+  const loadingAttributes = () => isReadingAttributes
+  const mBeanApplicable = () => isObject(selectedNodeAttributes.nodeData)
+  const mBeanCollectionApplicable = () =>
+    Object.values(selectedNodeAttributes.children).every(nodeAttributes => isObject(nodeAttributes))
+    && checkIfAllChildrenInDataHaveSameAttributes(selectedNodeAttributes)
+  const ALWAYS = () => true
+
+  const tableSelector: () => React.FunctionComponent = () => {
+    const tablePriorityList: { condition: () => boolean; element: React.FunctionComponent }[] = [
       { condition: loadingAttributes, element: isReadingAttributesCard },
       { condition: mBeanApplicable, element: Attributes },
       { condition: mBeanCollectionApplicable, element: AttributeTable },
     ]
 
-    return tablePriorityList.find(entry => entry.condition(node))?.element ?? JmxContentMBeans
+    return tablePriorityList.find(entry => entry.condition())?.element ?? JmxContentMBeans
   }
 
   const allNavItems = [
-    { id: 'attributes', title: 'Attributes', component: tableSelector(selectedNode), isApplicable: ALWAYS },
+    { id: 'attributes', title: 'Attributes', component: tableSelector(), isApplicable: ALWAYS },
     { id: 'operations', title: 'Operations', component: Operations, isApplicable: mBeanApplicable },
     { id: 'chart', title: 'Chart', component: Chart, isApplicable: mBeanApplicable },
   ]
 
   /* Filter the nav items to those applicable to the selected node */
-  const navItems = allNavItems.filter(nav => nav.isApplicable(selectedNode))
+  const navItems = allNavItems.filter(nav => nav.isApplicable())
 
   const mbeanNav = (
     <Nav aria-label='MBean Nav' variant='tertiary'>
