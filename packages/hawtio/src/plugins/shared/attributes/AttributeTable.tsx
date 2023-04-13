@@ -5,34 +5,81 @@ import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/selectionNodeCont
 import { AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { attributeService } from './attribute-service'
 import './AttributeTable.css'
+import { InfoCircleIcon } from '@patternfly/react-icons'
 import { JmxContentMBeans } from '@hawtiosrc/plugins/shared/JmxContentMBeans'
 import { humanizeLabels } from '@hawtiosrc/util/strings'
+import { MBeanNode } from '../tree'
+import { IResponse } from 'jolokia.js'
 
 export const AttributeTable: React.FunctionComponent = () => {
   const { selectedNode } = useContext(PluginNodeSelectionContext)
-  const [attributesList, setAttributesList] = useState<AttributeValues[]>([{}])
+  const [attributesList, setAttributesList] = useState<{ [name: string]: AttributeValues }>({})
   const [isReading, setIsReading] = useState<boolean>(false)
+  const attributesEntries = Object.values(attributesList)
+
+  async function readAttributes(currentSelection: MBeanNode) {
+    if (!currentSelection) return
+
+    const childrenMbeansAttributes: { [name: string]: AttributeValues } = {}
+
+    setIsReading(true)
+
+    for (const node of currentSelection.getChildren()) {
+      if (!node || !node?.objectName) continue
+
+      const attrs = await attributeService.read(node.objectName)
+      childrenMbeansAttributes[node.objectName] = attrs
+    }
+
+    setAttributesList({ ...childrenMbeansAttributes })
+
+    setIsReading(false)
+  }
+
+  async function setJobForSpecificNode(node: MBeanNode | null): Promise<void> {
+    if (!node || !node?.objectName) return
+
+    const mbean = node.objectName
+    attributeService.register({ type: 'read', mbean }, (response: IResponse) => {
+      attributesList[mbean] = response.value as AttributeValues
+      setAttributesList({ ...attributesList })
+    })
+  }
+
+  async function setReadingJobs(currentSelection: MBeanNode): Promise<void> {
+    if (!currentSelection) return
+
+    currentSelection.getChildren().forEach(async node => await setJobForSpecificNode(node))
+  }
+
+  function checkIfAllMBeansHaveSameAttributes(attributesEntries: AttributeValues[]): boolean {
+    if (attributesEntries.length <= 1) {
+      return true
+    }
+
+    const firstMBeanAttributesElements = attributesEntries[0].length
+
+    if (!attributesEntries.every(mbeanAttributes => mbeanAttributes.length === firstMBeanAttributesElements)) {
+      return false
+    }
+
+    const labelSet: Set<string> = new Set()
+    Object.keys(attributesEntries[0]).forEach(label => labelSet.add(label))
+
+    return attributesEntries.every(attributes => Object.keys(attributes).every(label => labelSet.has(label)))
+  }
 
   useEffect(() => {
     if (!selectedNode) {
       return
     }
 
-    const readAttributes = async () => {
-      const childrenMbeansAttributes: AttributeValues[] = []
-      setIsReading(true)
-      if (selectedNode.children)
-        for (const mbean of selectedNode.children) {
-          const objectName = mbean.objectName
-          if (objectName) {
-            const attrs = await attributeService.read(objectName)
-            childrenMbeansAttributes.push(attrs)
-          }
-        }
-      setAttributesList([...childrenMbeansAttributes])
-      setIsReading(false)
-    }
-    readAttributes()
+    readAttributes(selectedNode)
+    setReadingJobs(selectedNode)
+
+    return () => attributeService.unregisterAll()
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedNode])
 
   if (!selectedNode) {
@@ -49,33 +96,28 @@ export const AttributeTable: React.FunctionComponent = () => {
     )
   }
 
-  const checkIfAllMBeansHaveSameAttributes = (attributesList: AttributeValues[]) => {
-    if (attributesList.length <= 1) {
-      return true
-    }
-
-    const firstMBeanAttributesElements = attributesList[0].length
-
-    if (!attributesList.every(mbeanAttributes => mbeanAttributes.length === firstMBeanAttributesElements)) {
-      return false
-    }
-
-    const labelSet: Set<string> = new Set()
-    Object.keys(attributesList[0]).forEach(label => labelSet.add(label))
-
-    return attributesList.every(attributes => Object.keys(attributes).every(label => labelSet.has(label)))
+  if (attributesEntries.length === 0) {
+    return (
+      <Card>
+        <CardBody>
+          <Text component='p'>
+            <InfoCircleIcon /> This node has no MBeans.
+          </Text>
+        </CardBody>
+      </Card>
+    )
   }
 
   if (
-    attributesList.some(attribute => Object.entries(attribute).length === 0) ||
-    !checkIfAllMBeansHaveSameAttributes(attributesList)
+    attributesEntries.some(attribute => Object.entries(attribute).length === 0) ||
+    !checkIfAllMBeansHaveSameAttributes(attributesEntries)
   ) {
     return <JmxContentMBeans />
   }
 
-  const labels = Object.keys(attributesList[0])
+  const labels = Object.keys(attributesEntries[0])
   const columns: TableProps['cells'] = labels.map(label => humanizeLabels(label))
-  const rows: TableProps['rows'] = attributesList.map(attribute =>
+  const rows: TableProps['rows'] = attributesEntries.map(attribute =>
     labels.map(label => JSON.stringify(attribute[label])),
   )
 
