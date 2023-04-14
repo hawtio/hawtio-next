@@ -59,6 +59,8 @@ export const CamelContent: React.FunctionComponent = () => {
   }
 
   const allNavItems: NavItem[] = [
+    { id: 'attributes', title: 'Attributes', component: Attributes, isApplicable: mBeanApplicable },
+    { id: 'operations', title: 'Operations', component: Operations, isApplicable: mBeanApplicable },
     {
       id: 'contexts',
       title: 'Contexts',
@@ -72,6 +74,18 @@ export const CamelContent: React.FunctionComponent = () => {
       isApplicable: (node: MBeanNode) => ccs.isRoutesFolder(node),
     },
     {
+      id: 'endpoints',
+      title: 'Endpoints',
+      component: Endpoints,
+      isApplicable: (node: MBeanNode) => ccs.isEndpointsFolder(node),
+    },
+    {
+      id: 'routeDiagram',
+      title: 'Route Diagram',
+      component: RouteDiagram,
+      isApplicable: (node: MBeanNode) => ccs.isRouteNode(node) || ccs.isRoutesFolder(node),
+    },
+    {
       id: 'source',
       title: 'Source',
       component: Source,
@@ -80,15 +94,6 @@ export const CamelContent: React.FunctionComponent = () => {
         !ccs.isEndpointsFolder(node) &&
         (ccs.isRouteNode(node) || ccs.isRoutesFolder(node)),
     },
-    {
-      id: 'routeDiagram',
-      title: 'Route Diagram',
-      component: RouteDiagram,
-      isApplicable: (node: MBeanNode) => ccs.isRouteNode(node) || ccs.isRoutesFolder(node),
-    },
-    { id: 'attributes', title: 'Attributes', component: Attributes, isApplicable: mBeanApplicable },
-    { id: 'operations', title: 'Operations', component: Operations, isApplicable: mBeanApplicable },
-    { id: 'chart', title: 'Chart', component: Chart, isApplicable: mBeanApplicable },
     {
       id: 'exchanges',
       title: 'Exchanges',
@@ -101,12 +106,7 @@ export const CamelContent: React.FunctionComponent = () => {
       component: TypeConverters,
       isApplicable: (node: MBeanNode) => ccs.hasTypeConverter(node),
     },
-    {
-      id: 'endpoints',
-      title: 'Endpoints',
-      component: Endpoints,
-      isApplicable: (node: MBeanNode) => ccs.isEndpointsFolder(node),
-    },
+    { id: 'chart', title: 'Chart', component: Chart, isApplicable: mBeanApplicable },
   ]
 
   /* Filter the nav items to those applicable to the selected node */
