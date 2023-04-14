@@ -1,9 +1,11 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 /* jshint node: true */
-const fs = require('fs')
-const path = require('path')
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url';
 
 const ROOT = '..'
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const svgdir = path.resolve(__dirname, ROOT, 'src', 'plugins', 'camel', 'icons', 'svg')
 const index = path.resolve(svgdir, 'index.ts')
 

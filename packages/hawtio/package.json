@@ -3,6 +3,7 @@
   "version": "0.2.0-dev.6",
   "description": "A Hawtio reimplementation based on TypeScript + React.",
   "main": "./dist/index.js",
+  "type": "module",
   "types": "./dist/index.d.ts",
   "author": "Hawtio developer team",
   "license": "Apache-2.0",
