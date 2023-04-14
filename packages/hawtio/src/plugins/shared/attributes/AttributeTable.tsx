@@ -17,41 +17,6 @@ export const AttributeTable: React.FunctionComponent = () => {
   const [isReading, setIsReading] = useState<boolean>(false)
   const attributesEntries = Object.values(attributesList)
 
-  async function readAttributes(currentSelection: MBeanNode) {
-    if (!currentSelection) return
-
-    const childrenMbeansAttributes: { [name: string]: AttributeValues } = {}
-
-    setIsReading(true)
-
-    for (const node of currentSelection.getChildren()) {
-      if (!node || !node?.objectName) continue
-
-      const attrs = await attributeService.read(node.objectName)
-      childrenMbeansAttributes[node.objectName] = attrs
-    }
-
-    setAttributesList({ ...childrenMbeansAttributes })
-
-    setIsReading(false)
-  }
-
-  async function setJobForSpecificNode(node: MBeanNode | null): Promise<void> {
-    if (!node || !node?.objectName) return
-
-    const mbean = node.objectName
-    attributeService.register({ type: 'read', mbean }, (response: IResponse) => {
-      attributesList[mbean] = response.value as AttributeValues
-      setAttributesList({ ...attributesList })
-    })
-  }
-
-  async function setReadingJobs(currentSelection: MBeanNode): Promise<void> {
-    if (!currentSelection) return
-
-    currentSelection.getChildren().forEach(async node => await setJobForSpecificNode(node))
-  }
-
   function checkIfAllMBeansHaveSameAttributes(attributesEntries: AttributeValues[]): boolean {
     if (attributesEntries.length <= 1) {
       return true
@@ -74,12 +39,47 @@ export const AttributeTable: React.FunctionComponent = () => {
       return
     }
 
+    const readAttributes = async (currentSelection: MBeanNode) => {
+      if (!currentSelection) return
+
+      const childrenMbeansAttributes: { [name: string]: AttributeValues } = {}
+
+      setIsReading(true)
+
+      for (const node of currentSelection.getChildren()) {
+        if (!node || !node?.objectName) continue
+
+        const attrs = await attributeService.read(node.objectName)
+        childrenMbeansAttributes[node.objectName] = attrs
+      }
+
+      setAttributesList({ ...childrenMbeansAttributes })
+
+      setIsReading(false)
+    }
+
+    const setJobForSpecificNode = async (node: MBeanNode | null): Promise<void> => {
+      if (!node || !node?.objectName) return
+
+      const mbean = node.objectName
+      attributeService.register({ type: 'read', mbean }, (response: IResponse) => {
+        setAttributesList(attributesList => {
+          attributesList[mbean] = response.value as AttributeValues
+          return { ...attributesList }
+        })
+      })
+    }
+
+    const setReadingJobs = async (currentSelection: MBeanNode): Promise<void> => {
+      if (!currentSelection) return
+
+      currentSelection.getChildren().forEach(async node => await setJobForSpecificNode(node))
+    }
+
     readAttributes(selectedNode)
     setReadingJobs(selectedNode)
 
     return () => attributeService.unregisterAll()
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedNode])
 
   if (!selectedNode) {
