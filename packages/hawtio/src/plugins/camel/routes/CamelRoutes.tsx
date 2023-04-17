@@ -30,12 +30,20 @@ export const CamelRoutes: React.FunctionComponent = () => {
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false)
 
   useEffect(() => {
+
+    let timeoutHandle: NodeJS.Timeout
     const getRouteAttributes = async () => {
       const routes = await routesService.getRoutesAttributes(selectedNode)
       setRoutes(routes)
+
+      timeoutHandle = setTimeout(getRouteAttributes, 10000)
     }
 
     getRouteAttributes()
+
+    return () => {
+      clearTimeout(timeoutHandle)
+    }
   }, [selectedNode, reload])
 
   const onDropdownToggle = (isOpen: boolean) => {
