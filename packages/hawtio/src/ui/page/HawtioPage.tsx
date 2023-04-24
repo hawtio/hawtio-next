@@ -3,7 +3,8 @@ import { usePlugins } from '@hawtiosrc/core'
 import { HawtioHelp } from '@hawtiosrc/help/HawtioHelp'
 import { backgroundImages } from '@hawtiosrc/img'
 import { PluginNodeSelectionContext, usePluginNodeSelected } from '@hawtiosrc/plugins'
-import { HawtioPreferences, preferencesService } from '@hawtiosrc/preferences'
+import { HawtioPreferences } from '@hawtiosrc/preferences/HawtioPreferences'
+import { preferencesService } from '@hawtiosrc/preferences/preferences-service'
 import {
   BackgroundImage,
   EmptyState,
@@ -18,11 +19,11 @@ import { CubesIcon } from '@patternfly/react-icons'
 import React from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { HawtioNotification } from '../notification'
-import { PageContext } from './context'
-import { log } from './globals'
 import { HawtioHeader } from './HawtioHeader'
 import { HawtioLoading } from './HawtioLoading'
 import { HawtioSidebar } from './HawtioSidebar'
+import { PageContext } from './context'
+import { log } from './globals'
 
 export const HawtioPage: React.FunctionComponent = () => {
   const { username, isLogin, userLoaded } = useUser()
