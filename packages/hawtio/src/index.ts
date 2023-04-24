@@ -1,10 +1,12 @@
 import { configManager } from './core'
 
-export * from './core'
+// Hawtio React component
 export * from './Hawtio'
-export { helpRegistry } from './help'
+// Hawtio API
+export * from './core'
+export * from './help'
 export * from './plugins'
-export { preferencesRegistry } from './preferences'
+export * from './preferences'
 
 // Register Hawtio React component version
 configManager.addProductInfo('Hawtio React', '__PACKAGE_VERSION_PLACEHOLDER__')

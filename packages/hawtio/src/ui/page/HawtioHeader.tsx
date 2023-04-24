@@ -1,7 +1,7 @@
 import { PUBLIC_USER, userService } from '@hawtiosrc/auth'
 import { DEFAULT_APP_NAME, useHawtconfig } from '@hawtiosrc/core'
 import { hawtioLogo, userAvatar } from '@hawtiosrc/img'
-import { preferencesService } from '@hawtiosrc/preferences'
+import { preferencesService } from '@hawtiosrc/preferences/preferences-service'
 import { HawtioAbout } from '@hawtiosrc/ui/about'
 import {
   Avatar,
@@ -23,8 +23,8 @@ import {
 import { BarsIcon, HelpIcon } from '@patternfly/react-icons'
 import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { PageContext } from './context'
 import './HawtioHeader.css'
+import { PageContext } from './context'
 
 export const HawtioHeader: React.FunctionComponent = () => {
   const [navOpen, setNavOpen] = useState(preferencesService.isShowVerticalNavByDefault())

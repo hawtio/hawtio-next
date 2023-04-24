@@ -18,4 +18,4 @@ export const connect: HawtioPlugin = () => {
   preferencesRegistry.add('connect', 'Connect', ConnectPreferences, 11)
 }
 
-export { JolokiaListMethod, jolokiaService } from './jolokia-service'
+export * from './jolokia-service'
