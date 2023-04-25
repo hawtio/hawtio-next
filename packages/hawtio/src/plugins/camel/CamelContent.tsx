@@ -58,6 +58,8 @@ export const CamelContent: React.FunctionComponent = () => {
     return ccs.hasMBean(node) && !ccs.isContextsFolder(node) && !ccs.isRoutesFolder(node) && !ccs.isRouteXmlNode(node)
   }
 
+  // The order of the items in the following list is the order in will the tabs will be visualized.
+  // For more info check: https://github.com/hawtio/hawtio-next/issues/237
   const allNavItems: NavItem[] = [
     { id: 'attributes', title: 'Attributes', component: Attributes, isApplicable: mBeanApplicable },
     { id: 'operations', title: 'Operations', component: Operations, isApplicable: mBeanApplicable },
