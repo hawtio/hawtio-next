@@ -1966,7 +1966,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hawtio/camel-model@^3.20.2-1, @hawtio/camel-model@workspace:packages/camel-model":
+"@hawtio/camel-model@^3.20.3, @hawtio/camel-model@workspace:packages/camel-model":
   version: 0.0.0-use.local
   resolution: "@hawtio/camel-model@workspace:packages/camel-model"
   dependencies:
@@ -1996,7 +1996,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hawtio/react@workspace:packages/hawtio"
   dependencies:
-    "@hawtio/camel-model": ^3.20.2-1
+    "@hawtio/camel-model": ^3.20.3
     "@module-federation/utilities": ^1.6.0
     "@patternfly/react-code-editor": ^4.82.113
     "@patternfly/react-core": ^4.276.8
