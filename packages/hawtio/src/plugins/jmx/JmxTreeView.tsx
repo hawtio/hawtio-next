@@ -79,6 +79,29 @@ export const JmxTreeView: React.FunctionComponent = () => {
     }
   }
 
+  const actuallyRenameAccordingToParents = (mbean: MBeanNode) => {
+    // The names concats all parent names together. I was unable to find source on base version, but from debugging the app,
+    // it seems like that is the logic
+    const elementNamesParentToChild = []
+    let currentNode: MBeanNode | null = mbean
+    while (currentNode) {
+      elementNamesParentToChild.unshift(currentNode.name)
+      currentNode = currentNode.parent
+    }
+
+    mbean.id = elementNamesParentToChild.join('-')
+  }
+  const renameAccordingToParents = (mbean: MBeanNode) => {
+    mbean.getChildren().forEach(mbean => {
+      renameAccordingToParents(mbean)
+    })
+
+    actuallyRenameAccordingToParents(mbean)
+  }
+  filteredTree.forEach(mbean => {
+    renameAccordingToParents(mbean)
+  })
+
   return (
     <TreeView
       id='jmx-tree-view'
