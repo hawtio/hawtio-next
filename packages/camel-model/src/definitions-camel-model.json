@@ -7639,7 +7639,7 @@
           "kind": "attribute",
           "type": "boolean",
           "defaultValue": "false",
-          "description": "Ignore the invalidate endpoint exception when try to create a producer with that endpoint",
+          "description": "Whether to ignore invalid endpoint URIs and skip sending the message.",
           "title": "Ignore Invalid Endpoint",
           "required": false,
           "deprecated": false
@@ -8110,7 +8110,7 @@
           "kind": "attribute",
           "type": "boolean",
           "defaultValue": "false",
-          "description": "Ignore the invalidate endpoint exception when try to create a producer with that endpoint",
+          "description": "Whether to ignore invalid endpoint URIs and skip sending the message.",
           "title": "Ignore Invalid Endpoint",
           "required": false,
           "deprecated": false

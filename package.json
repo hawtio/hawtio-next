@@ -29,6 +29,7 @@
     "lint:fix": "yarn lint --fix",
     "format:check": "yarn prettier --check .",
     "format:fix": "yarn prettier --write .",
+    "generate:camel-model": "yarn workspace @hawtio/camel-model generate",
     "release:camel-model": "yarn workspace @hawtio/camel-model npm publish --tolerate-republish",
     "release:hawtio": "yarn workspace @hawtio/react npm publish --tolerate-republish"
   },

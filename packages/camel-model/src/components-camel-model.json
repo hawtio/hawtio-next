@@ -9964,35 +9964,11 @@
           "required": false,
           "deprecated": false
         },
-        "accountKey": {
-          "kind": "parameter",
-          "type": "string",
-          "description": "account key for authentication",
-          "title": "Account Key",
-          "required": false,
-          "deprecated": false
-        },
         "clientId": {
           "kind": "parameter",
           "type": "string",
           "description": "client id for azure account",
           "title": "Client Id",
-          "required": false,
-          "deprecated": false
-        },
-        "clientSecret": {
-          "kind": "parameter",
-          "type": "string",
-          "description": "client secret for azure account",
-          "title": "Client Secret",
-          "required": false,
-          "deprecated": false
-        },
-        "clientSecretCredential": {
-          "kind": "parameter",
-          "type": "object",
-          "description": "client secret credential for authentication",
-          "title": "Client Secret Credential",
           "required": false,
           "deprecated": false
         },
@@ -10400,6 +10376,54 @@
           "defaultValue": "true",
           "description": "Controls if fixed delay or fixed rate is used. See ScheduledExecutorService in JDK for details.",
           "title": "Use Fixed Delay",
+          "required": false,
+          "deprecated": false
+        },
+        "accountKey": {
+          "kind": "parameter",
+          "type": "string",
+          "description": "account key for authentication",
+          "title": "Account Key",
+          "required": false,
+          "deprecated": false
+        },
+        "clientSecret": {
+          "kind": "parameter",
+          "type": "string",
+          "description": "client secret for azure account",
+          "title": "Client Secret",
+          "required": false,
+          "deprecated": false
+        },
+        "clientSecretCredential": {
+          "kind": "parameter",
+          "type": "object",
+          "description": "client secret credential for authentication",
+          "title": "Client Secret Credential",
+          "required": false,
+          "deprecated": false
+        },
+        "sasCredential": {
+          "kind": "parameter",
+          "type": "object",
+          "description": "SAS token credential",
+          "title": "Sas Credential",
+          "required": false,
+          "deprecated": false
+        },
+        "sasSignature": {
+          "kind": "parameter",
+          "type": "string",
+          "description": "SAS token signature",
+          "title": "Sas Signature",
+          "required": false,
+          "deprecated": false
+        },
+        "useDefaultIdentity": {
+          "kind": "parameter",
+          "type": "boolean",
+          "description": "Use default identity",
+          "title": "Use Default Identity",
           "required": false,
           "deprecated": false
         }
@@ -51057,12 +51081,13 @@
         "dataChangeFilterTrigger": {
           "kind": "parameter",
           "type": "object",
+          "defaultValue": "StatusValueTimestamp",
           "enum": [
             "Status",
             "StatusValue",
             "StatusValueTimestamp"
           ],
-          "description": "Daata change trigger for data change monitor filter type.",
+          "description": "Data change trigger for data change monitor filter type.",
           "title": "Data Change Filter Trigger",
           "required": false,
           "deprecated": false
