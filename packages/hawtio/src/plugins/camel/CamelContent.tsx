@@ -142,12 +142,10 @@ export const CamelContent: React.FunctionComponent = () => {
 
       <PageSection className={'camel-main'}>
         {navItems.length > 0 && (
-          <React.Fragment>
-            <Routes>
-              {camelNavRoutes}
-              <Route key='root' path='/' element={<Navigate to={navItems[0].id} />} />
-            </Routes>
-          </React.Fragment>
+          <Routes>
+            {camelNavRoutes}
+            <Route key='root' path='/' element={<Navigate to={navItems[0].id} />} />
+          </Routes>
         )}
         {navItems.length === 0 && !selectedNode.objectName && <JmxContentMBeans />}
       </PageSection>

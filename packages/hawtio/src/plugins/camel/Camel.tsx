@@ -1,5 +1,3 @@
-import React from 'react'
-import Split from 'react-split'
 import {
   EmptyState,
   EmptyStateIcon,
@@ -10,10 +8,12 @@ import {
   Title,
 } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons'
-import { CamelTreeView } from './CamelTreeView'
-import { CamelContent } from './CamelContent'
-import { useCamelTree, CamelContext } from './context'
+import React from 'react'
+import Split from 'react-split'
 import './Camel.css'
+import { CamelContent } from './CamelContent'
+import { CamelTreeView } from './CamelTreeView'
+import { CamelContext, useCamelTree } from './context'
 
 export const Camel: React.FunctionComponent = () => {
   const { tree, loaded, selectedNode, setSelectedNode } = useCamelTree()
