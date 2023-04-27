@@ -29,13 +29,9 @@ export interface OptimisedJmxMBean extends IJmxMBean {
   opByString?: { [name: string]: unknown }
 }
 
-export interface FilterFunc {
-  (node: MBeanNode): boolean
-}
+export type FilterFn = (node: MBeanNode) => boolean
 
-export interface ForEachFunc {
-  (node: MBeanNode): void
-}
+export type ForEachFn = (node: MBeanNode) => void
 
 export class MBeanNode implements TreeViewDataItem {
   id: string
@@ -254,7 +250,7 @@ export class MBeanNode implements TreeViewDataItem {
    * where the namePath drills down to descendants from
    * this node
    */
-  forEach(namePath: string[], eachFn: ForEachFunc) {
+  forEach(namePath: string[], eachFn: ForEachFn) {
     if (namePath.length === 0) return // path empty so nothing to do
 
     const child: MBeanNode | null = this.getDescendentOrThis(namePath[0])
@@ -264,7 +260,7 @@ export class MBeanNode implements TreeViewDataItem {
     child.forEach(namePath.slice(1), eachFn)
   }
 
-  findDescendant(filter: FilterFunc): MBeanNode | null {
+  findDescendant(filter: FilterFn): MBeanNode | null {
     if (filter(this)) {
       return this
     }
@@ -303,7 +299,7 @@ export class MBeanNode implements TreeViewDataItem {
    * @for Node
    * @return {MBeanNode}
    */
-  findAncestor(filter: FilterFunc): MBeanNode | null {
+  findAncestor(filter: FilterFn): MBeanNode | null {
     let ancestor: MBeanNode | null = this.parent
     while (ancestor !== null) {
       if (filter(ancestor)) return ancestor
@@ -314,7 +310,7 @@ export class MBeanNode implements TreeViewDataItem {
     return null
   }
 
-  filterClone(filter: FilterFunc): MBeanNode | null {
+  filterClone(filter: FilterFn): MBeanNode | null {
     const copyChildren: MBeanNode[] = []
     if (this.children) {
       this.children.forEach(child => {
