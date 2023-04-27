@@ -1,5 +1,5 @@
 import { Logger } from '@hawtiosrc/core'
-import { escapeDots, escapeTags } from '@hawtiosrc/util/jolokia'
+import { escapeHtmlId, escapeTags } from '@hawtiosrc/util/jolokia'
 import { isEmpty } from '@hawtiosrc/util/objects'
 import { stringSorter, trimQuotes } from '@hawtiosrc/util/strings'
 import { TreeViewDataItem } from '@patternfly/react-core'
@@ -34,7 +34,11 @@ export type FilterFn = (node: MBeanNode) => boolean
 export type ForEachFn = (node: MBeanNode) => void
 
 export class MBeanNode implements TreeViewDataItem {
+  /**
+   * ID of the tree view item in HTML.
+   */
   id: string
+
   name: string
   icon: React.ReactNode
   expandedIcon?: React.ReactNode
@@ -46,27 +50,41 @@ export class MBeanNode implements TreeViewDataItem {
   objectName?: string
   mbean?: OptimisedJmxMBean
 
+  private readonly idSeparator = '-'
+
   /**
    * A new node
    * @constructor
    * @param {MBeanNode|null} parent - The parent of the new node. Otherwise, for a singleton node use null.
-   * @param {string} id - The unique identifier of the new node.
    * @param {string} name - The name of the new node.
    * @param {boolean} folder - Whether this new node is a folder, ie. has children
    */
-  constructor(parent: MBeanNode | null, id: string, name: string, folder: boolean) {
-    this.id = id
+  constructor(parent: MBeanNode | null, name: string, folder: boolean) {
     this.name = name
 
-    if (this === parent) throw Error('Node cannot be its own parent')
-
+    if (this === parent) throw new Error('Node cannot be its own parent')
     this.parent = parent
+
     if (folder) {
       this.icon = Icons.folder
       this.expandedIcon = Icons.folderOpen
       this.children = []
     } else {
       this.icon = Icons.mbean
+    }
+
+    this.id = this.generateId()
+  }
+
+  private generateId(): string {
+    const idPrefix = this.parent ? this.parent.id + this.idSeparator : ''
+    return idPrefix + escapeHtmlId(this.name)
+  }
+
+  initId(recursive: boolean) {
+    this.id = this.generateId()
+    if (recursive) {
+      this.children?.forEach(c => c.initId(recursive))
     }
   }
 
@@ -121,7 +139,7 @@ export class MBeanNode implements TreeViewDataItem {
   }
 
   getChildren(): MBeanNode[] {
-    return this.children ? this.children : []
+    return this.children ?? []
   }
 
   matches(properties: Record<string, string>): boolean {
@@ -169,8 +187,7 @@ export class MBeanNode implements TreeViewDataItem {
       this.children = []
     }
 
-    const id = escapeDots(name) + '-' + (this.children.length + 1)
-    const newChild = new MBeanNode(this, id, name, folder)
+    const newChild = new MBeanNode(this, name, folder)
     this.children.push(newChild)
     return newChild
   }
@@ -328,7 +345,7 @@ export class MBeanNode implements TreeViewDataItem {
       return null
     }
 
-    const copy = new MBeanNode(this, this.id, this.name, copyChildren.length > 0)
+    const copy = new MBeanNode(this, this.name, copyChildren.length > 0)
     if (copyChildren.length > 0) {
       copy.children = copyChildren
     }
@@ -342,7 +359,7 @@ export class MBeanNode implements TreeViewDataItem {
       this.children = []
     }
 
-    if (this === child) throw Error('Node cannot be its own child')
+    if (this === child) throw new Error('Node cannot be its own child')
 
     child.parent = this
     this.children.push(child)

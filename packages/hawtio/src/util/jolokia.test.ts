@@ -1,4 +1,4 @@
-import { escapeDots, escapeTags, operationToString } from './jolokia'
+import { escapeHtmlId, escapeTags, operationToString } from './jolokia'
 
 describe('jolokia', () => {
   test('escapeTags', () => {
@@ -7,8 +7,9 @@ describe('jolokia', () => {
     expect(escapeTags('"SampleContext"')).toEqual('"SampleContext"')
   })
 
-  test('escapeDots', () => {
-    expect(escapeDots('java.lang')).toEqual('java-lang')
+  test('escapeHtmlId', () => {
+    expect(escapeHtmlId('java.lang')).toEqual('java.lang')
+    expect(escapeHtmlId('Camel Contexts')).toEqual('CamelContexts')
   })
 
   test('operationToString', () => {

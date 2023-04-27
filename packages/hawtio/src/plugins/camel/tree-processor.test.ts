@@ -1,5 +1,8 @@
 import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { MBeanNode, MBeanTree, workspace } from '@hawtiosrc/plugins/shared'
+import fs from 'fs'
+import path from 'path'
+import * as ccs from './camel-content-service'
 import {
   camelContexts,
   componentsType,
@@ -7,14 +10,11 @@ import {
   contextsType,
   endpointsType,
   jmxDomain,
-  routesType,
   mbeansType,
   routeNodeType,
+  routesType,
 } from './globals'
-import * as ccs from './camel-content-service'
 import { camelTreeProcessor } from './tree-processor'
-import fs from 'fs'
-import path from 'path'
 
 jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
 
@@ -67,35 +67,35 @@ describe('tree-processor', () => {
     expect(contextsNode).not.toBeNull()
     expect(ccs.hasDomain(contextsNode)).toBeTruthy()
     expect(ccs.hasType(contextsNode, contextsType)).toBeTruthy()
-    expect(contextsNode.id).toBe(`${camelContexts}-1`)
+    expect(contextsNode.id).toBe('org.apache.camel-CamelContexts')
     expect(contextsNode.name).toBe(camelContexts)
     expect(contextsNode.childCount()).toBe(1)
 
     const contextNode = contextsNode.getIndex(0) as MBeanNode
     expect(ccs.hasDomain(contextNode)).toBeTruthy()
     expect(ccs.hasType(contextNode, contextNodeType)).toBeTruthy()
-    expect(contextNode.id).toBe('SampleCamel-1')
+    expect(contextNode.id).toBe('org.apache.camel-CamelContexts-SampleCamel')
     expect(contextNode.name).toBe('SampleCamel')
     expect(ccs.getCamelVersion(contextNode)).toBe(CAMEL_MODEL_VERSION)
     expect(contextNode.childCount()).toBe(4)
 
     const types = [routesType, endpointsType, componentsType, mbeansType]
-    for (const t of types) {
-      const n = contextNode.get(t) as MBeanNode
-      expect(n).toBeDefined()
-      expect(ccs.hasDomain(n)).toBeTruthy()
-      expect(ccs.hasType(n, t)).toBeTruthy()
-      expect(n.id).toMatch(new RegExp(`^${t}-[0-9]+`))
-      expect(n.name).toBe(t)
-      expect(ccs.getCamelVersion(n)).toBe(CAMEL_MODEL_VERSION)
-      expect(n.childCount()).toBeGreaterThan(0)
+    for (const type of types) {
+      const node = contextNode.get(type) as MBeanNode
+      expect(node).toBeDefined()
+      expect(ccs.hasDomain(node)).toBeTruthy()
+      expect(ccs.hasType(node, type)).toBeTruthy()
+      expect(node.id).toEqual(`org.apache.camel-CamelContexts-SampleCamel-${type}`)
+      expect(node.name).toBe(type)
+      expect(ccs.getCamelVersion(node)).toBe(CAMEL_MODEL_VERSION)
+      expect(node.childCount()).toBeGreaterThan(0)
     }
 
     const routesNode = contextNode.get(routesType) as MBeanNode
-    for (const c of routesNode.getChildren()) {
-      expect(c).toBeDefined()
-      expect(ccs.hasDomain(c)).toBeTruthy()
-      expect(ccs.hasType(c, routeNodeType)).toBeTruthy()
+    for (const child of routesNode.getChildren()) {
+      expect(child).toBeDefined()
+      expect(ccs.hasDomain(child)).toBeTruthy()
+      expect(ccs.hasType(child, routeNodeType)).toBeTruthy()
     }
   })
 })

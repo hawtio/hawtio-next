@@ -2,21 +2,21 @@ import { MBeanNode, MBeanTree, TreeProcessor } from '@hawtiosrc/plugins/shared/t
 import React from 'react'
 import * as ccs from './camel-content-service'
 import {
-  jmxDomain,
   camelContexts,
-  contextsType,
-  contextNodeType,
-  routesType,
-  endpointsType,
-  endpointNodeType,
-  componentsType,
   componentNodeType,
+  componentsType,
+  contextNodeType,
+  contextsType,
   dataformatsType,
   domainNodeType,
+  endpointNodeType,
+  endpointsType,
+  jmxDomain,
   mbeansType,
   routeNodeType,
+  routesType,
 } from './globals'
-import { getIcon, IconNames } from './icons'
+import { IconNames, getIcon } from './icons'
 import { routesService } from './routes-service'
 
 function adoptChild(parent: MBeanNode | null, child: MBeanNode | null, type: string, childIcon: React.ReactNode) {
@@ -37,22 +37,20 @@ function setChildIcon(node: MBeanNode | null, childIcon: React.ReactNode) {
 }
 
 export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
-  const domainNode = tree.get(jmxDomain)
-  if (!domainNode) {
+  const camelDomain = tree.get(jmxDomain)
+  if (!camelDomain) {
     return
   }
 
-  domainNode.icon = getIcon(IconNames.CamelIcon)
-  domainNode.expandedIcon = domainNode.icon
-  ccs.setType(domainNode, domainNodeType)
+  camelDomain.setIcons(getIcon(IconNames.CamelIcon))
+  ccs.setType(camelDomain, domainNodeType)
 
   // Detach current children from domain node
-  const oldContexts = domainNode.removeChildren()
+  const oldContexts = camelDomain.removeChildren()
 
   // Create the initial contexts group node
-  const groupCtxsNode = domainNode.getOrCreate(camelContexts, true)
-  groupCtxsNode.icon = getIcon(IconNames.CamelIcon)
-  groupCtxsNode.expandedIcon = domainNode.icon
+  const groupCtxsNode = camelDomain.getOrCreate(camelContexts, true)
+  groupCtxsNode.setIcons(getIcon(IconNames.CamelIcon))
   groupCtxsNode.addProperty('class', 'org-apache-camel-context-folder')
   groupCtxsNode.addProperty('key', camelContexts)
   groupCtxsNode.addProperty('name', camelContexts)
@@ -101,27 +99,21 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
     // Add all other entries which are not one of
     // context/routes/endpoints/components/dataformats as MBeans
     //
-    const mBeansNode = (newCtxNode as MBeanNode).getOrCreate(mbeansType, true)
+    const mBeansNode = newCtxNode.getOrCreate(mbeansType, true)
     ccs.setType(mBeansNode, mbeansType)
     ccs.setDomain(mBeansNode)
 
+    const predefinedTypes = new Set([contextNodeType, routesType, endpointsType, componentsType, dataformatsType])
     context
       .getChildren()
-      .filter(
-        child =>
-          !(
-            child.name === contextNodeType ||
-            child.name === routesType ||
-            child.name === endpointsType ||
-            child.name === componentsType ||
-            child.name === dataformatsType
-          ),
-      )
+      .filter(child => !predefinedTypes.has(child.name))
       .forEach(child => mBeansNode.adopt(child))
 
     mBeansNode.sort(false)
 
     // Finally add the new context to the group of contexts node
     groupCtxsNode.adopt(newCtxNode)
+    // Reinitialise HTML ids for the new Camel tree
+    groupCtxsNode.initId(true)
   })
 }
