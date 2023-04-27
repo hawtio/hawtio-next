@@ -1,12 +1,12 @@
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
-import { jmxDomain, endpointNodeType, endpointsType, contextNodeType } from './globals'
 import * as ccs from './camel-content-service'
+import { contextNodeType, endpointNodeType, endpointsType, jmxDomain } from './globals'
 
 jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
 
 describe('camel-content-service', () => {
   test('syncChildProperties', async () => {
-    const domainNode = new MBeanNode(null, jmxDomain, jmxDomain, true)
+    const domainNode = new MBeanNode(null, jmxDomain, true)
     const endpointsNode = domainNode.create(endpointsType, true)
 
     const childNames = [
@@ -61,7 +61,7 @@ describe('camel-content-service', () => {
   })
 
   test('isCamelVersionEQGT', () => {
-    const ctxNode = new MBeanNode(null, 'sampleapp', 'sampleapp', true)
+    const ctxNode = new MBeanNode(null, 'sampleapp', true)
     ccs.setDomain(ctxNode)
     ccs.setType(ctxNode, contextNodeType)
 

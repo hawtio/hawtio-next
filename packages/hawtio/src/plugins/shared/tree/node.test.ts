@@ -1,7 +1,7 @@
-import { Icons, MBeanNode, PropertyList } from './node'
-import { workspace } from '../workspace'
-import { MBeanTree } from './tree'
 import { domainNodeType } from '@hawtiosrc/plugins/camel/globals'
+import { workspace } from '../workspace'
+import { Icons, MBeanNode, PropertyList } from './node'
+import { MBeanTree } from './tree'
 
 jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
 
@@ -74,7 +74,7 @@ describe('MBeanNode', () => {
       canInvoke: true,
     }
 
-    const node1 = new MBeanNode(null, 'test.node', 'test.node', false)
+    const node1 = new MBeanNode(null, 'test.node', false)
     node1.populateMBean('context=SampleContext,type=context,name="SampleCamel"', mbean)
     expect(node1.icon).toBe(Icons.folder)
     expect(node1.expandedIcon).toBe(Icons.folderOpen)
@@ -101,7 +101,7 @@ describe('MBeanNode', () => {
 
     // When canInvoke is false
     mbean.canInvoke = false
-    const node2 = new MBeanNode(null, 'test.node', 'test.node', false)
+    const node2 = new MBeanNode(null, 'test.node', false)
     node2.populateMBean('context=SampleContext,type=context,name="SampleCamel"', mbean)
 
     const child2 = node2.children?.[0].children?.[0].children?.[0]
@@ -175,12 +175,12 @@ describe('MBeanNode', () => {
     let path = ['org.apache.camel', 'SampleCamel', 'components', 'quartz']
     let qNode = domainNode.navigate(...path) as MBeanNode
     expect(qNode).not.toBeNull()
-    expect(qNode.id).toBe('quartz-1')
+    expect(qNode.id).toBe('org.apache.camel-SampleCamel-components-quartz')
 
     path = ['org.apache.camel', 'SampleCame*', 'c*ponents', '*artz']
     qNode = domainNode.navigate(...path) as MBeanNode
     expect(qNode).not.toBeNull()
-    expect(qNode.id).toBe('quartz-1')
+    expect(qNode.id).toBe('org.apache.camel-SampleCamel-components-quartz')
   })
 
   test('forEach', async () => {
@@ -201,16 +201,16 @@ describe('MBeanNode', () => {
   test('findAncestors', async () => {
     const camelNode = tree.get('org.apache.camel') as MBeanNode
     expect(camelNode).not.toBeNull()
-    expect(camelNode.id).toBe('org-apache-camel')
+    expect(camelNode.id).toBe('org.apache.camel')
 
     const ctxNode = camelNode.getIndex(0) as MBeanNode
     expect(ctxNode).not.toBeNull()
-    expect(ctxNode.id).toBe('SampleCamel-1')
+    expect(ctxNode.id).toBe('org.apache.camel-SampleCamel')
     expect(ctxNode.name).toBe('SampleCamel')
 
     const compNode = ctxNode.get('components') as MBeanNode
     expect(compNode).not.toBeNull()
-    expect(compNode.id).toBe('components-4')
+    expect(compNode.id).toBe('org.apache.camel-SampleCamel-components')
 
     const chain: string[] = [camelNode.name, ctxNode.name]
     expect(compNode.findAncestors().map((n: MBeanNode) => n.name)).toEqual(chain)
@@ -220,16 +220,16 @@ describe('MBeanNode', () => {
     const tree: MBeanTree = await workspace.getTree()
     const camelNode = tree.get('org.apache.camel') as MBeanNode
     expect(camelNode).not.toBeNull()
-    expect(camelNode.id).toBe('org-apache-camel')
+    expect(camelNode.id).toBe('org.apache.camel')
 
     const ctxNode = camelNode.getIndex(0) as MBeanNode
     expect(ctxNode).not.toBeNull()
-    expect(ctxNode.id).toBe('SampleCamel-1')
+    expect(ctxNode.id).toBe('org.apache.camel-SampleCamel')
     expect(ctxNode.name).toBe('SampleCamel')
 
     const compNode = ctxNode.get('components') as MBeanNode
     expect(compNode).not.toBeNull()
-    expect(compNode.id).toBe('components-4')
+    expect(compNode.id).toBe('org.apache.camel-SampleCamel-components')
 
     expect(compNode.findAncestor((node: MBeanNode) => node.name === ctxNode.name)).toBe(ctxNode)
     expect(compNode.findAncestor((node: MBeanNode) => node.name === camelNode.name)).toBe(camelNode)
@@ -239,9 +239,9 @@ describe('MBeanNode', () => {
     const tree: MBeanTree = await workspace.getTree()
     const camelNode = tree.get('org.apache.camel') as MBeanNode
     expect(camelNode).not.toBeNull()
-    expect(camelNode.id).toBe('org-apache-camel')
+    expect(camelNode.id).toBe('org.apache.camel')
 
-    const newCtx = new MBeanNode(null, 'test', 'TestNode', false)
+    const newCtx = new MBeanNode(null, 'TestNode', false)
     expect(newCtx.parent).toBeNull()
 
     camelNode.adopt(newCtx)
@@ -252,24 +252,24 @@ describe('MBeanNode', () => {
 
 describe('PropertyList', () => {
   test('objectName', () => {
-    const node = new MBeanNode(null, 'org.apache.camel', 'org.apache.camel', false)
+    const node = new MBeanNode(null, 'org.apache.camel', false)
     const propList = new PropertyList(node, 'context=SampleContext,type=context,name="SampleCamel"')
     expect(propList.objectName()).toEqual('org.apache.camel:context=SampleContext,type=context,name="SampleCamel"')
   })
 
   test('getPaths', () => {
-    const node1 = new MBeanNode(null, 'java.lang', 'java.lang', false)
+    const node1 = new MBeanNode(null, 'java.lang', false)
     const propList1 = new PropertyList(node1, 'name=Metaspace,type=MemoryPool')
     expect(propList1.getPaths()).toEqual(['MemoryPool', 'Metaspace'])
 
-    const node2 = new MBeanNode(null, 'org.apache.camel', 'org.apache.camel', false)
+    const node2 = new MBeanNode(null, 'org.apache.camel', false)
     const propList2 = new PropertyList(node2, 'context=SampleContext,type=context,name="SampleCamel"')
     expect(propList2.getPaths()).toEqual(['SampleContext', 'context', 'SampleCamel'])
   })
 
   test('getPaths for special domains', () => {
     // osgi.compendium
-    const osgiCompendiumNode = new MBeanNode(null, 'osgi.compendium', 'osgi.compendium', false)
+    const osgiCompendiumNode = new MBeanNode(null, 'osgi.compendium', false)
     const osgiCompendiumPropList = new PropertyList(
       osgiCompendiumNode,
       'name=Name1,framework=Framework1,service=Service1,version=Version1',
@@ -277,7 +277,7 @@ describe('PropertyList', () => {
     expect(osgiCompendiumPropList.getPaths()).toEqual(['Service1', 'Version1', 'Framework1', 'Name1'])
 
     // osgi.core
-    const osgiCoreNode = new MBeanNode(null, 'osgi.core', 'osgi.core', false)
+    const osgiCoreNode = new MBeanNode(null, 'osgi.core', false)
     const osgiCorePropList = new PropertyList(
       osgiCoreNode,
       'name=Name1,framework=Framework1,type=Type1,version=Version1',

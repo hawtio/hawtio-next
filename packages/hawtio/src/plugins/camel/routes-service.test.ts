@@ -34,13 +34,13 @@ describe('routes-service', () => {
   })
 
   beforeEach(() => {
-    contextNode = new MBeanNode(null, 'SampleCamel', 'sample-camel-1', true)
+    contextNode = new MBeanNode(null, 'sample-camel-1', true)
     contextNode.objectName = 'org.apache.camel:context=SampleCamel,type=context,name="SampleCamel"'
 
-    routesNode = new MBeanNode(null, 'Routes', 'routes-2', true)
+    routesNode = new MBeanNode(null, 'routes-2', true)
     routesNode.addProperty('type', 'routes')
 
-    simpleRouteNode = new MBeanNode(null, 'simple', testRouteId, false)
+    simpleRouteNode = new MBeanNode(null, testRouteId, false)
 
     routesNode.adopt(simpleRouteNode)
     contextNode.adopt(routesNode)
@@ -65,20 +65,18 @@ describe('routes-service', () => {
 
   test('getRoutesXml no mbean', async () => {
     contextNode.objectName = undefined
-    const t = async () => {
-      await routesService.getRoutesXml(contextNode)
-    }
 
-    await expect(t).rejects.toThrow('Cannot process route xml as mbean name not available')
+    await expect(() => routesService.getRoutesXml(contextNode)).rejects.toThrow(
+      'Cannot process route xml as mbean name not available',
+    )
   })
 
   test('getRoutesXml wrong mbean', async () => {
     contextNode.objectName = 'wrong:mbean:name'
-    const t = async () => {
-      await routesService.getRoutesXml(contextNode)
-    }
 
-    await expect(t).rejects.toThrow('Failed to extract any xml from mbean: ' + contextNode.objectName)
+    await expect(() => routesService.getRoutesXml(contextNode)).rejects.toThrow(
+      'Failed to extract any xml from mbean: ' + contextNode.objectName,
+    )
   })
 
   test('loadRouteChildren', async () => {
@@ -92,19 +90,19 @@ describe('routes-service', () => {
       children?: MBeanAttr[]
     }
 
-    const exp: MBeanAttr[] = [
+    const expected: MBeanAttr[] = [
       { id: 'from', name: 'from' },
-      { id: 'setBody2', name: 'setBody' },
-      { id: 'to3', name: 'to' },
-      { id: 'to4', name: 'to' },
+      { id: 'setBody', name: 'setBody' },
+      { id: 'to', name: 'to' },
+      { id: 'to', name: 'to' },
     ]
 
     for (let i = 0; i < simpleRouteNode.childCount(); ++i) {
       let childNode: MBeanNode | null = simpleRouteNode.getIndex(i)
       expect(childNode).not.toBeNull()
       childNode = childNode as MBeanNode
-      expect(childNode.id).toBe(exp[i].id)
-      expect(childNode.name).toBe(exp[i].name)
+      expect(childNode.id).toBe(expected[i].id)
+      expect(childNode.name).toBe(expected[i].name)
       expect(childNode.getChildren().length).toBe(0)
       expect(childNode.icon).not.toBeNull()
       render(childNode.icon as React.ReactElement)

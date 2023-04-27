@@ -103,8 +103,7 @@ class RoutesService {
     const nodeName = routeXml.localName
     const nodeSettings = schemaService.getSchema(nodeName)
     if (nodeSettings) {
-      const id = routeXml.getAttribute('id') || nodeName
-      const node = new MBeanNode(null, id, nodeName, false)
+      const node = new MBeanNode(null, nodeName, false)
       ccs.setType(node, routeXmlNodeType)
       ccs.setDomain(node)
       const icon: React.ReactNode = this.getIcon(nodeSettings)

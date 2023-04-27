@@ -150,12 +150,15 @@ export function escapeTags(text: string): string {
 }
 
 /**
- * Escapes dots ('.') to '-'.
+ * Escapes characters that cannot be used as HTML `id` attribute.
+ * https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/id
+ *
+ * Space characters are escaped to ''.
  *
  * @param text string to be escaped
  */
-export function escapeDots(text: string): string {
-  return text.replace(/\./g, '-')
+export function escapeHtmlId(text: string): string {
+  return text.replace(/\s/g, '')
 }
 
 export function operationToString(operation: string, args: IJmxOperationArgument[]): string {

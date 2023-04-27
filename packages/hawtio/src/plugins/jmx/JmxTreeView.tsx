@@ -1,9 +1,9 @@
+import { MBeanNode, MBeanTree, PluginTreeViewToolbar } from '@hawtiosrc/plugins/shared'
 import { TreeView, TreeViewDataItem } from '@patternfly/react-core'
 import React, { ChangeEvent, useContext, useEffect, useState } from 'react'
-import { PluginTreeViewToolbar, MBeanNode, MBeanTree } from '@hawtiosrc/plugins/shared'
-import { MBeanTreeContext } from './context'
-import './JmxTreeView.css'
 import { useNavigate } from 'react-router-dom'
+import './JmxTreeView.css'
+import { MBeanTreeContext } from './context'
 import { pluginPath } from './globals'
 
 /**
@@ -78,29 +78,6 @@ export const JmxTreeView: React.FunctionComponent = () => {
         return {}
     }
   }
-
-  const actuallyRenameAccordingToParents = (mbean: MBeanNode) => {
-    // The names concats all parent names together. I was unable to find source on base version, but from debugging the app,
-    // it seems like that is the logic
-    const elementNamesParentToChild = []
-    let currentNode: MBeanNode | null = mbean
-    while (currentNode) {
-      elementNamesParentToChild.unshift(currentNode.name)
-      currentNode = currentNode.parent
-    }
-
-    mbean.id = elementNamesParentToChild.join('-')
-  }
-  const renameAccordingToParents = (mbean: MBeanNode) => {
-    mbean.getChildren().forEach(mbean => {
-      renameAccordingToParents(mbean)
-    })
-
-    actuallyRenameAccordingToParents(mbean)
-  }
-  filteredTree.forEach(mbean => {
-    renameAccordingToParents(mbean)
-  })
 
   return (
     <TreeView
