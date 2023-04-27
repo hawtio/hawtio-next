@@ -146,9 +146,7 @@ function applyJolokiaEscapeRules(mbean: string): string {
  * @param text string to be escaped
  */
 export function escapeTags(text: string): string {
-  let escaped = text.replace('<', '&lt;')
-  escaped = escaped.replace('>', '&gt;')
-  return escaped
+  return text.replace('<', '&lt;').replace('>', '&gt;')
 }
 
 /**

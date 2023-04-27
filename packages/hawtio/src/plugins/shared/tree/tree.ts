@@ -1,9 +1,13 @@
 import { escapeDots, escapeTags } from '@hawtiosrc/util/jolokia'
 import { stringSorter } from '@hawtiosrc/util/strings'
-import { MBeanNode, OptimisedJmxDomain, OptimisedJmxDomains, FilterFunc, ForEachFunc } from './node'
+import { MBeanNode, OptimisedJmxDomain, OptimisedJmxDomains, FilterFn, ForEachFn } from './node'
 import { log } from '../globals'
 import { treeProcessorRegistry } from './processor-registry'
 
+/**
+ * The object representation of MBean tree.
+ * Internally, it is constructed of MBeanNode[].
+ */
 export class MBeanTree {
   private tree: MBeanNode[] = []
 
@@ -23,7 +27,7 @@ export class MBeanTree {
     return mBeanTree
   }
 
-  static filter(originalTree: MBeanNode[], filter: FilterFunc): MBeanNode[] {
+  static filter(originalTree: MBeanNode[], filter: FilterFn): MBeanNode[] {
     //Filter behaviour is the following:
     // 1) If there is a hit in a parent bean, bring everything under the parent
     // 2) If there is no hit in the parent, but there is in a sub bean
@@ -115,7 +119,7 @@ export class MBeanTree {
   /**
    * Searches this folder and all its descendants for the first folder to match the filter
    */
-  findDescendant(filter: FilterFunc): MBeanNode | null {
+  findDescendant(filter: FilterFn): MBeanNode | null {
     let answer: MBeanNode | null = null
     this.tree.forEach(child => {
       if (!answer) {
@@ -142,7 +146,7 @@ export class MBeanTree {
    * Perform a function on each node in the given path
    * where the namePath drills down to descendants of this tree
    */
-  forEach(namePath: string[], eachFn: ForEachFunc) {
+  forEach(namePath: string[], eachFn: ForEachFn) {
     if (namePath.length === 0) return // path empty so nothing to do
 
     const child: MBeanNode | null = this.descendentByPathEntry(namePath[0])

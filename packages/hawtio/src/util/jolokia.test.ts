@@ -1,6 +1,12 @@
-import { escapeDots, operationToString } from './jolokia'
+import { escapeDots, escapeTags, operationToString } from './jolokia'
 
 describe('jolokia', () => {
+  test('escapeTags', () => {
+    expect(escapeTags('domain-name')).toEqual('domain-name')
+    expect(escapeTags('<domain-name>')).toEqual('&lt;domain-name&gt;')
+    expect(escapeTags('"SampleContext"')).toEqual('"SampleContext"')
+  })
+
   test('escapeDots', () => {
     expect(escapeDots('java.lang')).toEqual('java-lang')
   })
