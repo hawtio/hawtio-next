@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "@hawtio/camel-model": "^3.20.3",
-    "@module-federation/utilities": "^1.6.0",
+    "@module-federation/utilities": "^1.7.0",
     "@patternfly/react-code-editor": "^4.82.113",
     "@patternfly/react-core": "^4.276.8",
     "@patternfly/react-table": "^4.113.0",
