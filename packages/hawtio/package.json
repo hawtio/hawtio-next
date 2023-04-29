@@ -57,7 +57,7 @@
     "react-dom": "^18.2.0",
     "react-markdown": "^8.0.7",
     "react-monaco-editor": "^0.52.0",
-    "react-router-dom": "^6.10.0",
+    "react-router-dom": "^6.11.0",
     "react-split": "^2.0.14",
     "reactflow": "^11.6.1",
     "superstruct": "^1.0.3",
