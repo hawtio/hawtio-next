@@ -52,7 +52,7 @@
     "jolokia.js": "1.7.2",
     "jquery": "^3.6.4",
     "js-logger": "^1.6.1",
-    "monaco-editor": "^0.37.1",
+    "monaco-editor": "^0.38.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-markdown": "^8.0.7",
