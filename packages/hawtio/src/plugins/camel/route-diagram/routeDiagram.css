@@ -1,12 +1,15 @@
 .react-flow__node-camel {
   height: 80px;
-  width: 350px;
+  width: 150px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
 }
 .react-flow__node-camel .camel-node-content {
+  display: grid;
+  grid-template-rows: 30% 40% 30%;
+  grid-template-columns: 40% 35% 25%;
   border: 2px solid #8a8d90;
   background-color: #fafafa;
   padding: 5px;
@@ -16,27 +19,42 @@
 
   font-size: small;
 }
-.react-flow__node-camel .icon {
-  flex-grow: inherit;
-  align-items: center;
-  justify-content: space-between;
-  display: flex;
-}
-.react-flow__node-camel .inflights {
-  color: #0f4a85;
-  margin-top: -60px;
-  margin-left: 15px;
+
+.react-flow__node-camel .camel-node-content .annotation {
+  grid-row: 1 / 2;
+  grid-column: 3 / 4;
 }
 
-.react-flow__node-camel img {
+.react-flow__node-camel .camel-node-content .icon {
+  grid-row: 1 / 3;
+  grid-column: 1 / 2;
+}
+
+.react-flow__node-camel .camel-node-content .icon img {
   margin-top: 5px;
   margin-left: 5px;
   width: 30px;
 }
 
-.react-flow__node-camel .number {
-  align-items: center;
+.react-flow__node-camel .camel-node-content .inflights {
+  grid-row: 2 / 3;
+  grid-column: 2 / 3;
+  color: #0f4a85;
+  justify-self: center;
 }
+
+.react-flow__node-camel .camel-node-content .number {
+  grid-row: 2 / 3;
+  grid-column: 3 / 4;
+  justify-self: center;
+}
+
+.react-flow__node-camel .camel-node-content .camel-node-label {
+  grid-row: 3 / 4;
+  grid-column: 1 / 4;
+  justify-self: center;
+}
+
 .node-tooltip {
   background-color: white;
   border: solid 1px black;
@@ -55,4 +73,8 @@
   height: 90vh;
   width: 70vw;
   background-color: white;
+}
+
+.highlighted {
+  border-color: red !important;
 }
