@@ -181,6 +181,57 @@ export function hasTypeConverter(node: MBeanNode): boolean {
   )
 }
 
+export function findTraceBean(node: MBeanNode): MBeanNode | null {
+  if (!node) return null
+
+  const ctxNode = findContext(node)
+  if (!ctxNode) return null
+
+  const result = ctxNode.navigate(mbeansType, 'tracer')
+  if (!result || !result.children) return null
+
+  const tracer = result.getChildren().find(m => m.name.startsWith('BacklogTracer'))
+  return !tracer ? null : tracer
+}
+
+export function findDebugBean(node: MBeanNode): MBeanNode | null {
+  if (!node) return null
+
+  const ctxNode = findContext(node)
+  if (!ctxNode) return null
+
+  const result = ctxNode.navigate(mbeansType, 'tracer')
+  if (!result || !result.children) return null
+
+  const db = result.getChildren().find(m => m.name.startsWith('BacklogDebugger'))
+  return !db ? null : db
+}
+
+export function canGetBreakpoints(node: MBeanNode): boolean {
+  if (!isRouteNode(node)) return false
+
+  const db = findDebugBean(node)
+  if (!db) return false
+
+  return workspace.hasInvokeRights(db as MBeanNode, 'getBreakpoints')
+}
+
+export function canDumpAllTracedMessagesAsXml(node: MBeanNode): boolean {
+  const trace = findTraceBean(node)
+  if (!trace) return false
+
+  return workspace.hasInvokeRights(trace as MBeanNode, 'dumpAllTracedMessagesAsXml')
+}
+
+export function canTrace(node: MBeanNode): boolean {
+  if (!isRouteNode(node)) return false
+
+  const trace = findTraceBean(node)
+  if (!trace) return false
+
+  return canDumpAllTracedMessagesAsXml(trace)
+}
+
 /**
  * Fetch the camel version and add it to the tree to avoid making a blocking call
  * elsewhere.

@@ -30,7 +30,6 @@ export const CamelRoutes: React.FunctionComponent = () => {
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false)
 
   useEffect(() => {
-
     let timeoutHandle: NodeJS.Timeout
     const getRouteAttributes = async () => {
       const routes = await routesService.getRoutesAttributes(selectedNode)

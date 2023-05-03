@@ -1,3 +1,4 @@
+import React from 'react'
 import {
   EmptyState,
   EmptyStateIcon,
@@ -14,24 +15,24 @@ import {
 } from '@patternfly/react-core'
 import './CamelContent.css'
 import { CubesIcon } from '@patternfly/react-icons'
-import React, { useContext } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import { CamelContext } from './context'
 import { Attributes, Operations, Chart, JmxContentMBeans, MBeanNode } from '@hawtiosrc/plugins/shared'
+import { RouteDiagramContext, useRouteDiagramContext } from './route-diagram/route-diagram-context'
+import { RouteDiagram } from '@hawtiosrc/plugins/camel/route-diagram/RouteDiagram'
 import { Contexts } from './contexts'
 import { Endpoints } from './endpoints'
 import { Exchanges } from './exchanges'
 import { TypeConverters } from './type-converters'
+import { Debug } from './debug'
 import * as ccs from './camel-content-service'
 import { CamelRoutes } from '@hawtiosrc/plugins/camel/routes/CamelRoutes'
 import { Source } from '@hawtiosrc/plugins/camel/routes/Source'
-import { RouteDiagram } from '@hawtiosrc/plugins/camel/route-diagram/RouteDiagram'
 
 export const CamelContent: React.FunctionComponent = () => {
-  const { selectedNode } = useContext(CamelContext)
+  const ctx = useRouteDiagramContext()
   const { pathname, search } = useLocation()
 
-  if (!selectedNode) {
+  if (!ctx.selectedNode) {
     return (
       <PageSection variant={PageSectionVariants.light} isFilled>
         <EmptyState variant={EmptyStateVariant.full}>
@@ -47,8 +48,8 @@ export const CamelContent: React.FunctionComponent = () => {
   interface NavItem {
     id: string
     title: string
-    component: React.FunctionComponent
-    isApplicable(node: MBeanNode): boolean
+    componentFn: () => JSX.Element
+    isApplicable(node: MBeanNode | null): boolean
   }
 
   /**
@@ -61,36 +62,42 @@ export const CamelContent: React.FunctionComponent = () => {
   // The order of the items in the following list is the order in will the tabs will be visualized.
   // For more info check: https://github.com/hawtio/hawtio-next/issues/237
   const allNavItems: NavItem[] = [
-    { id: 'attributes', title: 'Attributes', component: Attributes, isApplicable: mBeanApplicable },
-    { id: 'operations', title: 'Operations', component: Operations, isApplicable: mBeanApplicable },
+    { id: 'attributes', title: 'Attributes', componentFn: () => <Attributes />, isApplicable: mBeanApplicable },
+    { id: 'operations', title: 'Operations', componentFn: () => <Operations />, isApplicable: mBeanApplicable },
     {
       id: 'contexts',
       title: 'Contexts',
-      component: Contexts,
+      componentFn: () => <Contexts />,
       isApplicable: (node: MBeanNode) => ccs.isContextsFolder(node),
     },
     {
       id: 'routes',
       title: 'Routes',
-      component: CamelRoutes,
+      componentFn: () => <CamelRoutes />,
       isApplicable: (node: MBeanNode) => ccs.isRoutesFolder(node),
     },
     {
       id: 'endpoints',
       title: 'Endpoints',
-      component: Endpoints,
+      componentFn: () => <Endpoints />,
       isApplicable: (node: MBeanNode) => ccs.isEndpointsFolder(node),
     },
     {
       id: 'routeDiagram',
       title: 'Route Diagram',
-      component: RouteDiagram,
+      componentFn: () => {
+        return (
+          <RouteDiagramContext.Provider value={ctx}>
+            <RouteDiagram />
+          </RouteDiagramContext.Provider>
+        )
+      },
       isApplicable: (node: MBeanNode) => ccs.isRouteNode(node) || ccs.isRoutesFolder(node),
     },
     {
       id: 'source',
       title: 'Source',
-      component: Source,
+      componentFn: () => <Source />,
       isApplicable: (node: MBeanNode) =>
         !ccs.isEndpointNode(node) &&
         !ccs.isEndpointsFolder(node) &&
@@ -99,20 +106,26 @@ export const CamelContent: React.FunctionComponent = () => {
     {
       id: 'exchanges',
       title: 'Exchanges',
-      component: Exchanges,
+      componentFn: () => <Exchanges />,
       isApplicable: (node: MBeanNode) => ccs.hasExchange(node),
     },
     {
       id: 'type-converters',
       title: 'Type Converters',
-      component: TypeConverters,
+      componentFn: () => <TypeConverters />,
       isApplicable: (node: MBeanNode) => ccs.hasTypeConverter(node),
     },
-    { id: 'chart', title: 'Chart', component: Chart, isApplicable: mBeanApplicable },
+    { id: 'chart', title: 'Chart', componentFn: () => <Chart />, isApplicable: mBeanApplicable },
+    {
+      id: 'debug',
+      title: 'Debug',
+      componentFn: () => <Debug />,
+      isApplicable: (node: MBeanNode) => ccs.canGetBreakpoints(node),
+    },
   ]
 
   /* Filter the nav items to those applicable to the selected node */
-  const navItems = allNavItems.filter(nav => nav.isApplicable(selectedNode))
+  const navItems = allNavItems.filter(nav => nav.isApplicable(ctx.selectedNode))
 
   const camelNav = navItems.length > 0 && (
     <Nav aria-label='Camel Nav' variant='tertiary'>
@@ -126,16 +139,14 @@ export const CamelContent: React.FunctionComponent = () => {
     </Nav>
   )
 
-  const camelNavRoutes = navItems.map(nav => (
-    <Route key={nav.id} path={nav.id} element={React.createElement(nav.component)} />
-  ))
+  const camelNavRoutes = navItems.map(nav => <Route key={nav.id} path={nav.id} element={nav.componentFn()} />)
 
   return (
     <React.Fragment>
       <PageGroup>
         <PageSection variant={PageSectionVariants.light}>
-          <Title headingLevel='h1'>{selectedNode.name}</Title>
-          <Text component='small'>{selectedNode.objectName}</Text>
+          <Title headingLevel='h1'>{ctx.selectedNode?.name}</Title>
+          <Text component='small'>{ctx.selectedNode?.objectName}</Text>
         </PageSection>
         {navItems.length > 0 && <PageNavigation>{camelNav}</PageNavigation>}
       </PageGroup>
@@ -147,7 +158,7 @@ export const CamelContent: React.FunctionComponent = () => {
             <Route key='root' path='/' element={<Navigate to={navItems[0].id} />} />
           </Routes>
         )}
-        {navItems.length === 0 && !selectedNode.objectName && <JmxContentMBeans />}
+        {navItems.length === 0 && !ctx.selectedNode?.objectName && <JmxContentMBeans />}
       </PageSection>
     </React.Fragment>
   )

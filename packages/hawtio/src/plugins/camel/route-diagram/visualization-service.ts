@@ -7,6 +7,7 @@ import dagre from 'dagre'
 
 export type CamelNodeData = {
   id: string
+  routeIdx: number
   name: string
   label: string
   labelSummary: string
@@ -20,6 +21,8 @@ export type CamelNodeData = {
   uri: string
   routeId: string
   stats?: Statistics
+
+  nodeClicked?: (node: Node) => void
 }
 
 class VisualizationService {
@@ -28,11 +31,16 @@ class VisualizationService {
   nodeHeight = 80
   defaultMaximumLabelWidth = 34
   edgeType = 'smoothstep'
+  margin = {
+    left: 25,
+    top: 25,
+  }
 
   constructor() {
     this.dagreGraph = new dagre.graphlib.Graph()
     this.dagreGraph.setDefaultEdgeLabel(() => ({}))
   }
+
   getLayoutedElements(nodes: Node[], edges: Edge[], direction = 'TB') {
     const isHorizontal = direction === 'LR'
     this.dagreGraph.setGraph({ rankdir: direction })
@@ -53,9 +61,10 @@ class VisualizationService {
 
       // We are shifting the dagre node position (anchor=center center) to the top left
       // so it matches the React Flow node anchor point (top left).
+
       node.position = {
-        x: nodeWithPosition.x - this.nodeWidth / 2,
-        y: nodeWithPosition.y - this.nodeHeight / 2,
+        x: nodeWithPosition.x - this.nodeWidth / 2 + this.margin.left,
+        y: nodeWithPosition.y - this.nodeHeight / 2 + this.margin.top,
       }
 
       return node
@@ -106,6 +115,7 @@ class VisualizationService {
       },
       type: 'camel',
     }))
+
     const edges = links.map(edge => ({ ...edge, markerEnd: { type: 'arrow' }, type: this.edgeType, animated: true }))
     return { camelNodes, edges }
   }
@@ -137,8 +147,14 @@ class VisualizationService {
     let siblingNodes: number[] = []
     const parenNodeName: string = parent.localName
 
+    /*
+     * Whereas the id is unique across all routes in the xml, the
+     * routeIdx defines an id for each node in the route so
+     */
+    let routeIdx = -1
     for (const route of parent.children) {
       const id: string = nodes.length + ''
+      routeIdx++
       // from acts as a parent even though its a previous sibling :)
       const nodeId = route.localName
       if (nodeId === 'from' && parentId !== '-1') {
@@ -191,6 +207,7 @@ class VisualizationService {
         let cid = route.getAttribute('_cid') || route.getAttribute('id')
         node = {
           id: id,
+          routeIdx: routeIdx,
           name: nodeId,
           label: label,
           labelSummary: labelSummary,
@@ -268,6 +285,7 @@ class VisualizationService {
     }
     return siblingNodes
   }
+
   appendLabel(route: Element, label: string, text: boolean): string {
     switch (route.localName) {
       case 'method':
@@ -289,4 +307,5 @@ class VisualizationService {
     return label
   }
 }
+
 export const visualizationService = new VisualizationService()

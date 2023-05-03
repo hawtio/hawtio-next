@@ -1,0 +1,46 @@
+#route-diagram-breakpoint-view {
+  overflow: auto;
+  margin-top: 1.5em;
+}
+
+.react-flow {
+  background-color: white !important;
+}
+
+.react-flow__renderer {
+  background-color: white !important;
+}
+
+.react-flow__viewport {
+  background-color: white !important;
+}
+
+.breakpoint-symbol {
+  text-align: right;
+  color: darkred;
+}
+
+.cond-bkp-form-lang-radio {
+  float: left;
+}
+
+.cond-bkp-form-lang-radio-help {
+  float: left;
+  padding-top: 0 !important;
+}
+
+.cond-bkp-form-error {
+  color: red;
+}
+
+.cond-bkp-form-error-icon {
+  float: left;
+  width: 5%;
+  margin-right: 0.5em;
+  margin-top: 0.25em;
+}
+
+.cond-bkp-form-error-msg {
+  float: left;
+  width: 90%;
+}
