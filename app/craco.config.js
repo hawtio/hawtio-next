@@ -1,4 +1,4 @@
-const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPlugin')
+const { ModuleFederationPlugin } = require('webpack').container
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
 const { dependencies } = require('./package.json')
 const { hawtioBackend } = require('@hawtio/backend-middleware')
