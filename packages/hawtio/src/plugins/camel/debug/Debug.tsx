@@ -17,20 +17,6 @@ import {
   Radio,
   TextInput,
   Popover,
-  Panel,
-  PanelMain,
-  PanelMainBody,
-  Nav,
-  NavList,
-  NavItem,
-  DrawerHead,
-  DrawerPanelContent,
-  DrawerActions,
-  DrawerCloseButton,
-  Drawer,
-  DrawerContent,
-  DrawerContentBody,
-  Divider,
 } from '@patternfly/react-core'
 import {
   BanIcon,
@@ -56,6 +42,7 @@ import { CamelNodeData } from '../route-diagram/visualization-service'
 import { IResponse } from 'jolokia.js'
 import { log } from '../globals'
 import { parseXML } from '@hawtiosrc/util/xml'
+import { MessageDrawer } from './MessageDrawer'
 
 export const Debug: React.FunctionComponent = () => {
   const {
@@ -77,11 +64,9 @@ export const Debug: React.FunctionComponent = () => {
   const [suspendedBreakpoints, setSuspendedBreakpoints] = useState<string[]>([])
   const [breakpointCounter, setBreakpointCounter] = useState<number>(0)
   const [isConditionalBreakpointOpen, setIsConditionalBreakpointOpen] = useState<boolean>(false)
-  const [activePanelTab, setActivePanelTab] = React.useState('debug-panel-tab-header')
   const [messages, setMessages] = useState<MessageData[]>([])
 
   const [debugPanelExpanded, setDebugPanelExpanded] = React.useState(false)
-  const debugPanelRef = React.useRef<HTMLDivElement | null>(null)
 
   const applyBreakpoints = useCallback((response: unknown) => {
     const bkps: string[] = []
@@ -358,11 +343,6 @@ export const Debug: React.FunctionComponent = () => {
     setSuspendedBreakpoints([])
   }
 
-  const onSelectTab = (result: { itemId: number | string }) => {
-    console.log(result)
-    setActivePanelTab(result.itemId as string)
-  }
-
   if (!selectedNode) {
     return (
       <Card>
@@ -385,67 +365,19 @@ export const Debug: React.FunctionComponent = () => {
     )
   }
 
-  const debugPanelIds = [
-    { id: 'debug-panel-tab-header', label: 'Header' },
-    { id: 'debug-panel-tab-body', label: 'Body' },
-    { id: 'debug-panel-tab-breakpoints', label: 'Breakpoints' },
-  ]
-
-  const debugPanelNavItems = (): JSX.Element[] => {
-    const panels: JSX.Element[] = []
-    for (const panelId of debugPanelIds) {
-      panels.push(
-        <NavItem
-          preventDefault
-          key={panelId.id}
-          itemId={panelId.id}
-          isActive={activePanelTab === panelId.id}
-          id={panelId.id}
-        >
-          {panelId.label}
-        </NavItem>,
-      )
-    }
-    return panels
+  /**
+   * Button callback for opening and closing the message panel drawer
+   */
+  const onDebugPanelToggle = () => {
+    setDebugPanelExpanded(!debugPanelExpanded)
   }
 
-  const debugPanelHeaderTab = (): JSX.Element => {
-    if (!messages || messages.length === 0) return <em>No Messages</em>
-
-    const message = messages[0]
-
-    return (
-      <TableComposable aria-label='Header table' variant='compact'>
-        <Thead>
-          <Tr>
-            <Th>Key</Th>
-            <Th>Value</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {Object.entries(message.headers).map(([key, value]) => (
-            <Tr key={key}>
-              <Td dataLabel='Key'>{key}</Td>
-              <Td dataLabel='Value'>{value}</Td>
-            </Tr>
-          ))}
-        </Tbody>
-      </TableComposable>
-    )
-  }
-
-  const debugPanelBodyTab = (): JSX.Element => {
-    if (!messages || messages.length === 0) return <em>No Messages</em>
-
-    const message = messages[0]
-    if (message.body === '[Body is null]') return <em>No Body</em>
-
-    return <p>{message.body}</p>
-  }
-
+  /**
+   * Extra panel to add to the drawer slide-in
+   */
   const debugPanelBreakpointsTab = (): JSX.Element => {
     return (
-      <TableComposable aria-label='Breakpoints table' variant='compact'>
+      <TableComposable key='breakpoints' aria-label='Breakpoints table' variant='compact'>
         <Thead>
           <Tr>
             <Th>Breakpoint</Th>
@@ -470,48 +402,6 @@ export const Debug: React.FunctionComponent = () => {
       </TableComposable>
     )
   }
-
-  const onDebugPanelExpand = () => {
-    debugPanelRef.current && debugPanelRef.current.focus()
-  }
-
-  const onDebugPanelToggle = () => {
-    setDebugPanelExpanded(!debugPanelExpanded)
-  }
-
-  const onDebugPanelCloseClick = () => {
-    setDebugPanelExpanded(false)
-  }
-
-  const debugPanelContent = (
-    <DrawerPanelContent>
-      <DrawerHead>
-        <div tabIndex={debugPanelExpanded ? 0 : -1} ref={debugPanelRef}>
-          <Nav
-            onSelect={onSelectTab}
-            variant='horizontal'
-            theme='light'
-            aria-label='Show Header or Body Debug Info Table'
-          >
-            <NavList>{debugPanelNavItems()}</NavList>
-          </Nav>
-          <Divider />
-        </div>
-        <DrawerActions>
-          <DrawerCloseButton onClick={onDebugPanelCloseClick} />
-        </DrawerActions>
-      </DrawerHead>
-      <Panel isScrollable>
-        <PanelMain>
-          <PanelMainBody>
-            {activePanelTab === 'debug-panel-tab-header' && debugPanelHeaderTab()}
-            {activePanelTab === 'debug-panel-tab-body' && debugPanelBodyTab()}
-            {activePanelTab === 'debug-panel-tab-breakpoints' && debugPanelBreakpointsTab()}
-          </PanelMainBody>
-        </PanelMain>
-      </Panel>
-    </DrawerPanelContent>
-  )
 
   const toolbarButtons = (
     <React.Fragment>
@@ -638,17 +528,22 @@ export const Debug: React.FunctionComponent = () => {
               <ToolbarContent>{toolbarButtons}</ToolbarContent>
             </Toolbar>
 
-            <Drawer isExpanded={debugPanelExpanded} onExpand={onDebugPanelExpand} position='left'>
-              <DrawerContent panelContent={debugPanelContent}>
-                <DrawerContentBody>
-                  <div id='route-diagram-breakpoint-view'>
-                    <RouteDiagramContext.Provider value={ctx}>
-                      <RouteDiagram />
-                    </RouteDiagramContext.Provider>
-                  </div>
-                </DrawerContentBody>
-              </DrawerContent>
-            </Drawer>
+            <MessageDrawer
+              messages={messages}
+              expanded={debugPanelExpanded}
+              setExpanded={setDebugPanelExpanded}
+              extraPanel={{
+                id: 'debug-panel-tab-breakpoints',
+                label: 'Breakpoints',
+                panelFn: debugPanelBreakpointsTab,
+              }}
+            >
+              <div id='route-diagram-breakpoint-view'>
+                <RouteDiagramContext.Provider value={ctx}>
+                  <RouteDiagram />
+                </RouteDiagramContext.Provider>
+              </div>
+            </MessageDrawer>
           </React.Fragment>
         )}
         <ConditionalBreakpointModal
