@@ -2009,7 +2009,7 @@ __metadata:
     "@types/jest": ^29.5.1
     "@types/node": ^18.16.2
     "@types/react": ^18.2.0
-    "@types/react-dom": ^18.2.1
+    "@types/react-dom": ^18.2.3
     "@types/react-router-dom": ^5.3.3
     dagre: ^0.8.5
     eslint-config-react-app: ^7.0.1
@@ -4032,12 +4032,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18.2.1":
-  version: 18.2.1
-  resolution: "@types/react-dom@npm:18.2.1"
+"@types/react-dom@npm:^18.2.3":
+  version: 18.2.3
+  resolution: "@types/react-dom@npm:18.2.3"
   dependencies:
     "@types/react": "*"
-  checksum: 4e607a9d08f707ae2bd6b377f1da32989dcbe4e38ac39110423a1f6bc95dd53a5484f7f952b34e9d12b5f29a265d52a8c74c1a7d1d1e25be0fa69ccf9d64209f
+  checksum: 33520610ee36765dbee62bd7d4a448598f0dec6d3ba94a05ff066e239ae536d739cb3bc2cd5269884f57293a3983ce614182844c4489b6e3350015eb5a08dcc7
   languageName: node
   linkType: hard
 

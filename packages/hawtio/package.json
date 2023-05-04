@@ -45,7 +45,7 @@
     "@types/jest": "^29.5.1",
     "@types/node": "^18.16.2",
     "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.1",
+    "@types/react-dom": "^18.2.3",
     "@types/react-router-dom": "^5.3.3",
     "dagre": "^0.8.5",
     "eventemitter3": "^5.0.0",
