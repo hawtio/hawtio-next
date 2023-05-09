@@ -24,6 +24,7 @@ import { Endpoints } from './endpoints'
 import { Exchanges } from './exchanges'
 import { TypeConverters } from './type-converters'
 import { Debug } from './debug'
+import { Trace } from './trace'
 import * as ccs from './camel-content-service'
 import { CamelRoutes } from '@hawtiosrc/plugins/camel/routes/CamelRoutes'
 import { Source } from '@hawtiosrc/plugins/camel/routes/Source'
@@ -116,6 +117,12 @@ export const CamelContent: React.FunctionComponent = () => {
       isApplicable: (node: MBeanNode) => ccs.hasTypeConverter(node),
     },
     { id: 'chart', title: 'Chart', componentFn: () => <Chart />, isApplicable: mBeanApplicable },
+    {
+      id: 'trace',
+      title: 'Trace',
+      componentFn: () => <Trace />,
+      isApplicable: (node: MBeanNode) => ccs.canTrace(node),
+    },
     {
       id: 'debug',
       title: 'Debug',

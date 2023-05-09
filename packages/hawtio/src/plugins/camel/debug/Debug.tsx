@@ -41,7 +41,7 @@ import { Annotation, RouteDiagramContext, useRouteDiagramContext } from '../rout
 import { CamelNodeData } from '../route-diagram/visualization-service'
 import { IResponse } from 'jolokia.js'
 import { log } from '../globals'
-import { parseXML } from '@hawtiosrc/util/xml'
+import { childText, parseXML } from '@hawtiosrc/util/xml'
 import { MessageDrawer } from './MessageDrawer'
 
 export const Debug: React.FunctionComponent = () => {
@@ -81,11 +81,11 @@ export const Debug: React.FunctionComponent = () => {
    * breakpoints from info transmitted by JMX nodes
    */
   const applyBreakpointCounter = useCallback(
-    async (counter: number, contextNode: MBeanNode) => {
+    async (counter: number, routeNode: MBeanNode) => {
       if (!counter || counter === breakpointCounter) return
 
       setBreakpointCounter(counter)
-      const suspendedBkps = await ds.getSuspendedBreakpointIds(contextNode)
+      const suspendedBkps = await ds.getSuspendedBreakpointIds(routeNode)
 
       setSuspendedBreakpoints(suspendedBkps)
       if (suspendedBkps.length === 0) {
@@ -95,7 +95,7 @@ export const Debug: React.FunctionComponent = () => {
 
       setGraphSelection(suspendedBkps[0])
 
-      const msgs = await ds.getTracedMessages(contextNode, suspendedBkps[0])
+      const msgs = await ds.getTracedMessages(routeNode, suspendedBkps[0])
       log.debug('onMessage ->', msgs)
 
       if (!msgs || msgs.length === 0) {
@@ -113,7 +113,7 @@ export const Debug: React.FunctionComponent = () => {
       const messages: MessageData[] = []
       for (const message of allMessages) {
         const msgData = ds.createMessageFromXml(message) as MessageData
-        const toNode = ds.childText(message, 'toNode')
+        const toNode = childText(message, 'toNode')
         if (toNode) msgData.toNode = toNode
 
         messages.push(msgData)
@@ -170,7 +170,7 @@ export const Debug: React.FunctionComponent = () => {
   const doubleClickNodeAction = useCallback((): ((nodeData: CamelNodeData) => void) => {
     return async (nodeData: CamelNodeData) => {
       if (nodeData.routeIdx === 0) {
-        ds.notifyError('Cannot breakpoint on the first node in the route')
+        ccs.notifyError('Cannot breakpoint on the first node in the route')
         return
       }
 
