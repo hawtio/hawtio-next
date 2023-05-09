@@ -1,10 +1,10 @@
-import { eventService } from '@hawtiosrc/core'
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import { log } from '../globals'
 import * as ccs from '../camel-content-service'
 import { jolokiaService } from '@hawtiosrc/plugins/connect'
 import { camelPreferencesService } from '../camel-preferences-service'
 import { IRequest, IResponseFn } from 'jolokia.js'
+import { childText, xmlText } from '@hawtiosrc/util/xml'
 
 export interface ConditionalBreakpoint {
   nodeId: string
@@ -27,20 +27,6 @@ export interface MessageData {
 class DebugService {
   private handles: number[] = []
 
-  notifyError(msg: string) {
-    eventService.notify({
-      type: 'danger',
-      message: msg,
-    })
-  }
-
-  notifyInfo(msg: string) {
-    eventService.notify({
-      type: 'info',
-      message: msg,
-    })
-  }
-
   async register(request: IRequest, callback: IResponseFn) {
     const handle = await jolokiaService.register(request, callback)
     log.debug('Register handle:', handle)
@@ -55,7 +41,7 @@ class DebugService {
 
   getDebugBean(node: MBeanNode): MBeanNode | null {
     const db = ccs.findDebugBean(node) as MBeanNode
-    if (!db || !db.objectName) this.notifyError('Could not find the debug bean')
+    if (!db || !db.objectName) ccs.notifyError('Could not find the debug bean')
 
     return db
   }
@@ -74,14 +60,14 @@ class DebugService {
     const db = this.getDebugBean(node)
     if (!db) return false
 
-    const max = flag ? 1 : 0
-    camelPreferencesService.saveCamelPreferences({ maximumTraceDebugBodyLength: max })
-
-    const streams = camelPreferencesService.loadCamelPreferences().isIncludeTraceDebugStreams
-
-    await jolokiaService.writeAttribute(db.objectName as string, 'BodyMaxChars', max)
-    await jolokiaService.writeAttribute(db.objectName as string, 'BodyIncludeStreams', streams)
-    await jolokiaService.writeAttribute(db.objectName as string, 'BodyIncludeFiles', streams)
+    const options = camelPreferencesService.loadCamelPreferences()
+    await jolokiaService.writeAttribute(db.objectName as string, 'BodyMaxChars', options.maximumTraceDebugBodyLength)
+    await jolokiaService.writeAttribute(
+      db.objectName as string,
+      'BodyIncludeStreams',
+      options.isIncludeTraceDebugStreams,
+    )
+    await jolokiaService.writeAttribute(db.objectName as string, 'BodyIncludeFiles', options.isIncludeTraceDebugStreams)
 
     const method = flag ? 'enableDebugger' : 'disableDebugger'
     await jolokiaService.execute(db.objectName as string, method)
@@ -103,8 +89,8 @@ class DebugService {
     await jolokiaService.execute(db.objectName as string, 'addBreakpoint', [breakpointId])
     const breakpoints = await this.getBreakpoints(node)
     const added = breakpoints.includes(breakpointId)
-    if (added) this.notifyInfo('breakpoint created')
-    else this.notifyError('breakpoint could not be added')
+    if (added) ccs.notifyInfo('breakpoint created')
+    else ccs.notifyError('breakpoint could not be added')
 
     return added
   }
@@ -116,8 +102,8 @@ class DebugService {
     await jolokiaService.execute(db.objectName as string, 'removeBreakpoint', [breakpointId])
     const breakpoints = await this.getBreakpoints(node)
     const removed = !breakpoints.includes(breakpointId)
-    if (removed) this.notifyInfo('breakpoint removed')
-    else this.notifyError('breakpoint could not be removed')
+    if (removed) ccs.notifyInfo('breakpoint removed')
+    else ccs.notifyError('breakpoint could not be removed')
 
     return removed
   }
@@ -147,8 +133,8 @@ class DebugService {
 
     const breakpoints = await this.getBreakpoints(node)
     const added = breakpoints.includes(conditionalBreakpoint.nodeId)
-    if (added) this.notifyInfo('conditional breakpoint created')
-    else this.notifyError('conditional breakpoint could not be added')
+    if (added) ccs.notifyInfo('conditional breakpoint created')
+    else ccs.notifyError('conditional breakpoint could not be added')
 
     return added
   }
@@ -210,20 +196,9 @@ class DebugService {
     return type
   }
 
-  text(element: Element): string | null {
-    const txt = element.firstChild?.textContent
-    return !txt ? null : txt
-  }
-
-  childText(element: Element, childTag: string): string | null {
-    const childEl = element.querySelector(childTag)
-    if (!childEl) return null
-    return this.text(childEl)
-  }
-
   createMessageFromXml(exchange: Element): MessageData | null {
-    const uid = this.childText(exchange, 'uid')
-    const timestamp = this.childText(exchange, 'timestamp')
+    const uid = childText(exchange, 'uid')
+    const timestamp = childText(exchange, 'timestamp')
 
     let message = exchange.querySelector('message')
     if (!message) {
@@ -237,7 +212,7 @@ class DebugService {
     Array.from(headerElements).forEach(headerElement => {
       const key = headerElement.getAttribute('key')
       const typeName = headerElement.getAttribute('type')
-      const value = this.text(headerElement)
+      const value = xmlText(headerElement)
 
       if (key) {
         if (value) headers[key] = value

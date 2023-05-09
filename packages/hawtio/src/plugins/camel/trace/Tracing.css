@@ -1,0 +1,11 @@
+.noTracing {
+  margin-bottom: 0.5em;
+}
+
+#route-message-table {
+  margin-top: 0.5em;
+}
+
+#route-message-table-header button {
+  float: right;
+}

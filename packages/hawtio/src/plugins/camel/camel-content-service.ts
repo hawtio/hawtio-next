@@ -15,6 +15,21 @@ import {
   routesType,
   routeXmlNodeType,
 } from './globals'
+import { eventService } from '@hawtiosrc/core'
+
+export function notifyError(msg: string) {
+  eventService.notify({
+    type: 'danger',
+    message: msg,
+  })
+}
+
+export function notifyInfo(msg: string) {
+  eventService.notify({
+    type: 'info',
+    message: msg,
+  })
+}
 
 export function setChildProperties(parent: MBeanNode | null, childType: string) {
   if (!parent) return
@@ -229,7 +244,7 @@ export function canTrace(node: MBeanNode): boolean {
   const trace = findTraceBean(node)
   if (!trace) return false
 
-  return canDumpAllTracedMessagesAsXml(trace)
+  return canDumpAllTracedMessagesAsXml(node)
 }
 
 /**

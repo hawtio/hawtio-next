@@ -37,16 +37,16 @@ export type Annotation = {
 
 export type RouteDiagramContext = {
   selectedNode: MBeanNode | null
-  graphNodeData: CamelNodeData[]
-  setGraphNodeData: (graphnNodeData: CamelNodeData[]) => void
-  graphSelection: string
+  graphNodeData?: CamelNodeData[]
+  setGraphNodeData: (graphNodeData: CamelNodeData[]) => void
+  graphSelection?: string
   setGraphSelection: (graphSelection: string) => void
-  showStatistics: boolean
-  setShowStatistics: (value: boolean) => void
-  doubleClickAction: (nodeData: CamelNodeData) => void
-  setDoubleClickAction: (fn: (nodeData: CamelNodeData) => void) => void
-  annotations: Annotation[]
-  setAnnotations: (annotations: Annotation[]) => void
+  showStatistics?: boolean
+  setShowStatistics?: (value: boolean) => void
+  doubleClickAction?: (nodeData: CamelNodeData) => void
+  setDoubleClickAction?: (fn: (nodeData: CamelNodeData) => void) => void
+  annotations?: Annotation[]
+  setAnnotations?: (annotations: Annotation[]) => void
 }
 
 export const RouteDiagramContext = createContext<RouteDiagramContext>({
