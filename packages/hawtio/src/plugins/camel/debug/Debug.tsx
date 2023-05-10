@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Card,
   CardBody,
@@ -36,6 +36,7 @@ import { log } from '../globals'
 import { childText, parseXML } from '@hawtiosrc/util/xml'
 import { MessageDrawer } from './MessageDrawer'
 import { ConditionalBreakpointModal } from './ConditionalBreakpointModel'
+import { compareArrays } from '@hawtiosrc/util/arrays'
 
 export const Debug: React.FunctionComponent = () => {
   const {
@@ -44,7 +45,6 @@ export const Debug: React.FunctionComponent = () => {
     setGraphNodeData,
     graphSelection,
     setGraphSelection,
-    showStatistics,
     setShowStatistics,
     doubleClickAction,
     setDoubleClickAction,
@@ -58,14 +58,21 @@ export const Debug: React.FunctionComponent = () => {
   const [breakpointCounter, setBreakpointCounter] = useState<number>(0)
   const [isConditionalBreakpointOpen, setIsConditionalBreakpointOpen] = useState<boolean>(false)
   const [messages, setMessages] = useState<MessageData[]>([])
-
   const [debugPanelExpanded, setDebugPanelExpanded] = React.useState(false)
+  const bkpsRef = useRef<string[]>([])
 
   const applyBreakpoints = useCallback((response: unknown) => {
-    const bkps: string[] = []
-    if (isArray(response)) {
-      bkps.push(...(response as string[]))
+    if (!isArray(response)) {
+      bkpsRef.current = []
+      setBreakpoints([])
+      return
     }
+
+    const responseArr: string[] = response as string[]
+    if (compareArrays(bkpsRef.current, responseArr)) return
+
+    const bkps = [...responseArr]
+    bkpsRef.current = bkps
     setBreakpoints(bkps)
   }, [])
 
@@ -105,7 +112,9 @@ export const Debug: React.FunctionComponent = () => {
 
       const messages: MessageData[] = []
       for (const message of allMessages) {
-        const msgData = ds.createMessageFromXml(message) as MessageData
+        const msgData = ds.createMessageFromXml(message)
+        if (!msgData) continue
+
         const toNode = childText(message, 'toNode')
         if (toNode) msgData.toNode = toNode
 
@@ -162,15 +171,17 @@ export const Debug: React.FunctionComponent = () => {
    */
   const doubleClickNodeAction = useCallback((): ((nodeData: CamelNodeData) => void) => {
     return async (nodeData: CamelNodeData) => {
+      if (!selectedNode) return
+
       if (nodeData.routeIdx === 0) {
         ccs.notifyError('Cannot breakpoint on the first node in the route')
         return
       }
 
-      const bkps = await ds.getBreakpoints(selectedNode as MBeanNode)
+      const bkps = await ds.getBreakpoints(selectedNode)
       if (bkps.includes(nodeData.cid)) {
-        handleRemoveBreakpoint(selectedNode as MBeanNode, nodeData.cid)
-      } else handleAddBreakpoint(selectedNode as MBeanNode, nodeData.cid)
+        handleRemoveBreakpoint(selectedNode, nodeData.cid)
+      } else handleAddBreakpoint(selectedNode, nodeData.cid)
     }
   }, [selectedNode, handleAddBreakpoint, handleRemoveBreakpoint])
 
@@ -188,6 +199,47 @@ export const Debug: React.FunctionComponent = () => {
     }
   }, [])
 
+  /**
+   * Called when isDebugging is changed to reload breakpoint properties
+   */
+  const reloadBreakpointChanges = useCallback(
+    async (isDebugging: boolean, contextNode: MBeanNode) => {
+      // Unregister old handles
+      ds.unregisterAll()
+
+      const debugNode = ds.getDebugBean(contextNode)
+      if (!debugNode || !debugNode.objectName) return
+
+      if (isDebugging) {
+        const result = await ds.getBreakpoints(contextNode)
+        applyBreakpoints(result)
+
+        const bc = await ds.getBreakpointCounter(contextNode)
+        applyBreakpointCounter(bc, contextNode)
+
+        /*
+         * Sets up polling and updating of counter when it changes
+         */
+        ds.register(
+          {
+            type: 'exec',
+            mbean: debugNode.objectName,
+            operation: 'getDebugCounter',
+          },
+          (response: IResponse) => {
+            log.debug('Scheduler - Debug:', response.value)
+            applyBreakpointCounter(response?.value as number, contextNode)
+          },
+        )
+      } else {
+        setBreakpoints([])
+        setSuspendedBreakpoints([])
+        setBreakpointCounter(0)
+      }
+    },
+    [applyBreakpointCounter, applyBreakpoints],
+  )
+
   useEffect(() => {
     if (!selectedNode) return
 
@@ -197,59 +249,12 @@ export const Debug: React.FunctionComponent = () => {
     setShowStatistics(false)
     setDoubleClickAction(doubleClickNodeAction)
 
-    ds.isDebugging(selectedNode as MBeanNode).then((value: boolean) => {
+    ds.isDebugging(selectedNode).then((value: boolean) => {
       setIsDebugging(value)
+      reloadBreakpointChanges(value, selectedNode)
       setIsReading(false)
     })
-  }, [selectedNode, doubleClickNodeAction, setDoubleClickAction, setShowStatistics])
-
-  /**
-   * Called when isDebugging is changed to reload breakpoint properties
-   */
-  const reloadBreakpointChanges = useCallback(
-    async (isDebugging: boolean) => {
-      // Unregister old handles
-      ds.unregisterAll()
-
-      const debugNode = ds.getDebugBean(selectedNode as MBeanNode)
-      if (!debugNode) return
-
-      if (isDebugging) {
-        const result = await ds.getBreakpoints(selectedNode as MBeanNode)
-        applyBreakpoints(result)
-
-        const bc = await ds.getBreakpointCounter(selectedNode as MBeanNode)
-        applyBreakpointCounter(bc, selectedNode as MBeanNode)
-
-        /*
-         * Sets up polling and updating of counter when it changes
-         */
-        ds.register(
-          {
-            type: 'exec',
-            mbean: debugNode.objectName as string,
-            operation: 'getDebugCounter',
-          },
-          (response: IResponse) => {
-            log.debug('Scheduler - Debug:', response.value)
-            applyBreakpointCounter(response?.value as number, selectedNode as MBeanNode)
-          },
-        )
-      } else {
-        setBreakpoints([])
-        setSuspendedBreakpoints([])
-        setBreakpointCounter(0)
-      }
-    },
-    [selectedNode, applyBreakpointCounter, applyBreakpoints],
-  )
-
-  /**
-   * When isDebugging is updated, reload all the breakpoint properties
-   */
-  useEffect(() => {
-    reloadBreakpointChanges(isDebugging)
-  }, [isDebugging, reloadBreakpointChanges])
+  }, [selectedNode, doubleClickNodeAction, setDoubleClickAction, setShowStatistics, reloadBreakpointChanges])
 
   useEffect(() => {
     const annotations: Annotation[] = []
@@ -288,7 +293,9 @@ export const Debug: React.FunctionComponent = () => {
    *
    *********************************/
   const hasSelectedBreakpoint = (): boolean => {
-    return isBreakpointSet(graphSelection as string)
+    if (!graphSelection) return false
+
+    return isBreakpointSet(graphSelection)
   }
 
   /*********************************
@@ -306,18 +313,25 @@ export const Debug: React.FunctionComponent = () => {
    *
    *********************************/
   const onDebugging = async () => {
-    const isDb = await ds.setDebugging(selectedNode as MBeanNode, !isDebugging)
+    if (!selectedNode) return
+
+    const isDb = await ds.setDebugging(selectedNode, !isDebugging)
     setIsDebugging(isDb)
+    reloadBreakpointChanges(isDb, selectedNode)
   }
 
   const onAddBreakpoint = () => {
+    if (!selectedNode) return
+
     if (!graphSelection || isFirstGraphNode(graphSelection)) return
-    handleAddBreakpoint(selectedNode as MBeanNode, graphSelection)
+    handleAddBreakpoint(selectedNode, graphSelection)
   }
 
   const onRemoveBreakpoint = () => {
+    if (!selectedNode) return
+
     if (!hasSelectedBreakpoint()) return
-    handleRemoveBreakpoint(selectedNode as MBeanNode, graphSelection)
+    handleRemoveBreakpoint(selectedNode, graphSelection)
   }
 
   const onAddConditionalBreakpointToggle = () => {
@@ -325,13 +339,17 @@ export const Debug: React.FunctionComponent = () => {
   }
 
   const onStep = async () => {
+    if (!selectedNode) return
+
     if (!suspendedBreakpoints || suspendedBreakpoints.length === 0) return
 
-    await ds.stepBreakpoint(selectedNode as MBeanNode, suspendedBreakpoints[0])
+    await ds.stepBreakpoint(selectedNode, suspendedBreakpoints[0])
   }
 
   const onResume = () => {
-    ds.resume(selectedNode as MBeanNode)
+    if (!selectedNode) return
+
+    ds.resume(selectedNode)
     setMessages([])
     setSuspendedBreakpoints([])
   }
@@ -386,7 +404,7 @@ export const Debug: React.FunctionComponent = () => {
                   variant='plain'
                   isSmall={true}
                   icon={<TimesCircleIcon />}
-                  onClick={() => handleRemoveBreakpoint(selectedNode as MBeanNode, breakpoint)}
+                  onClick={() => handleRemoveBreakpoint(selectedNode, breakpoint)}
                 ></Button>
               </Td>
             </Tr>
@@ -479,20 +497,6 @@ export const Debug: React.FunctionComponent = () => {
     </React.Fragment>
   )
 
-  const ctx: RouteDiagramContext = {
-    selectedNode: selectedNode,
-    graphNodeData: graphNodeData,
-    setGraphNodeData: setGraphNodeData,
-    graphSelection: graphSelection,
-    setGraphSelection: setGraphSelection,
-    showStatistics: showStatistics,
-    setShowStatistics: setShowStatistics,
-    doubleClickAction: doubleClickAction,
-    setDoubleClickAction: setDoubleClickAction,
-    annotations: annotations,
-    setAnnotations: setAnnotations,
-  }
-
   return (
     <Card isFullHeight>
       <CardHeader>
@@ -532,7 +536,20 @@ export const Debug: React.FunctionComponent = () => {
               }}
             >
               <div id='route-diagram-breakpoint-view'>
-                <RouteDiagramContext.Provider value={ctx}>
+                <RouteDiagramContext.Provider
+                  value={{
+                    selectedNode: selectedNode,
+                    graphNodeData: graphNodeData,
+                    setGraphNodeData: setGraphNodeData,
+                    graphSelection: graphSelection,
+                    setGraphSelection: setGraphSelection,
+                    setShowStatistics: setShowStatistics,
+                    doubleClickAction: doubleClickAction,
+                    setDoubleClickAction: setDoubleClickAction,
+                    annotations: annotations,
+                    setAnnotations: setAnnotations,
+                  }}
+                >
                   <RouteDiagram />
                 </RouteDiagramContext.Provider>
               </div>
