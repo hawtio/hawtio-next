@@ -49,7 +49,7 @@ export const CamelContent: React.FunctionComponent = () => {
   interface NavItem {
     id: string
     title: string
-    componentFn: () => JSX.Element
+    component: JSX.Element
     isApplicable(node: MBeanNode | null): boolean
   }
 
@@ -63,42 +63,40 @@ export const CamelContent: React.FunctionComponent = () => {
   // The order of the items in the following list is the order in will the tabs will be visualized.
   // For more info check: https://github.com/hawtio/hawtio-next/issues/237
   const allNavItems: NavItem[] = [
-    { id: 'attributes', title: 'Attributes', componentFn: () => <Attributes />, isApplicable: mBeanApplicable },
-    { id: 'operations', title: 'Operations', componentFn: () => <Operations />, isApplicable: mBeanApplicable },
+    { id: 'attributes', title: 'Attributes', component: <Attributes />, isApplicable: mBeanApplicable },
+    { id: 'operations', title: 'Operations', component: <Operations />, isApplicable: mBeanApplicable },
     {
       id: 'contexts',
       title: 'Contexts',
-      componentFn: () => <Contexts />,
+      component: <Contexts />,
       isApplicable: (node: MBeanNode) => ccs.isContextsFolder(node),
     },
     {
       id: 'routes',
       title: 'Routes',
-      componentFn: () => <CamelRoutes />,
+      component: <CamelRoutes />,
       isApplicable: (node: MBeanNode) => ccs.isRoutesFolder(node),
     },
     {
       id: 'endpoints',
       title: 'Endpoints',
-      componentFn: () => <Endpoints />,
+      component: <Endpoints />,
       isApplicable: (node: MBeanNode) => ccs.isEndpointsFolder(node),
     },
     {
       id: 'routeDiagram',
       title: 'Route Diagram',
-      componentFn: () => {
-        return (
-          <RouteDiagramContext.Provider value={ctx}>
-            <RouteDiagram />
-          </RouteDiagramContext.Provider>
-        )
-      },
+      component: (
+        <RouteDiagramContext.Provider value={ctx}>
+          <RouteDiagram />
+        </RouteDiagramContext.Provider>
+      ),
       isApplicable: (node: MBeanNode) => ccs.isRouteNode(node) || ccs.isRoutesFolder(node),
     },
     {
       id: 'source',
       title: 'Source',
-      componentFn: () => <Source />,
+      component: <Source />,
       isApplicable: (node: MBeanNode) =>
         !ccs.isEndpointNode(node) &&
         !ccs.isEndpointsFolder(node) &&
@@ -107,26 +105,26 @@ export const CamelContent: React.FunctionComponent = () => {
     {
       id: 'exchanges',
       title: 'Exchanges',
-      componentFn: () => <Exchanges />,
+      component: <Exchanges />,
       isApplicable: (node: MBeanNode) => ccs.hasExchange(node),
     },
     {
       id: 'type-converters',
       title: 'Type Converters',
-      componentFn: () => <TypeConverters />,
+      component: <TypeConverters />,
       isApplicable: (node: MBeanNode) => ccs.hasTypeConverter(node),
     },
-    { id: 'chart', title: 'Chart', componentFn: () => <Chart />, isApplicable: mBeanApplicable },
+    { id: 'chart', title: 'Chart', component: <Chart />, isApplicable: mBeanApplicable },
     {
       id: 'trace',
       title: 'Trace',
-      componentFn: () => <Trace />,
+      component: <Trace />,
       isApplicable: (node: MBeanNode) => ccs.canTrace(node),
     },
     {
       id: 'debug',
       title: 'Debug',
-      componentFn: () => <Debug />,
+      component: <Debug />,
       isApplicable: (node: MBeanNode) => ccs.canGetBreakpoints(node),
     },
   ]
@@ -146,7 +144,7 @@ export const CamelContent: React.FunctionComponent = () => {
     </Nav>
   )
 
-  const camelNavRoutes = navItems.map(nav => <Route key={nav.id} path={nav.id} element={nav.componentFn()} />)
+  const camelNavRoutes = navItems.map(nav => <Route key={nav.id} path={nav.id} element={nav.component} />)
 
   return (
     <React.Fragment>
