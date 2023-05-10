@@ -209,7 +209,7 @@ export function findTraceBean(node: MBeanNode): MBeanNode | null {
   return !tracer ? null : tracer
 }
 
-export function findDebugBean(node: MBeanNode): MBeanNode | null {
+export function findDebugBean(node: MBeanNode | null): MBeanNode | null {
   if (!node) return null
 
   const ctxNode = findContext(node)
