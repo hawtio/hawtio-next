@@ -40,7 +40,7 @@ class DebugService {
   }
 
   getDebugBean(node: MBeanNode): MBeanNode | null {
-    const db = ccs.findDebugBean(node) as MBeanNode
+    const db = ccs.findDebugBean(node)
     if (!db || !db.objectName) ccs.notifyError('Could not find the debug bean')
 
     return db
@@ -48,9 +48,9 @@ class DebugService {
 
   async isDebugging(node: MBeanNode): Promise<boolean> {
     const db = this.getDebugBean(node)
-    if (!db) return false
+    if (!db || !db.objectName) return false
 
-    const result = await jolokiaService.readAttribute(db.objectName as string, 'Enabled')
+    const result = await jolokiaService.readAttribute(db.objectName, 'Enabled')
     if (!result) return false
 
     return result as boolean
@@ -58,35 +58,31 @@ class DebugService {
 
   async setDebugging(node: MBeanNode, flag: boolean): Promise<boolean> {
     const db = this.getDebugBean(node)
-    if (!db) return false
+    if (!db || !db.objectName) return false
 
     const options = camelPreferencesService.loadCamelPreferences()
-    await jolokiaService.writeAttribute(db.objectName as string, 'BodyMaxChars', options.maximumTraceDebugBodyLength)
-    await jolokiaService.writeAttribute(
-      db.objectName as string,
-      'BodyIncludeStreams',
-      options.isIncludeTraceDebugStreams,
-    )
-    await jolokiaService.writeAttribute(db.objectName as string, 'BodyIncludeFiles', options.isIncludeTraceDebugStreams)
+    await jolokiaService.writeAttribute(db.objectName, 'BodyMaxChars', options.maximumTraceDebugBodyLength)
+    await jolokiaService.writeAttribute(db.objectName, 'BodyIncludeStreams', options.isIncludeTraceDebugStreams)
+    await jolokiaService.writeAttribute(db.objectName, 'BodyIncludeFiles', options.isIncludeTraceDebugStreams)
 
     const method = flag ? 'enableDebugger' : 'disableDebugger'
-    await jolokiaService.execute(db.objectName as string, method)
+    await jolokiaService.execute(db.objectName, method)
     return await this.isDebugging(node)
   }
 
   async getBreakpoints(node: MBeanNode): Promise<string[]> {
     const db = this.getDebugBean(node)
-    if (!db) return []
+    if (!db || !db.objectName) return []
 
-    const result = await jolokiaService.execute(db.objectName as string, 'getBreakpoints')
+    const result = await jolokiaService.execute(db.objectName, 'getBreakpoints')
     return result as string[]
   }
 
   async addBreakpoint(node: MBeanNode, breakpointId: string): Promise<boolean> {
     const db = this.getDebugBean(node)
-    if (!db) return false
+    if (!db || !db.objectName) return false
 
-    await jolokiaService.execute(db.objectName as string, 'addBreakpoint', [breakpointId])
+    await jolokiaService.execute(db.objectName, 'addBreakpoint', [breakpointId])
     const breakpoints = await this.getBreakpoints(node)
     const added = breakpoints.includes(breakpointId)
     if (added) ccs.notifyInfo('breakpoint created')
@@ -97,9 +93,9 @@ class DebugService {
 
   async removeBreakpoint(node: MBeanNode, breakpointId: string): Promise<boolean> {
     const db = this.getDebugBean(node)
-    if (!db) return false
+    if (!db || !db.objectName) return false
 
-    await jolokiaService.execute(db.objectName as string, 'removeBreakpoint', [breakpointId])
+    await jolokiaService.execute(db.objectName, 'removeBreakpoint', [breakpointId])
     const breakpoints = await this.getBreakpoints(node)
     const removed = !breakpoints.includes(breakpointId)
     if (removed) ccs.notifyInfo('breakpoint removed')
@@ -110,9 +106,9 @@ class DebugService {
 
   async validateConditionalBreakpoint(node: MBeanNode, breakpoint: ConditionalBreakpoint): Promise<string | null> {
     const db = this.getDebugBean(node)
-    if (!db) return 'Error: cannot find debugger bean'
+    if (!db || !db.objectName) return 'Error: cannot find debugger bean'
 
-    const result = await jolokiaService.execute(db.objectName as string, 'validateConditionalBreakpoint', [
+    const result = await jolokiaService.execute(db.objectName, 'validateConditionalBreakpoint', [
       breakpoint.language,
       breakpoint.predicate,
     ])
@@ -123,9 +119,9 @@ class DebugService {
   async addConditionalBreakpoint(node: MBeanNode, conditionalBreakpoint: ConditionalBreakpoint): Promise<boolean> {
     log.info('Add conditional breakpoint')
     const db = this.getDebugBean(node)
-    if (!db) return false
+    if (!db || !db.objectName) return false
 
-    await jolokiaService.execute(db.objectName as string, 'addConditionalBreakpoint', [
+    await jolokiaService.execute(db.objectName, 'addConditionalBreakpoint', [
       conditionalBreakpoint.nodeId,
       conditionalBreakpoint.language,
       conditionalBreakpoint.predicate,
@@ -144,17 +140,17 @@ class DebugService {
    */
   async getSuspendedBreakpointIds(node: MBeanNode): Promise<string[]> {
     const db = this.getDebugBean(node)
-    if (!db) return []
+    if (!db || !db.objectName) return []
 
-    const result = await jolokiaService.execute(db.objectName as string, 'getSuspendedBreakpointNodeIds')
+    const result = await jolokiaService.execute(db.objectName, 'getSuspendedBreakpointNodeIds')
     return result as string[]
   }
 
   async stepBreakpoint(node: MBeanNode, breakpointId: string): Promise<string[]> {
     const db = this.getDebugBean(node)
-    if (!db) return []
+    if (!db || !db.objectName) return []
 
-    await jolokiaService.execute(db.objectName as string, 'stepBreakpoint(java.lang.String)', [breakpointId])
+    await jolokiaService.execute(db.objectName, 'stepBreakpoint(java.lang.String)', [breakpointId])
 
     // Return the new suspended breakpoint
     return await this.getSuspendedBreakpointIds(node)
@@ -162,17 +158,17 @@ class DebugService {
 
   async getBreakpointCounter(node: MBeanNode): Promise<number> {
     const db = this.getDebugBean(node)
-    if (!db) return 0
+    if (!db || !db.objectName) return 0
 
-    const result = await jolokiaService.execute(db.objectName as string, 'getDebugCounter')
+    const result = await jolokiaService.execute(db.objectName, 'getDebugCounter')
     return result as number
   }
 
   async getTracedMessages(node: MBeanNode, breakpointId: string): Promise<string> {
     const db = this.getDebugBean(node)
-    if (!db) return ''
+    if (!db || !db.objectName) return ''
 
-    const result = await jolokiaService.execute(db.objectName as string, 'dumpTracedMessagesAsXml(java.lang.String)', [
+    const result = await jolokiaService.execute(db.objectName, 'dumpTracedMessagesAsXml(java.lang.String)', [
       breakpointId,
     ])
     return result as string
@@ -180,12 +176,12 @@ class DebugService {
 
   async resume(node: MBeanNode): Promise<void> {
     const db = this.getDebugBean(node)
-    if (!db) return
+    if (!db || !db.objectName) return
 
-    await jolokiaService.execute(db.objectName as string, 'resumeAll')
+    await jolokiaService.execute(db.objectName, 'resumeAll')
   }
 
-  private humanizeJavaType(type: string): string {
+  private humanizeJavaType(type: string | null): string {
     if (!type) return ''
 
     // skip leading java.lang
@@ -197,8 +193,8 @@ class DebugService {
   }
 
   createMessageFromXml(exchange: Element): MessageData | null {
-    const uid = childText(exchange, 'uid')
-    const timestamp = childText(exchange, 'timestamp')
+    const uid = childText(exchange, 'uid') || ''
+    const timestamp = childText(exchange, 'timestamp') || ''
 
     let message = exchange.querySelector('message')
     if (!message) {
@@ -223,7 +219,7 @@ class DebugService {
           key +
           '</td>' +
           "<td class='property-value'>" +
-          this.humanizeJavaType(typeName as string) +
+          this.humanizeJavaType(typeName) +
           '</td>' +
           "<td class='property-value'>" +
           (value || '') +
@@ -251,19 +247,19 @@ class DebugService {
 
     const bodyElement = message.querySelector('body')
     let bodyText = ''
-    let bodyType = ''
+    let bodyType: string | null = ''
     if (bodyElement) {
-      bodyText = bodyElement.textContent as string
-      bodyType = bodyElement.getAttribute('type') as string
-      bodyType = this.humanizeJavaType(bodyType as string)
+      bodyText = bodyElement.textContent || ''
+      bodyType = bodyElement.getAttribute('type')
+      bodyType = this.humanizeJavaType(bodyType)
     }
 
     const messageData: MessageData = {
       headers: headers,
       headerTypes: headerTypes,
       id: id,
-      uid: uid as string,
-      timestamp: timestamp as string,
+      uid: uid,
+      timestamp: timestamp,
       headerHtml: headerHtml,
       body: bodyText,
       bodyType: bodyType,
