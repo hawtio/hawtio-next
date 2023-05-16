@@ -2008,7 +2008,7 @@ __metadata:
     "@types/dagre": ^0.7.48
     "@types/dagre-layout": ^0.8.2
     "@types/jest": ^29.5.1
-    "@types/node": ^18.16.2
+    "@types/node": ^18.16.9
     "@types/react": ^18.2.6
     "@types/react-dom": ^18.2.4
     "@types/react-router-dom": ^5.3.3
@@ -3984,10 +3984,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^18.16.2":
-  version: 18.16.2
-  resolution: "@types/node@npm:18.16.2"
-  checksum: 7ad66d23b3b93885a9f879bff98e0196790ad35589b47a3d81b52db969ad17ee298082020296df5166c2d72d3cd6a4b9ab34d254483637d967944a4b3e6febdb
+"@types/node@npm:^18.16.9":
+  version: 18.16.9
+  resolution: "@types/node@npm:18.16.9"
+  checksum: 7fe0ef372ba8b157bd646efe29b0ece92ccb9f455171a7ceb4c92d6b490789ff0f14411b1dc6ad203351a0efa2b435072dfab5566fb6eaaaa5cd549e1fb22afa
   languageName: node
   linkType: hard
 
