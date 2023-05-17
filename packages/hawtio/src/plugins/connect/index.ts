@@ -19,4 +19,5 @@ export const connect: HawtioPlugin = () => {
 }
 
 export * from './connect-service'
+export * from './connections'
 export * from './jolokia-service'
