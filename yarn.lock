@@ -2035,6 +2035,7 @@ __metadata:
     ts-jest: ^29.1.0
     tsup: ^6.7.0
     typescript: ^4.9.5
+    xml-formatter: ^3.4.1
   peerDependencies:
     "@patternfly/react-core": ^4.276.8
     react: ^16.8 || ^17 || ^18
@@ -17212,6 +17213,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"xml-formatter@npm:^3.4.1":
+  version: 3.4.1
+  resolution: "xml-formatter@npm:3.4.1"
+  dependencies:
+    xml-parser-xo: ^4.1.0
+  checksum: ca0bdee58eeb62d4749bb4ad49bf18e678bd3e1ddb6ae076ae145e5f423f1d98285111bf062afac374f10c360f6543ab28ee14657d152933a74a792074cc3747
+  languageName: node
+  linkType: hard
+
 "xml-name-validator@npm:^3.0.0":
   version: 3.0.0
   resolution: "xml-name-validator@npm:3.0.0"
@@ -17223,6 +17233,13 @@ __metadata:
   version: 4.0.0
   resolution: "xml-name-validator@npm:4.0.0"
   checksum: af100b79c29804f05fa35aa3683e29a321db9b9685d5e5febda3fa1e40f13f85abc40f45a6b2bf7bee33f68a1dc5e8eaef4cec100a304a9db565e6061d4cb5ad
+  languageName: node
+  linkType: hard
+
+"xml-parser-xo@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "xml-parser-xo@npm:4.1.0"
+  checksum: a216e7d522a5f15a560cd5c929004c7b5d99c7fc958dc8ceeb259c077e918657ae210d84eebeffce175d1202fe5ecb072243080b9015874ba837ee0642ab2aae
   languageName: node
   linkType: hard
 
