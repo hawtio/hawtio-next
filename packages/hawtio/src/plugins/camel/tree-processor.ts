@@ -24,6 +24,9 @@ function adoptChild(parent: MBeanNode | null, child: MBeanNode | null, type: str
 
   parent.adopt(child)
   child.setIcons(childIcon)
+  if (ccs.isContext(parent)) {
+    child.addProperty(contextNodeType, parent.objectName ?? '')
+  }
   ccs.setType(child, type)
   ccs.setDomain(child)
 }

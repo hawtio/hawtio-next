@@ -1,4 +1,3 @@
-import React from 'react'
 import {
   EmptyState,
   EmptyStateIcon,
@@ -15,10 +14,11 @@ import {
 } from '@patternfly/react-core'
 import './CamelContent.css'
 import { CubesIcon } from '@patternfly/react-icons'
+import React from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { Attributes, Operations, Chart, JmxContentMBeans, MBeanNode } from '@hawtiosrc/plugins/shared'
 import { RouteDiagramContext, useRouteDiagramContext } from './route-diagram/route-diagram-context'
-import { RouteDiagram } from '@hawtiosrc/plugins/camel/route-diagram/RouteDiagram'
+import { RouteDiagram } from './route-diagram/RouteDiagram'
 import { Contexts } from './contexts'
 import { Endpoints } from './endpoints'
 import { Exchanges } from './exchanges'
@@ -26,8 +26,9 @@ import { TypeConverters } from './type-converters'
 import { Debug } from './debug'
 import { Trace } from './trace'
 import * as ccs from './camel-content-service'
-import { CamelRoutes } from '@hawtiosrc/plugins/camel/routes/CamelRoutes'
-import { Source } from '@hawtiosrc/plugins/camel/routes/Source'
+import { CamelRoutes } from './routes/CamelRoutes'
+import { Source } from './routes/Source'
+import { SendMessage } from './endpoints/SendMessage'
 
 export const CamelContent: React.FunctionComponent = () => {
   const ctx = useRouteDiagramContext()
@@ -101,6 +102,12 @@ export const CamelContent: React.FunctionComponent = () => {
         !ccs.isEndpointNode(node) &&
         !ccs.isEndpointsFolder(node) &&
         (ccs.isRouteNode(node) || ccs.isRoutesFolder(node)),
+    },
+    {
+      id: 'send',
+      title: 'Send',
+      component: <SendMessage />,
+      isApplicable: (node: MBeanNode) => ccs.isEndpointNode(node),
     },
     {
       id: 'exchanges',

@@ -1,9 +1,9 @@
-import { eventService } from '@hawtiosrc/core'
+import { eventService, NotificationType } from '@hawtiosrc/core'
 import { jolokiaService } from '@hawtiosrc/plugins/connect'
 import * as schema from '@hawtio/camel-model'
 import { MBeanNode, workspace } from '@hawtiosrc/plugins/shared'
 import * as ccs from '../camel-content-service'
-import { endpointsType, log } from '../globals'
+import { contextNodeType, endpointsType, log } from '../globals'
 import { isObject } from '@hawtiosrc/util/objects'
 
 export type Endpoint = {
@@ -133,4 +133,58 @@ export function loadEndpointSchema(node: MBeanNode, componentName: string): Reco
 
   const compSchema: Record<string, unknown> = schema.components.components
   return compSchema[componentName] as Record<string, unknown>
+}
+
+export async function doSendMessage(
+  mbean: MBeanNode,
+  body: string,
+  headers: { name: string; value: string }[],
+  notify: (type: NotificationType, message: string) => void,
+) {
+  const messageHeaders: Record<string, string> = {}
+  if (headers.length > 0) {
+    headers.forEach(header => {
+      const key = header.name
+      if (key && key !== '') {
+        messageHeaders[key] = header.value
+      }
+    })
+  }
+
+  const context = mbean.parent?.getProperty(contextNodeType)
+  const uri = mbean.name
+  if (context && uri) {
+    let ok = true
+
+    const reply = await jolokiaService.execute(context, 'canSendToEndpoint(java.lang.String)', [uri])
+    if (!reply) {
+      notify('warning', 'Camel does not support sending to this endpoint.')
+      ok = false
+    }
+
+    if (ok) {
+      if (Object.keys(messageHeaders).length > 0) {
+        jolokiaService
+          .execute(context, 'sendBodyAndHeaders(java.lang.String, java.lang.Object, java.util.Map)', [
+            uri,
+            body,
+            messageHeaders,
+          ])
+          .then(ok => {
+            notify('success', `Message and headers were sent to the ${uri} endpoint`)
+          })
+      } else {
+        jolokiaService.execute(context, 'sendStringBody(java.lang.String, java.lang.String)', [uri, body]).then(ok => {
+          notify('success', `Message was sent to the ${uri} endpoint`)
+        })
+      }
+    }
+  } else {
+    if (!mbean) {
+      notify('danger', 'Could not find CamelContext MBean!')
+    } else {
+      notify('danger', 'Failed to determine endpoint name!')
+    }
+    log.debug('Parsed context and endpoint:', context, mbean)
+  }
 }
