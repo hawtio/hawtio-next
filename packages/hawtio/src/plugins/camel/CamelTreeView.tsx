@@ -1,9 +1,10 @@
 import { MBeanNode, MBeanTree, PluginTreeViewToolbar } from '@hawtiosrc/plugins/shared'
 import { TreeView, TreeViewDataItem } from '@patternfly/react-core'
-import React, { ChangeEvent, useContext, useEffect, useState } from 'react'
+import React, { ChangeEvent, useContext, useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './CamelTreeView.css'
 import { CamelContext } from './context'
+import * as ccs from './camel-content-service'
 import { pluginPath } from './globals'
 
 /**
@@ -29,8 +30,19 @@ enum ExpansionValue {
 export const CamelTreeView: React.FunctionComponent = () => {
   const { tree, selectedNode, setSelectedNode } = useContext(CamelContext)
   const [expanded, setExpanded] = useState(ExpansionValue.Default)
-  const [filteredTree, setFilteredTree] = useState(tree.getTree())
   const navigate = useNavigate()
+
+  const deriveTree = useCallback((): MBeanNode[] => {
+    const t = tree.getTree()
+    if (t.length === 0) return t
+
+    if (!ccs.isDomainNode(t[0])) return t
+
+    // Exclude the domain node from the tree display
+    return t[0].getChildren()
+  }, [tree])
+
+  const [filteredTree, setFilteredTree] = useState(deriveTree())
 
   /**
    * Listen for changes to the tree that may occur as a result
@@ -38,8 +50,8 @@ export const CamelTreeView: React.FunctionComponent = () => {
    * eg. new endpoint being created
    */
   useEffect(() => {
-    setFilteredTree(tree.getTree())
-  }, [tree])
+    setFilteredTree(deriveTree())
+  }, [deriveTree])
 
   const onSearch = (event: ChangeEvent<HTMLInputElement>) => {
     // Ensure no node from the 'old' filtered is lingering
@@ -48,10 +60,10 @@ export const CamelTreeView: React.FunctionComponent = () => {
 
     const input = event.target.value
     if (input === '') {
-      setFilteredTree(tree.getTree())
+      setFilteredTree(deriveTree())
     } else {
       setFilteredTree(
-        MBeanTree.filter(tree.getTree(), (node: MBeanNode) => node.name.toLowerCase().includes(input.toLowerCase())),
+        MBeanTree.filter(deriveTree(), (node: MBeanNode) => node.name.toLowerCase().includes(input.toLowerCase())),
       )
       setExpanded(ExpansionValue.ExpandAll)
     }

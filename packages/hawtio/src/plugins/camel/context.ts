@@ -5,6 +5,7 @@ import { workspace, MBeanNode, MBeanTree } from '@hawtiosrc/plugins/shared'
 import { pluginName, pluginPath, jmxDomain } from './globals'
 import { useNavigate } from 'react-router-dom'
 import { eventService, EVENT_REFRESH } from '@hawtiosrc/core'
+import * as ccs from './camel-content-service'
 
 /**
  * Custom React hook for using Camel MBean tree.
@@ -35,10 +36,23 @@ export function useCamelTree() {
       setTree(subTree)
       if (rootNode && rootNode.children && rootNode.children.length > 0) {
         const path: string[] = []
-        if (refSelectedNode.current) {
+        /*
+         * Make the selection the camel selected node if
+         * - It is not null
+         * - It is a camel domain node
+         * - It is not the domain node (not visible)
+         */
+        if (
+          refSelectedNode.current &&
+          ccs.hasDomain(refSelectedNode.current) &&
+          !ccs.isDomainNode(refSelectedNode.current)
+        ) {
           path.push(...refSelectedNode.current.path())
         } else {
-          path.push(...rootNode.getChildren()[0].path())
+          // Find the first context from the rootNode
+          const ctx = ccs.findContext(rootNode)
+          if (ctx) path.push(...ctx.path())
+          else path.push(...rootNode.getChildren()[0].path())
         }
 
         // Expand the nodes to redisplay the path
