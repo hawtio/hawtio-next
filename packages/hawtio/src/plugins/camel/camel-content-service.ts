@@ -148,6 +148,11 @@ export function canBrowse(node: MBeanNode): boolean {
   return workspace.hasInvokeRights(inflightNode as MBeanNode, 'browse')
 }
 
+export function canBrowseMessages(node: MBeanNode): boolean {
+  const browseMessages = node.mbean?.op['browseMessageAsXml']
+  return !!browseMessages
+}
+
 export function hasExchange(node: MBeanNode): boolean {
   return (
     node &&
