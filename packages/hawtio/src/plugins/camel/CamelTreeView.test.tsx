@@ -1,0 +1,73 @@
+import { render, screen } from '@testing-library/react'
+import { MBeanNode, MBeanTree, workspace } from '@hawtiosrc/plugins/shared'
+import { CamelTreeView } from './CamelTreeView'
+import { camelContexts, jmxDomain, pluginName } from './globals'
+import { camelTreeProcessor } from '@hawtiosrc/plugins/camel/tree-processor'
+import { jolokiaService } from '@hawtiosrc/plugins/connect'
+import fs from 'fs'
+import path from 'path'
+import { CamelContext } from './context'
+
+const routesXmlPath = path.resolve(__dirname, 'testdata', 'camel-sample-app-routes.xml')
+const sampleRoutesXml = fs.readFileSync(routesXmlPath, { encoding: 'utf8', flag: 'r' })
+
+/**
+ * Mock out the useNavigate() to allow the tests to work
+ */
+const mockedUsedNavigate = jest.fn()
+jest.mock('react-router-dom', () => ({
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  ...(jest.requireActual('react-router-dom') as any),
+  useNavigate: () => mockedUsedNavigate,
+}))
+
+/**
+ * Mock the routes xml to provide a full tree
+ */
+jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
+jolokiaService.execute = jest.fn(async (mbean: string, operation: string, args?: unknown[]): Promise<unknown> => {
+  if (
+    mbean === 'org.apache.camel:context=SampleCamel,type=context,name="SampleCamel"' &&
+    operation === 'dumpRoutesAsXml()'
+  ) {
+    return sampleRoutesXml
+  }
+
+  return ''
+})
+
+const selectedNode = null
+const setSelectedNode = () => {
+  /* no-op */
+}
+
+describe('CamelTreeView', () => {
+  let tree: MBeanTree
+
+  beforeAll(async () => {
+    const wkspTree = await workspace.getTree()
+    camelTreeProcessor(wkspTree)
+    const rootNode = wkspTree.findDescendant(node => node.name === jmxDomain)
+    if (rootNode) tree = MBeanTree.createFromNodes(pluginName, [rootNode])
+  })
+
+  test('Tree Display', async () => {
+    expect(tree).not.toBeUndefined()
+
+    const domainNode: MBeanNode = tree.get(jmxDomain) as MBeanNode
+    expect(domainNode).not.toBeNull()
+    const contextsNode: MBeanNode = domainNode.getIndex(0) as MBeanNode
+    expect(contextsNode).not.toBeNull()
+
+    render(
+      <CamelContext.Provider value={{ tree, selectedNode, setSelectedNode }}>
+        <CamelTreeView />
+      </CamelContext.Provider>,
+    )
+
+    const domainItem = screen.queryByLabelText(jmxDomain)
+    expect(domainItem).toBeNull()
+    const contextItem = screen.queryByLabelText(camelContexts)
+    expect(contextItem).not.toBeNull()
+  })
+})

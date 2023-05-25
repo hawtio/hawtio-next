@@ -47,6 +47,7 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
 
   camelDomain.setIcons(getIcon(IconNames.CamelIcon))
   ccs.setType(camelDomain, domainNodeType)
+  ccs.setDomain(camelDomain)
 
   // Detach current children from domain node
   const oldContexts = camelDomain.removeChildren()

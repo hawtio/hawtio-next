@@ -77,8 +77,8 @@ export function findContext(node: MBeanNode): MBeanNode | null {
   if (!node || !hasDomain(node)) return null
 
   if (isDomainNode(node)) {
-    // The camel domain node
-    return node.getIndex(0)
+    // The camel domain node so traverse to context folder & recurse
+    return findContext(node.getIndex(0) as MBeanNode)
   }
 
   if (isContextsFolder(node)) {
