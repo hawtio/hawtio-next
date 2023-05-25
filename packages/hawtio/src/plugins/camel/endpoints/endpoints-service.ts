@@ -5,6 +5,7 @@ import { MBeanNode, workspace } from '@hawtiosrc/plugins/shared'
 import * as ccs from '../camel-content-service'
 import { contextNodeType, endpointsType, log } from '../globals'
 import { isObject } from '@hawtiosrc/util/objects'
+import { parseXML } from '@hawtiosrc/util/xml'
 
 export type Endpoint = {
   uri: string
@@ -12,6 +13,11 @@ export type Endpoint = {
   mbean: string
 }
 
+export type MessageData = {
+  messageId: string
+  body: string
+  headers: { key: string; type: string; value: string }[]
+}
 export async function getEndpoints(node: MBeanNode): Promise<Endpoint[]> {
   const endpoints: Endpoint[] = []
   const ctxNode = ccs.findContext(node)
@@ -187,4 +193,90 @@ export async function doSendMessage(
     }
     log.debug('Parsed context and endpoint:', context, mbean)
   }
+}
+
+export async function forwardMessagesToEndpoint(
+  mBean: MBeanNode,
+  uri: string,
+  messages: MessageData[],
+  notify: (type: NotificationType, message: string) => void,
+) {
+  const context = mBean.parent?.getProperty(contextNodeType)
+
+  if (context && uri && messages && messages.length) {
+    try {
+      await jolokiaService.execute(context, 'createEndpoint(java.lang.String)', [uri])
+    } catch (err) {
+      notify('danger', `Error: ${err}`)
+      return
+    }
+
+    let forwarded = 0
+    for (const message of messages) {
+      const body = message.body
+      const messageHeaders: Record<string, string> = {}
+      if (message.headers.length > 0) {
+        message.headers.forEach(header => {
+          if (header.key && header.key !== '') {
+            messageHeaders[header.key] = header.value
+          }
+        })
+      }
+      try {
+        await jolokiaService.execute(context, 'sendBodyAndHeaders(java.lang.String, java.lang.Object, java.util.Map)', [
+          uri,
+          body,
+          messageHeaders,
+        ])
+        forwarded++
+      } catch (err) {
+        notify('danger', `Error: ${err}`)
+        return
+      }
+    }
+    const m = forwarded > 1 ? 'messages' : 'message'
+    notify('success', `Forwarded ${forwarded} ${m} to endpoint ${uri}`)
+  }
+}
+export async function getMessagesFromTheEndpoint(mbean: MBeanNode, from: number, to: number): Promise<MessageData[]> {
+  let messageData: MessageData[] = []
+  const context = mbean.parent?.getProperty(contextNodeType)
+  const browseAll = to === -1
+  if (context) {
+    let reply
+    if (browseAll) {
+      reply = await jolokiaService.execute(mbean.objectName ?? '', 'browseAllMessagesAsXml(java.lang.Boolean)', [true])
+    } else {
+      reply = await jolokiaService.execute(
+        mbean.objectName ?? '',
+        'browseRangeMessagesAsXml(java.lang.Integer,java.lang.Integer, java.lang.Boolean)',
+        [from, to, true],
+      )
+    }
+    const messagesXml = parseXML(reply as string)
+    messageData = parseMessagesFromXml(messagesXml)
+  }
+  return messageData
+}
+
+function parseMessagesFromXml(pDoc: XMLDocument): MessageData[] {
+  const messagesData: MessageData[] = []
+  const messages = pDoc.getElementsByTagName('message')
+  for (const message of messages) {
+    const headers: { key: string; type: string; value: string }[] = []
+    for (const header of message.getElementsByTagName('header')) {
+      headers.push({
+        key: header.getAttribute('key') ?? '',
+        value: header.textContent ?? '',
+        type: header.getAttribute('type') ?? '',
+      })
+    }
+    messagesData.push({
+      messageId: message.getAttribute('exchangeId') ?? '',
+      body: message.getElementsByTagName('body')[0].textContent ?? '',
+      headers: headers,
+    })
+  }
+
+  return messagesData
 }

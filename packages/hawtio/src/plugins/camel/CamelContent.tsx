@@ -29,6 +29,7 @@ import * as ccs from './camel-content-service'
 import { CamelRoutes } from './routes/CamelRoutes'
 import { Source } from './routes/Source'
 import { SendMessage } from './endpoints/SendMessage'
+import { BrowseMessages } from './endpoints/BrowseMessages'
 
 export const CamelContent: React.FunctionComponent = () => {
   const ctx = useRouteDiagramContext()
@@ -108,6 +109,12 @@ export const CamelContent: React.FunctionComponent = () => {
       title: 'Send',
       component: <SendMessage />,
       isApplicable: (node: MBeanNode) => ccs.isEndpointNode(node),
+    },
+    {
+      id: 'browse',
+      title: 'Browse',
+      component: <BrowseMessages />,
+      isApplicable: (node: MBeanNode) => ccs.isEndpointNode(node) && ccs.canBrowseMessages(node),
     },
     {
       id: 'exchanges',
