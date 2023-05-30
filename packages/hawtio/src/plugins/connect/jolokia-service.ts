@@ -34,6 +34,7 @@ import $ from 'jquery'
 import { func, is, object } from 'superstruct'
 import { connectService, PARAM_KEY_CONNECTION } from './connect-service'
 import { log } from './globals'
+import { basicAuthHeaderValue } from '@hawtiosrc/util/http'
 
 export const DEFAULT_MAX_DEPTH = 7
 export const DEFAULT_MAX_COLLECTION_SIZE = 50000
@@ -121,6 +122,9 @@ class JolokiaService implements IJolokiaService {
   }
 
   private async initJolokiaUrl(): Promise<string | null> {
+    // Wait for resolving user as it may attach credentials to http request headers
+    await userService.isLogin()
+
     // Check remote connection
     const conn = connectService.getCurrentConnectionName()
     if (conn) {
@@ -183,7 +187,7 @@ class JolokiaService implements IJolokiaService {
       return new DummyJolokia()
     }
 
-    // TODO: hawtio-oauth may have already set up jQuery beforeSend?
+    // An auth plugin such as Keycloak may have already set up jQuery beforeSend
     if (!$.ajaxSettings.beforeSend) {
       log.debug('Set up jQuery beforeSend')
       const beforeSend = await this.beforeSend()
@@ -220,9 +224,8 @@ class JolokiaService implements IJolokiaService {
       return (xhr: JQueryXHR) => xhr.setRequestHeader(header, `Bearer ${connection.token}`)
     } else if (connection && connection.username && connection.password) {
       log.debug('Set authorization header to username/password')
-      const authInfo = window.btoa(`${connection.username}:${connection.password}`)
-      const basicAuthHeader = `Basic ${authInfo}`
-      return (xhr: JQueryXHR) => xhr.setRequestHeader(header, basicAuthHeader)
+      const headerValue = basicAuthHeaderValue(connection.username, connection.password)
+      return (xhr: JQueryXHR) => xhr.setRequestHeader(header, headerValue)
     } else {
       const token = getCookie('XSRF-TOKEN')
       if (token) {
@@ -259,6 +262,7 @@ class JolokiaService implements IJolokiaService {
           } else {
             // just logout
             userService.isLogin().then(login => {
+              log.debug('Logging out due to jQuery ajax error: status =', xhr.status)
               login && userService.logout()
             })
           }

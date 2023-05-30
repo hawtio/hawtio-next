@@ -11,6 +11,9 @@ export function useUser() {
 
   useEffect(() => {
     const fetchUser = async () => {
+      // Try syncing the login status with the server here
+      await userService.fetchUser()
+
       const username = await userService.getUsername()
       const isLogin = await userService.isLogin()
       setUsername(username)
