@@ -27,47 +27,46 @@ export function useCamelTree() {
   const populateTree = async () => {
     const wkspTree: MBeanTree = await workspace.getTree()
     const rootNode = wkspTree.findDescendant(node => node.name === jmxDomain)
-    if (rootNode) {
+    if (rootNode && rootNode.children && rootNode.children.length > 0) {
+      const contextsNode = rootNode.getChildren()[0]
+
       /*
-       * Using the camel domain node from the original tree means it is the same
+       * Using the camel domain nodes from the original tree means it is the same
        * node as that that appears in the workspace tree
        */
-      const subTree: MBeanTree = MBeanTree.createFromNodes(pluginName, [rootNode])
+      const subTree: MBeanTree = MBeanTree.createFromNodes(pluginName, contextsNode.getChildren())
       setTree(subTree)
-      if (rootNode && rootNode.children && rootNode.children.length > 0) {
-        const path: string[] = []
-        /*
-         * Make the selection the camel selected node if
-         * - It is not null
-         * - It is a camel domain node
-         * - It is not the domain node (not visible)
-         */
-        if (
-          refSelectedNode.current &&
-          ccs.hasDomain(refSelectedNode.current) &&
-          !ccs.isDomainNode(refSelectedNode.current)
-        ) {
-          path.push(...refSelectedNode.current.path())
-        } else {
-          // Find the first context from the rootNode
-          const ctx = ccs.findContext(rootNode)
-          if (ctx) path.push(...ctx.path())
-          else path.push(...rootNode.getChildren()[0].path())
-        }
 
-        // Expand the nodes to redisplay the path
-        rootNode.forEach(path, (node: MBeanNode) => {
-          const tvd = node as TreeViewDataItem
-          tvd.defaultExpanded = true
-        })
-
-        // Ensure the new version of the selected node is selected
-        const newSelected = rootNode.navigate(...path)
-        if (newSelected) setSelectedNode(newSelected)
-
-        /* On population of tree, ensure the url path is returned to the base plugin path */
-        navigate(pluginPath)
+      const path: string[] = []
+      /*
+       * Make the selection the camel selected node if
+       * - It is not null
+       * - It is a camel domain node
+       * - It is not the domain node (not visible)
+       */
+      if (
+        refSelectedNode.current &&
+        ccs.hasDomain(refSelectedNode.current) &&
+        !ccs.isDomainNode(refSelectedNode.current)
+      ) {
+        path.push(...refSelectedNode.current.path())
+      } else {
+        // No selection so select the contexts node to display the contexts view
+        path.push(...contextsNode.path())
       }
+
+      // Expand the nodes to redisplay the path
+      rootNode.forEach(path, (node: MBeanNode) => {
+        const tvd = node as TreeViewDataItem
+        tvd.defaultExpanded = true
+      })
+
+      // Ensure the new version of the selected node is selected
+      const newSelected = rootNode.navigate(...path)
+      if (newSelected) setSelectedNode(newSelected)
+
+      /* On population of tree, ensure the url path is returned to the base plugin path */
+      navigate(pluginPath)
     } else {
       setTree(wkspTree)
       // No camel contexts so redirect to the JMX view and select the first tree node
