@@ -53,7 +53,7 @@ export const HawtioPage: React.FunctionComponent = () => {
     </PageSection>
   )
 
-  const defaultPlugin = plugins[0] || null
+  const defaultPlugin = plugins[0] ?? null
   let defaultPage
   if (defaultPlugin) {
     defaultPage = <Navigate to={{ pathname: defaultPlugin.path, search }} />

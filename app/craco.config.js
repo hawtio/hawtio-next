@@ -30,7 +30,7 @@ module.exports = {
             '@hawtio/react': {
               singleton: true,
               // Hardcoding needed because it cannot handle yarn 'workspace:*' version
-              requiredVersion: '^0.2.0-dev.4',
+              requiredVersion: '^0.3.0-dev.2',
             },
           },
         }),
@@ -99,7 +99,7 @@ module.exports = {
   devServer: {
     setupMiddlewares: (middlewares, devServer) => {
       // Redirect / to /hawtio/
-      devServer.app.get('/', (req, res) => res.redirect('/hawtio/'))
+      devServer.app.get('/', (_, res) => res.redirect('/hawtio/'))
 
       const username = 'developer'
       const login = true
@@ -113,13 +113,25 @@ module.exports = {
           pluginEntry: 'registerRemote',
         },
       ]
+      // Keycloak
+      const keycloakEnabled = false
+      const keycloakClientConfig = {
+        realm: 'hawtio-demo',
+        clientId: 'hawtio-client',
+        url: 'http://localhost:18080/',
+        jaas: false,
+        pkceMethod: 'S256',
+      }
 
       // Hawtio backend API mock
-      devServer.app.get('/hawtio/user', (req, res) => res.send(`"${username}"`))
-      devServer.app.post('/hawtio/auth/login', (req, res) => res.send(String(login)))
-      devServer.app.get('/hawtio/auth/logout', (req, res) => res.redirect('/hawtio/login'))
-      devServer.app.get('/hawtio/proxy/enabled', (req, res) => res.send(String(proxyEnabled)))
-      devServer.app.get('/hawtio/plugin', (req, res) => res.send(JSON.stringify(plugin)))
+      devServer.app.get('/hawtio/user', (_, res) => res.send(`"${username}"`))
+      devServer.app.post('/hawtio/auth/login', (_, res) => res.send(String(login)))
+      devServer.app.get('/hawtio/auth/logout', (_, res) => res.redirect('/hawtio/login'))
+      devServer.app.get('/hawtio/proxy/enabled', (_, res) => res.send(String(proxyEnabled)))
+      devServer.app.get('/hawtio/plugin', (_, res) => res.send(JSON.stringify(plugin)))
+      devServer.app.get('/hawtio/keycloak/enabled', (_, res) => res.send(String(keycloakEnabled)))
+      devServer.app.get('/hawtio/keycloak/client-config', (_, res) => res.send(JSON.stringify(keycloakClientConfig)))
+      devServer.app.get('/hawtio/keycloak/validate-subject-matches', (_, res) => res.send('true'))
 
       middlewares.push({
         name: 'hawtio-backend',
