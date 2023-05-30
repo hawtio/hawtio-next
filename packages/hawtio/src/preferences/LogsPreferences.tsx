@@ -14,10 +14,7 @@ import {
   Form,
   FormGroup,
   FormSection,
-  FormSelect,
-  FormSelectOption,
-  Select,
-  SelectOption,
+  Slider,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
@@ -67,11 +64,13 @@ const GlobalForms: React.FunctionComponent = () => {
   return (
     <React.Fragment>
       <FormGroup label='Log level' fieldId='logs-global-form-log-level'>
-        <FormSelect id='logs-global-form-log-level-select' value={logLevel} onChange={handleLogLevelChange}>
-          {LOG_LEVEL_OPTIONS.map((level, index) => (
-            <FormSelectOption key={index} label={level} value={level} />
-          ))}
-        </FormSelect>
+        <Slider
+          id='logs-global-form-log-level-slider'
+          value={LOG_LEVEL_OPTIONS.findIndex(level => level === logLevel)}
+          max={LOG_LEVEL_OPTIONS.length - 1}
+          customSteps={LOG_LEVEL_OPTIONS.map((level, index) => ({ value: index, label: level }))}
+          onChange={(value: number) => handleLogLevelChange(LOG_LEVEL_OPTIONS[value])}
+        />
       </FormGroup>
     </React.Fragment>
   )
@@ -127,18 +126,12 @@ type ChildLoggerItemProps = {
 const ChildLoggerItem: React.FunctionComponent<ChildLoggerItemProps> = props => {
   const { logger } = props
   const { reloadChildLoggers } = useContext(LogsContext)
-  const [isSelectOpen, setIsSelectOpen] = useState(false)
 
   const name = logger.name
 
-  const onLogLevelSelect = (level: string) => {
+  const onLogLevelChange = (level: string) => {
     Logger.updateChildLogger(logger.name, level)
     reloadChildLoggers()
-    onLogLevelToggle()
-  }
-
-  const onLogLevelToggle = () => {
-    setIsSelectOpen(!isSelectOpen)
   }
 
   const deleteChildLogger = () => {
@@ -151,21 +144,17 @@ const ChildLoggerItem: React.FunctionComponent<ChildLoggerItemProps> = props => 
       <DataListItemRow>
         <DataListItemCells
           dataListCells={[
-            <DataListCell key={`logs-child-logger-name-${name}`}>
+            <DataListCell key={`logs-child-logger-name-${name}`} width={1}>
               <b>{name}</b>
             </DataListCell>,
-            <DataListCell key={`logs-child-logger-log-level-${name}`}>
-              <Select
-                id='logs-child-logger-actions-log-level'
-                onToggle={onLogLevelToggle}
-                onSelect={(event, value) => onLogLevelSelect(String(value))}
-                selections={logger.filterLevel.name}
-                isOpen={isSelectOpen}
-              >
-                {LOG_LEVEL_OPTIONS.map((level, index) => (
-                  <SelectOption key={index} value={level} />
-                ))}
-              </Select>
+            <DataListCell key={`logs-child-logger-log-level-${name}`} width={2}>
+              <Slider
+                id={`logs-child-logger-actions-log-level-slider-${name}`}
+                value={LOG_LEVEL_OPTIONS.findIndex(level => level === logger.filterLevel.name)}
+                max={LOG_LEVEL_OPTIONS.length - 1}
+                customSteps={LOG_LEVEL_OPTIONS.map((level, index) => ({ value: index, label: level }))}
+                onChange={(value: number) => onLogLevelChange(LOG_LEVEL_OPTIONS[value])}
+              />
             </DataListCell>,
           ]}
         />
