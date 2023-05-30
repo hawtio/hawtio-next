@@ -1,10 +1,9 @@
 import { MBeanNode, MBeanTree, PluginTreeViewToolbar } from '@hawtiosrc/plugins/shared'
 import { TreeView, TreeViewDataItem } from '@patternfly/react-core'
-import React, { ChangeEvent, useContext, useEffect, useState, useCallback } from 'react'
+import React, { ChangeEvent, useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './CamelTreeView.css'
 import { CamelContext } from './context'
-import * as ccs from './camel-content-service'
 import { pluginPath } from './globals'
 
 /**
@@ -32,17 +31,7 @@ export const CamelTreeView: React.FunctionComponent = () => {
   const [expanded, setExpanded] = useState(ExpansionValue.Default)
   const navigate = useNavigate()
 
-  const deriveTree = useCallback((): MBeanNode[] => {
-    const t = tree.getTree()
-    if (t.length === 0) return t
-
-    if (!ccs.isDomainNode(t[0])) return t
-
-    // Exclude the domain node from the tree display
-    return t[0].getChildren()
-  }, [tree])
-
-  const [filteredTree, setFilteredTree] = useState(deriveTree())
+  const [filteredTree, setFilteredTree] = useState(tree.getTree())
 
   /**
    * Listen for changes to the tree that may occur as a result
@@ -50,8 +39,8 @@ export const CamelTreeView: React.FunctionComponent = () => {
    * eg. new endpoint being created
    */
   useEffect(() => {
-    setFilteredTree(deriveTree())
-  }, [deriveTree])
+    setFilteredTree(tree.getTree())
+  }, [tree])
 
   const onSearch = (event: ChangeEvent<HTMLInputElement>) => {
     // Ensure no node from the 'old' filtered is lingering
@@ -60,10 +49,10 @@ export const CamelTreeView: React.FunctionComponent = () => {
 
     const input = event.target.value
     if (input === '') {
-      setFilteredTree(deriveTree())
+      setFilteredTree(tree.getTree())
     } else {
       setFilteredTree(
-        MBeanTree.filter(deriveTree(), (node: MBeanNode) => node.name.toLowerCase().includes(input.toLowerCase())),
+        MBeanTree.filter(tree.getTree(), (node: MBeanNode) => node.name.toLowerCase().includes(input.toLowerCase())),
       )
       setExpanded(ExpansionValue.ExpandAll)
     }

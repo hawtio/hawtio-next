@@ -48,16 +48,18 @@ describe('CamelTreeView', () => {
     const wkspTree = await workspace.getTree()
     camelTreeProcessor(wkspTree)
     const rootNode = wkspTree.findDescendant(node => node.name === jmxDomain)
-    if (rootNode) tree = MBeanTree.createFromNodes(pluginName, [rootNode])
+
+    if (rootNode) {
+      const ctxNode = rootNode.getChildren()[0]
+      tree = MBeanTree.createFromNodes(pluginName, ctxNode.getChildren())
+    }
   })
 
   test('Tree Display', async () => {
     expect(tree).not.toBeUndefined()
 
     const domainNode: MBeanNode = tree.get(jmxDomain) as MBeanNode
-    expect(domainNode).not.toBeNull()
-    const contextsNode: MBeanNode = domainNode.getIndex(0) as MBeanNode
-    expect(contextsNode).not.toBeNull()
+    expect(domainNode).toBeNull()
 
     render(
       <CamelContext.Provider value={{ tree, selectedNode, setSelectedNode }}>
@@ -67,7 +69,9 @@ describe('CamelTreeView', () => {
 
     const domainItem = screen.queryByLabelText(jmxDomain)
     expect(domainItem).toBeNull()
-    const contextItem = screen.queryByLabelText(camelContexts)
-    expect(contextItem).not.toBeNull()
+    const contextsItem = screen.queryByLabelText(camelContexts)
+    expect(contextsItem).toBeNull()
+    const ctxItem = screen.queryByLabelText('SampleCamel')
+    expect(ctxItem).not.toBeNull()
   })
 })
