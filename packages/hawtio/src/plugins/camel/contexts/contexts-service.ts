@@ -22,6 +22,13 @@ class ContextsService {
     return actx
   }
 
+  async getContext(ctxNode: MBeanNode | null): Promise<ContextAttributes | null> {
+    if (!ctxNode || !ctxNode.objectName) return null
+
+    const attributes = await jolokiaService.readAttributes(ctxNode.objectName)
+    return this.createContextAttibutes(ctxNode.name, ctxNode.objectName, attributes)
+  }
+
   async getContexts(ctxsNode: MBeanNode | null): Promise<ContextAttributes[]> {
     if (!ctxsNode) return []
 

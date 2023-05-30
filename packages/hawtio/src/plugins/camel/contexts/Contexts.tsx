@@ -1,18 +1,5 @@
-import {
-  Button,
-  Card,
-  CardBody,
-  Dropdown,
-  DropdownItem,
-  KebabToggle,
-  Modal,
-  ModalVariant,
-  Text,
-  Toolbar,
-  ToolbarContent,
-  ToolbarItem,
-} from '@patternfly/react-core'
-import { AsleepIcon, InfoCircleIcon, PlayIcon, Remove2Icon } from '@patternfly/react-icons'
+import { Card, CardBody, Text } from '@patternfly/react-core'
+import { InfoCircleIcon } from '@patternfly/react-icons'
 import { Table, TableBody, TableHeader, TableProps, wrappable } from '@patternfly/react-table'
 import { IResponse } from 'jolokia.js'
 import { AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
@@ -21,7 +8,7 @@ import { CamelContext } from '@hawtiosrc/plugins/camel/context'
 import { log } from '../globals'
 import { contextsService, ContextAttributes } from './contexts-service'
 import { eventService } from '@hawtiosrc/core'
-import { workspace } from '@hawtiosrc/plugins/shared'
+import { ContextToolbar } from './ContextToolbar'
 
 export const Contexts: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
@@ -29,126 +16,19 @@ export const Contexts: React.FunctionComponent = () => {
 
   const emptyCtxs: ContextAttributes[] = []
   const [contexts, setContexts] = useState(emptyCtxs)
-  const [selectedCtxId, setSelectedCtxId] = useState<string[]>([])
-  const [isOpen, setIsOpen] = useState(false)
-  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false)
+  const [selectedCtx, setSelectedCtx] = useState<ContextAttributes[]>([])
 
   const onSelectContext = (ctx: ContextAttributes, isSelecting: boolean) => {
-    const otherSelectedCtx = selectedCtxId.filter(c => c !== ctx.context)
-    setSelectedCtxId(isSelecting ? [...otherSelectedCtx, ctx.context] : [...otherSelectedCtx])
+    const otherSelectedCtx = selectedCtx.filter(c => c.context !== ctx.context)
+    setSelectedCtx(isSelecting ? [...otherSelectedCtx, ctx] : [...otherSelectedCtx])
   }
 
   const selectAllContexts = (isSelecting = true) => {
-    setSelectedCtxId(isSelecting ? contexts.map(c => c.context) : [])
+    setSelectedCtx(isSelecting ? [...contexts] : [])
   }
 
   const isContextSelected = (ctx: ContextAttributes) => {
-    return selectedCtxId.includes(ctx.context)
-  }
-
-  const onDropdownToggle = (isOpen: boolean) => {
-    setIsOpen(isOpen)
-  }
-
-  const isStartEnabled = (): boolean => {
-    return selectedCtxId.some(id => {
-      const ctx = contexts.find(c => c.context === id)
-      return ctx && ctx.state === 'Suspended'
-    })
-  }
-
-  const onStartClicked = () => {
-    contexts
-      .filter(ctx => {
-        const id = selectedCtxId.find(id => ctx.context === id)
-        return id && ctx.state === 'Suspended'
-      })
-      .forEach(ctx => {
-        contextsService
-          .startContext(ctx)
-          .then(() => {
-            eventService.notify({
-              type: 'success',
-              message: 'Camel context started successfully',
-            })
-          })
-          .catch((error: Error) => {
-            eventService.notify({
-              type: 'danger',
-              message: error.message,
-            })
-          })
-      })
-  }
-
-  const isSuspendEnabled = (): boolean => {
-    return selectedCtxId.some(id => {
-      const ctx = contexts.find(c => c.context === id)
-      return ctx && ctx.state === 'Started'
-    })
-  }
-
-  const onSuspendClicked = () => {
-    contexts
-      .filter(ctx => {
-        const id = selectedCtxId.find(id => ctx.context === id)
-        return id && ctx.state === 'Started'
-      })
-      .forEach(ctx => {
-        contextsService
-          .suspendContext(ctx)
-          .then(() => {
-            eventService.notify({
-              type: 'success',
-              message: 'Camel context suspended successfully',
-            })
-          })
-          .catch((error: Error) => {
-            eventService.notify({
-              type: 'danger',
-              message: error.message,
-            })
-          })
-      })
-  }
-
-  const isDeleteEnabled = (): boolean => {
-    return selectedCtxId.length > 0
-  }
-
-  const handleConfirmDeleteToggle = () => {
-    setIsConfirmDeleteOpen(!isConfirmDeleteOpen)
-  }
-
-  const onDeleteClicked = () => {
-    setIsOpen(false)
-    handleConfirmDeleteToggle()
-  }
-
-  const onDeleteConfirmClicked = () => {
-    const toDelete = contexts.filter(ctx => selectedCtxId.find(id => ctx.context === id))
-
-    let deleteProcessed = 0
-    toDelete.forEach(async ctx => {
-      try {
-        await contextsService.stopContext(ctx)
-        eventService.notify({
-          type: 'success',
-          message: 'Camel context deleted.',
-        })
-      } catch (error) {
-        eventService.notify({
-          type: 'danger',
-          message: error as string,
-        })
-      }
-
-      deleteProcessed++
-      if (deleteProcessed === toDelete.length) {
-        setContexts(contexts.filter(c => toDelete.indexOf(c) < 0))
-        workspace.refreshTree()
-      }
-    })
+    return selectedCtx.includes(ctx)
   }
 
   useEffect(() => {
@@ -242,84 +122,18 @@ export const Contexts: React.FunctionComponent = () => {
     )
   }
 
-  const toolbarButtons = (
-    <React.Fragment>
-      <ToolbarItem>
-        <Button
-          variant='secondary'
-          isSmall={true}
-          isDisabled={!isStartEnabled()}
-          icon={React.createElement(PlayIcon)}
-          onClick={onStartClicked}
-        >
-          Start
-        </Button>
-      </ToolbarItem>
-      <ToolbarItem>
-        <Button
-          variant='secondary'
-          isSmall={true}
-          isDisabled={!isSuspendEnabled()}
-          icon={React.createElement(AsleepIcon)}
-          onClick={onSuspendClicked}
-        >
-          Suspend
-        </Button>
-      </ToolbarItem>
-    </React.Fragment>
-  )
-
-  const ConfirmDeleteModal = () => (
-    <Modal
-      variant={ModalVariant.small}
-      title='Are you sure?'
-      titleIconVariant='danger'
-      isOpen={isConfirmDeleteOpen}
-      onClose={handleConfirmDeleteToggle}
-      actions={[
-        <Button key='delete' variant='danger' onClick={onDeleteConfirmClicked}>
-          Delete
-        </Button>,
-        <Button key='cancel' variant='link' onClick={handleConfirmDeleteToggle}>
-          Cancel
-        </Button>,
-      ]}
-    >
-      <p>You are about to delete this Camel Context.</p>
-      <p>This operation cannot be undone so please be careful.</p>
-    </Modal>
-  )
-
-  const dropdownItems = [
-    <DropdownItem key='action' componentID='deleteAction'>
-      <Button
-        variant='control'
-        isSmall={true}
-        isDisabled={!isDeleteEnabled()}
-        icon={React.createElement(Remove2Icon)}
-        onClick={onDeleteClicked}
-      >
-        Delete
-      </Button>
-    </DropdownItem>,
-  ]
+  /*
+   * Callback the is fired after the delete button has been
+   * clicked in the toolbar
+   */
+  const handleDeletedContexts = (deleted: ContextAttributes[]) => {
+    const ctxs = contexts.filter(ctx => !deleted.includes(ctx))
+    setContexts(ctxs)
+  }
 
   return (
     <Card isFullHeight>
-      <Toolbar id='toolbar-items'>
-        <ToolbarContent>
-          {toolbarButtons}
-          <ToolbarItem>
-            <Dropdown
-              autoFocus={true}
-              toggle={<KebabToggle id='toggle-kebab' onToggle={onDropdownToggle} />}
-              isOpen={isOpen}
-              dropdownItems={dropdownItems}
-            />
-          </ToolbarItem>
-          <ToolbarItem variant='separator' />
-        </ToolbarContent>
-      </Toolbar>
+      <ContextToolbar contexts={selectedCtx} deleteCallback={handleDeletedContexts} />
       <Table
         onSelect={(_event, isSelecting, rowIndex) => {
           if (rowIndex === -1) {
@@ -338,7 +152,6 @@ export const Contexts: React.FunctionComponent = () => {
         <TableHeader />
         <TableBody />
       </Table>
-      <ConfirmDeleteModal />
     </Card>
   )
 }

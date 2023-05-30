@@ -8,7 +8,7 @@ const noOpAction = (nodeData: CamelNodeData) => {
 }
 
 export function useRouteDiagramContext() {
-  const { selectedNode } = useContext(CamelContext)
+  const { selectedNode, setSelectedNode } = useContext(CamelContext)
   const [graphNodeData, setGraphNodeData] = useState<CamelNodeData[]>([])
   const [graphSelection, setGraphSelection] = useState<string>('')
   const [showStatistics, setShowStatistics] = useState<boolean>(true)
@@ -17,6 +17,7 @@ export function useRouteDiagramContext() {
 
   return {
     selectedNode,
+    setSelectedNode,
     graphNodeData,
     setGraphNodeData,
     graphSelection,

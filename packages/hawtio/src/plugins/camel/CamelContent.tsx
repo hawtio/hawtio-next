@@ -14,8 +14,8 @@ import {
 } from '@patternfly/react-core'
 import './CamelContent.css'
 import { CubesIcon } from '@patternfly/react-icons'
-import React from 'react'
-import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { Attributes, Operations, Chart, JmxContentMBeans, MBeanNode } from '@hawtiosrc/plugins/shared'
 import { RouteDiagramContext, useRouteDiagramContext } from './route-diagram/route-diagram-context'
 import { RouteDiagram } from './route-diagram/RouteDiagram'
@@ -30,10 +30,52 @@ import { CamelRoutes } from './routes/CamelRoutes'
 import { Source } from './routes/Source'
 import { SendMessage } from './endpoints/SendMessage'
 import { BrowseMessages } from './endpoints/BrowseMessages'
+import { ContextAttributes, contextsService } from './contexts/contexts-service'
+import { eventService } from '@hawtiosrc/core'
+import { ContextToolbar } from './contexts/ContextToolbar'
+import { IResponse } from 'jolokia.js'
+import { log } from './globals'
+import { AttributeValues } from '../connect'
 
 export const CamelContent: React.FunctionComponent = () => {
   const ctx = useRouteDiagramContext()
+  const [ctxAttributes, setCtxAttributes] = useState<ContextAttributes | null>()
   const { pathname, search } = useLocation()
+  const navigate = useNavigate()
+
+  /**
+   * Attributes only needed if a context has been selected
+   */
+  useEffect(() => {
+    const readAttributes = async () => {
+      if (!ctx.selectedNode) return
+
+      if (!ccs.isContext(ctx.selectedNode as MBeanNode)) {
+        return
+      }
+
+      const attr = await contextsService.getContext(ctx.selectedNode)
+      if (attr) setCtxAttributes(attr)
+
+      const name = ctx.selectedNode.name as string
+      const mbean = ctx.selectedNode.objectName as string
+      contextsService.register({ type: 'read', mbean }, (response: IResponse) => {
+        log.debug('Scheduler - Contexts:', response.value)
+
+        /* Replace the context in the existing set with the new one */
+        const newCtxAttr: ContextAttributes = contextsService.createContextAttibutes(
+          name,
+          mbean,
+          response.value as AttributeValues,
+        )
+
+        setCtxAttributes(newCtxAttr)
+      })
+    }
+    readAttributes()
+
+    return () => contextsService.unregisterAll()
+  }, [ctx.selectedNode])
 
   if (!ctx.selectedNode) {
     return (
@@ -160,10 +202,29 @@ export const CamelContent: React.FunctionComponent = () => {
 
   const camelNavRoutes = navItems.map(nav => <Route key={nav.id} path={nav.id} element={nav.component} />)
 
+  /*
+   * Callback the is fired after the delete button has been
+   * clicked in the toolbar
+   */
+  const handleDeletedContext = () => {
+    ctx.setSelectedNode(null)
+
+    // Navigate away from this context as it no longer exists
+    navigate('jmx')
+
+    eventService.notify({
+      type: 'warning',
+      message: 'No Camel domain detected. Redirecting to back to jmx.',
+    })
+  }
+
   return (
     <React.Fragment>
       <PageGroup>
-        <PageSection variant={PageSectionVariants.light}>
+        <PageSection id='camel-content-header' variant={PageSectionVariants.light} hasShadowBottom>
+          {ccs.isContext(ctx.selectedNode) && (
+            <ContextToolbar contexts={!ctxAttributes ? [] : [ctxAttributes]} deleteCallback={handleDeletedContext} />
+          )}
           <Title headingLevel='h1'>{ctx.selectedNode?.name}</Title>
           <Text component='small'>{ctx.selectedNode?.objectName}</Text>
         </PageSection>
