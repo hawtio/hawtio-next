@@ -130,6 +130,14 @@ export class MBeanNode implements TreeViewDataItem {
     }
   }
 
+  getType(): string {
+    return this.getProperty('type')
+  }
+
+  setType(type: string) {
+    this.addProperty('type', type)
+  }
+
   get(name: string): MBeanNode | null {
     return this.children?.find(node => node.name === name) || null
   }
@@ -211,6 +219,18 @@ export class MBeanNode implements TreeViewDataItem {
     }
 
     return remove
+  }
+
+  removeChild(child: MBeanNode): MBeanNode | null {
+    if (!this.children || !child) return null
+
+    const index = this.children.indexOf(child)
+    if (index === -1) return null
+
+    const removed = this.children.splice(index, 1)
+    removed[0].parent = null
+
+    return removed[0]
   }
 
   childCount(): number {
@@ -360,6 +380,8 @@ export class MBeanNode implements TreeViewDataItem {
     }
 
     if (this === child) throw new Error('Node cannot be its own child')
+
+    if (child.parent) child.parent.removeChild(child)
 
     child.parent = this
     this.children.push(child)

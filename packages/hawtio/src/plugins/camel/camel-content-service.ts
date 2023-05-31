@@ -35,14 +35,10 @@ export function setChildProperties(parent: MBeanNode | null, childType: string) 
   if (!parent) return
 
   for (const child of parent.getChildren()) {
-    setType(child, childType)
+    child.setType(childType)
     setDomain(child)
     setChildProperties(child, childType)
   }
-}
-
-export function setType(node: MBeanNode, type: string) {
-  node.addProperty('type', type)
 }
 
 export function setDomain(node: MBeanNode) {
@@ -58,7 +54,7 @@ export function hasMBean(node: MBeanNode): boolean {
 }
 
 export function hasType(node: MBeanNode, type: string): boolean {
-  return node && type === node.getProperty('type')
+  return node && type === node.getType()
 }
 
 export function isDomainNode(node: MBeanNode): boolean {

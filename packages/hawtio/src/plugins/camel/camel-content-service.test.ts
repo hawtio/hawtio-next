@@ -23,14 +23,14 @@ describe('camel-content-service', () => {
     expect(domainNode.getChildren()).toContain(endpointsNode)
     expect(endpointsNode.childCount()).toBe(4)
 
-    ccs.setType(endpointsNode, endpointsType)
+    endpointsNode.setType(endpointsType)
     ccs.setDomain(endpointsNode)
     ccs.setChildProperties(endpointsNode, endpointNodeType)
 
-    expect(endpointsNode.getProperty('type')).toBe(endpointsType)
+    expect(endpointsNode.getType()).toBe(endpointsType)
     expect(endpointsNode.getProperty('domain')).toBe(jmxDomain)
     for (const child of endpointsNode.getChildren()) {
-      expect(child.getProperty('type')).toBe(endpointNodeType)
+      expect(child.getType()).toBe(endpointNodeType)
       expect(child.getProperty('domain')).toBe(jmxDomain)
     }
   })
@@ -63,7 +63,7 @@ describe('camel-content-service', () => {
   test('isCamelVersionEQGT', () => {
     const ctxNode = new MBeanNode(null, 'sampleapp', true)
     ccs.setDomain(ctxNode)
-    ccs.setType(ctxNode, contextNodeType)
+    ctxNode.setType(contextNodeType)
 
     let versions = [
       { v: '2.12', r: false },

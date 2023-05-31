@@ -104,7 +104,7 @@ class RoutesService {
     const nodeSettings = schemaService.getSchema(nodeName)
     if (nodeSettings) {
       const node = new MBeanNode(null, nodeName, false)
-      ccs.setType(node, routeXmlNodeType)
+      node.setType(routeXmlNodeType)
       ccs.setDomain(node)
       const icon: React.ReactNode = this.getIcon(nodeSettings)
       node.setIcons(icon)
@@ -125,6 +125,10 @@ class RoutesService {
    */
   loadRouteChildren(routeNode: MBeanNode, routeXml: Element) {
     routeNode.addProperty('xml', routeXml.outerHTML)
+
+    const routeGroup = routeXml.getAttribute('group')
+    if (routeGroup) routeNode.addProperty('group', routeGroup)
+
     for (const childXml of routeXml.children) {
       const child = this.loadRouteChild(routeNode, childXml)
       if (child) routeNode.adopt(child)
@@ -180,23 +184,23 @@ class RoutesService {
     return route
   }
 
-  transformXml(contextNode: MBeanNode | null, routesNode: MBeanNode | null) {
-    if (!contextNode || !routesNode || routesNode.getProperty('type') !== 'routes') {
+  async transformXml(contextNode: MBeanNode | null, routesNode: MBeanNode | null) {
+    if (!contextNode || !routesNode || routesNode.getType() !== 'routes') {
       return
     }
     // routesNode.addProperty('xml', routeXml.outerHTML)
-    this.getRoutesXml(contextNode).then(xml => {
-      if (!xml) return
-      routesNode.addProperty('xml', xml)
-      routesNode.getChildren().forEach((routeNode: MBeanNode) => {
-        try {
-          const xmlNode = this.processRouteXml(xml, routeNode)
-          if (!xmlNode) return
-          this.loadRouteChildren(routeNode, xmlNode)
-        } catch (error) {
-          log.error(`Failed to process route xml for ${routeNode.name}: ` + error)
-        }
-      })
+    const xml = await this.getRoutesXml(contextNode)
+    if (!xml) return
+
+    routesNode.addProperty('xml', xml)
+    routesNode.getChildren().forEach((routeNode: MBeanNode) => {
+      try {
+        const xmlNode = this.processRouteXml(xml, routeNode)
+        if (!xmlNode) return
+        this.loadRouteChildren(routeNode, xmlNode)
+      } catch (error) {
+        log.error(`Failed to process route xml for ${routeNode.name}: ` + error)
+      }
     })
   }
 

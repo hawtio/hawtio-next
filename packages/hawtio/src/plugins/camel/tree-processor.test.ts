@@ -37,7 +37,13 @@ describe('tree-processor', () => {
   let tree: MBeanTree
 
   const routesXmlPath = path.resolve(__dirname, 'testdata', 'camel-sample-app-routes.xml')
-  const sampleRoutesXml = fs.readFileSync(routesXmlPath, { encoding: 'utf8', flag: 'r' })
+  const routesWithGroupsXmlPath = path.resolve(__dirname, 'testdata', 'camel-sample-app-routes-with-groups.xml')
+  const routesWithSingleGroupXmlPath = path.resolve(
+    __dirname,
+    'testdata',
+    'camel-sample-app-routes-with-single-group.xml',
+  )
+  let sampleRoutesXml = fs.readFileSync(routesXmlPath, { encoding: 'utf8', flag: 'r' })
 
   jolokiaService.execute = jest.fn(async (mbean: string, operation: string, args?: unknown[]): Promise<unknown> => {
     if (
@@ -50,14 +56,16 @@ describe('tree-processor', () => {
     return ''
   })
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     tree = await workspace.getTree()
+    workspace.refreshTree()
+    sampleRoutesXml = fs.readFileSync(routesXmlPath, { encoding: 'utf8', flag: 'r' })
   })
 
-  test('processor', () => {
+  test('processor', async () => {
     expect(tree.isEmpty()).toBeFalsy()
 
-    camelTreeProcessor(tree)
+    await camelTreeProcessor(tree)
 
     const domainNode: MBeanNode = tree.get(jmxDomain) as MBeanNode
     expect(domainNode).not.toBeNull()
@@ -97,5 +105,66 @@ describe('tree-processor', () => {
       expect(ccs.hasDomain(child)).toBeTruthy()
       expect(ccs.hasType(child, routeNodeType)).toBeTruthy()
     }
+  })
+
+  test('processor-with-single-group', async () => {
+    sampleRoutesXml = fs.readFileSync(routesWithSingleGroupXmlPath, { encoding: 'utf8', flag: 'r' })
+    expect(tree.isEmpty()).toBeFalsy()
+
+    await camelTreeProcessor(tree)
+
+    const domainNode: MBeanNode = tree.get(jmxDomain) as MBeanNode
+    expect(domainNode).not.toBeNull()
+    expect(domainNode.childCount()).toBe(1)
+
+    const contextsNode = domainNode.getIndex(0) as MBeanNode
+    expect(contextsNode).not.toBeNull()
+
+    const contextNode = contextsNode.getIndex(0) as MBeanNode
+    expect(contextNode).toBeDefined()
+    expect(contextNode.childCount()).toBe(4)
+
+    const routesNode = contextNode.get(routesType) as MBeanNode
+    expect(routesNode).toBeDefined()
+    expect(routesNode.childCount()).toBe(2)
+
+    const group1Node = routesNode.get('group1') as MBeanNode
+    expect(group1Node).toBeDefined()
+    expect(group1Node.childCount()).toBe(1)
+
+    // non-grouped route added under default route group
+    const defaultNode = routesNode.get('default') as MBeanNode
+    expect(defaultNode).toBeDefined()
+    expect(defaultNode.childCount()).toBe(1)
+  })
+
+  test('processor-with-groups', async () => {
+    sampleRoutesXml = fs.readFileSync(routesWithGroupsXmlPath, { encoding: 'utf8', flag: 'r' })
+    expect(tree.isEmpty()).toBeFalsy()
+
+    await camelTreeProcessor(tree)
+
+    const domainNode: MBeanNode = tree.get(jmxDomain) as MBeanNode
+    expect(domainNode).not.toBeNull()
+    expect(domainNode.childCount()).toBe(1)
+
+    const contextsNode = domainNode.getIndex(0) as MBeanNode
+    expect(contextsNode).not.toBeNull()
+
+    const contextNode = contextsNode.getIndex(0) as MBeanNode
+    expect(contextNode).toBeDefined()
+    expect(contextNode.childCount()).toBe(4)
+
+    const routesNode = contextNode.get(routesType) as MBeanNode
+    expect(routesNode).toBeDefined()
+    expect(routesNode.childCount()).toBe(2)
+
+    const group1Node = routesNode.get('group1') as MBeanNode
+    expect(group1Node).toBeDefined()
+    expect(group1Node.childCount()).toBe(1)
+
+    const group2Node = routesNode.get('group2') as MBeanNode
+    expect(group2Node).toBeDefined()
+    expect(group2Node.childCount()).toBe(1)
   })
 })

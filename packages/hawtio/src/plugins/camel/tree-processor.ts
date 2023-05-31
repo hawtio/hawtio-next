@@ -8,11 +8,13 @@ import {
   contextNodeType,
   contextsType,
   dataformatsType,
+  defaultRouteGroupsType,
   domainNodeType,
   endpointNodeType,
   endpointsType,
   jmxDomain,
   mbeansType,
+  routeGroupsType,
   routeNodeType,
   routesType,
 } from './globals'
@@ -27,7 +29,7 @@ function adoptChild(parent: MBeanNode | null, child: MBeanNode | null, type: str
   if (ccs.isContext(parent)) {
     child.addProperty(contextNodeType, parent.objectName ?? '')
   }
-  ccs.setType(child, type)
+  child.setType(type)
   ccs.setDomain(child)
 }
 
@@ -39,6 +41,43 @@ function setChildIcon(node: MBeanNode | null, childIcon: React.ReactNode) {
   })
 }
 
+function groupRoutes(routesNode: MBeanNode | null) {
+  if (!routesNode) return // Nothing to do
+
+  let haveGroups = false
+  for (const routeNode of routesNode.getChildren()) {
+    const groupId = routeNode.getProperty('group')
+    if (groupId) {
+      haveGroups = true
+      break
+    }
+  }
+
+  if (!haveGroups) return // Nothing to do - leave routes as not being grouped
+
+  const routeIcon = getIcon(IconNames.CamelRouteIcon)
+  const routeNodes = [...routesNode.getChildren()]
+
+  for (const routeNode of routeNodes) {
+    if (routeNode.getType() === routeGroupsType) continue
+
+    const groupId = routeNode.getProperty('group')
+    let groupNode: MBeanNode
+    if (groupId) {
+      groupNode = routesNode.getOrCreate(groupId, true)
+    } else {
+      groupNode = routesNode.getOrCreate(defaultRouteGroupsType, true)
+    }
+
+    groupNode.setType(routeGroupsType)
+    ccs.setDomain(groupNode)
+
+    adoptChild(groupNode, routeNode, routeNodeType, routeIcon)
+  }
+
+  setChildIcon(routesNode, routeIcon)
+}
+
 export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
   const camelDomain = tree.get(jmxDomain)
   if (!camelDomain) {
@@ -46,7 +85,7 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
   }
 
   camelDomain.setIcons(getIcon(IconNames.CamelIcon))
-  ccs.setType(camelDomain, domainNodeType)
+  camelDomain.setType(domainNodeType)
   ccs.setDomain(camelDomain)
 
   // Detach current children from domain node
@@ -58,10 +97,10 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
   groupCtxsNode.addProperty('class', 'org-apache-camel-context-folder')
   groupCtxsNode.addProperty('key', camelContexts)
   groupCtxsNode.addProperty('name', camelContexts)
-  ccs.setType(groupCtxsNode, contextsType)
+  groupCtxsNode.setType(contextsType)
   ccs.setDomain(groupCtxsNode)
 
-  oldContexts.forEach((context: MBeanNode) => {
+  for (const context of oldContexts) {
     const contextCategory = context.get(contextNodeType)
     let newCtxNode: MBeanNode | null = null
     if (contextCategory && contextCategory.childCount() === 1) {
@@ -70,7 +109,7 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
 
     if (!newCtxNode) return
 
-    ccs.setType(newCtxNode, contextNodeType)
+    newCtxNode.setType(contextNodeType)
     ccs.setDomain(newCtxNode)
     // Set the camel version as a property on the context
     ccs.setCamelVersion(newCtxNode)
@@ -84,8 +123,12 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
     adoptChild(newCtxNode, routesNode, routesType, endPointFolderIcon)
     setChildIcon(routesNode, routeIcon)
     ccs.setChildProperties(routesNode, routeNodeType)
-    routesService.transformXml(newCtxNode, routesNode)
     routesNode?.addProperty(contextNodeType, newCtxNode.objectName ?? '')
+
+    await routesService.transformXml(newCtxNode, routesNode)
+
+    // Once XML has been processed then group the routes if they have groupIds
+    groupRoutes(routesNode)
 
     const endpointsNode = context.get(endpointsType)
     adoptChild(newCtxNode, endpointsNode, endpointsType, endPointFolderIcon)
@@ -105,7 +148,7 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
     // context/routes/endpoints/components/dataformats as MBeans
     //
     const mBeansNode = newCtxNode.getOrCreate(mbeansType, true)
-    ccs.setType(mBeansNode, mbeansType)
+    mBeansNode.setType(mbeansType)
     ccs.setDomain(mBeansNode)
 
     const predefinedTypes = new Set([contextNodeType, routesType, endpointsType, componentsType, dataformatsType])
@@ -120,5 +163,5 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
     groupCtxsNode.adopt(newCtxNode)
     // Reinitialise HTML ids for the new Camel tree
     groupCtxsNode.initId(true)
-  })
+  }
 }

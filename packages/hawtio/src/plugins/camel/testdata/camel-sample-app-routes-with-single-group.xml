@@ -1,0 +1,18 @@
+<routes xmlns="http://camel.apache.org/schema/spring">
+    <route customId="true" id="cron" group="group1" sourceLineNumber="14" sourceLocation="io.hawt.example.spring.boot.SampleCamelRouter">
+        <from sourceLineNumber="14" sourceLocation="io.hawt.example.spring.boot.SampleCamelRouter" uri="quartz:cron?cron={{quartz.cron}}"/>
+        <setBody id="setBody1" sourceLineNumber="15" sourceLocation="io.hawt.example.spring.boot.SampleCamelRouter">
+            <constant>Hello Camel! - cron</constant>
+        </setBody>
+        <to id="to1" sourceLineNumber="16" sourceLocation="io.hawt.example.spring.boot.SampleCamelRouter" uri="stream:out"/>
+        <to id="to2" sourceLineNumber="17" sourceLocation="io.hawt.example.spring.boot.SampleCamelRouter" uri="mock:result"/>
+    </route>
+    <route customId="true" id="simple" sourceLineNumber="19" sourceLocation="io.hawt.example.spring.boot.SampleCamelRouter">
+        <from sourceLineNumber="19" sourceLocation="io.hawt.example.spring.boot.SampleCamelRouter" uri="quartz:simple?trigger.repeatInterval={{quartz.repeatInterval}}"/>
+        <setBody id="setBody2" sourceLineNumber="20" sourceLocation="io.hawt.example.spring.boot.SampleCamelRouter">
+            <constant>Hello Camel! - simple</constant>
+        </setBody>
+        <to id="to3" sourceLineNumber="21" sourceLocation="io.hawt.example.spring.boot.SampleCamelRouter" uri="stream:out"/>
+        <to id="to4" sourceLineNumber="22" sourceLocation="io.hawt.example.spring.boot.SampleCamelRouter" uri="mock:result"/>
+    </route>
+</routes>
