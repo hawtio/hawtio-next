@@ -46,6 +46,8 @@ export interface Statistics {
   firstExchangeCompletedExchangeId?: string
   lastExchangeCompletedTimestamp?: string
   lastExchangeCompletedExchangeId?: string
+  selfProcessingTime?: string
+  accumulatedProcessingTime?: string
 }
 
 export type ProcessorStats = Statistics & {

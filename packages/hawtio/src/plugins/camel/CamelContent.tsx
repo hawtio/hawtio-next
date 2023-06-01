@@ -36,6 +36,7 @@ import { ContextToolbar } from './contexts/ContextToolbar'
 import { IResponse } from 'jolokia.js'
 import { log } from './globals'
 import { AttributeValues } from '../connect'
+import { Profile } from './profile/Profile'
 
 export const CamelContent: React.FunctionComponent = () => {
   const ctx = useRouteDiagramContext()
@@ -171,6 +172,13 @@ export const CamelContent: React.FunctionComponent = () => {
       isApplicable: (node: MBeanNode) => ccs.hasTypeConverter(node),
     },
     { id: 'chart', title: 'Chart', component: <Chart />, isApplicable: mBeanApplicable },
+    {
+      id: 'profile',
+      title: 'Profile',
+      component: <Profile />,
+      // Applicable for same criteria as trace
+      isApplicable: (node: MBeanNode) => ccs.canTrace(node),
+    },
     {
       id: 'trace',
       title: 'Trace',
