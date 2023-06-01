@@ -73,16 +73,17 @@ export class MBeanNode implements TreeViewDataItem {
       this.icon = Icons.mbean
     }
 
-    this.id = this.generateId()
+    this.id = this.generateId(folder)
   }
 
-  private generateId(): string {
+  private generateId(folder: boolean): string {
     const idPrefix = this.parent ? this.parent.id + this.idSeparator : ''
-    return idPrefix + escapeHtmlId(this.name)
+    const idPostFix = folder ? '-folder' : ''
+    return idPrefix + escapeHtmlId(this.name) + idPostFix
   }
 
   initId(recursive: boolean) {
-    this.id = this.generateId()
+    this.id = this.generateId(this.children !== undefined)
     if (recursive) {
       this.children?.forEach(c => c.initId(recursive))
     }
