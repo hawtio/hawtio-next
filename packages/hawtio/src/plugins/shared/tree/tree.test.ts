@@ -41,12 +41,12 @@ describe('MBeanTree', () => {
     let path = ['org.apache.camel', 'SampleCamel', 'components', 'quartz']
     let qNode = wkspTree.navigate(...path) as MBeanNode
     expect(qNode).not.toBeNull()
-    expect(qNode.id).toBe('org.apache.camel-SampleCamel-components-quartz')
+    expect(qNode.id).toBe('org.apache.camel-folder-SampleCamel-folder-components-folder-quartz')
 
     path = ['org.apache.camel', 'SampleCame*', 'c*ponents', '*artz']
     qNode = wkspTree.navigate(...path) as MBeanNode
     expect(qNode).not.toBeNull()
-    expect(qNode.id).toBe('org.apache.camel-SampleCamel-components-quartz')
+    expect(qNode.id).toBe('org.apache.camel-folder-SampleCamel-folder-components-folder-quartz')
   })
 
   test('forEach', async () => {
