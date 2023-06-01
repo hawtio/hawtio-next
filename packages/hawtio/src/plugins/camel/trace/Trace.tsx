@@ -173,7 +173,7 @@ export const Trace: React.FunctionComponent = () => {
     return (
       <Card>
         <CardBody>
-          <Skeleton screenreaderText='Loading...' />
+          <Text component='p'>No selection has been made</Text>
         </CardBody>
       </Card>
     )
