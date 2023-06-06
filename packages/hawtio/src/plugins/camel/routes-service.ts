@@ -1,7 +1,7 @@
 import React from 'react'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import { AttributeValues, jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
-import { contextNodeType, log, routeXmlNodeType } from './globals'
+import { contextNodeType, log, routeGroupsType, routeNodeType, routeXmlNodeType } from './globals'
 import { schemaService } from './schema-service'
 import * as ccs from './camel-content-service'
 import * as icons from './icons'
@@ -206,23 +206,7 @@ class RoutesService {
     })
   }
 
-  async getRoutesAttributes(routeFolder: MBeanNode | null): Promise<CamelRoute[]> {
-    if (!routeFolder) return []
-
-    const children = routeFolder.getChildren()
-    if (children.length === 0) return []
-
-    const routes: CamelRoute[] = []
-    for (const child of children) {
-      if (!child.objectName) continue
-
-      const attributes: AttributeValues = await jolokiaService.readAttributes(child.objectName as string)
-      routes.push(this.createCamelRoute(child.objectName as string, attributes))
-    }
-    return routes
-  }
-
-  createCamelRoute(objName: string, attr: AttributeValues) {
+  private createCamelRoute(objName: string, attr: AttributeValues) {
     const route: CamelRoute = {
       objectName: objName,
       ExchangesCompleted: attr['ExchangesCompleted'] as number,
@@ -237,6 +221,39 @@ class RoutesService {
     }
 
     return route
+  }
+
+  private async readRouteAttributes(node: MBeanNode): Promise<CamelRoute | null> {
+    if (!node.objectName) return null
+
+    const attributes: AttributeValues = await jolokiaService.readAttributes(node.objectName as string)
+    return this.createCamelRoute(node.objectName as string, attributes)
+  }
+
+  async getRoutesAttributes(routeFolder: MBeanNode | null): Promise<CamelRoute[]> {
+    if (!routeFolder) return []
+
+    const children = routeFolder.getChildren()
+    if (children.length === 0) return []
+
+    /*
+     * If the children are route groups then it recurses
+     * to return the contents of the groups
+     */
+    const routes: CamelRoute[] = []
+    for (const child of children) {
+      if (ccs.hasType(child, routeNodeType)) {
+        // read attributes of route
+        const camelRoute = await this.readRouteAttributes(child)
+        if (camelRoute) routes.push(camelRoute)
+      } else if (ccs.hasType(child, routeGroupsType)) {
+        // recurse into route group
+        const camelRoutes = await this.getRoutesAttributes(child)
+        routes.push(...camelRoutes)
+      }
+    }
+
+    return routes
   }
 
   async startRoute(objName: string) {
