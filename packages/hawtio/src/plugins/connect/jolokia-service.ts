@@ -31,7 +31,7 @@ import Jolokia, {
 } from 'jolokia.js'
 import 'jolokia.js/jolokia-simple'
 import $ from 'jquery'
-import { func, is, object } from 'superstruct'
+import { func, is, object, unknown } from 'superstruct'
 import { connectService, PARAM_KEY_CONNECTION } from './connect-service'
 import { log } from './globals'
 import { basicAuthHeaderValue } from '@hawtiosrc/util/http'
@@ -490,6 +490,7 @@ class DummyJolokia implements IJolokia {
   }
 
   getAttribute(mbean: string, attribute: string, path?: string | ISimpleOptions, opts?: ISimpleOptions) {
+    opts?.success?.({})
     return null
   }
   setAttribute(
@@ -500,6 +501,7 @@ class DummyJolokia implements IJolokia {
     opts?: ISimpleOptions,
   ) {
     /* no-op */
+    opts?.success?.(unknown)
   }
 
   execute(mbean: string, operation: string, ...args: unknown[]) {
@@ -507,6 +509,7 @@ class DummyJolokia implements IJolokia {
     return null
   }
   search(mBeanPattern: string, opts?: ISearchOptions) {
+    opts?.success?.([])
     return null
   }
   list(path: string, opts?: IListOptions) {
@@ -514,6 +517,7 @@ class DummyJolokia implements IJolokia {
     return null
   }
   version(opts?: IVersionOptions) {
+    opts?.success?.({} as IVersion)
     return {} as IVersion
   }
 
