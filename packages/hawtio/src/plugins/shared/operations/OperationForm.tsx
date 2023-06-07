@@ -32,6 +32,139 @@ export interface OperationFormProps {
   operation: Operation
 }
 
+const ArgFormInput: React.FunctionComponent<{
+  javaType: string
+  index: number
+  opName: string
+  argValues: unknown[]
+  updateArgValues: (index: number) => (value: boolean | string) => void
+}> = ({ javaType, index, opName, argValues, updateArgValues }) => {
+  const id = `operation-${opName}-form-log-buffer-input`
+  const value = argValues[index]
+  switch (javaType) {
+    case 'boolean':
+    case 'java.lang.Boolean':
+      return <Checkbox id={id} isChecked={Boolean(value)} onChange={updateArgValues(index)} />
+    case 'int':
+    case 'long':
+    case 'java.lang.Integer':
+    case 'java.lang.Long':
+      return <TextInput id={id} type='number' value={Number(value)} onChange={updateArgValues(index)} />
+
+    default:
+      return <TextInput id={id} type='text' value={String(value)} onChange={updateArgValues(index)} />
+  }
+}
+
+const defaultValue = (javaType: string) => {
+  switch (javaType) {
+    case 'boolean':
+    case 'java.lang.Boolean':
+      return false
+    case 'int':
+    case 'long':
+    case 'java.lang.Integer':
+    case 'java.lang.Long':
+      return 0
+    default:
+      return ''
+  }
+}
+const OperationExecuteForm: React.FunctionComponent<{
+  objectName: string
+  name: string
+  operation: Operation
+  setResult: (result: string) => void
+  setIsFailed: (failed: boolean) => void
+}> = ({ objectName, name, operation, setResult, setIsFailed }) => {
+  const [isExecuting, setIsExecuting] = useState(false)
+
+  const [argValues, setArgValues] = useState<unknown[]>(operation.args.map(arg => defaultValue(arg.type)))
+
+  const updateArgValues = (index: number) => (value: boolean | string) => {
+    const values = [...argValues]
+    values[index] = value
+    setArgValues(values)
+  }
+
+  const processResult = (result: unknown) => {
+    if (operation.returnType === 'void' && (!result || result === 'null')) {
+      return 'Operation successful'
+    }
+    switch (typeof result) {
+      case 'boolean':
+        return result.toString()
+      case 'string': {
+        const trimmed = result.trim()
+        if (trimmed === '') {
+          return 'Empty string'
+        }
+        return trimmed
+      }
+      default:
+        return JSON.stringify(result, null, 2)
+    }
+  }
+
+  const execute = async () => {
+    setIsExecuting(true)
+    try {
+      const result = await operationService.execute(objectName, name, argValues)
+      setIsFailed(false)
+      setResult(processResult(result))
+    } catch (err) {
+      setIsFailed(true)
+      setResult(String(err))
+    } finally {
+      setIsExecuting(false)
+    }
+  }
+
+  return (
+    <Form isHorizontal={operation.args.length > 0}>
+      {operation.args.length === 0 && (
+        <Text component='p'>
+          This JMX operation requires no arguments. Click the <code>Execute</code> button to invoke the operation.
+        </Text>
+      )}
+      {operation.args.length > 0 && (
+        <Text component='p'>
+          This JMX operation requires some parameters. Fill in the fields below and click the <code>Execute</code>{' '}
+          button to invoke the operation.
+        </Text>
+      )}
+      {operation.args.map((arg, index) => (
+        <FormGroup
+          key={arg.name + index}
+          label={arg.name}
+          fieldId={`operation-${name}-form-${arg.name}`}
+          helperText={arg.helpText()}
+        >
+          <ArgFormInput
+            key={'input-' + arg.name + '-' + index}
+            javaType={arg.type}
+            index={index}
+            opName={name}
+            argValues={argValues}
+            updateArgValues={updateArgValues}
+          />
+        </FormGroup>
+      ))}
+      <ActionGroup>
+        <Button
+          key={`operation-action-execute-${name}`}
+          variant='primary'
+          onClick={execute}
+          isSmall
+          isDisabled={isExecuting}
+        >
+          Execute
+        </Button>
+      </ActionGroup>
+    </Form>
+  )
+}
+
 export const OperationForm: React.FunctionComponent<OperationFormProps> = props => {
   const { selectedNode } = useContext(PluginNodeSelectionContext)
   const { name, operation } = props
@@ -117,63 +250,8 @@ type OperationFormContentsProps = OperationFormProps & {
 
 const OperationFormContents: React.FunctionComponent<OperationFormContentsProps> = props => {
   const { name, operation, objectName, isExpanded } = props
-  const [isExecuting, setIsExecuting] = useState(false)
   const [isFailed, setIsFailed] = useState(false)
   const [result, setResult] = useState<string | null>(null)
-  const defaultValue = (javaType: string) => {
-    switch (javaType) {
-      case 'boolean':
-      case 'java.lang.Boolean':
-        return false
-      case 'int':
-      case 'long':
-      case 'java.lang.Integer':
-      case 'java.lang.Long':
-        return 0
-      default:
-        return ''
-    }
-  }
-  const [argValues, setArgValues] = useState<unknown[]>(operation.args.map(arg => defaultValue(arg.type)))
-
-  const updateArgValues = (index: number) => (value: boolean | string) => {
-    const values = [...argValues]
-    values[index] = value
-    setArgValues(values)
-  }
-
-  const processResult = (result: unknown) => {
-    if (operation.returnType === 'void' && (!result || result === 'null')) {
-      return 'Operation successful'
-    }
-    switch (typeof result) {
-      case 'boolean':
-        return result.toString()
-      case 'string': {
-        const trimmed = result.trim()
-        if (trimmed === '') {
-          return 'Empty string'
-        }
-        return trimmed
-      }
-      default:
-        return JSON.stringify(result, null, 2)
-    }
-  }
-
-  const execute = async () => {
-    setIsExecuting(true)
-    try {
-      const result = await operationService.execute(objectName, name, argValues)
-      setIsFailed(false)
-      setResult(processResult(result))
-    } catch (err) {
-      setIsFailed(true)
-      setResult(String(err))
-    } finally {
-      setIsExecuting(false)
-    }
-  }
 
   // TODO: impl HTML escaping
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -183,62 +261,6 @@ const OperationFormContents: React.FunctionComponent<OperationFormContentsProps>
     }
     return result.startsWith('<!DOCTYPE html>') || /^<table[^>]*>/.test(result) || /^<ul[^>]*>/.test(result)
   }
-
-  const argFormInput = (javaType: string, index: number) => {
-    const id = `operation-${name}-form-log-buffer-input`
-    const value = argValues[index]
-    switch (javaType) {
-      case 'boolean':
-      case 'java.lang.Boolean':
-        return <Checkbox id={id} isChecked={Boolean(value)} onChange={updateArgValues(index)} />
-      case 'int':
-      case 'long':
-      case 'java.lang.Integer':
-      case 'java.lang.Long':
-        return <TextInput id={id} type='number' value={Number(value)} onChange={updateArgValues(index)} />
-      default:
-        return <TextInput id={id} type='text' value={String(value)} onChange={updateArgValues(index)} />
-    }
-  }
-
-  const argForms = operation.args.map((arg, index) => (
-    <FormGroup
-      key={arg.name}
-      label={arg.name}
-      fieldId={`operation-${name}-form-${arg.name}`}
-      helperText={arg.helpText()}
-    >
-      {argFormInput(arg.type, index)}
-    </FormGroup>
-  ))
-
-  const OperationExecuteForm = () => (
-    <Form isHorizontal={operation.args.length > 0}>
-      {operation.args.length === 0 && (
-        <Text component='p'>
-          This JMX operation requires no arguments. Click the <code>Execute</code> button to invoke the operation.
-        </Text>
-      )}
-      {operation.args.length > 0 && (
-        <Text component='p'>
-          This JMX operation requires some parameters. Fill in the fields below and click the <code>Execute</code>{' '}
-          button to invoke the operation.
-        </Text>
-      )}
-      {argForms}
-      <ActionGroup>
-        <Button
-          key={`operation-action-execute-${name}`}
-          variant='primary'
-          onClick={execute}
-          isSmall
-          isDisabled={isExecuting}
-        >
-          Execute
-        </Button>
-      </ActionGroup>
-    </Form>
-  )
 
   const OperationExecuteResult = () => (
     <React.Fragment>
@@ -259,7 +281,13 @@ const OperationFormContents: React.FunctionComponent<OperationFormContentsProps>
   return (
     <React.Fragment>
       <DataListContent id={`operation-execute-${name}`} aria-label={`operation execute ${name}`} isHidden={!isExpanded}>
-        <OperationExecuteForm />
+        <OperationExecuteForm
+          setResult={setResult}
+          name={name}
+          operation={operation}
+          objectName={objectName}
+          setIsFailed={setIsFailed}
+        />
       </DataListContent>
       {result && (
         <DataListContent id={`operation-result-${name}`} aria-label={`operation result ${name}`} isHidden={!isExpanded}>
