@@ -15,9 +15,9 @@ export class MBeanTree {
     return new MBeanTree(id)
   }
 
-  static createFromDomains(id: string, domains: OptimisedJmxDomains): MBeanTree {
+  static async createFromDomains(id: string, domains: OptimisedJmxDomains): Promise<MBeanTree> {
     const mBeanTree = new MBeanTree(id)
-    mBeanTree.populate(domains)
+    await mBeanTree.populate(domains)
     return mBeanTree
   }
 
@@ -59,7 +59,7 @@ export class MBeanTree {
 
   private constructor(private id: string) {}
 
-  private populate(domains: OptimisedJmxDomains) {
+  private async populate(domains: OptimisedJmxDomains) {
     Object.entries(domains).forEach(([name, domain]) => {
       // Domain name is displayed in the tree, so let's escape it here.
       // Use a custom escaping method here as escaping '"' breaks Camel tree.
@@ -70,7 +70,7 @@ export class MBeanTree {
     this.sortTree()
 
     // Post-process loaded tree
-    treeProcessorRegistry.process(this)
+    await treeProcessorRegistry.process(this)
 
     log.debug('Populated JMX tree:', this.tree)
   }
