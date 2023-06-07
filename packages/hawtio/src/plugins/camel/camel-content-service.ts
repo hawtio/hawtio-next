@@ -120,17 +120,21 @@ export function isComponentNode(node: MBeanNode): boolean {
   return node && hasDomain(node) && hasType(node, componentNodeType)
 }
 
-export function findInflightRepository(node: MBeanNode): MBeanNode | null {
+function findMBean(node: MBeanNode, folder: string, id: string): MBeanNode | null {
   if (!node) return null
 
   const ctxNode = findContext(node)
   if (!ctxNode) return null
 
-  const result = ctxNode.navigate(mbeansType, 'services')
+  const result = ctxNode.navigate(mbeansType, folder)
   if (!result || !result.children) return null
 
-  const inFlightRepo = result.getChildren().find(m => m.name.startsWith('DefaultInflightRepository'))
-  return !inFlightRepo ? null : inFlightRepo
+  const service = result.getChildren().find(m => m.name.startsWith(id))
+  return !service ? null : service
+}
+
+export function findInflightRepository(node: MBeanNode): MBeanNode | null {
+  return findMBean(node, 'services', 'DefaultInflightRepository')
 }
 
 export function hasInflightRepository(node: MBeanNode): boolean {
@@ -163,16 +167,7 @@ export function hasExchange(node: MBeanNode): boolean {
 }
 
 export function findTypeConverter(node: MBeanNode): MBeanNode | null {
-  if (!node) return null
-
-  const ctxNode = findContext(node)
-  if (!ctxNode) return null
-
-  const result = ctxNode.navigate(mbeansType, 'services')
-  if (!result || !result.children) return null
-
-  const typeConvertor = result.getChildren().find(m => m.name.endsWith('TypeConverter'))
-  return !typeConvertor ? null : typeConvertor
+  return findMBean(node, 'services', 'TypeConverter')
 }
 
 export function canListTypeConverters(node: MBeanNode): boolean {
@@ -198,29 +193,11 @@ export function hasTypeConverter(node: MBeanNode): boolean {
 }
 
 export function findTraceBean(node: MBeanNode): MBeanNode | null {
-  if (!node) return null
-
-  const ctxNode = findContext(node)
-  if (!ctxNode) return null
-
-  const result = ctxNode.navigate(mbeansType, 'tracer')
-  if (!result || !result.children) return null
-
-  const tracer = result.getChildren().find(m => m.name.startsWith('BacklogTracer'))
-  return !tracer ? null : tracer
+  return findMBean(node, 'tracer', 'BacklogTracer')
 }
 
-export function findDebugBean(node: MBeanNode | null): MBeanNode | null {
-  if (!node) return null
-
-  const ctxNode = findContext(node)
-  if (!ctxNode) return null
-
-  const result = ctxNode.navigate(mbeansType, 'tracer')
-  if (!result || !result.children) return null
-
-  const db = result.getChildren().find(m => m.name.startsWith('BacklogDebugger'))
-  return !db ? null : db
+export function findDebugBean(node: MBeanNode): MBeanNode | null {
+  return findMBean(node, 'tracer', 'BacklogDebugger')
 }
 
 export function canGetBreakpoints(node: MBeanNode): boolean {
