@@ -64,6 +64,7 @@ export const OperationForm: React.FunctionComponent<OperationFormProps> = props 
     <DataListItemCells
       dataListCells={[
         <DataListCell key={`operation-cell-name-${name}`} isFilled={false}>
+          <code className='operation-datatype'>{operation.getReadableReturnType()}</code>
           <b>{operation.readableName}</b>
         </DataListCell>,
         <DataListCell key={`operation-cell-desc-${name}`} isFilled={false}>
@@ -141,12 +142,31 @@ const OperationFormContents: React.FunctionComponent<OperationFormContentsProps>
     setArgValues(values)
   }
 
+  const processResult = (result: unknown) => {
+    if (operation.returnType === 'void' && (!result || result === 'null')) {
+      return 'Operation successful'
+    }
+    switch (typeof result) {
+      case 'boolean':
+        return result.toString()
+      case 'string': {
+        const trimmed = result.trim()
+        if (trimmed === '') {
+          return 'Empty string'
+        }
+        return trimmed
+      }
+      default:
+        return JSON.stringify(result, null, 2)
+    }
+  }
+
   const execute = async () => {
     setIsExecuting(true)
     try {
       const result = await operationService.execute(objectName, name, argValues)
       setIsFailed(false)
-      setResult(result)
+      setResult(processResult(result))
     } catch (err) {
       setIsFailed(true)
       setResult(String(err))

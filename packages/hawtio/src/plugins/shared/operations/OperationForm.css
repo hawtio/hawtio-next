@@ -1,3 +1,7 @@
 .jmx-operation-error .pf-c-clipboard-copy__expandable-content {
   background-color: #ffe6e6;
 }
+
+.operation-datatype {
+  margin-right: 0.5em;
+}

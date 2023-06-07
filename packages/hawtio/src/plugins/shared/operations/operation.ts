@@ -27,6 +27,7 @@ function addOperation(operations: Operation[], operationMap: OperationMap, name:
     name,
     op.args.map(arg => new OperationArgument(arg.name, arg.type, arg.desc)),
     op.desc,
+    op.ret,
   )
   operations.push(operation)
   operationMap[operation.name] = operation
@@ -42,7 +43,14 @@ export class Operation {
   readonly readableName: string
   canInvoke: boolean
 
-  constructor(method: string, readonly args: OperationArgument[], readonly description: string) {
+  static IGNORED_PACKAGES = ['java.util', 'java.lang']
+
+  constructor(
+    method: string,
+    readonly args: OperationArgument[],
+    readonly description: string,
+    readonly returnType: string,
+  ) {
     this.name = this.buildName(method)
     this.readableName = this.buildReadableName(method)
     this.canInvoke = true
@@ -54,6 +62,18 @@ export class Operation {
 
   private buildReadableName(method: string): string {
     return method + '(' + this.args.map(arg => arg.readableType).join(', ') + ')'
+  }
+
+  getReadableReturnType(): string {
+    const splitName = this.returnType.split('.')
+    const typeName = splitName.pop()
+    const packageName = splitName.join('.')
+
+    if (typeName && Operation.IGNORED_PACKAGES.includes(packageName)) {
+      return typeName
+    } else {
+      return this.returnType
+    }
   }
 }
 
