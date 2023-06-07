@@ -100,7 +100,7 @@ class Workspace {
       }
     } else {
       if (this.pluginRegisterHandle) {
-        jolokiaService.unregister(this.pluginRegisterHandle)
+        await jolokiaService.unregister(this.pluginRegisterHandle)
         this.pluginRegisterHandle = undefined
         this.pluginUpdateCounter = undefined
       }
