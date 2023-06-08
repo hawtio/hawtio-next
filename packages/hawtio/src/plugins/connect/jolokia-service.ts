@@ -5,7 +5,6 @@ import {
   escapeMBeanPath,
   onBulkSuccess,
   onListSuccess,
-  onSearchSuccess,
   onSimpleSuccess,
   onSimpleSuccessAndError,
   onSuccess,
@@ -31,7 +30,7 @@ import Jolokia, {
 } from 'jolokia.js'
 import 'jolokia.js/jolokia-simple'
 import $ from 'jquery'
-import { func, is, object, unknown } from 'superstruct'
+import { func, is, object } from 'superstruct'
 import { connectService, PARAM_KEY_CONNECTION } from './connect-service'
 import { log } from './globals'
 import { basicAuthHeaderValue } from '@hawtiosrc/util/http'
@@ -406,10 +405,16 @@ class JolokiaService implements IJolokiaService {
 
   async search(mbeanPattern: string): Promise<string[]> {
     const jolokia = await this.jolokia
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       jolokia.search(
         mbeanPattern,
-        onSearchSuccess((response: string[]) => resolve(response)),
+        onSimpleSuccessAndError(
+          response => resolve(response as string[]),
+          (response: IErrorResponse) => {
+            log.error('Error during the search: ' + response.value)
+            resolve([])
+          },
+        ),
       )
     })
   }
@@ -500,8 +505,7 @@ class DummyJolokia implements IJolokia {
     path?: string | ISimpleOptions,
     opts?: ISimpleOptions,
   ) {
-    /* no-op */
-    opts?.success?.(unknown)
+    opts?.success?.({})
   }
 
   execute(mbean: string, operation: string, ...args: unknown[]) {
