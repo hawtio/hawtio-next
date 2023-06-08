@@ -225,6 +225,25 @@ export function canTrace(node: MBeanNode): boolean {
   return canDumpAllTracedMessagesAsXml(node)
 }
 
+export function findRestRegistryBean(node: MBeanNode): MBeanNode | null {
+  return findMBean(node, 'services', 'DefaultRestRegistry')
+}
+
+export function canListRestServices(node: MBeanNode): boolean {
+  const registry = findRestRegistryBean(node)
+  if (!registry) return false
+
+  return workspace.hasInvokeRights(registry as MBeanNode, 'listRestServices')
+}
+
+export function hasRestServices(node: MBeanNode): boolean {
+  if (!isContext(node) && !isRoutesFolder(node)) return false
+  if (!isCamelVersionEQGT_2_14(node) && !canListRestServices(node)) return false
+
+  const registry = findRestRegistryBean(node)
+  return registry ? true : false
+}
+
 /**
  * Fetch the camel version and add it to the tree to avoid making a blocking call
  * elsewhere.

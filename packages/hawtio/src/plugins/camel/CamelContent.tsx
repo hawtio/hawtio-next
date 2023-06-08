@@ -37,6 +37,7 @@ import { IResponse } from 'jolokia.js'
 import { log } from './globals'
 import { AttributeValues } from '../connect'
 import { Profile } from './profile/Profile'
+import { RestServices } from './rest-services/RestServices'
 
 export const CamelContent: React.FunctionComponent = () => {
   const ctx = useRouteDiagramContext()
@@ -164,6 +165,12 @@ export const CamelContent: React.FunctionComponent = () => {
       title: 'Exchanges',
       component: <Exchanges />,
       isApplicable: (node: MBeanNode) => ccs.hasExchange(node),
+    },
+    {
+      id: 'rest-services',
+      title: 'Rest Services',
+      component: <RestServices />,
+      isApplicable: (node: MBeanNode) => ccs.hasRestServices(node),
     },
     {
       id: 'type-converters',
