@@ -1,0 +1,11 @@
+#rest-services-card-body {
+  min-height: 25vh;
+}
+
+#select-filter-type {
+  min-width: 10em;
+}
+
+#search-filter-input {
+  min-width: 15em;
+}
