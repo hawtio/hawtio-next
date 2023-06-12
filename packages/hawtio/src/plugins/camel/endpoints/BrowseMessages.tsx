@@ -337,6 +337,7 @@ export const BrowseMessages: React.FunctionComponent = () => {
             >
               <SearchInput
                 type='text'
+                data-testid='filter-input'
                 id='search-input'
                 placeholder='Search...'
                 value={searchTerm}
