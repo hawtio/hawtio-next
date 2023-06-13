@@ -4,6 +4,6 @@ import help from './help.md'
 import { keycloakService } from './keycloak-service'
 
 export const keycloak: HawtioPlugin = () => {
-  keycloakService.registerFetchUserHook()
+  keycloakService.registerUserHooks()
   helpRegistry.add('keycloak', 'Keycloak', help, 21)
 }
