@@ -8,9 +8,11 @@ type User = {
 
 export type ResolveUser = (user: User) => void
 export type FetchUserHook = (resolve: ResolveUser) => Promise<boolean>
+export type LogoutHook = () => Promise<boolean>
 
 export interface IUserService {
   addFetchUserHook(name: string, hook: FetchUserHook): void
+  addLogoutHook(name: string, hook: LogoutHook): void
   fetchUser(retry?: boolean): Promise<void>
   getUsername(): Promise<string>
   isLogin(): Promise<boolean>
@@ -25,6 +27,7 @@ class UserService implements IUserService {
     // no-op
   }
   private fetchUserHooks: { [name: string]: FetchUserHook } = {}
+  private logoutHooks: { [name: string]: LogoutHook } = {}
   private token: string | null = null
 
   constructor() {
@@ -33,8 +36,12 @@ class UserService implements IUserService {
     })
   }
 
-  addFetchUserHook(name: string, hook: FetchUserHook): void {
+  addFetchUserHook(name: string, hook: FetchUserHook) {
     this.fetchUserHooks[name] = hook
+  }
+
+  addLogoutHook(name: string, hook: LogoutHook) {
+    this.logoutHooks[name] = hook
   }
 
   /**
@@ -42,16 +49,17 @@ class UserService implements IUserService {
    */
   async fetchUser(retry = true): Promise<void> {
     // First, let fetch user hooks to resolve the user in a special way
-    for (const [name, hook] of Object.entries(this.fetchUserHooks)) {
-      const resolved = await hook(this.resolveUser)
-      log.debug('Invoke fetch user hook ', name, ': resolved =', resolved)
+    for (const [name, fetchUser] of Object.entries(this.fetchUserHooks)) {
+      const resolved = await fetchUser(this.resolveUser)
+      log.debug('Invoke fetch user hook', name, ': resolved =', resolved)
       if (resolved) {
-        // Send login event
+        // Login succeeded
         eventService.login()
         return
       }
     }
 
+    // Default fetch user logic
     try {
       const res = await fetch(PATH_USER)
       if (!res.ok) {
@@ -103,11 +111,22 @@ class UserService implements IUserService {
       return
     }
 
-    log.info('Logged out:', login.username)
+    log.info('Log out:', login.username)
 
     // Send logout event
     eventService.logout()
 
+    // First, let logout hooks to log out in a special way
+    for (const [name, logout] of Object.entries(this.logoutHooks)) {
+      const result = await logout()
+      log.debug('Invoke logout hook', name, ': result =', result)
+      if (result) {
+        // Logout succeeded
+        return
+      }
+    }
+
+    // Default logout logic
     log.debug('Redirect to:', PATH_LOGOUT)
     window.location.href = PATH_LOGOUT
   }

@@ -1,6 +1,5 @@
 import { userService } from '@hawtiosrc/auth'
 import { ResolveUser } from '@hawtiosrc/auth/user-service'
-import { eventService } from '@hawtiosrc/core'
 import { getCookie } from '@hawtiosrc/util/cookies'
 import { fetchPath } from '@hawtiosrc/util/fetch'
 import { basicAuthHeaderValue } from '@hawtiosrc/util/http'
@@ -30,7 +29,7 @@ export const KEYCLOAK_TOKEN_MINIMUM_VALIDITY = 5 // 5 sec.
 
 export interface IKeycloakService {
   isKeycloakEnabled(): Promise<boolean>
-  registerFetchUserHook(): void
+  registerUserHooks(): void
   validateSubjectMatches(user: string): Promise<boolean>
 }
 
@@ -128,8 +127,8 @@ class KeycloakService implements IKeycloakService {
     return this.enabled
   }
 
-  registerFetchUserHook() {
-    const hook = async (resolve: ResolveUser) => {
+  registerUserHooks() {
+    const fetchUser = async (resolve: ResolveUser) => {
       const keycloak = await this.keycloak
       const userProfile = await this.userProfile
       if (!keycloak || !userProfile) {
@@ -144,15 +143,25 @@ class KeycloakService implements IKeycloakService {
       this.setupJQueryAjax()
       this.setupFetch()
 
-      log.debug('Register Keycloak logout to LOGOUT event')
-      eventService.onLogout(() => {
-        log.info('Log out Keycloak')
-        keycloak.logout()
-      })
-
       return true
     }
-    userService.addFetchUserHook('keycloak', hook)
+    userService.addFetchUserHook('keycloak', fetchUser)
+
+    const logout = async () => {
+      const keycloak = await this.keycloak
+      if (!keycloak) {
+        return false
+      }
+
+      log.info('Log out Keycloak')
+      try {
+        await keycloak.logout()
+      } catch (error) {
+        log.error('Error logging out Keycloak:', error)
+      }
+      return true
+    }
+    userService.addLogoutHook('keycloak', logout)
   }
 
   private async setupJQueryAjax() {
