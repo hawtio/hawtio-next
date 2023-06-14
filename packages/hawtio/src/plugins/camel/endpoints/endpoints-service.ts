@@ -3,6 +3,7 @@ import { jolokiaService } from '@hawtiosrc/plugins/connect'
 import * as schema from '@hawtio/camel-model'
 import { MBeanNode, workspace } from '@hawtiosrc/plugins/shared'
 import * as ccs from '../camel-content-service'
+import { getDefaultRuntimeEndpointRegistry } from '../camel-content-service'
 import { contextNodeType, endpointsType, log } from '../globals'
 import { isObject } from '@hawtiosrc/util/objects'
 import { parseXML } from '@hawtiosrc/util/xml'
@@ -11,6 +12,17 @@ export type Endpoint = {
   uri: string
   state: string
   mbean: string
+}
+
+export type EndpointStatistics = {
+  hits: number
+  routeId: string
+  static: boolean
+  index: number
+  dynamic: boolean
+  url: string
+  direction: string
+  [key: string]: string | boolean | number
 }
 
 export type MessageData = {
@@ -279,4 +291,16 @@ function parseMessagesFromXml(pDoc: XMLDocument): MessageData[] {
   }
 
   return messagesData
+}
+
+export async function getEndpointStatistics(node: MBeanNode) {
+  let stats: EndpointStatistics[] = []
+  const registry = getDefaultRuntimeEndpointRegistry(node)
+  if (registry && registry.objectName) {
+    const res = await jolokiaService.execute(registry.objectName, 'endpointStatistics()')
+    stats = Object.values(res as { [key: string]: EndpointStatistics })
+  } else {
+    log.error('Error with the retrieving the registry')
+  }
+  return stats
 }

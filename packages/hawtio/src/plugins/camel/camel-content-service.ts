@@ -153,6 +153,25 @@ export function canBrowseMessages(node: MBeanNode): boolean {
   return !!browseMessages
 }
 
+export function canSeeEndpointStats(node: MBeanNode): boolean {
+  const registry = getDefaultRuntimeEndpointRegistry(node)
+  if (!registry) return false
+
+  const canInvoke = workspace.hasInvokeRights(registry, 'endpointStatistics')
+  return (
+    !isEndpointsFolder(node) &&
+    !isEndpointNode(node) &&
+    !isComponentsFolder(node) &&
+    !isComponentNode(node) &&
+    (isContext(node) || isRoutesFolder(node)) &&
+    isCamelVersionEQGT_2_16(node) &&
+    canInvoke
+  )
+}
+
+export function getDefaultRuntimeEndpointRegistry(node: MBeanNode): MBeanNode | null {
+  return findMBean(node, 'services', 'DefaultRuntimeEndpointRegistry')
+}
 export function hasExchange(node: MBeanNode): boolean {
   return (
     node &&

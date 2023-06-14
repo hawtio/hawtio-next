@@ -38,6 +38,8 @@ import { CamelRoutes } from './routes/CamelRoutes'
 import { Source } from './routes/Source'
 import { Trace } from './trace'
 import { TypeConverters } from './type-converters'
+import { EndpointStats } from './endpoints/EndpointsStats'
+import { canSeeEndpointStats } from './camel-content-service'
 
 export const CamelContent: React.FunctionComponent = () => {
   const ctx = useRouteDiagramContext()
@@ -159,6 +161,12 @@ export const CamelContent: React.FunctionComponent = () => {
       title: 'Browse',
       component: <BrowseMessages />,
       isApplicable: (node: MBeanNode) => ccs.isEndpointNode(node) && ccs.canBrowseMessages(node),
+    },
+    {
+      id: 'endpoint-stats',
+      title: 'Endpoints (in/out)',
+      component: <EndpointStats />,
+      isApplicable: (node: MBeanNode) => canSeeEndpointStats(node),
     },
     {
       id: 'exchanges',
