@@ -1,7 +1,7 @@
-import { log } from '../globals'
-import { IRequest, IResponseFn } from 'jolokia.js'
-import { jolokiaService, AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
+import { AttributeValues, jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
+import { IRequest, IResponseFn } from 'jolokia.js'
+import { log } from '../globals'
 
 export interface ContextAttributes {
   context: string
@@ -12,7 +12,7 @@ export interface ContextAttributes {
 class ContextsService {
   private handles: number[] = []
 
-  createContextAttibutes(context: string, mbean: string, attributes: AttributeValues): ContextAttributes {
+  createContextAttributes(context: string, mbean: string, attributes: AttributeValues): ContextAttributes {
     const actx: ContextAttributes = {
       context: context,
       mbean: mbean,
@@ -26,7 +26,7 @@ class ContextsService {
     if (!ctxNode || !ctxNode.objectName) return null
 
     const attributes = await jolokiaService.readAttributes(ctxNode.objectName)
-    return this.createContextAttibutes(ctxNode.name, ctxNode.objectName, attributes)
+    return this.createContextAttributes(ctxNode.name, ctxNode.objectName, attributes)
   }
 
   async getContexts(ctxsNode: MBeanNode | null): Promise<ContextAttributes[]> {
@@ -40,7 +40,7 @@ class ContextsService {
       if (!child.objectName) continue
 
       const attributes: AttributeValues = await jolokiaService.readAttributes(child.objectName as string)
-      ctxAttributes.push(this.createContextAttibutes(child.name, child.objectName, attributes))
+      ctxAttributes.push(this.createContextAttributes(child.name, child.objectName, attributes))
     }
 
     return ctxAttributes
