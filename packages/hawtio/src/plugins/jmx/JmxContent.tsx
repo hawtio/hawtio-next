@@ -1,3 +1,6 @@
+import { JmxContentMBeans, MBeanNode } from '@hawtiosrc/plugins/shared'
+import { AttributeTable, Attributes } from '@hawtiosrc/plugins/shared/attributes'
+import { Operations } from '@hawtiosrc/plugins/shared/operations'
 import {
   EmptyState,
   EmptyStateIcon,
@@ -12,15 +15,11 @@ import {
   Text,
   Title,
 } from '@patternfly/react-core'
-import './JmxContent.css'
 import { CubesIcon } from '@patternfly/react-icons'
 import React, { useContext } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import './JmxContent.css'
 import { MBeanTreeContext } from './context'
-import { Chart } from '@hawtiosrc/plugins/shared/chart'
-import { Operations } from '@hawtiosrc/plugins/shared/operations'
-import { Attributes, AttributeTable } from '@hawtiosrc/plugins/shared/attributes'
-import { JmxContentMBeans, MBeanNode } from '@hawtiosrc/plugins/shared'
 
 export const JmxContent: React.FunctionComponent = () => {
   const { selectedNode } = useContext(MBeanTreeContext)
@@ -55,7 +54,7 @@ export const JmxContent: React.FunctionComponent = () => {
   const allNavItems = [
     { id: 'attributes', title: 'Attributes', component: tableSelector(selectedNode), isApplicable: ALWAYS },
     { id: 'operations', title: 'Operations', component: Operations, isApplicable: mBeanApplicable },
-    { id: 'chart', title: 'Chart', component: Chart, isApplicable: mBeanApplicable },
+    //{ id: 'chart', title: 'Chart', component: Chart, isApplicable: mBeanApplicable },
   ]
 
   /* Filter the nav items to those applicable to the selected node */

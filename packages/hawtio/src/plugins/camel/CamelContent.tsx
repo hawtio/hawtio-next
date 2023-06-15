@@ -1,3 +1,5 @@
+import { eventService } from '@hawtiosrc/core'
+import { Attributes, JmxContentMBeans, MBeanNode, Operations } from '@hawtiosrc/plugins/shared'
 import {
   EmptyState,
   EmptyStateIcon,
@@ -12,32 +14,30 @@ import {
   Text,
   Title,
 } from '@patternfly/react-core'
-import './CamelContent.css'
 import { CubesIcon } from '@patternfly/react-icons'
+import { IResponse } from 'jolokia.js'
 import React, { useEffect, useState } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
-import { Attributes, Operations, Chart, JmxContentMBeans, MBeanNode } from '@hawtiosrc/plugins/shared'
-import { RouteDiagramContext, useRouteDiagramContext } from './route-diagram/route-diagram-context'
-import { RouteDiagram } from './route-diagram/RouteDiagram'
-import { Contexts } from './contexts'
-import { Endpoints } from './endpoints'
-import { Exchanges } from './exchanges'
-import { TypeConverters } from './type-converters'
-import { Debug } from './debug'
-import { Trace } from './trace'
-import * as ccs from './camel-content-service'
-import { CamelRoutes } from './routes/CamelRoutes'
-import { Source } from './routes/Source'
-import { SendMessage } from './endpoints/SendMessage'
-import { BrowseMessages } from './endpoints/BrowseMessages'
-import { ContextAttributes, contextsService } from './contexts/contexts-service'
-import { eventService } from '@hawtiosrc/core'
-import { ContextToolbar } from './contexts/ContextToolbar'
-import { IResponse } from 'jolokia.js'
-import { log } from './globals'
 import { AttributeValues } from '../connect'
+import './CamelContent.css'
+import * as ccs from './camel-content-service'
+import { Contexts } from './contexts'
+import { ContextToolbar } from './contexts/ContextToolbar'
+import { ContextAttributes, contextsService } from './contexts/contexts-service'
+import { Debug } from './debug'
+import { Endpoints } from './endpoints'
+import { BrowseMessages } from './endpoints/BrowseMessages'
+import { SendMessage } from './endpoints/SendMessage'
+import { Exchanges } from './exchanges'
+import { log } from './globals'
 import { Profile } from './profile/Profile'
 import { RestServices } from './rest-services/RestServices'
+import { RouteDiagram } from './route-diagram/RouteDiagram'
+import { RouteDiagramContext, useRouteDiagramContext } from './route-diagram/route-diagram-context'
+import { CamelRoutes } from './routes/CamelRoutes'
+import { Source } from './routes/Source'
+import { Trace } from './trace'
+import { TypeConverters } from './type-converters'
 
 export const CamelContent: React.FunctionComponent = () => {
   const ctx = useRouteDiagramContext()
@@ -178,7 +178,7 @@ export const CamelContent: React.FunctionComponent = () => {
       component: <TypeConverters />,
       isApplicable: (node: MBeanNode) => ccs.hasTypeConverter(node),
     },
-    { id: 'chart', title: 'Chart', component: <Chart />, isApplicable: mBeanApplicable },
+    //{ id: 'chart', title: 'Chart', component: <Chart />, isApplicable: mBeanApplicable },
     {
       id: 'profile',
       title: 'Profile',
