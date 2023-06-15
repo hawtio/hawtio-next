@@ -3,7 +3,7 @@ import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import { IRequest, IResponseFn } from 'jolokia.js'
 import { log } from '../globals'
 
-export interface ContextAttributes {
+export type ContextAttributes = {
   context: string
   mbean: string
   state: string
@@ -13,13 +13,13 @@ class ContextsService {
   private handles: number[] = []
 
   createContextAttributes(context: string, mbean: string, attributes: AttributeValues): ContextAttributes {
-    const actx: ContextAttributes = {
+    const attrs: ContextAttributes = {
       context: context,
       mbean: mbean,
       state: attributes ? (attributes['State'] as string) : 'Not Found',
     }
 
-    return actx
+    return attrs
   }
 
   async getContext(ctxNode: MBeanNode | null): Promise<ContextAttributes | null> {
