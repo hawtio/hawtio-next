@@ -79,13 +79,13 @@ export const JmxContent: React.FunctionComponent = () => {
   return (
     <React.Fragment>
       <PageGroup>
-        <PageSection variant={PageSectionVariants.light}>
+        <PageSection id='jmx-content-header' variant={PageSectionVariants.light}>
           <Title headingLevel='h1'>{selectedNode.name}</Title>
           <Text component='small'>{selectedNode.objectName}</Text>
         </PageSection>
         <PageNavigation>{mbeanNav}</PageNavigation>
       </PageGroup>
-      <PageSection className={'jmx-main'}>
+      <PageSection className='jmx-main'>
         <React.Fragment>
           <Routes>
             {mbeanRoutes}

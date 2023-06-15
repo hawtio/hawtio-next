@@ -47,7 +47,7 @@ export const CamelContent: React.FunctionComponent = () => {
   const { pathname, search } = useLocation()
   const navigate = useNavigate()
 
-  /**
+  /*
    * Attributes only needed if a context has been selected
    */
   useEffect(() => {
@@ -64,11 +64,7 @@ export const CamelContent: React.FunctionComponent = () => {
         log.debug('Scheduler - Contexts:', response.value)
 
         /* Replace the context in the existing set with the new one */
-        const newCtxAttr: ContextAttributes = contextsService.createContextAttributes(
-          name,
-          objectName,
-          response.value as AttributeValues,
-        )
+        const newCtxAttr = contextsService.createContextAttributes(name, objectName, response.value as AttributeValues)
 
         setCtxAttributes(newCtxAttr)
       })
@@ -197,17 +193,17 @@ export const CamelContent: React.FunctionComponent = () => {
   return (
     <React.Fragment>
       <PageGroup>
-        <PageSection id='camel-content-header' variant={PageSectionVariants.light} hasShadowBottom>
+        <PageSection id='camel-content-header' variant={PageSectionVariants.light}>
           {ccs.isContext(selectedNode) && (
             <ContextToolbar contexts={!ctxAttributes ? [] : [ctxAttributes]} deleteCallback={handleDeletedContext} />
           )}
           <Title headingLevel='h1'>{selectedNode.name}</Title>
           <Text component='small'>{selectedNode.objectName}</Text>
         </PageSection>
-        {navItems.length > 0 && <PageNavigation>{camelNav}</PageNavigation>}
+        {navItems.length > 1 && <PageNavigation>{camelNav}</PageNavigation>}
       </PageGroup>
 
-      <PageSection className={'camel-main'}>
+      <PageSection className='camel-main'>
         {navItems.length > 0 && (
           <Routes>
             {camelNavRoutes}
