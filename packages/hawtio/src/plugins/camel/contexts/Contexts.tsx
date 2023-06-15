@@ -57,7 +57,7 @@ export const Contexts: React.FunctionComponent = () => {
         log.debug('Scheduler - Contexts:', response.value)
 
         /* Replace the context in the existing set with the new one */
-        const newCtx: ContextAttributes = contextsService.createContextAttibutes(
+        const newCtx: ContextAttributes = contextsService.createContextAttributes(
           ctx.context,
           mbean,
           response.value as AttributeValues,

@@ -67,7 +67,7 @@ export const CamelContent: React.FunctionComponent = () => {
         log.debug('Scheduler - Contexts:', response.value)
 
         /* Replace the context in the existing set with the new one */
-        const newCtxAttr: ContextAttributes = contextsService.createContextAttibutes(
+        const newCtxAttr: ContextAttributes = contextsService.createContextAttributes(
           name,
           mbean,
           response.value as AttributeValues,
