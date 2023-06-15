@@ -1,3 +1,5 @@
+import { eventService } from '@hawtiosrc/core'
+import { workspace } from '@hawtiosrc/plugins/shared'
 import {
   Button,
   Dropdown,
@@ -12,34 +14,32 @@ import {
 } from '@patternfly/react-core'
 import { AsleepIcon, PlayIcon, Remove2Icon } from '@patternfly/react-icons'
 import React, { useState } from 'react'
-import { contextsService, ContextAttributes } from './contexts-service'
-import { eventService } from '@hawtiosrc/core'
-import { workspace } from '@hawtiosrc/plugins/shared'
+import { ContextAttributes, contextsService } from './contexts-service'
 
 type ContextToolbarProps = {
   contexts: ContextAttributes[]
   deleteCallback: (contexts: ContextAttributes[]) => void
 }
 
-export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = (props: ContextToolbarProps) => {
+export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = ({ contexts, deleteCallback }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false)
-  const [isDeleting, setIsDeleting] = useState<boolean>(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const onDropdownToggle = (isOpen: boolean) => {
     setIsOpen(isOpen)
   }
 
   const isStartEnabled = (): boolean => {
-    if (props.contexts.length === 0) return false
+    if (contexts.length === 0) return false
 
-    return props.contexts.some(ctx => {
+    return contexts.some(ctx => {
       return ctx.state === 'Suspended'
     })
   }
 
   const onStartClicked = () => {
-    props.contexts
+    contexts
       .filter(ctx => {
         return ctx.state === 'Suspended'
       })
@@ -62,15 +62,15 @@ export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = (pro
   }
 
   const isSuspendEnabled = (): boolean => {
-    if (props.contexts.length === 0) return false
+    if (contexts.length === 0) return false
 
-    return props.contexts.some(ctx => {
+    return contexts.some(ctx => {
       return ctx.state === 'Started'
     })
   }
 
   const onSuspendClicked = () => {
-    for (const ctx of props.contexts) {
+    for (const ctx of contexts) {
       if (ctx.state !== 'Started') continue
 
       try {
@@ -89,7 +89,7 @@ export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = (pro
   }
 
   const isDeleteEnabled = (): boolean => {
-    return props.contexts.length > 0
+    return contexts.length > 0
   }
 
   const handleConfirmDeleteToggle = () => {
@@ -106,7 +106,7 @@ export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = (pro
   }
 
   const deleteContexts = async () => {
-    for (const ctx of props.contexts) {
+    for (const ctx of contexts) {
       try {
         await contextsService.stopContext(ctx)
         eventService.notify({
@@ -121,7 +121,7 @@ export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = (pro
       }
     }
 
-    props.deleteCallback(props.contexts)
+    deleteCallback(contexts)
     setIsDeleting(false)
     workspace.refreshTree()
   }
@@ -129,7 +129,7 @@ export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = (pro
   if (isDeleting) {
     deleteContexts()
 
-    const title = 'Deleting Context' + (props.contexts.length > 1 ? 's' : '') + ' ...'
+    const title = `Deleting ${contexts.length > 1 ? 'Contexts' : 'Context'} ...`
     return (
       <Modal variant={ModalVariant.small} title={title} titleIconVariant='warning' isOpen={isDeleting}>
         <Skeleton screenreaderText={title} />
@@ -141,10 +141,10 @@ export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = (pro
     <React.Fragment>
       <ToolbarItem>
         <Button
-          variant='secondary'
+          variant='primary'
           isSmall={true}
           isDisabled={!isStartEnabled()}
-          icon={React.createElement(PlayIcon)}
+          icon={<PlayIcon />}
           onClick={onStartClicked}
         >
           Start
@@ -152,10 +152,10 @@ export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = (pro
       </ToolbarItem>
       <ToolbarItem>
         <Button
-          variant='secondary'
+          variant='danger'
           isSmall={true}
           isDisabled={!isSuspendEnabled()}
-          icon={React.createElement(AsleepIcon)}
+          icon={<AsleepIcon />}
           onClick={onSuspendClicked}
         >
           Suspend
@@ -186,17 +186,14 @@ export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = (pro
   )
 
   const dropdownItems = [
-    <DropdownItem key='action' componentID='deleteAction'>
-      <Button
-        variant='control'
-        isSmall={true}
-        isDisabled={!isDeleteEnabled()}
-        icon={React.createElement(Remove2Icon)}
-        onClick={onDeleteClicked}
-      >
-        Delete
-      </Button>
-    </DropdownItem>,
+    <DropdownItem
+      key='delete'
+      component={
+        <Button variant='plain' isDisabled={!isDeleteEnabled()} onClick={onDeleteClicked}>
+          <Remove2Icon /> Delete
+        </Button>
+      }
+    />,
   ]
 
   return (
@@ -210,9 +207,9 @@ export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = (pro
               toggle={<KebabToggle id='toggle-kebab' onToggle={onDropdownToggle} />}
               isOpen={isOpen}
               dropdownItems={dropdownItems}
+              isPlain
             />
           </ToolbarItem>
-          <ToolbarItem variant='separator' />
         </ToolbarContent>
       </Toolbar>
       <ConfirmDeleteModal />

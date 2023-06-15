@@ -1,14 +1,14 @@
+import { eventService } from '@hawtiosrc/core'
+import { CamelContext } from '@hawtiosrc/plugins/camel/context'
+import { AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { Card, CardBody, Text } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
 import { Table, TableBody, TableHeader, TableProps, wrappable } from '@patternfly/react-table'
 import { IResponse } from 'jolokia.js'
-import { AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
-import React, { useEffect, useState, useContext } from 'react'
-import { CamelContext } from '@hawtiosrc/plugins/camel/context'
+import React, { useContext, useEffect, useState } from 'react'
 import { log } from '../globals'
-import { contextsService, ContextAttributes } from './contexts-service'
-import { eventService } from '@hawtiosrc/core'
 import { ContextToolbar } from './ContextToolbar'
+import { ContextAttributes, contextsService } from './contexts-service'
 
 export const Contexts: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
@@ -145,7 +145,7 @@ export const Contexts: React.FunctionComponent = () => {
         }}
         canSelectAll={true}
         aria-label='Contexts'
-        variant={'compact'}
+        variant='compact'
         cells={columns}
         rows={rows}
       >

@@ -27,6 +27,7 @@ import { ContextAttributes, contextsService } from './contexts/contexts-service'
 import { Debug } from './debug'
 import { Endpoints } from './endpoints'
 import { BrowseMessages } from './endpoints/BrowseMessages'
+import { EndpointStats } from './endpoints/EndpointsStats'
 import { SendMessage } from './endpoints/SendMessage'
 import { Exchanges } from './exchanges'
 import { log } from './globals'
@@ -38,7 +39,6 @@ import { CamelRoutes } from './routes/CamelRoutes'
 import { Source } from './routes/Source'
 import { Trace } from './trace'
 import { TypeConverters } from './type-converters'
-import { EndpointStats } from './endpoints/EndpointsStats'
 
 export const CamelContent: React.FunctionComponent = () => {
   const ctx = useRouteDiagramContext()
@@ -186,7 +186,7 @@ export const CamelContent: React.FunctionComponent = () => {
 
     eventService.notify({
       type: 'warning',
-      message: 'No Camel domain detected. Redirecting to back to jmx.',
+      message: 'No Camel domain detected. Redirecting to back to JMX.',
     })
   }
 
