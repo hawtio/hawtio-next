@@ -93,7 +93,7 @@ export const Contexts: React.FunctionComponent = () => {
     )
   }
 
-  /**
+  /*
    * Populate the column headers and data using the positions
    * of the headers in the array to ensure the correct locations
    * of the data
