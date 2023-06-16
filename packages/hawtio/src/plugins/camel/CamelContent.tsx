@@ -30,7 +30,7 @@ import { BrowseMessages } from './endpoints/BrowseMessages'
 import { EndpointStats } from './endpoints/EndpointsStats'
 import { SendMessage } from './endpoints/SendMessage'
 import { Exchanges } from './exchanges'
-import { log } from './globals'
+import { log, pluginPath } from './globals'
 import { Profile } from './profile/Profile'
 import { RestServices } from './rest-services/RestServices'
 import { RouteDiagram } from './route-diagram/RouteDiagram'
@@ -164,7 +164,7 @@ export const CamelContent: React.FunctionComponent = () => {
     <Nav aria-label='Camel Nav' variant='tertiary'>
       <NavList>
         {navItems.map(nav => (
-          <NavItem key={nav.id} isActive={pathname === nav.id}>
+          <NavItem key={nav.id} isActive={pathname === `${pluginPath}/${nav.id}`}>
             <NavLink to={{ pathname: nav.id, search }}>{nav.title}</NavLink>
           </NavItem>
         ))}
