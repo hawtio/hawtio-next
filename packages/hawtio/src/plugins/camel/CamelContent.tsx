@@ -23,7 +23,7 @@ import './CamelContent.css'
 import * as ccs from './camel-content-service'
 import { Contexts } from './contexts'
 import { ContextToolbar } from './contexts/ContextToolbar'
-import { ContextAttributes, contextsService } from './contexts/contexts-service'
+import { ContextState, contextsService } from './contexts/contexts-service'
 import { Debug } from './debug'
 import { Endpoints } from './endpoints'
 import { BrowseMessages } from './endpoints/BrowseMessages'
@@ -43,7 +43,7 @@ import { TypeConverters } from './type-converters'
 export const CamelContent: React.FunctionComponent = () => {
   const ctx = useRouteDiagramContext()
   const { selectedNode } = ctx
-  const [ctxAttributes, setCtxAttributes] = useState<ContextAttributes | null>(null)
+  const [ctxAttributes, setCtxAttributes] = useState<ContextState | null>(null)
   const { pathname, search } = useLocation()
   const navigate = useNavigate()
 
@@ -63,8 +63,9 @@ export const CamelContent: React.FunctionComponent = () => {
       contextsService.register({ type: 'read', mbean: objectName }, (response: IResponse) => {
         log.debug('Scheduler - Contexts:', response.value)
 
-        /* Replace the context in the existing set with the new one */
-        const newCtxAttr = contextsService.createContextAttributes(name, objectName, response.value as AttributeValues)
+        // Replace the context in the existing set with the new one
+        const attrs = response.value as AttributeValues
+        const newCtxAttr = contextsService.toContextState(name, objectName, attrs)
 
         setCtxAttributes(newCtxAttr)
       })

@@ -3,7 +3,10 @@ import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import { IRequest, IResponseFn } from 'jolokia.js'
 import { log } from '../globals'
 
-export type ContextAttributes = {
+export const CONTEXT_STATE_STARTED = 'Started'
+export const CONTEXT_STATE_SUSPENDED = 'Suspended'
+
+export type ContextState = {
   context: string
   mbean: string
   state: string
@@ -12,35 +15,31 @@ export type ContextAttributes = {
 class ContextsService {
   private handles: number[] = []
 
-  createContextAttributes(context: string, mbean: string, attributes: AttributeValues): ContextAttributes {
-    const attrs: ContextAttributes = {
+  toContextState(context: string, mbean: string, attributes: AttributeValues): ContextState {
+    return {
       context: context,
       mbean: mbean,
-      state: attributes ? (attributes['State'] as string) : 'Not Found',
+      state: (attributes?.['State'] as string) ?? 'Not Found',
     }
-
-    return attrs
   }
 
-  async getContext(ctxNode: MBeanNode | null): Promise<ContextAttributes | null> {
-    if (!ctxNode || !ctxNode.objectName) return null
+  async getContext(contextNode: MBeanNode): Promise<ContextState | null> {
+    if (!contextNode.objectName) return null
 
-    const attributes = await jolokiaService.readAttributes(ctxNode.objectName)
-    return this.createContextAttributes(ctxNode.name, ctxNode.objectName, attributes)
+    const attributes = await jolokiaService.readAttributes(contextNode.objectName)
+    return this.toContextState(contextNode.name, contextNode.objectName, attributes)
   }
 
-  async getContexts(ctxsNode: MBeanNode | null): Promise<ContextAttributes[]> {
-    if (!ctxsNode) return []
+  async getContexts(contextsNode: MBeanNode): Promise<ContextState[]> {
+    const contexts = contextsNode.getChildren()
+    if (contexts.length === 0) return []
 
-    const children = ctxsNode.getChildren()
-    if (children.length === 0) return []
+    const ctxAttributes: ContextState[] = []
+    for (const ctx of contexts) {
+      if (!ctx.objectName) continue
 
-    const ctxAttributes: ContextAttributes[] = []
-    for (const child of children) {
-      if (!child.objectName) continue
-
-      const attributes: AttributeValues = await jolokiaService.readAttributes(child.objectName as string)
-      ctxAttributes.push(this.createContextAttributes(child.name, child.objectName, attributes))
+      const attributes: AttributeValues = await jolokiaService.readAttributes(ctx.objectName)
+      ctxAttributes.push(this.toContextState(ctx.name, ctx.objectName, attributes))
     }
 
     return ctxAttributes
@@ -58,19 +57,19 @@ class ContextsService {
     this.handles = []
   }
 
-  startContext(context: ContextAttributes): Promise<unknown> {
-    return this.executeOperationOnContext('start()', context)
+  async startContext(context: ContextState) {
+    await this.executeOperation('start()', context)
   }
 
-  suspendContext(context: ContextAttributes): Promise<unknown> {
-    return this.executeOperationOnContext('suspend()', context)
+  async suspendContext(context: ContextState) {
+    await this.executeOperation('suspend()', context)
   }
 
-  stopContext(context: ContextAttributes): Promise<unknown> {
-    return this.executeOperationOnContext('stop()', context)
+  async stopContext(context: ContextState) {
+    await this.executeOperation('stop()', context)
   }
 
-  executeOperationOnContext(operation: string, context: ContextAttributes): Promise<unknown> {
+  private executeOperation(operation: string, context: ContextState): Promise<unknown> {
     return jolokiaService.execute(context.mbean, operation)
   }
 }

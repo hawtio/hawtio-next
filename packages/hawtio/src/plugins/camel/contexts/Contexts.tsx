@@ -8,17 +8,17 @@ import { IResponse } from 'jolokia.js'
 import React, { useContext, useEffect, useState } from 'react'
 import { log } from '../globals'
 import { ContextToolbar } from './ContextToolbar'
-import { ContextAttributes, contextsService } from './contexts-service'
+import { ContextState, contextsService } from './contexts-service'
 
 export const Contexts: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
   const [isReading, setIsReading] = useState(true)
 
-  const emptyCtxs: ContextAttributes[] = []
+  const emptyCtxs: ContextState[] = []
   const [contexts, setContexts] = useState(emptyCtxs)
-  const [selectedCtx, setSelectedCtx] = useState<ContextAttributes[]>([])
+  const [selectedCtx, setSelectedCtx] = useState<ContextState[]>([])
 
-  const onSelectContext = (ctx: ContextAttributes, isSelecting: boolean) => {
+  const onSelectContext = (ctx: ContextState, isSelecting: boolean) => {
     const otherSelectedCtx = selectedCtx.filter(c => c.context !== ctx.context)
     setSelectedCtx(isSelecting ? [...otherSelectedCtx, ctx] : [...otherSelectedCtx])
   }
@@ -27,11 +27,13 @@ export const Contexts: React.FunctionComponent = () => {
     setSelectedCtx(isSelecting ? [...contexts] : [])
   }
 
-  const isContextSelected = (ctx: ContextAttributes) => {
+  const isContextSelected = (ctx: ContextState) => {
     return selectedCtx.includes(ctx)
   }
 
   useEffect(() => {
+    if (!selectedNode) return
+
     setIsReading(true)
     const readAttributes = async () => {
       try {
@@ -51,19 +53,18 @@ export const Contexts: React.FunctionComponent = () => {
   useEffect(() => {
     if (!contexts || contexts.length === 0) return
 
+    // TODO: we should not invoke setContexts separately from multiple scheduler.
+    // It should cause a bug of overwriting the other updates when we have multiple contexts.
     for (const [idx, ctx] of contexts.entries()) {
       const mbean = ctx.mbean
       contextsService.register({ type: 'read', mbean }, (response: IResponse) => {
         log.debug('Scheduler - Contexts:', response.value)
 
-        /* Replace the context in the existing set with the new one */
-        const newCtx: ContextAttributes = contextsService.createContextAttributes(
-          ctx.context,
-          mbean,
-          response.value as AttributeValues,
-        )
+        // Replace the context in the existing set with the new one
+        const attrs = response.value as AttributeValues
+        const newCtx = contextsService.toContextState(ctx.context, mbean, attrs)
 
-        /* Replace the context in the contexts array */
+        // Replace the context in the contexts array
         const newContexts = [...contexts]
         newContexts.splice(idx, 1, newCtx)
         setContexts(newContexts)
@@ -126,7 +127,7 @@ export const Contexts: React.FunctionComponent = () => {
    * Callback the is fired after the delete button has been
    * clicked in the toolbar
    */
-  const handleDeletedContexts = (deleted: ContextAttributes[]) => {
+  const handleDeletedContexts = (deleted: ContextState[]) => {
     const ctxs = contexts.filter(ctx => !deleted.includes(ctx))
     setContexts(ctxs)
   }

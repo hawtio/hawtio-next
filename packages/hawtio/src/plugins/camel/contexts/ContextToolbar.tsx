@@ -14,11 +14,11 @@ import {
 } from '@patternfly/react-core'
 import { AsleepIcon, PlayIcon, Remove2Icon } from '@patternfly/react-icons'
 import React, { useState } from 'react'
-import { ContextAttributes, contextsService } from './contexts-service'
+import { CONTEXT_STATE_STARTED, CONTEXT_STATE_SUSPENDED, ContextState, contextsService } from './contexts-service'
 
 type ContextToolbarProps = {
-  contexts: ContextAttributes[]
-  deleteCallback: (contexts: ContextAttributes[]) => void
+  contexts: ContextState[]
+  deleteCallback: (contexts: ContextState[]) => void
 }
 
 export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = ({ contexts, deleteCallback }) => {
@@ -33,59 +33,55 @@ export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = ({ c
   const isStartEnabled = (): boolean => {
     if (contexts.length === 0) return false
 
-    return contexts.some(ctx => {
-      return ctx.state === 'Suspended'
-    })
+    return contexts.some(ctx => ctx.state === CONTEXT_STATE_SUSPENDED)
   }
 
   const onStartClicked = () => {
     contexts
-      .filter(ctx => {
-        return ctx.state === 'Suspended'
-      })
-      .forEach(ctx => {
+      .filter(ctx => ctx.state === CONTEXT_STATE_SUSPENDED)
+      .forEach(ctx =>
         contextsService
           .startContext(ctx)
-          .then(() => {
+          .then(() =>
             eventService.notify({
               type: 'success',
               message: 'Camel context start requested',
-            })
-          })
-          .catch((error: Error) => {
+            }),
+          )
+          .catch(error =>
             eventService.notify({
               type: 'danger',
-              message: error.message,
-            })
-          })
-      })
+              message: `Camel context start failed: ${error}`,
+            }),
+          ),
+      )
   }
 
   const isSuspendEnabled = (): boolean => {
     if (contexts.length === 0) return false
 
-    return contexts.some(ctx => {
-      return ctx.state === 'Started'
-    })
+    return contexts.some(ctx => ctx.state === CONTEXT_STATE_STARTED)
   }
 
   const onSuspendClicked = () => {
-    for (const ctx of contexts) {
-      if (ctx.state !== 'Started') continue
-
-      try {
-        contextsService.suspendContext(ctx)
-        eventService.notify({
-          type: 'success',
-          message: 'Camel context suspension requested',
-        })
-      } catch (error) {
-        eventService.notify({
-          type: 'danger',
-          message: error as string,
-        })
-      }
-    }
+    contexts
+      .filter(ctx => ctx.state === CONTEXT_STATE_STARTED)
+      .forEach(ctx =>
+        contextsService
+          .suspendContext(ctx)
+          .then(() =>
+            eventService.notify({
+              type: 'success',
+              message: 'Camel context suspension requested',
+            }),
+          )
+          .catch(error =>
+            eventService.notify({
+              type: 'danger',
+              message: `Camel context suspension failed: ${error}`,
+            }),
+          ),
+      )
   }
 
   const isDeleteEnabled = (): boolean => {
@@ -106,6 +102,8 @@ export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = ({ c
   }
 
   const deleteContexts = async () => {
+    // Use for-of loop to make sure the callback and tree refresh are called after
+    // all the deletion is complete
     for (const ctx of contexts) {
       try {
         await contextsService.stopContext(ctx)
@@ -116,7 +114,7 @@ export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = ({ c
       } catch (error) {
         eventService.notify({
           type: 'danger',
-          message: error as string,
+          message: `Camel context deletion failed: ${error}`,
         })
       }
     }
