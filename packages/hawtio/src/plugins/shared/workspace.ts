@@ -1,8 +1,8 @@
 import { eventService, Logger } from '@hawtiosrc/core'
 import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
+import { isArray } from '@hawtiosrc/util/objects'
 import { isString } from '@hawtiosrc/util/strings'
 import { IErrorResponse, IJmxOperation, IJmxOperations, IResponse, ISimpleOptions } from 'jolokia.js'
-import { isArray } from '@hawtiosrc/util/objects'
 import { is, object } from 'superstruct'
 import { HAWTIO_REGISTRY_MBEAN, HAWTIO_TREE_WATCHER_MBEAN, pluginName } from './globals'
 import { MBeanNode, MBeanTree, OptimisedJmxDomain, OptimisedJmxDomains, OptimisedJmxMBean } from './tree'
@@ -46,13 +46,10 @@ class Workspace {
     return tree
   }
 
-  refreshTree() {
-    this.tree = new Promise(resolve => {
-      this.loadTree().then(tree => {
-        resolve(tree)
-        eventService.refresh()
-      })
-    })
+  async refreshTree() {
+    this.tree = this.loadTree()
+    await this.tree
+    eventService.refresh()
   }
 
   private maybeUpdatePlugins(response: IResponse): void {
