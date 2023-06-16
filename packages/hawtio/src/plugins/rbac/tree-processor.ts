@@ -29,6 +29,16 @@ import { rbacService } from './rbac-service'
 export const rbacTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
   log.debug('Processing tree:', tree)
   const aclMBean = await rbacService.getACLMBean()
+
+  if (!aclMBean || aclMBean.length === 0) {
+    /*
+     * Some implementations of jolokia provision, eg. running with java -javaagent
+     * do not provide an acl mbean or implement server-side RBAC so need to skip
+     */
+    log.debug('No acl mbean available. RBAC decoration of JMX tree skipped')
+    return
+  }
+
   const mbeans = tree.flatten()
   const listMethod = await jolokiaService.getListMethod()
   switch (listMethod) {

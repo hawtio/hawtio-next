@@ -36,17 +36,22 @@ class Workspace {
         log.debug('Error fetching JMX tree:', xhr)
       },
     }
-    const value = await jolokiaService.list(options)
+    try {
+      const value = await jolokiaService.list(options)
 
-    const domains = this.unwindResponseWithRBACCache(value)
-    log.debug('JMX tree loaded:', domains)
+      const domains = this.unwindResponseWithRBACCache(value)
+      log.debug('JMX tree loaded:', domains)
 
-    const tree = await MBeanTree.createFromDomains(pluginName, domains)
+      const tree = await MBeanTree.createFromDomains(pluginName, domains)
 
-    this.maybeMonitorPlugins()
-    this.maybeMonitorTree()
+      this.maybeMonitorPlugins()
+      this.maybeMonitorTree()
 
-    return tree
+      return tree
+    } catch (response) {
+      log.error('A request to list the JMX tree failed: ' + response)
+      return MBeanTree.createEmpty(pluginName)
+    }
   }
 
   /**
