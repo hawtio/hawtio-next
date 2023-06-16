@@ -4,18 +4,21 @@ import { isArray } from '@hawtiosrc/util/objects'
 import { isString } from '@hawtiosrc/util/strings'
 import { IErrorResponse, IJmxOperation, IJmxOperations, IResponse, ISimpleOptions } from 'jolokia.js'
 import { is, object } from 'superstruct'
-import { HAWTIO_REGISTRY_MBEAN, HAWTIO_TREE_WATCHER_MBEAN, pluginName } from './globals'
+import { pluginName } from './globals'
 import { MBeanNode, MBeanTree, OptimisedJmxDomain, OptimisedJmxDomains, OptimisedJmxMBean } from './tree'
 
 const log = Logger.get(`${pluginName}-workspace`)
+
+const HAWTIO_REGISTRY_MBEAN = 'hawtio:type=Registry'
+const HAWTIO_TREE_WATCHER_MBEAN = 'hawtio:type=TreeWatcher'
 
 export type MBeanCache = { [propertyList: string]: string }
 
 class Workspace {
   private tree: Promise<MBeanTree>
-  private pluginRegisterHandle?: number
+  private pluginRegisterHandle?: Promise<number>
   private pluginUpdateCounter?: number
-  private treeWatchRegisterHandle?: number
+  private treeWatchRegisterHandle?: Promise<number>
   private treeWatcherCounter?: number
 
   constructor() {
@@ -38,98 +41,12 @@ class Workspace {
     const domains = this.unwindResponseWithRBACCache(value)
     log.debug('JMX tree loaded:', domains)
 
-    const tree = MBeanTree.createFromDomains(pluginName, domains)
+    const tree = await MBeanTree.createFromDomains(pluginName, domains)
 
     this.maybeMonitorPlugins()
     this.maybeMonitorTree()
 
     return tree
-  }
-
-  async refreshTree() {
-    this.tree = this.loadTree()
-    await this.tree
-    eventService.refresh()
-  }
-
-  private maybeUpdatePlugins(response: IResponse): void {
-    const counter = response.value
-    if (!this.pluginUpdateCounter) {
-      this.pluginUpdateCounter = counter as number
-      return
-    }
-    if (this.pluginUpdateCounter !== response.value) {
-      if (jolokiaService.loadAutoRefresh()) {
-        window.location.reload()
-      }
-    }
-  }
-
-  private maybeReloadTree(response: IResponse): void {
-    const counter = response.value
-    if (!this.treeWatcherCounter) {
-      this.treeWatcherCounter = counter as number
-      return
-    }
-    if (this.treeWatcherCounter !== counter) {
-      this.treeWatcherCounter = counter as number
-      this.refreshTree()
-    }
-  }
-
-  /**
-   * If the Registry plugin is available then register
-   * a callback to refresh the active app plugins in use
-   */
-  private async maybeMonitorPlugins() {
-    const hasRegistry = await this.treeContainsDomainAndProperties('hawtio', { type: 'Registry' })
-
-    if (hasRegistry) {
-      if (!this.pluginRegisterHandle) {
-        this.pluginRegisterHandle = await jolokiaService.register(
-          {
-            type: 'read',
-            mbean: HAWTIO_REGISTRY_MBEAN,
-            attribute: 'UpdateCounter',
-          },
-          (response: IResponse) => this.maybeUpdatePlugins(response),
-        )
-      }
-    } else {
-      if (this.pluginRegisterHandle) {
-        await jolokiaService.unregister(this.pluginRegisterHandle)
-        this.pluginRegisterHandle = undefined
-        this.pluginUpdateCounter = undefined
-      }
-    }
-  }
-
-  /**
-   * If the TreeWatcher plugin is available then register
-   * a callback to reload the tree in order to refresh
-   * the changes.
-   */
-  private async maybeMonitorTree() {
-    const hasTreeWatcher = await this.treeContainsDomainAndProperties('hawtio', { type: 'TreeWatcher' })
-
-    if (hasTreeWatcher) {
-      if (!this.treeWatchRegisterHandle) {
-        this.treeWatchRegisterHandle = await jolokiaService.register(
-          {
-            type: 'read',
-            mbean: HAWTIO_TREE_WATCHER_MBEAN,
-            attribute: 'Counter',
-          },
-          (response: IResponse) => this.maybeReloadTree(response),
-        )
-      }
-    } else {
-      if (this.treeWatchRegisterHandle) {
-        jolokiaService.unregister(this.treeWatchRegisterHandle)
-        this.treeWatchRegisterHandle = undefined
-        this.treeWatcherCounter = undefined
-      }
-    }
   }
 
   /**
@@ -153,6 +70,105 @@ class Workspace {
       return value.domains as OptimisedJmxDomains
     }
     return value as OptimisedJmxDomains
+  }
+
+  /**
+   * If the Registry plugin is available then register
+   * a callback to refresh the active app plugins in use.
+   */
+  private async maybeMonitorPlugins() {
+    const hasRegistry = await this.treeContainsDomainAndProperties('hawtio', { type: 'Registry' })
+
+    if (hasRegistry) {
+      if (!this.pluginRegisterHandle) {
+        this.pluginRegisterHandle = jolokiaService.register(
+          {
+            type: 'read',
+            mbean: HAWTIO_REGISTRY_MBEAN,
+            attribute: 'UpdateCounter',
+          },
+          (response: IResponse) => this.maybeUpdatePlugins(response),
+        )
+      }
+    } else {
+      if (this.pluginRegisterHandle) {
+        const handle = await this.pluginRegisterHandle
+        await jolokiaService.unregister(handle)
+        this.pluginRegisterHandle = undefined
+        this.pluginUpdateCounter = undefined
+      }
+    }
+  }
+
+  /**
+   * If the TreeWatcher plugin is available then register
+   * a callback to reload the tree in order to refresh
+   * the changes.
+   */
+  private async maybeMonitorTree() {
+    const hasTreeWatcher = await this.treeContainsDomainAndProperties('hawtio', { type: 'TreeWatcher' })
+
+    if (hasTreeWatcher) {
+      if (!this.treeWatchRegisterHandle) {
+        this.treeWatchRegisterHandle = jolokiaService.register(
+          {
+            type: 'read',
+            mbean: HAWTIO_TREE_WATCHER_MBEAN,
+            attribute: 'Counter',
+          },
+          (response: IResponse) => this.maybeReloadTree(response),
+        )
+      }
+    } else {
+      if (this.treeWatchRegisterHandle) {
+        const handle = await this.treeWatchRegisterHandle
+        jolokiaService.unregister(handle)
+        this.treeWatchRegisterHandle = undefined
+        this.treeWatcherCounter = undefined
+      }
+    }
+  }
+
+  private maybeUpdatePlugins(response: IResponse) {
+    const counter = response.value as number
+    if (!this.pluginUpdateCounter) {
+      // Initial counter setting
+      this.pluginUpdateCounter = counter
+      return
+    }
+    if (this.pluginUpdateCounter === counter) {
+      return
+    }
+
+    // Refresh plugins by reloading page
+    log.debug('Plugin update counter changed:', this.pluginUpdateCounter, '->', counter)
+    if (jolokiaService.loadAutoRefresh()) {
+      log.debug('Update plugins')
+      window.location.reload()
+    }
+  }
+
+  private maybeReloadTree(response: IResponse) {
+    const counter = response.value as number
+    if (!this.treeWatcherCounter) {
+      // Initial counter setting
+      this.treeWatcherCounter = counter
+      return
+    }
+    if (this.treeWatcherCounter === counter) {
+      return
+    }
+    // Refresh plugins by reloading page
+    log.debug('Tree watcher counter changed:', this.treeWatcherCounter, '->', counter)
+    this.treeWatcherCounter = counter as number
+    log.debug('Refresh tree')
+    this.refreshTree()
+  }
+
+  async refreshTree() {
+    this.tree = this.loadTree()
+    await this.tree
+    eventService.refresh()
   }
 
   async getTree(): Promise<MBeanTree> {
@@ -199,7 +215,7 @@ class Workspace {
 
     if (properties) {
       const domainAndChildren: MBeanNode[] = [domain]
-      domainAndChildren.push(...(domain.children || []))
+      domainAndChildren.push(...(domain.children ?? []))
       const checkProperties = (node: MBeanNode) => {
         if (!this.matchesProperties(node, properties)) {
           if (node.children && node.children.length > 0) {
