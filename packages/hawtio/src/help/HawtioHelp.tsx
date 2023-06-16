@@ -31,7 +31,7 @@ export const HawtioHelp: React.FunctionComponent = () => {
           <Nav aria-label='Nav' variant='tertiary'>
             <NavList>
               {helpRegistry.getHelps().map(help => (
-                <NavItem key={help.id} isActive={location.pathname === help.id}>
+                <NavItem key={help.id} isActive={location.pathname === `/help/${help.id}`}>
                   <NavLink to={help.id}>{help.title}</NavLink>
                 </NavItem>
               ))}

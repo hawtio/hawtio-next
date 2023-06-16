@@ -33,7 +33,7 @@ export const HawtioPreferences: React.FunctionComponent = () => {
           <Nav aria-label='Nav' variant='tertiary'>
             <NavList>
               {preferencesRegistry.getPreferences().map(prefs => (
-                <NavItem key={prefs.id} isActive={location.pathname === prefs.id}>
+                <NavItem key={prefs.id} isActive={location.pathname === `/preferences/${prefs.id}`}>
                   <NavLink to={prefs.id}>{prefs.title}</NavLink>
                 </NavItem>
               ))}
