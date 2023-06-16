@@ -20,6 +20,7 @@ import React, { useContext } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import './JmxContent.css'
 import { MBeanTreeContext } from './context'
+import { pluginPath } from '@hawtiosrc/plugins/jmx/globals'
 
 export const JmxContent: React.FunctionComponent = () => {
   const { selectedNode } = useContext(MBeanTreeContext)
@@ -64,7 +65,7 @@ export const JmxContent: React.FunctionComponent = () => {
     <Nav aria-label='MBean Nav' variant='tertiary'>
       <NavList>
         {navItems.map(nav => (
-          <NavItem key={nav.id} isActive={pathname === nav.id}>
+          <NavItem key={nav.id} isActive={pathname === `${pluginPath}/${nav.id}`}>
             <NavLink to={{ pathname: nav.id, search }}>{nav.title}</NavLink>
           </NavItem>
         ))}
