@@ -4,7 +4,7 @@ import { getCookie } from '@hawtiosrc/util/cookies'
 import {
   escapeMBeanPath,
   onBulkSuccess,
-  onListSuccess,
+  onListSuccessAndError,
   onSimpleSuccess,
   onSimpleSuccessAndError,
   onSuccess,
@@ -14,11 +14,13 @@ import { parseBoolean } from '@hawtiosrc/util/strings'
 import Jolokia, {
   IAjaxErrorFn,
   IErrorResponse,
+  IErrorResponseFn,
   IJmxDomain,
   IJmxDomains,
   IJmxMBean,
   IJolokia,
   IListOptions,
+  IListResponseFn,
   IOptions,
   IRequest,
   IResponse,
@@ -291,25 +293,30 @@ class JolokiaService implements IJolokiaService {
    *
    * @param jolokia Jolokia instance to use
    */
-  private async checkListOptimisation(jolokia: IJolokia): Promise<void> {
+  protected async checkListOptimisation(jolokia: IJolokia): Promise<void> {
     log.debug('Check if we can call optimised jolokia.list() operation')
     return new Promise<void>(resolve => {
-      jolokia.list(
-        escapeMBeanPath(this.config.mbean),
-        onListSuccess((value: IJmxDomains | IJmxDomain | IJmxMBean) => {
-          // check if the MBean exists by testing whether the returned value has
-          // the 'op' property
-          if (isObject(value?.op)) {
-            this.config.method = JolokiaListMethod.OPTIMISED
-          } else {
-            // we could get 403 error, mark the method as special case,
-            // which equals LIST=GENERAL in practice
-            this.config.method = JolokiaListMethod.UNDETERMINED
-          }
-          log.debug('Jolokia list method:', JolokiaListMethod[this.config.method])
-          resolve()
-        }),
-      )
+      const successFn: IListResponseFn = (value: IJmxDomains | IJmxDomain | IJmxMBean) => {
+        // check if the MBean exists by testing whether the returned value has
+        // the 'op' property
+        if (isObject(value?.op)) {
+          this.config.method = JolokiaListMethod.OPTIMISED
+        } else {
+          // we could get 403 error, mark the method as special case,
+          // which equals LIST=GENERAL in practice
+          this.config.method = JolokiaListMethod.UNDETERMINED
+        }
+        log.debug('Jolokia list method:', JolokiaListMethod[this.config.method])
+        resolve()
+      }
+
+      const errorFn: IErrorResponseFn = (response: IErrorResponse) => {
+        log.debug('Operation "list" failed due to:', response.error)
+        log.debug('Optimisation on jolokia.list() not available')
+        resolve() // optimisation not happening
+      }
+
+      jolokia.list(escapeMBeanPath(this.config.mbean), onListSuccessAndError(successFn, errorFn))
     })
   }
 
@@ -334,7 +341,8 @@ class JolokiaService implements IJolokiaService {
   async list(options: ISimpleOptions): Promise<unknown> {
     const jolokia = await this.jolokia
     const { method, mbean } = this.config
-    return new Promise<unknown>(resolve => {
+
+    return new Promise<unknown>((resolve, reject) => {
       switch (method) {
         case JolokiaListMethod.OPTIMISED:
           log.debug('Invoke Jolokia list MBean in optimised mode')
@@ -351,7 +359,11 @@ class JolokiaService implements IJolokiaService {
           log.debug('Invoke Jolokia list MBean in default mode')
           jolokia.list(
             null,
-            onListSuccess(value => resolve(value), options),
+            onListSuccessAndError(
+              value => resolve(value),
+              response => reject(response),
+              options,
+            ),
           )
       }
     })
@@ -547,3 +559,8 @@ class DummyJolokia implements IJolokia {
 /* eslint-enable @typescript-eslint/no-unused-vars */
 
 export const jolokiaService = new JolokiaService()
+
+export const __testing_jolokia_service__ = {
+  JolokiaService,
+  DummyJolokia,
+}

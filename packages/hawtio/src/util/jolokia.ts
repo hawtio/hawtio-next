@@ -39,8 +39,12 @@ export function onSearchSuccess(successFn: ISearchResponseFn, options: ISearchOp
   return onGenericSuccess(successFn, options)
 }
 
-export function onListSuccess(successFn: IListResponseFn, options: IListOptions = {}): IListOptions {
-  return onGenericSuccess(successFn, options)
+export function onListSuccessAndError(
+  successFn: IListResponseFn,
+  errorFn: IErrorResponseFn,
+  options: IListOptions = {},
+): IListOptions {
+  return onGenericSuccessAndError(successFn, errorFn, options)
 }
 
 export function onVersionSuccess(successFn: IVersionResponseFn, options: IVersionOptions = {}): IVersionOptions {
