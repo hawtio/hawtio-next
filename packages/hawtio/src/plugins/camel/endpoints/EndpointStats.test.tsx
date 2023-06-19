@@ -10,8 +10,8 @@ function getMockedStatistics(): EndpointStatistics[] {
     { url: 'urlA', routeId: 'ID0', static: false, dynamic: false, hits: 1, direction: 'in1', index: 0 },
     { url: 'urlB', routeId: 'ID1', static: false, dynamic: false, hits: 2, direction: 'in2', index: 1 },
     { url: 'urlC', routeId: 'ID2', static: false, dynamic: false, hits: 3, direction: 'out1', index: 2 },
-    { url: 'urlD', routeId: 'ID3', static: false, dynamic: false, hits: 4, direction: 'out2', index: 3 },
-    { url: 'urlE', routeId: 'ID4', static: false, dynamic: false, hits: 5, direction: 'out3', index: 4 },
+    { url: 'urlD', routeId: 'ID3', static: true, dynamic: false, hits: 4, direction: 'out2', index: 3 },
+    { url: 'urlE', routeId: 'ID4', static: true, dynamic: true, hits: 5, direction: 'out3', index: 4 },
   ]
 }
 
@@ -83,5 +83,27 @@ describe('EndpointStats.tsx', () => {
 
     expect(screen.queryByText('urlA')).not.toBeInTheDocument()
     expect(screen.getByText(statistic.routeId)).toBeInTheDocument()
+  })
+
+  test('Statistics can be sorted', async () => {
+    renderWithContext()
+    const testSortingHeaders = async (header: string, index: number, expected: string) => {
+      const element = within(screen.getByTestId(header)).getByRole('button')
+
+      await userEvent.click(element)
+      //for desc ordering it's necessary to click again
+      await userEvent.click(element)
+      expect(within(screen.getByTestId('row' + index)).getAllByText(expected)[0]).toBeInTheDocument()
+    }
+
+    await waitFor(() => {
+      expect(screen.getByText('urlA')).toBeInTheDocument()
+    })
+    await testSortingHeaders('url-header', 0, 'urlE')
+    await testSortingHeaders('routeId-header', 4, 'ID0')
+    await testSortingHeaders('direction-header', 0, 'out3')
+    await testSortingHeaders('hits-header', 0, '5')
+    await testSortingHeaders('dynamic-header', 0, 'true')
+    await testSortingHeaders('static-header', 0, 'true')
   })
 })
