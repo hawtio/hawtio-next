@@ -98,8 +98,9 @@ module.exports = {
   },
   devServer: {
     setupMiddlewares: (middlewares, devServer) => {
-      // Redirect / to /hawtio/
+      // Redirect / or /hawtio to /hawtio/
       devServer.app.get('/', (_, res) => res.redirect('/hawtio/'))
+      devServer.app.get('/hawtio$', (_, res) => res.redirect('/hawtio/'))
 
       const username = 'developer'
       const login = true
