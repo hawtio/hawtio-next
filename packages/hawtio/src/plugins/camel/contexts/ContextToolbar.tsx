@@ -22,12 +22,12 @@ type ContextToolbarProps = {
 }
 
 export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = ({ contexts, deleteCallback }) => {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
   const onDropdownToggle = (isOpen: boolean) => {
-    setIsOpen(isOpen)
+    setIsDropdownOpen(isOpen)
   }
 
   const isStartEnabled = (): boolean => {
@@ -93,7 +93,7 @@ export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = ({ c
   }
 
   const onDeleteClicked = () => {
-    setIsOpen(false)
+    setIsDropdownOpen(false)
     handleConfirmDeleteToggle()
   }
 
@@ -196,14 +196,14 @@ export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = ({ c
 
   return (
     <React.Fragment>
-      <Toolbar id='toolbar-items'>
+      <Toolbar id='camel-contexts-toolbar'>
         <ToolbarContent>
           {toolbarButtons}
-          <ToolbarItem>
+          <ToolbarItem id='camel-contexts-toolbar-item-dropdown'>
             <Dropdown
               autoFocus={true}
-              toggle={<KebabToggle id='toggle-kebab' onToggle={onDropdownToggle} />}
-              isOpen={isOpen}
+              toggle={<KebabToggle id='camel-contexts-toolbar-item-dropdown-toggle' onToggle={onDropdownToggle} />}
+              isOpen={isDropdownOpen}
               dropdownItems={dropdownItems}
               isPlain
             />

@@ -86,7 +86,7 @@ export const JmxContent: React.FunctionComponent = () => {
         </PageSection>
         <PageNavigation>{mbeanNav}</PageNavigation>
       </PageGroup>
-      <PageSection className='jmx-main'>
+      <PageSection id='jmx-content-main'>
         <React.Fragment>
           <Routes>
             {mbeanRoutes}
