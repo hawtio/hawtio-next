@@ -67,12 +67,12 @@ export enum JolokiaListMethod {
  */
 const OPTIMISED_JOLOKIA_LIST_MBEAN = 'hawtio:type=security,name=RBACRegistry'
 
-export interface JolokiaConfig {
+export type JolokiaConfig = {
   method: JolokiaListMethod
   mbean: string
 }
 
-export interface JolokiaStoredOptions {
+export type JolokiaStoredOptions = {
   maxDepth: number
   maxCollectionSize: number
 }
