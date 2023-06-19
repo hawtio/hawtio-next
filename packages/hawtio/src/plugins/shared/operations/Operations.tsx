@@ -10,14 +10,33 @@ import './Operations.css'
 export const Operations: React.FunctionComponent = () => {
   const { selectedNode } = useContext(PluginNodeSelectionContext)
 
+  const OperationList = React.useMemo(
+    () => {
+      // No other way around it than to check it twice
+      if (!selectedNode || !selectedNode.objectName || !selectedNode.mbean) {
+        return null
+      }
+
+      const operations = createOperations(selectedNode.objectName, selectedNode.mbean.op)
+
+      return (
+        <DataList id='jmx-operation-list' aria-label='operation list' isCompact>
+          {operations.map(op => (
+            <OperationForm key={op.name} name={op.name} operation={op} />
+          ))}
+        </DataList>
+      )
+    },
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [selectedNode?.objectName],
+  )
+
   if (!selectedNode || !selectedNode.objectName || !selectedNode.mbean) {
     return null
   }
 
-  const objectName = selectedNode.objectName
-  const mbean = selectedNode.mbean
-
-  if (isEmpty(mbean.op)) {
+  if (isEmpty(selectedNode.mbean.op)) {
     return (
       <Card>
         <CardBody>
@@ -29,16 +48,6 @@ export const Operations: React.FunctionComponent = () => {
     )
   }
 
-  const operations = createOperations(objectName, mbean.op)
-
-  const OperationList = () => (
-    <DataList id='jmx-operation-list' aria-label='operation list' isCompact>
-      {operations.map(op => (
-        <OperationForm key={op.name} name={op.name} operation={op} />
-      ))}
-    </DataList>
-  )
-
   return (
     <Card isFullHeight>
       <CardBody>
@@ -46,9 +55,7 @@ export const Operations: React.FunctionComponent = () => {
           This MBean supports the following JMX operations. Expand an item in the list to invoke that operation.
         </Text>
       </CardBody>
-      <CardBody>
-        <OperationList />
-      </CardBody>
+      <CardBody>{OperationList}</CardBody>
     </Card>
   )
 }

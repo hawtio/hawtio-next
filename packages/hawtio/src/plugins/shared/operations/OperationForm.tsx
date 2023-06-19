@@ -1,5 +1,7 @@
 import {
   ActionGroup,
+  Alert,
+  AlertGroup,
   Button,
   Checkbox,
   ClipboardCopy,
@@ -21,7 +23,7 @@ import {
   TextInput,
   Title,
 } from '@patternfly/react-core'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useMemo, useState } from 'react'
 import { Operation } from './operation'
 import { operationService } from './operation-service'
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/selectionNodeContext'
@@ -170,12 +172,7 @@ export const OperationForm: React.FunctionComponent<OperationFormProps> = props 
   const { name, operation } = props
   const [isExpanded, setIsExpanded] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-
-  if (!selectedNode || !selectedNode.objectName || !selectedNode.mbean) {
-    return null
-  }
-
-  const { objectName } = selectedNode
+  const [currentAlerts, setCurrentAlerts] = useState<React.ReactNode[]>([])
 
   const handleToggle = () => {
     setIsExpanded(!isExpanded)
@@ -185,13 +182,56 @@ export const OperationForm: React.FunctionComponent<OperationFormProps> = props 
     setIsDropdownOpen(!isDropdownOpen)
   }
 
-  const copyMethodName = () => {
-    // TODO: impl
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text)
+    setCurrentAlerts(prev => [
+      ...prev,
+      <Alert key={`{alert-${prev.length + 1}`} isLiveRegion timeout={2000} title='Copied to clipboard' />,
+    ])
   }
 
-  const copyJolokiaURL = () => {
-    // TODO: impl
+  const copyMethodName = () => {
+    copyToClipboard(operation.readableName)
   }
+
+  const copyJolokiaURL = async () => {
+    copyToClipboard(await operationService.getJolokiaUrl(objectName, name))
+  }
+
+  const OperationActions = useMemo(
+    () => (
+      <DataListAction
+        id={`operation-actions-${name}`}
+        aria-label={`operation actions ${name}`}
+        aria-labelledby={`${name} operation-actions-${name}`}
+      >
+        <Dropdown
+          key={`operation-action-dropdown-${name}`}
+          isPlain
+          position={DropdownPosition.right}
+          isOpen={isDropdownOpen}
+          toggle={<KebabToggle onToggle={handleDropdownToggle} />}
+          dropdownItems={[
+            <DropdownItem key={`operation-action-copy-method-name-${name}`} onClick={copyMethodName}>
+              Copy method name
+            </DropdownItem>,
+            <DropdownItem key={`operation-action-copy-jolokia-url-${name}`} onClick={copyJolokiaURL}>
+              Copy Jolokia URL
+            </DropdownItem>,
+          ]}
+        />
+      </DataListAction>
+    ),
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [selectedNode?.mbean, isDropdownOpen],
+  )
+
+  if (!selectedNode || !selectedNode.objectName || !selectedNode.mbean) {
+    return null
+  }
+
+  const { objectName } = selectedNode
 
   const OperationCells = () => (
     <DataListItemCells
@@ -207,39 +247,20 @@ export const OperationForm: React.FunctionComponent<OperationFormProps> = props 
     />
   )
 
-  const OperationActions = () => (
-    <DataListAction
-      id={`operation-actions-${name}`}
-      aria-label={`operation actions ${name}`}
-      aria-labelledby={`${name} operation-actions-${name}`}
-    >
-      <Dropdown
-        key={`operation-action-dropdown-${name}`}
-        isPlain
-        position={DropdownPosition.right}
-        isOpen={isDropdownOpen}
-        toggle={<KebabToggle onToggle={handleDropdownToggle} />}
-        dropdownItems={[
-          <DropdownItem key={`operation-action-copy-method-name-${name}`} onClick={copyMethodName}>
-            Copy method name
-          </DropdownItem>,
-          <DropdownItem key={`operation-action-copy-jolokia-url-${name}`} onClick={copyJolokiaURL}>
-            Copy Jolokia URL
-          </DropdownItem>,
-        ]}
-      />
-    </DataListAction>
-  )
-
   return (
-    <DataListItem key={`operation-${name}`} aria-labelledby={`operation ${name}`} isExpanded={isExpanded}>
-      <DataListItemRow>
-        <DataListToggle onClick={handleToggle} isExpanded={isExpanded} id='ex-toggle1' aria-controls='ex-expand1' />
-        <OperationCells />
-        <OperationActions />
-      </DataListItemRow>
-      <OperationFormContents {...props} objectName={objectName} isExpanded={isExpanded} />
-    </DataListItem>
+    <React.Fragment>
+      <AlertGroup isToast isLiveRegion>
+        {currentAlerts}
+      </AlertGroup>
+      <DataListItem key={`operation-${name}`} aria-labelledby={`operation ${name}`} isExpanded={isExpanded}>
+        <DataListItemRow>
+          <DataListToggle onClick={handleToggle} isExpanded={isExpanded} id='ex-toggle1' aria-controls='ex-expand1' />
+          <OperationCells />
+          {OperationActions}
+        </DataListItemRow>
+        <OperationFormContents {...props} objectName={objectName} isExpanded={isExpanded} />
+      </DataListItem>
+    </React.Fragment>
   )
 }
 
