@@ -5,6 +5,7 @@ import {
   Checkbox,
   Form,
   FormGroup,
+  FormGroupProps,
   FormSection,
   Modal,
   ModalVariant,
@@ -31,65 +32,121 @@ const JolokiaForm: React.FunctionComponent = () => {
 
   const jolokiaStoredOptions = jolokiaService.loadJolokiaStoredOptions()
   const [updateRate, setUpdateRate] = useState(jolokiaService.loadUpdateRate())
-  const [autoRefresh, setAutoRefresh] = useState(jolokiaService.loadAutoRefresh())
+  const [updateRateValidated, setUpdateRateValidated] = useState<FormGroupProps['validated']>('default')
+  const [updateRateInvalidText, setUpdateRateInvalidText] = useState('')
   const [maxDepth, setMaxDepth] = useState(jolokiaStoredOptions.maxDepth)
+  const [maxDepthValidated, setMaxDepthValidated] = useState<FormGroupProps['validated']>('default')
+  const [maxDepthInvalidText, setMaxDepthInvalidText] = useState('')
   const [maxCollectionSize, setMaxCollectionSize] = useState(jolokiaStoredOptions.maxCollectionSize)
+  const [maxCollectionSizeValidated, setMaxCollectionSizeValidated] = useState<FormGroupProps['validated']>('default')
+  const [maxCollectionSizeInvalidText, setMaxCollectionSizeInvalidText] = useState('')
+  const [autoRefresh, setAutoRefresh] = useState(jolokiaService.loadAutoRefresh())
 
   const onUpdateRateChanged = (updateRate: string) => {
     const intValue = parseInt(updateRate)
-
-    if (intValue) {
-      jolokiaService.saveUpdateRate(intValue)
-      setUpdateRate(intValue)
+    if (!intValue) {
+      setUpdateRateValidated('error')
+      setUpdateRateInvalidText('Must be a number')
+      return
     }
+    if (intValue <= 0) {
+      setUpdateRateValidated('error')
+      setUpdateRateInvalidText('Must be greater than 0')
+      return
+    }
+
+    setUpdateRate(intValue)
+    setUpdateRateValidated('success')
   }
 
   const onMaxDepthChanged = (maxDepth: string) => {
     const intValue = parseInt(maxDepth)
-
-    if (intValue) {
-      jolokiaService.saveJolokiaStoredOptions({ maxDepth: intValue, maxCollectionSize })
-      setMaxDepth(intValue)
+    if (!intValue) {
+      setMaxDepthValidated('error')
+      setMaxDepthInvalidText('Must be a number')
+      return
     }
-  }
+    if (intValue <= 0) {
+      setMaxDepthValidated('error')
+      setMaxDepthInvalidText('Must be greater than 0')
+      return
+    }
 
-  const onAutoRefreshChanged = (autoRefresh: boolean) => {
-    jolokiaService.saveAutoRefresh(autoRefresh)
-    setAutoRefresh(autoRefresh)
+    setMaxDepth(intValue)
+    setMaxDepthValidated('success')
   }
 
   const onMaxCollectionSizeChanged = (maxCollectionSize: string) => {
     const intValue = parseInt(maxCollectionSize)
-
-    if (intValue) {
-      jolokiaService.saveJolokiaStoredOptions({ maxDepth, maxCollectionSize: intValue })
-      setMaxCollectionSize(intValue)
+    if (!intValue) {
+      setMaxCollectionSizeValidated('error')
+      setMaxCollectionSizeInvalidText('Must be a number')
+      return
     }
+    if (intValue <= 0) {
+      setMaxCollectionSizeValidated('error')
+      setMaxCollectionSizeInvalidText('Must be greater than 0')
+      return
+    }
+
+    setMaxCollectionSize(intValue)
+    setMaxCollectionSizeValidated('success')
+  }
+
+  const onAutoRefreshChanged = (autoRefresh: boolean) => {
+    setAutoRefresh(autoRefresh)
   }
 
   const applyJolokia = () => {
+    jolokiaService.saveUpdateRate(updateRate)
+    jolokiaService.saveJolokiaStoredOptions({ maxDepth, maxCollectionSize })
+    jolokiaService.saveAutoRefresh(autoRefresh)
+
     // Page reload will apply currently stored preferences into Jolokia
     navigate(0)
   }
 
   return (
     <FormSection title='Jolokia' titleElement='h2'>
-      <FormGroup label='Update rate' fieldId='jolokia-form-update-rate'>
+      <FormGroup
+        label='Update rate'
+        fieldId='jolokia-form-update-rate'
+        validated={updateRateValidated}
+        helperTextInvalid={updateRateInvalidText}
+      >
         <TextInput
           id='jolokia-form-update-rate-input'
           type='number'
           value={updateRate}
+          validated={updateRateValidated}
           onChange={onUpdateRateChanged}
         />
       </FormGroup>
-      <FormGroup label='Max depth' fieldId='jolokia-form-max-depth'>
-        <TextInput id='jolokia-form-max-depth-input' type='number' value={maxDepth} onChange={onMaxDepthChanged} />
+      <FormGroup
+        label='Max depth'
+        fieldId='jolokia-form-max-depth'
+        validated={maxDepthValidated}
+        helperTextInvalid={maxDepthInvalidText}
+      >
+        <TextInput
+          id='jolokia-form-max-depth-input'
+          type='number'
+          value={maxDepth}
+          validated={maxDepthValidated}
+          onChange={onMaxDepthChanged}
+        />
       </FormGroup>
-      <FormGroup label='Max collection size' fieldId='jolokia-form-max-collection-size'>
+      <FormGroup
+        label='Max collection size'
+        fieldId='jolokia-form-max-collection-size'
+        validated={maxCollectionSizeValidated}
+        helperTextInvalid={maxCollectionSizeInvalidText}
+      >
         <TextInput
           id='jolokia-form-max-collection-size-input'
           type='number'
           value={maxCollectionSize}
+          validated={maxCollectionSizeValidated}
           onChange={onMaxCollectionSizeChanged}
         />
       </FormGroup>
