@@ -1,24 +1,24 @@
+import { Page } from '@patternfly/react-core'
+import { TableComposable, Tbody, Td, Tr } from '@patternfly/react-table'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import ReactFlow, {
-  addEdge,
   Connection,
   ConnectionLineType,
-  Node,
   Edge,
   Handle,
+  Node,
   NodeProps,
   NodeToolbar,
   Position,
+  addEdge,
   useEdgesState,
   useNodesState,
 } from 'reactflow'
-import { CamelNodeData, visualizationService } from './visualization-service'
 import 'reactflow/dist/style.css'
-import './routeDiagram.css'
-import { Page } from '@patternfly/react-core'
 import { routesService } from '../routes-service'
-import { TableComposable, Tbody, Td, Tr } from '@patternfly/react-table'
 import { Annotation, RouteDiagramContext } from './route-diagram-context'
+import './routeDiagram.css'
+import { CamelNodeData, visualizationService } from './visualization-service'
 
 const CamelNode = ({ data, selected, sourcePosition, targetPosition }: NodeProps<CamelNodeData>) => {
   const { showStatistics, doubleClickAction, annotations } = useContext(RouteDiagramContext)
@@ -196,7 +196,7 @@ export const RouteDiagram: React.FunctionComponent = () => {
     [setEdges],
   )
 
-  const onNodeClick = (event: React.MouseEvent, node: Node) => {
+  const onNodeClick = (_event: React.MouseEvent, node: Node) => {
     setGraphSelection(node.data.cid)
   }
 

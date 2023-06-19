@@ -1,8 +1,8 @@
-.camel-main > article {
+#camel-content-main > article {
   overflow: auto;
 }
 
-#camel-content-header > #toolbar-items {
+#camel-content-header > #camel-contexts-toolbar {
   float: right;
   padding-top: 0;
   padding-bottom: 0.5em;
