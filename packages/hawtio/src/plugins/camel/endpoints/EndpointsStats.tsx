@@ -19,7 +19,7 @@ import {
   ToolbarFilter,
   ToolbarGroup,
 } from '@patternfly/react-core'
-import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { TableComposable, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
 import { SearchIcon } from '@patternfly/react-icons'
 
 export const EndpointStats: React.FunctionComponent = () => {
@@ -28,6 +28,8 @@ export const EndpointStats: React.FunctionComponent = () => {
   const [filteredStats, setFilteredStats] = useState<EndpointStatistics[]>([])
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [filters, setFilters] = useState<string[]>([])
+  const [activeSortIndex, setActiveSortIndex] = React.useState<number>(-1)
+  const [activeSortDirection, setActiveSortDirection] = React.useState<'asc' | 'desc' | undefined>(undefined)
   const [attributeMenuItem, setAttributeMenuItem] = useState('url')
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
 
@@ -79,11 +81,30 @@ export const EndpointStats: React.FunctionComponent = () => {
     setFilters([...filters, `${attributeMenuItem}:${searchTerm}`])
     setSearchTerm('')
   }
+  const getSortableStats = (stat: EndpointStatistics): (number | string)[] => {
+    const { hits, routeId, dynamic, url, direction } = stat
+
+    return [url, routeId, direction, String(stat.static), String(dynamic), hits]
+  }
+  const getSortParams = (columnIndex: number): ThProps['sort'] => ({
+    sortBy: {
+      index: activeSortIndex,
+      direction: activeSortDirection,
+      defaultDirection: 'asc', // starting sort direction when first sorting a column. Defaults to 'asc'
+    },
+    onSort: (_event, index, direction) => {
+      setActiveSortIndex(index)
+      setActiveSortDirection(direction)
+    },
+    columnIndex,
+  })
+
   const attributes = [
     { key: 'url', value: 'URL' },
     { key: 'routeId', value: 'Route ID' },
     { key: 'direction', value: 'Direction' },
   ]
+
   const dropdownItems = attributes.map(a => (
     <DropdownItem
       onClick={() => {
@@ -95,6 +116,29 @@ export const EndpointStats: React.FunctionComponent = () => {
       {a.value}
     </DropdownItem>
   ))
+  const sortStatistics = (): EndpointStatistics[] => {
+    let sortedStats = filteredStats
+    if (activeSortIndex >= 0) {
+      sortedStats = filteredStats.sort((a, b) => {
+        const aValue = getSortableStats(a)[activeSortIndex]
+        const bValue = getSortableStats(b)[activeSortIndex]
+        if (typeof aValue === 'number') {
+          // Numeric sort
+          if (activeSortDirection === 'asc') {
+            return (aValue as number) - (bValue as number)
+          }
+          return (bValue as number) - (aValue as number)
+        } else {
+          // String sort
+          if (activeSortDirection === 'asc') {
+            return (aValue as string).localeCompare(bValue as string)
+          }
+          return (bValue as string).localeCompare(aValue as string)
+        }
+      })
+    }
+    return sortedStats
+  }
 
   return (
     <PageSection variant='light'>
@@ -139,23 +183,35 @@ export const EndpointStats: React.FunctionComponent = () => {
         </ToolbarContent>
       </Toolbar>
 
-      {filteredStats.length > 0 ? (
+      {sortStatistics().length > 0 ? (
         <FormGroup>
           <TableComposable aria-label='Endpoints Table' variant='compact' height='80vh'>
             <Thead>
               <Tr>
-                <Th>URL</Th>
-                <Th>Route ID</Th>
-                <Th>Direction</Th>
-                <Th>Static</Th>
-                <Th>Dynamic</Th>
-                <Th>Hits</Th>
+                <Th data-testid={'url-header'} sort={getSortParams(0)}>
+                  URL
+                </Th>
+                <Th data-testid={'routeId-header'} sort={getSortParams(1)}>
+                  Route ID
+                </Th>
+                <Th data-testid={'direction-header'} sort={getSortParams(2)}>
+                  Direction
+                </Th>
+                <Th data-testid={'static-header'} sort={getSortParams(3)}>
+                  Static
+                </Th>
+                <Th data-testid={'dynamic-header'} sort={getSortParams(4)}>
+                  Dynamic
+                </Th>
+                <Th data-testid={'hits-header'} sort={getSortParams(5)}>
+                  Hits
+                </Th>
               </Tr>
             </Thead>
             <Tbody>
               {filteredStats.map((stat: EndpointStatistics, index) => {
                 return (
-                  <Tr key={index}>
+                  <Tr key={'row' + index} data-testid={'row' + index}>
                     <Td style={{ flex: 3 }}>{stat.url}</Td>
                     <Td style={{ width: '20%' }}>{stat.routeId}</Td>
                     <Td style={{ flex: 1 }}>{stat.direction}</Td>
