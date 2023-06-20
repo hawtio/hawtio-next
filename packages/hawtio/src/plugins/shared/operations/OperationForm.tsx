@@ -1,7 +1,5 @@
 import {
   ActionGroup,
-  Alert,
-  AlertGroup,
   Button,
   Checkbox,
   ClipboardCopy,
@@ -28,7 +26,7 @@ import { Operation } from './operation'
 import { operationService } from './operation-service'
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/selectionNodeContext'
 import './OperationForm.css'
-
+import { eventService } from '@hawtiosrc/core'
 export interface OperationFormProps {
   name: string
   operation: Operation
@@ -177,18 +175,21 @@ const OperationActions = ({
   objectName: string
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [currentAlerts, setCurrentAlerts] = useState<React.ReactNode[]>([])
 
   const handleDropdownToggle = () => {
     setIsDropdownOpen(!isDropdownOpen)
   }
 
+  const notifySuccessfulCopy = () => {
+    eventService.notify({
+      type: 'success',
+      message: 'Copied to clipboard',
+    })
+  }
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
-    setCurrentAlerts(prev => [
-      ...prev,
-      <Alert key={`{alert-${prev.length + 1}`} isLiveRegion title='Copied to clipboard' />,
-    ])
+    notifySuccessfulCopy()
   }
 
   const copyMethodName = () => {
@@ -205,9 +206,6 @@ const OperationActions = ({
       aria-label={`operation actions ${name}`}
       aria-labelledby={`${name} operation-actions-${name}`}
     >
-      <AlertGroup isToast isLiveRegion>
-        {currentAlerts}
-      </AlertGroup>
       <Dropdown
         key={`operation-action-dropdown-${name}`}
         isPlain
