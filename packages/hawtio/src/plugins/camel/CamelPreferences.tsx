@@ -1,6 +1,8 @@
-import { CardBody, Checkbox, Form, FormGroup, FormSection, TextInput } from '@patternfly/react-core'
+import { CardBody, Checkbox, Form, FormGroup, FormSection, Icon, TextInput, Tooltip } from '@patternfly/react-core'
+import { HelpIcon } from '@patternfly/react-icons'
 import React, { useState } from 'react'
 import { camelPreferencesService, CamelOptions } from './camel-preferences-service'
+import './CamelPreferences.css'
 
 export const CamelPreferences: React.FunctionComponent = () => (
   <CardBody>
@@ -38,37 +40,78 @@ const CamelPreferencesForm: React.FunctionComponent = () => {
     }
   }
 
+  const TooltipIcon = ({ tooltip }: { tooltip: string }) => (
+    <Icon size='md'>
+      <Tooltip content={tooltip}>
+        <HelpIcon />
+      </Tooltip>
+    </Icon>
+  )
+
   return (
-    <FormSection>
-      <FormGroup label='Hide option documentation' fieldId='camel-form-hide-option-documentation'>
+    <FormSection title='Camel' titleElement='h2'>
+      <FormGroup
+        hasNoPaddingTop
+        label='Hide option documentation'
+        fieldId='camel-form-hide-option-documentation'
+        labelIcon={
+          <TooltipIcon tooltip='Whether to hide documentation in the properties view and Camel route editor' />
+        }
+      >
         <Checkbox
           id='camel-form-hide-option-documentation'
           isChecked={camelPreferences.isHideOptionDocumentation}
           onChange={updateCheckboxValueFor('isHideOptionDocumentation')}
         />
       </FormGroup>
-      <FormGroup label='Hide default options values' fieldId='camel-form-hide-default-option-value'>
+      <FormGroup
+        hasNoPaddingTop
+        label='Hide default options values'
+        fieldId='camel-form-hide-default-option-value'
+        labelIcon={
+          <TooltipIcon tooltip='Whether to hide options that are using a default value in the properties view' />
+        }
+      >
         <Checkbox
           id='camel-form-hide-default-option-value'
           isChecked={camelPreferences.isHideDefaultOptionValues}
           onChange={updateCheckboxValueFor('isHideDefaultOptionValues')}
         />
       </FormGroup>
-      <FormGroup label='Hide unused options values' fieldId='camel-form-hide-unused-option-value'>
+      <FormGroup
+        hasNoPaddingTop
+        label='Hide unused options values'
+        fieldId='camel-form-hide-unused-option-value'
+        labelIcon={<TooltipIcon tooltip='Whether to hide unused/empty options in the properties view' />}
+      >
         <Checkbox
           id='camel-form-hide-unused-option-value'
           isChecked={camelPreferences.isHideUnusedOptionValues}
           onChange={updateCheckboxValueFor('isHideUnusedOptionValues')}
         />
       </FormGroup>
-      <FormGroup label='Include trace / debug streams' fieldId='camel-form-include-trace-debug-streams'>
+      <FormGroup
+        hasNoPaddingTop
+        label='Include trace / debug streams'
+        fieldId='camel-form-include-trace-debug-streams'
+        labelIcon={
+          <TooltipIcon tooltip='Whether to include stream based message body when using the tracer and debugger' />
+        }
+      >
         <Checkbox
           id='camel-form-include-trace-debug-streams'
           isChecked={camelPreferences.isIncludeTraceDebugStreams}
           onChange={updateCheckboxValueFor('isIncludeTraceDebugStreams')}
         />
       </FormGroup>
-      <FormGroup label='Maximum trace / debug body length' fieldId='camel-form-maximum-trace-debug-body-length'>
+      <FormGroup
+        hasNoPaddingTop
+        label='Maximum trace / debug body length'
+        fieldId='camel-form-maximum-trace-debug-body-length'
+        labelIcon={
+          <TooltipIcon tooltip='The maximum length of the body before its clipped when using the tracer and debugger' />
+        }
+      >
         <TextInput
           id='camel-form-maximum-trace-debug-body-length'
           type='number'
@@ -76,7 +119,12 @@ const CamelPreferencesForm: React.FunctionComponent = () => {
           onChange={updateNumberValueFor('maximumTraceDebugBodyLength')}
         />
       </FormGroup>
-      <FormGroup label='Maximum label width' fieldId='camel-form-maximum-label-width'>
+      <FormGroup
+        hasNoPaddingTop
+        label='Maximum label width'
+        fieldId='camel-form-maximum-label-width'
+        labelIcon={<TooltipIcon tooltip='The maximum length of a label in Camel diagrams before it is clipped' />}
+      >
         <TextInput
           id='camel-form-maximum-label-width'
           type='number'
@@ -84,21 +132,40 @@ const CamelPreferencesForm: React.FunctionComponent = () => {
           onChange={updateNumberValueFor('maximumLabelWidth')}
         />
       </FormGroup>
-      <FormGroup label='Ignore ID for label' fieldId='camel-form-ignore-id-for-label'>
+      <FormGroup
+        hasNoPaddingTop
+        label='Ignore ID for label'
+        fieldId='camel-form-ignore-id-for-label'
+        labelIcon={
+          <TooltipIcon tooltip='If enabled then we will ignore the ID value when viewing a pattern in a Camel diagram; otherwise we will use the ID value as the label (the tooltip will show the actual detail' />
+        }
+      >
         <Checkbox
           id='camel-form-ignore-id-for-label'
           isChecked={camelPreferences.isIgnoreIDForLabel}
           onChange={updateCheckboxValueFor('isIgnoreIDForLabel')}
         />
       </FormGroup>
-      <FormGroup label='Show inflight counter' fieldId='camel-show-inflight-counter'>
+      <FormGroup
+        hasNoPaddingTop
+        label='Show inflight counter'
+        fieldId='camel-show-inflight-counter'
+        labelIcon={<TooltipIcon tooltip='Whether to show inflight counter in route diagram' />}
+      >
         <Checkbox
           id='camel-show-inflight-counter'
           isChecked={camelPreferences.isShowInflightCounter}
           onChange={updateCheckboxValueFor('isShowInflightCounter')}
         />
       </FormGroup>
-      <FormGroup label='Route metric maximum seconds' fieldId='camel-form-route-metric-maximum-seconds'>
+      <FormGroup
+        hasNoPaddingTop
+        label='Route metric maximum seconds'
+        fieldId='camel-form-route-metric-maximum-seconds'
+        labelIcon={
+          <TooltipIcon tooltip='The maximum value in seconds used by the route metrics duration and histogram charts' />
+        }
+      >
         <TextInput
           id='camel-form-route-metric-maximum-seconds'
           type='number'
