@@ -1,0 +1,13 @@
+.pf-c-form__group {
+  grid-template-columns: 1fr 4fr !important;
+}
+
+.pf-c-form__group-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pf-c-icon {
+  padding-right: 1em;
+}
