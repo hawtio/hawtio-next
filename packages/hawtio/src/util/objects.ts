@@ -1,3 +1,5 @@
+import { stringSorter } from '@hawtiosrc/util/strings'
+
 export function isObject(value: unknown): value is object {
   const type = typeof value
   return value != null && (type === 'object' || type === 'function')
@@ -21,4 +23,17 @@ export function isArray<T>(obj: T | T[]): obj is T[] {
 
 export function isNumber(value: unknown): value is number {
   return typeof value === 'number' && !Number.isNaN(value)
+}
+
+export function objectSorter(aValue: unknown, bValue: unknown, sortDesc?: boolean) {
+  if (isNumber(aValue)) {
+    // Numeric sort
+    if (!sortDesc) {
+      return (aValue as number) - (bValue as number)
+    }
+    return (bValue as number) - (aValue as number)
+  } else {
+    // String sort
+    return stringSorter(aValue as string, bValue as string, sortDesc)
+  }
 }

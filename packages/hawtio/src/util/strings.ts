@@ -84,14 +84,18 @@ export function trimQuotes(text: string): string {
   return text
 }
 
-export function stringSorter(a: string, b: string): number {
+export function stringSorter(a: string, b: string, sortDesc?: boolean): number {
+  let res = 0
   if (a < b) {
-    return -1
+    res = -1
   }
   if (a > b) {
-    return 1
+    res = 1
   }
-  return 0
+  if (sortDesc) {
+    res *= -1
+  }
+  return res
 }
 
 export function parseBoolean(value: string): boolean {
