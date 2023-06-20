@@ -1,8 +1,8 @@
-import { CardBody, Checkbox, Form, FormGroup, FormSection, Icon, TextInput, Tooltip } from '@patternfly/react-core'
-import { HelpIcon } from '@patternfly/react-icons'
+import { CardBody, Checkbox, Form, FormGroup, FormSection, TextInput } from '@patternfly/react-core'
 import React, { useState } from 'react'
 import { camelPreferencesService, CamelOptions } from './camel-preferences-service'
 import './CamelPreferences.css'
+import { TooltipHelpIcon } from '@hawtiosrc/plugins/shared'
 
 export const CamelPreferences: React.FunctionComponent = () => (
   <CardBody>
@@ -40,14 +40,6 @@ const CamelPreferencesForm: React.FunctionComponent = () => {
     }
   }
 
-  const TooltipIcon = ({ tooltip }: { tooltip: string }) => (
-    <Icon size='md'>
-      <Tooltip content={tooltip}>
-        <HelpIcon />
-      </Tooltip>
-    </Icon>
-  )
-
   return (
     <FormSection title='Camel' titleElement='h2'>
       <FormGroup
@@ -55,7 +47,7 @@ const CamelPreferencesForm: React.FunctionComponent = () => {
         label='Hide option documentation'
         fieldId='camel-form-hide-option-documentation'
         labelIcon={
-          <TooltipIcon tooltip='Whether to hide documentation in the properties view and Camel route editor' />
+          <TooltipHelpIcon tooltip='Whether to hide documentation in the properties view and Camel route editor' />
         }
       >
         <Checkbox
@@ -69,7 +61,7 @@ const CamelPreferencesForm: React.FunctionComponent = () => {
         label='Hide default options values'
         fieldId='camel-form-hide-default-option-value'
         labelIcon={
-          <TooltipIcon tooltip='Whether to hide options that are using a default value in the properties view' />
+          <TooltipHelpIcon tooltip='Whether to hide options that are using a default value in the properties view' />
         }
       >
         <Checkbox
@@ -82,7 +74,7 @@ const CamelPreferencesForm: React.FunctionComponent = () => {
         hasNoPaddingTop
         label='Hide unused options values'
         fieldId='camel-form-hide-unused-option-value'
-        labelIcon={<TooltipIcon tooltip='Whether to hide unused/empty options in the properties view' />}
+        labelIcon={<TooltipHelpIcon tooltip='Whether to hide unused/empty options in the properties view' />}
       >
         <Checkbox
           id='camel-form-hide-unused-option-value'
@@ -95,7 +87,7 @@ const CamelPreferencesForm: React.FunctionComponent = () => {
         label='Include trace / debug streams'
         fieldId='camel-form-include-trace-debug-streams'
         labelIcon={
-          <TooltipIcon tooltip='Whether to include stream based message body when using the tracer and debugger' />
+          <TooltipHelpIcon tooltip='Whether to include stream based message body when using the tracer and debugger' />
         }
       >
         <Checkbox
@@ -109,7 +101,7 @@ const CamelPreferencesForm: React.FunctionComponent = () => {
         label='Maximum trace / debug body length'
         fieldId='camel-form-maximum-trace-debug-body-length'
         labelIcon={
-          <TooltipIcon tooltip='The maximum length of the body before its clipped when using the tracer and debugger' />
+          <TooltipHelpIcon tooltip='The maximum length of the body before its clipped when using the tracer and debugger' />
         }
       >
         <TextInput
@@ -123,7 +115,7 @@ const CamelPreferencesForm: React.FunctionComponent = () => {
         hasNoPaddingTop
         label='Maximum label width'
         fieldId='camel-form-maximum-label-width'
-        labelIcon={<TooltipIcon tooltip='The maximum length of a label in Camel diagrams before it is clipped' />}
+        labelIcon={<TooltipHelpIcon tooltip='The maximum length of a label in Camel diagrams before it is clipped' />}
       >
         <TextInput
           id='camel-form-maximum-label-width'
@@ -137,7 +129,7 @@ const CamelPreferencesForm: React.FunctionComponent = () => {
         label='Ignore ID for label'
         fieldId='camel-form-ignore-id-for-label'
         labelIcon={
-          <TooltipIcon tooltip='If enabled then we will ignore the ID value when viewing a pattern in a Camel diagram; otherwise we will use the ID value as the label (the tooltip will show the actual detail' />
+          <TooltipHelpIcon tooltip='If enabled then we will ignore the ID value when viewing a pattern in a Camel diagram; otherwise we will use the ID value as the label (the tooltip will show the actual detail' />
         }
       >
         <Checkbox
@@ -150,7 +142,7 @@ const CamelPreferencesForm: React.FunctionComponent = () => {
         hasNoPaddingTop
         label='Show inflight counter'
         fieldId='camel-show-inflight-counter'
-        labelIcon={<TooltipIcon tooltip='Whether to show inflight counter in route diagram' />}
+        labelIcon={<TooltipHelpIcon tooltip='Whether to show inflight counter in route diagram' />}
       >
         <Checkbox
           id='camel-show-inflight-counter'
@@ -163,7 +155,7 @@ const CamelPreferencesForm: React.FunctionComponent = () => {
         label='Route metric maximum seconds'
         fieldId='camel-form-route-metric-maximum-seconds'
         labelIcon={
-          <TooltipIcon tooltip='The maximum value in seconds used by the route metrics duration and histogram charts' />
+          <TooltipHelpIcon tooltip='The maximum value in seconds used by the route metrics duration and histogram charts' />
         }
       >
         <TextInput

@@ -1,0 +1,1 @@
+export { TooltipHelpIcon } from './TooltipHelpIcon'

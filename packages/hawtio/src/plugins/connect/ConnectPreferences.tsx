@@ -17,6 +17,7 @@ import { jolokiaService } from '../connect/jolokia-service'
 import { RESET } from './connections'
 import { useConnections } from './context'
 import { log } from './globals'
+import { TooltipHelpIcon } from '@hawtiosrc/plugins/shared'
 
 export const ConnectPreferences: React.FunctionComponent = () => (
   <CardBody>
@@ -113,6 +114,7 @@ const JolokiaForm: React.FunctionComponent = () => {
         fieldId='jolokia-form-update-rate'
         validated={updateRateValidated}
         helperTextInvalid={updateRateInvalidText}
+        labelIcon={<TooltipHelpIcon tooltip='The period between polls to jolokia to fetch JMX data' />}
       >
         <TextInput
           id='jolokia-form-update-rate-input'
@@ -127,6 +129,9 @@ const JolokiaForm: React.FunctionComponent = () => {
         fieldId='jolokia-form-max-depth'
         validated={maxDepthValidated}
         helperTextInvalid={maxDepthInvalidText}
+        labelIcon={
+          <TooltipHelpIcon tooltip='The number of levels jolokia will marshal an object to json on the server side before returning' />
+        }
       >
         <TextInput
           id='jolokia-form-max-depth-input'
@@ -141,6 +146,9 @@ const JolokiaForm: React.FunctionComponent = () => {
         fieldId='jolokia-form-max-collection-size'
         validated={maxCollectionSizeValidated}
         helperTextInvalid={maxCollectionSizeInvalidText}
+        labelIcon={
+          <TooltipHelpIcon tooltip='The maximum number of elements in an array that jolokia will marshal in a response' />
+        }
       >
         <TextInput
           id='jolokia-form-max-collection-size-input'
@@ -150,7 +158,13 @@ const JolokiaForm: React.FunctionComponent = () => {
           onChange={onMaxCollectionSizeChanged}
         />
       </FormGroup>
-      <FormGroup label='Auto refresh' fieldId='jolokia-form-auto-refresh'>
+      <FormGroup
+        label='Auto refresh'
+        fieldId='jolokia-form-auto-refresh'
+        labelIcon={
+          <TooltipHelpIcon tooltip='Wether the page should refresh whenever it detects an update on a plugin' />
+        }
+      >
         <Checkbox id='jolokia-form-auto-refresh-input' isChecked={autoRefresh} onChange={onAutoRefreshChanged} />
       </FormGroup>
       <FormGroup fieldId='jolokia-form-apply' helperText='Restart Hawtio with the new values in effect.'>
