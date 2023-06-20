@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { CamelContext } from '@hawtiosrc/plugins/camel/context'
 import { CamelRoute, routesService } from '@hawtiosrc/plugins/camel/routes-service'
-import { Caption, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { Caption, TableComposable, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
 import {
   Button,
   Card,
@@ -20,6 +20,8 @@ import {
 import { AsleepIcon, InfoCircleIcon, PlayIcon, Remove2Icon } from '@patternfly/react-icons'
 import { eventService } from '@hawtiosrc/core'
 import { workspace } from '@hawtiosrc/plugins/shared'
+import { EndpointStatistics } from '@hawtiosrc/plugins/camel/endpoints/endpoints-service'
+import { compareForSort } from '@hawtiosrc/util/utils'
 
 export const CamelRoutes: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
@@ -28,6 +30,8 @@ export const CamelRoutes: React.FunctionComponent = () => {
   const [selected, setSelected] = useState<string[]>([])
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false)
+  const [activeSortIndex, setActiveSortIndex] = React.useState<number>(-1)
+  const [activeSortDirection, setActiveSortDirection] = React.useState<'asc' | 'desc'>('asc')
 
   useEffect(() => {
     let timeoutHandle: NodeJS.Timeout
@@ -130,6 +134,53 @@ export const CamelRoutes: React.FunctionComponent = () => {
     setIsConfirmDeleteOpen(!isConfirmDeleteOpen)
   }
 
+  const getSortableRoutes = (route: CamelRoute): (number | string)[] => {
+    const {
+      RouteId,
+      State,
+      ExchangesCompleted,
+      ExchangesFailed,
+      FailuresHandled,
+      ExchangesTotal,
+      ExchangesInflight,
+      MeanProcessingTime,
+    } = route
+
+    return [
+      RouteId,
+      State ?? '',
+      ExchangesCompleted,
+      ExchangesFailed,
+      FailuresHandled,
+      ExchangesTotal,
+      ExchangesInflight,
+      MeanProcessingTime,
+    ]
+  }
+  const getSortParams = (columnIndex: number): ThProps['sort'] => ({
+    sortBy: {
+      index: activeSortIndex,
+      direction: activeSortDirection,
+      defaultDirection: 'asc', // starting sort direction when first sorting a column. Defaults to 'asc'
+    },
+    onSort: (_event, index, direction) => {
+      setActiveSortIndex(index)
+      setActiveSortDirection(direction)
+    },
+    columnIndex,
+  })
+
+  const sortRoutes = (): CamelRoute[] => {
+    let sortedRoutes = routes
+    if (activeSortIndex >= 0) {
+      sortedRoutes = routes.sort((a, b) => {
+        const aValue = getSortableRoutes(a)[activeSortIndex]
+        const bValue = getSortableRoutes(b)[activeSortIndex]
+        return compareForSort(aValue, bValue, activeSortDirection)
+      })
+    }
+    return sortedRoutes
+  }
   const dropdownItems = [
     <DropdownItem key='action' componentID='deleteAction'>
       <Button

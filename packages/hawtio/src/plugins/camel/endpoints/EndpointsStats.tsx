@@ -21,6 +21,7 @@ import {
 } from '@patternfly/react-core'
 import { TableComposable, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
 import { SearchIcon } from '@patternfly/react-icons'
+import { objectSorter } from '@hawtiosrc/util/objects'
 
 export const EndpointStats: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
@@ -29,7 +30,7 @@ export const EndpointStats: React.FunctionComponent = () => {
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [filters, setFilters] = useState<string[]>([])
   const [activeSortIndex, setActiveSortIndex] = React.useState<number>(-1)
-  const [activeSortDirection, setActiveSortDirection] = React.useState<'asc' | 'desc' | undefined>(undefined)
+  const [activeSortDirection, setActiveSortDirection] = React.useState<'asc' | 'desc'>('asc')
   const [attributeMenuItem, setAttributeMenuItem] = useState('url')
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
 
@@ -122,19 +123,7 @@ export const EndpointStats: React.FunctionComponent = () => {
       sortedStats = filteredStats.sort((a, b) => {
         const aValue = getSortableStats(a)[activeSortIndex]
         const bValue = getSortableStats(b)[activeSortIndex]
-        if (typeof aValue === 'number') {
-          // Numeric sort
-          if (activeSortDirection === 'asc') {
-            return (aValue as number) - (bValue as number)
-          }
-          return (bValue as number) - (aValue as number)
-        } else {
-          // String sort
-          if (activeSortDirection === 'asc') {
-            return (aValue as string).localeCompare(bValue as string)
-          }
-          return (bValue as string).localeCompare(aValue as string)
-        }
+        return objectSorter(aValue, bValue, activeSortDirection === 'desc')
       })
     }
     return sortedStats
