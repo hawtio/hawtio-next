@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { CamelContext } from '@hawtiosrc/plugins/camel/context'
-import { CamelRoute, routesService } from '@hawtiosrc/plugins/camel/routes-service'
+import { CamelContext } from '../context'
+import { CamelRoute, routesService } from '../routes-service'
 import { Caption, TableComposable, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
 import {
   Button,
@@ -20,8 +20,7 @@ import {
 import { AsleepIcon, InfoCircleIcon, PlayIcon, Remove2Icon } from '@patternfly/react-icons'
 import { eventService } from '@hawtiosrc/core'
 import { workspace } from '@hawtiosrc/plugins/shared'
-import { EndpointStatistics } from '@hawtiosrc/plugins/camel/endpoints/endpoints-service'
-import { compareForSort } from '@hawtiosrc/util/utils'
+import { objectSorter } from '@hawtiosrc/util/objects'
 
 export const CamelRoutes: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
@@ -138,6 +137,7 @@ export const CamelRoutes: React.FunctionComponent = () => {
     const {
       RouteId,
       State,
+      Uptime,
       ExchangesCompleted,
       ExchangesFailed,
       FailuresHandled,
@@ -149,6 +149,7 @@ export const CamelRoutes: React.FunctionComponent = () => {
     return [
       RouteId,
       State ?? '',
+      Uptime,
       ExchangesCompleted,
       ExchangesFailed,
       FailuresHandled,
@@ -176,7 +177,7 @@ export const CamelRoutes: React.FunctionComponent = () => {
       sortedRoutes = routes.sort((a, b) => {
         const aValue = getSortableRoutes(a)[activeSortIndex]
         const bValue = getSortableRoutes(b)[activeSortIndex]
-        return compareForSort(aValue, bValue, activeSortDirection)
+        return objectSorter(aValue, bValue, activeSortDirection === 'desc')
       })
     }
     return sortedRoutes
@@ -306,21 +307,39 @@ export const CamelRoutes: React.FunctionComponent = () => {
                   isSelected: isAllSelected(),
                 }}
               />
-              <Th>{'Name'}</Th>
-              <Th>{'State'}</Th>
-              <Th>{'Uptime'}</Th>
-              <Th>{'Completed'}</Th>
-              <Th>{'Failed'}</Th>
-              <Th>{'Handled'}</Th>
-              <Th>{'Total'}</Th>
-              <Th>{'InFlight'}</Th>
-              <Th>{'Meantime'}</Th>
+              <Th data-testid={'name-header'} sort={getSortParams(0)}>
+                {'Name'}
+              </Th>
+              <Th data-testid={'state-header'} sort={getSortParams(1)}>
+                {'State'}
+              </Th>
+              <Th data-testid={'uptime-header'} sort={getSortParams(2)}>
+                {'Uptime'}
+              </Th>
+              <Th data-testid={'completed-header'} sort={getSortParams(3)}>
+                {'Completed'}
+              </Th>
+              <Th data-testid={'failed-header'} sort={getSortParams(4)}>
+                {'Failed'}
+              </Th>
+              <Th data-testid={'handled-header'} sort={getSortParams(5)}>
+                {'Handled'}
+              </Th>
+              <Th data-testid={'total-header'} sort={getSortParams(6)}>
+                {'Total'}
+              </Th>
+              <Th data-testid={'inflight-header'} sort={getSortParams(7)}>
+                {'InFlight'}
+              </Th>
+              <Th data-testid={'meantime-header'} sort={getSortParams(8)}>
+                {'Meantime'}
+              </Th>
             </Tr>
           </Thead>
           <Tbody>
-            {routes.map((route, rowIndex) => {
+            {sortRoutes().map((route, rowIndex) => {
               return (
-                <Tr key={route.RouteId}>
+                <Tr data-testid={'row' + rowIndex} key={route.RouteId}>
                   <Td
                     select={{
                       rowIndex,
