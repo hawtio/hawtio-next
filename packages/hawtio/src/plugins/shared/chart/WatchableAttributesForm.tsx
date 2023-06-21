@@ -18,7 +18,7 @@ export const WatchableAttributesForm = ({
   // Because the key needs to be unique across all trees (or else there is a bug where the check selection applies to
   // any element in any tree with the same key), I had to change the keys and no longer can use that prop for storing the key
   // to the original attributes to watch.
-  // There is a way around this building a dictionary storing attribute names - keys, but it seemed to overengineered
+  // There is a way around this building a dictionary storing attribute names - keys, but it seemed too overengineered
   // when the text is currently the same attribute name as the key in attributes to watch
 
   return (
@@ -83,8 +83,6 @@ export const WatchableAttributesForm = ({
                 ...Object.fromEntries(newUnwatchedAttribute.children?.map(({ text }) => [text, false]) || []),
               }
             })
-
-            console.log(newWatches)
 
             onAttributesToWatchUpdate(newWatches)
             setModalAttributesToWatch({ ...newWatches })
