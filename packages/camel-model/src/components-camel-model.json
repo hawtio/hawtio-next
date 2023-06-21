@@ -72916,14 +72916,6 @@
           "required": false,
           "deprecated": false
         },
-        "expression": {
-          "kind": "path",
-          "type": "string",
-          "description": "The XPath expression to use when option type\u003dxpathresult. Then this option is required to be configured.",
-          "title": "Expression",
-          "required": false,
-          "deprecated": false
-        },
         "messageFilter": {
           "kind": "parameter",
           "type": "object",
@@ -72953,6 +72945,14 @@
           "type": "object",
           "description": "Reference to an instance of org.apache.camel.component.spring.ws.bean.CamelEndpointMapping in the Registry/ApplicationContext. Only one bean is required in the registry to serve all Camel/Spring-WS endpoints. This bean is auto-discovered by the MessageDispatcher and used to map requests to Camel endpoints based on characteristics specified on the endpoint (like root QName, SOAP action, etc)",
           "title": "Endpoint Mapping",
+          "required": false,
+          "deprecated": false
+        },
+        "expression": {
+          "kind": "parameter",
+          "type": "string",
+          "description": "The XPath expression to use when option type\u003dxpathresult. Then this option is required to be configured.",
+          "title": "Expression",
           "required": false,
           "deprecated": false
         },
