@@ -1,5 +1,5 @@
 #camel-content-main > article {
-  overflow: auto;
+  overflow: inherit;
 }
 
 #camel-content-header > #camel-contexts-toolbar {
