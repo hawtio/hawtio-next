@@ -163,12 +163,12 @@ class ConnectService implements IConnectService {
       return connection.jolokiaUrl
     }
 
-    // TODO: Better handling of doc base and proxy URL construction
     const url = joinPaths(
+      hawtio.getBasePath() ?? '',
       '/proxy',
-      connection.scheme || 'http',
-      connection.host || 'localhost',
-      String(connection.port || 80),
+      connection.scheme ?? 'http',
+      connection.host ?? 'localhost',
+      String(connection.port ?? 80),
       connection.path,
     )
     log.debug('Using URL:', url)
