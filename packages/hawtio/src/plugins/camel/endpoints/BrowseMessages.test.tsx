@@ -17,7 +17,7 @@ function getMockedMessages(): MessageData[] {
     {
       messageId: 'another',
       body: 'anotherBody',
-      headers: [{ key: 'header', value: 'another', type: 'string' }],
+      headers: [{ key: 'header', value: 'anotherHeader', type: 'string' }],
     },
   ]
 }
@@ -46,10 +46,11 @@ describe('BrowseMessages.tsx', () => {
     let headerType = {}
 
     await waitFor(() => {
-      expect(screen.getByText('Message Details')).toBeInTheDocument()
-      headerKey = screen.getByText(message.headers[0].key)
-      headerValue = screen.getByText(message.headers[0].key)
-      headerType = screen.getByText(message.headers[0].value)
+      const messageDetails = screen.getByTestId('message-details')
+      expect(messageDetails).toBeInTheDocument()
+      headerKey = within(messageDetails).getByText(message.headers[0].key)
+      headerValue = within(messageDetails).getByText(message.headers[0].value)
+      headerType = within(messageDetails).getByText(message.headers[0].type)
     })
 
     expect(headerKey).toBeInTheDocument()
@@ -99,23 +100,22 @@ describe('BrowseMessages.tsx', () => {
       await userEvent.click(element)
     }
     await waitFor(() => {
-      expect(screen.getByText('Message Details')).toBeInTheDocument()
+      expect(screen.getByText('Message')).toBeInTheDocument()
     })
 
+    const testButtonActions = async (btn: string, messageIndex: number) => {
+      const button = screen.getByTestId(btn)
+      expect(button).toBeInTheDocument()
+      await userEvent.click(button)
+      await testMessageDetails(messages[messageIndex])
+    }
     // Check if the modal is open and the message ID is displayed
-    let buttons: HTMLElement[] = []
-    await waitFor(() => {
-      buttons = screen.getAllByRole('button')
-    })
-
-    const plusButton = buttons.find(b => b.outerHTML.includes('plus'))
-    const minusButton = buttons.find(b => b.outerHTML.includes('minus'))
-
     await testMessageDetails(messages[0])
-    if (plusButton) await userEvent.click(plusButton)
-    await testMessageDetails(messages[1])
-    if (minusButton) await userEvent.click(minusButton)
-    await testMessageDetails(messages[0])
+
+    await testButtonActions('next-message-button', 1)
+    await testButtonActions('previous-message-button', 0)
+    await testButtonActions('last-message-button', 7)
+    await testButtonActions('first-message-button', 0)
   })
 
   test('Forward Modal is displayed', async () => {
