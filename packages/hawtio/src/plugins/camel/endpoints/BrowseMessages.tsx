@@ -13,7 +13,6 @@ import {
   FormGroup,
   Modal,
   ModalVariant,
-  NumberInput,
   PageSection,
   Pagination,
   SearchInput,
@@ -72,7 +71,8 @@ const ForwardMessagesModal: React.FunctionComponent<{
         Forward
       </Button>
       <Modal
-        bodyAriaLabel='Message details'
+        bodyAriaLabel='forward-message-modal'
+        aria-label='forward-message-modal'
         position={Position.Top}
         tabIndex={0}
         variant={ModalVariant.small}
@@ -83,6 +83,33 @@ const ForwardMessagesModal: React.FunctionComponent<{
         <ForwardMessagesComponent onForwardMessages={onForwardMessages} />
       </Modal>
     </>
+  )
+}
+const MessageSelect: React.FunctionComponent<{
+  min: number
+  max: number
+  value: number
+  onNext: () => void
+  onPrevious: () => void
+  onFirst: () => void
+  onLast: () => void
+}> = ({ min, max, value, onNext, onPrevious, onFirst, onLast }) => {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', width: '300px' }}>
+      <Button data-testid='first-message-button' variant='plain' onClick={onFirst} isDisabled={value === min}>
+        {'<<'}
+      </Button>
+      <Button data-testid='previous-message-button' variant='plain' onClick={onPrevious} isDisabled={value === min}>
+        {'<'}
+      </Button>
+      <TextInput id='current-message-index' value={`${value}/${max}`} readOnly />
+      <Button data-testid='next-message-button' variant='plain' onClick={onNext} isDisabled={value === max}>
+        {'>'}
+      </Button>{' '}
+      <Button data-testid='last-message-button' variant='plain' onClick={onLast} isDisabled={value === max}>
+        {'>>'}
+      </Button>
+    </div>
   )
 }
 const MessageDetails: React.FunctionComponent<{
@@ -108,34 +135,44 @@ const MessageDetails: React.FunctionComponent<{
     setCurrentMessage(message)
     setCurrentIndex(index)
   }
-
+  const MessageHeader = () => {
+    return (
+      <div
+        aria-label='message-details-header'
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}
+      >
+        <Title aria-label='message-header-tittle' headingLevel='h2' style={{ marginRight: '10px' }}>
+          Message
+        </Title>
+        <MessageSelect
+          aria-label='message-header-messageSelector'
+          value={currentIndex + 1}
+          min={1}
+          max={maxValue}
+          onPrevious={() => switchToMessage(currentIndex - 1)}
+          onNext={() => switchToMessage(currentIndex + 1)}
+          onLast={() => switchToMessage(maxValue - 1)}
+          onFirst={() => switchToMessage(0)}
+        />
+      </div>
+    )
+  }
   return (
     <>
       <Button variant='link' onClick={handleModalToggle}>
         {mid}
       </Button>
       <Modal
-        bodyAriaLabel='Message details'
+        aria-label='Message-details-label'
         tabIndex={0}
+        data-testid={'message-details'}
         position={Position.Top}
         variant={ModalVariant.large}
         title={'Message Details'}
         isOpen={isModalOpen}
         onClose={handleModalToggle}
+        header={<MessageHeader aria-label='header' />}
       >
-        <br />
-        <NumberInput
-          value={currentIndex + 1}
-          min={1}
-          max={maxValue}
-          onMinus={() => switchToMessage(currentIndex - 1)}
-          onPlus={() => switchToMessage(currentIndex + 1)}
-          inputName='input'
-          inputAriaLabel='number input'
-          minusBtnAriaLabel='minus'
-          plusBtnAriaLabel='plus'
-        />{' '}
-        of {maxValue}
         <br />
         <ForwardMessagesComponent currentMessage={currentMessage} onForwardMessages={forwardMessages} />
         <FormGroup label='ID' frameBorder={1}>
@@ -150,7 +187,7 @@ const MessageDetails: React.FunctionComponent<{
         <br />
         <FormGroup label='Headers'>
           <TableComposable variant='compact'>
-            <Thead>
+            <Thead aria-label='headers-table-header'>
               <Tr>
                 <Td label='Key'>Key</Td>
                 <Td label='Type'>Type</Td>
@@ -392,6 +429,7 @@ export const BrowseMessages: React.FunctionComponent = () => {
                     />
                     <Td style={{ width: '20%' }}>
                       <MessageDetails
+                        aria-label={'message-details' + m.messageId}
                         message={m}
                         mid={m.messageId}
                         index={getFromIndex() + index}
