@@ -97,6 +97,14 @@ module.exports = {
     },
   },
   devServer: {
+    proxy: {
+      '/hawtio/proxy/**': {
+        target: 'http://localhost:3000',
+        pathRewrite: { '^/hawtio': '' },
+        changeOrigin: true,
+        logLevel: 'debug',
+      },
+    },
     setupMiddlewares: (middlewares, devServer) => {
       // Redirect / or /hawtio to /hawtio/
       devServer.app.get('/', (_, res) => res.redirect('/hawtio/'))
