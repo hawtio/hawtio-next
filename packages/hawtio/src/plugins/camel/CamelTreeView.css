@@ -18,3 +18,13 @@
   padding-top: 2px;
   font-size: smaller;
 }
+
+#camel-tree-view .pf-c-tree-view__node-icon {
+  flex-shrink: 0;
+}
+
+#camel-tree-view .pf-c-tree-view__node-text {
+  overflow-x: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
