@@ -387,6 +387,9 @@ export class MBeanNode implements TreeViewDataItem {
 
     child.parent = this
     this.children.push(child)
+
+    //Refresh ids on adoption
+    this.initId(true)
   }
 
   /**

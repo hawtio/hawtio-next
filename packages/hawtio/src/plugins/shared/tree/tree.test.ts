@@ -74,8 +74,8 @@ describe('MBeanTree', () => {
       //Can't access node.idSeparator as is private. And in any case, we should modify this whenever it changes
       const idSeparator = '-'
       const folderDenomination = '-folder'
-      const currentNodeExpectedPartOfId = escapeHtmlId(node.name) +
-        (node.getChildren().length !== 0 ? folderDenomination : '')
+      const currentNodeExpectedPartOfId =
+        escapeHtmlId(node.name) + (node.getChildren().length !== 0 ? folderDenomination : '')
 
       if (!node.parent) return currentNodeExpectedPartOfId
       return getExpectedIdRecursivelyFromParentNode(node.parent) + idSeparator + currentNodeExpectedPartOfId
@@ -173,16 +173,14 @@ describe('MBeanTree', () => {
   })
 })
 
-function createNode(name: string, objectName: string): MBeanNode {
-  const node = new MBeanNode(null, name, false)
+function createNode(name: string, objectName: string, parent?: MBeanNode): MBeanNode {
+  const node = new MBeanNode(parent ?? null, name, false)
   node.objectName = objectName
-  node.initId(false)
   return node
 }
 
 function createFolder(name: string, children: MBeanNode[]): MBeanNode {
   const folder = new MBeanNode(null, name, true)
   children.forEach(child => folder.adopt(child))
-  folder.initId(true)
   return folder
 }
