@@ -91,10 +91,10 @@ describe('routes-service', () => {
     }
 
     const expected: MBeanAttr[] = [
-      { id: 'from', name: 'from' },
-      { id: 'setBody', name: 'setBody' },
-      { id: 'to', name: 'to' },
-      { id: 'to', name: 'to' },
+      { id: 'sample-camel-1-folder-routes-2-folder-simple-folder-from', name: 'from' },
+      { id: 'sample-camel-1-folder-routes-2-folder-simple-folder-setBody', name: 'setBody' },
+      { id: 'sample-camel-1-folder-routes-2-folder-simple-folder-to', name: 'to' },
+      { id: 'sample-camel-1-folder-routes-2-folder-simple-folder-to', name: 'to' },
     ]
 
     for (let i = 0; i < simpleRouteNode.childCount(); ++i) {
