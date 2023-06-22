@@ -14,6 +14,12 @@ export const WatchableAttributesForm = ({
   onAttributesToWatchUpdate: (newAttributes: AttributesToWatch) => void
 }) => {
   const [modalAttributesToWatch, setModalAttributesToWatch] = useState<AttributesToWatch>(attributesToWatch)
+  // Take care when switching the text prop. As right now it's used to identify the key in attributes to watch prop.
+  // Because the key needs to be unique across all trees (or else there is a bug where the check selection applies to
+  // any element in any tree with the same key), I had to change the keys and no longer can use that prop for storing the key
+  // to the original attributes to watch.
+  // There is a way around this building a dictionary storing attribute names - keys, but it seemed too overengineered
+  // when the text is currently the same attribute name as the key in attributes to watch
 
   return (
     <Modal
@@ -67,14 +73,14 @@ export const WatchableAttributesForm = ({
           ) => {
             const newWatches: AttributesToWatch = {}
             newWatchedAttributes.forEach(newWatchedAttribute => {
-              newWatches[newWatchedAttribute.id] = {
-                ...Object.fromEntries(newWatchedAttribute.children?.map(({ id }) => [id, true]) || []),
+              newWatches[newWatchedAttribute.text] = {
+                ...Object.fromEntries(newWatchedAttribute.children?.map(({ text }) => [text, true]) || []),
               }
             })
             newUnwatchedAttributes.forEach(newUnwatchedAttribute => {
-              newWatches[newUnwatchedAttribute.id] = {
-                ...(newWatches[newUnwatchedAttribute.id] || {}),
-                ...Object.fromEntries(newUnwatchedAttribute.children?.map(({ id }) => [id, false]) || []),
+              newWatches[newUnwatchedAttribute.text] = {
+                ...(newWatches[newUnwatchedAttribute.text] || {}),
+                ...Object.fromEntries(newUnwatchedAttribute.children?.map(({ text }) => [text, false]) || []),
               }
             })
 
