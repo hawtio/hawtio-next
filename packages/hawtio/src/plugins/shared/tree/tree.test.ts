@@ -74,9 +74,8 @@ describe('MBeanTree', () => {
       //Can't access node.idSeparator as is private. And in any case, we should modify this whenever it changes
       const idSeparator = '-'
       const folderDenomination = '-folder'
-      const currentNodeExpectedPartOfId =
-        escapeHtmlId(node.name) +
-        (node.getChildren().length !== 0 && !node.name.includes('XNIO-2') ? folderDenomination : '')
+      const currentNodeExpectedPartOfId = escapeHtmlId(node.name) +
+        (node.getChildren().length !== 0 ? folderDenomination : '')
 
       if (!node.parent) return currentNodeExpectedPartOfId
       return getExpectedIdRecursivelyFromParentNode(node.parent) + idSeparator + currentNodeExpectedPartOfId
