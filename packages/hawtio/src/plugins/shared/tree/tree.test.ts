@@ -76,6 +76,7 @@ describe('MBeanTree', () => {
       const folderDenomination = '-folder'
       const currentNodeExpectedPartOfId =
         escapeHtmlId(node.name) +
+        // Guard for issue #377 (https://github.com/hawtio/hawtio-next/issues/377)
         (node.getChildren().length !== 0 && !node.name.includes('XNIO-2') ? folderDenomination : '')
 
       if (!node.parent) return currentNodeExpectedPartOfId
@@ -177,6 +178,7 @@ describe('MBeanTree', () => {
 function createNode(name: string, objectName: string): MBeanNode {
   const node = new MBeanNode(null, name, false)
   node.objectName = objectName
+  // Ids will be revisited. Check PR #378 (https://github.com/hawtio/hawtio-next/pull/378)
   node.initId(false)
   return node
 }
@@ -184,6 +186,7 @@ function createNode(name: string, objectName: string): MBeanNode {
 function createFolder(name: string, children: MBeanNode[]): MBeanNode {
   const folder = new MBeanNode(null, name, true)
   children.forEach(child => folder.adopt(child))
+  // Ids will be revisited. Check PR #378 (https://github.com/hawtio/hawtio-next/pull/378)
   folder.initId(true)
   return folder
 }
