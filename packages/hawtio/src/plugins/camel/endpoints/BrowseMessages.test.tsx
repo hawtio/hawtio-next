@@ -24,6 +24,7 @@ function getMockedMessages(): MessageData[] {
 
 jest.mock('@hawtiosrc/plugins/camel/endpoints/endpoints-service', () => ({
   getMessagesFromTheEndpoint: jest.fn().mockResolvedValue(getMockedMessages()),
+  getEndpoints: jest.fn().mockResolvedValue([]),
 }))
 describe('BrowseMessages.tsx', () => {
   const renderWithContext = () => {
