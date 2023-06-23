@@ -97,6 +97,7 @@ module.exports = {
     },
   },
   devServer: {
+    // TODO: We should update @hawtio/backend-middleware so that this workaround is not necessary
     proxy: {
       '/hawtio/proxy/**': {
         target: 'http://localhost:3000',
