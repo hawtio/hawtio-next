@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { CamelContext } from '@hawtiosrc/plugins/camel/context'
 import {
   Bullseye,
@@ -11,11 +11,16 @@ import {
   Flex,
   FlexItem,
   FormGroup,
+  Menu,
+  MenuContent,
+  MenuItem,
+  MenuList,
   Modal,
   ModalVariant,
   PageSection,
   Pagination,
   SearchInput,
+  Text,
   TextInput,
   Title,
   Toolbar,
@@ -30,20 +35,86 @@ import {
   getMessagesFromTheEndpoint,
   MessageData,
   forwardMessagesToEndpoint,
+  getEndpoints,
 } from '@hawtiosrc/plugins/camel/endpoints/endpoints-service'
 import { eventService, NotificationType } from '@hawtiosrc/core'
 import { Position } from 'reactflow'
+import { MBeanNode } from '@hawtiosrc/plugins'
 
 const ForwardMessagesComponent: React.FunctionComponent<{
   onForwardMessages: (uri: string, message?: MessageData) => void
   currentMessage?: MessageData
-}> = ({ onForwardMessages, currentMessage }) => {
+  endpoints: string[]
+}> = ({ onForwardMessages, currentMessage, endpoints }) => {
   const [uri, setUri] = useState('')
+  const [menuIsOpen, setMenuIsOpen] = React.useState(false)
+  const suggestionsRef = useRef(null)
+
+  const handleOutsideClick = (event: MouseEvent) => {
+    if (suggestionsRef.current && !(suggestionsRef.current as HTMLElement).contains(event.target as Node)) {
+      setMenuIsOpen(false)
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleOutsideClick)
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick)
+    }
+  }, [])
+
+  const onSelect = (event: React.MouseEvent<Element, MouseEvent> | undefined, itemId: string | number | undefined) => {
+    const selectedText = (event?.target as HTMLElement).innerText
+    setUri(selectedText)
+    setMenuIsOpen(false)
+    event?.stopPropagation()
+  }
+
+  const suggestionsList = endpoints
+    ?.filter(e => e.includes(uri))
+    .map((e, index) => {
+      const suggestion =
+        uri !== ''
+          ? e
+              .split(new RegExp(`(${uri})`, 'gi'))
+              .map((part, i) =>
+                part.toLowerCase() === uri.toLowerCase() ? <strong key={part + i}>{part}</strong> : part,
+              )
+          : e
+
+      return (
+        <MenuItem key={e} itemId={index}>
+          <Text>{suggestion}</Text>
+        </MenuItem>
+      )
+    })
+
+  const suggestions = (
+    <div ref={suggestionsRef}>
+      <Menu
+        style={{ position: 'absolute', top: '100%', zIndex: '999' }}
+        onSelect={onSelect}
+        onBlur={() => setMenuIsOpen(false)}
+      >
+        <MenuContent>
+          <MenuList data-testid='suggestions-menu-list'>{suggestionsList}</MenuList>
+        </MenuContent>
+      </Menu>
+    </div>
+  )
+
   return (
     <FormGroup label='URI:'>
       <Flex>
-        <FlexItem flex={{ default: 'flexNone', md: 'flex_3' }}>
-          <TextInput id='forward-input' label='URI:' onChange={setUri} value={uri} />
+        <FlexItem flex={{ default: 'flexNone', md: 'flex_3' }} style={{ position: 'relative' }}>
+          <TextInput
+            value={uri}
+            onChange={setUri}
+            onFocus={() => setMenuIsOpen(true)}
+            placeholder='uri'
+            aria-label='Search input'
+          />
+          {suggestionsList.length > 0 && menuIsOpen && suggestions}
         </FlexItem>
         <FlexItem flex={{ default: 'flexNone', md: 'flex_1' }}>
           <Button key='confirm' variant='primary' onClick={() => onForwardMessages(uri, currentMessage)}>
@@ -58,7 +129,8 @@ const ForwardMessagesComponent: React.FunctionComponent<{
 const ForwardMessagesModal: React.FunctionComponent<{
   onForwardMessages: (uri: string, message?: MessageData) => void
   enabled: boolean
-}> = ({ onForwardMessages, enabled }) => {
+  endpoints: string[]
+}> = ({ onForwardMessages, enabled, endpoints }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleModalToggle = () => {
@@ -80,7 +152,7 @@ const ForwardMessagesModal: React.FunctionComponent<{
         isOpen={isModalOpen}
         onClose={handleModalToggle}
       >
-        <ForwardMessagesComponent onForwardMessages={onForwardMessages} />
+        <ForwardMessagesComponent endpoints={endpoints} onForwardMessages={onForwardMessages} />
       </Modal>
     </>
   )
@@ -119,7 +191,8 @@ const MessageDetails: React.FunctionComponent<{
   maxValue: number
   getMessage: (index: number) => MessageData
   forwardMessages: (uri: string, message?: MessageData) => void
-}> = ({ message, mid, index, maxValue, getMessage, forwardMessages }) => {
+  endpoints: string[]
+}> = ({ message, mid, index, maxValue, getMessage, forwardMessages, endpoints }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentMessage, setCurrentMessage] = useState<MessageData>(message)
   const [currentIndex, setCurrentIndex] = useState<number>(index)
@@ -174,7 +247,11 @@ const MessageDetails: React.FunctionComponent<{
         header={<MessageHeader aria-label='header' />}
       >
         <br />
-        <ForwardMessagesComponent currentMessage={currentMessage} onForwardMessages={forwardMessages} />
+        <ForwardMessagesComponent
+          endpoints={endpoints}
+          currentMessage={currentMessage}
+          onForwardMessages={forwardMessages}
+        />
         <FormGroup label='ID' frameBorder={1}>
           {currentMessage.messageId}
         </FormGroup>
@@ -221,11 +298,15 @@ export const BrowseMessages: React.FunctionComponent = () => {
   const [selected, setSelected] = useState<string[]>([])
   const [page, setPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
+  const [endpoints, setEndpoints] = useState<string[]>([])
+
   useEffect(() => {
     const initLoad = async () => {
       if (selectedNode) {
         const messages = await getMessagesFromTheEndpoint(selectedNode, 0, -1)
         updateMessages(messages)
+        const endps = await getEndpoints(selectedNode as MBeanNode)
+        setEndpoints(endps.map(v => v.uri))
       }
     }
     initLoad()
@@ -388,7 +469,11 @@ export const BrowseMessages: React.FunctionComponent = () => {
             <Button onClick={loadMessages}>Refresh</Button>
           </ToolbarItem>
           <ToolbarItem>
-            <ForwardMessagesModal enabled={selected.length > 0} onForwardMessages={forwardMessages} />
+            <ForwardMessagesModal
+              endpoints={endpoints}
+              enabled={selected.length > 0}
+              onForwardMessages={forwardMessages}
+            />
           </ToolbarItem>
           <ToolbarItem variant='pagination'>
             <MessagesPagination />
@@ -431,6 +516,7 @@ export const BrowseMessages: React.FunctionComponent = () => {
                       <MessageDetails
                         aria-label={'message-details' + m.messageId}
                         message={m}
+                        endpoints={endpoints}
                         mid={m.messageId}
                         index={getFromIndex() + index}
                         getMessage={handleNextMessage}
