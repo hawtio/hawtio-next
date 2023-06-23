@@ -73,7 +73,6 @@ export class MBeanNode implements TreeViewDataItem {
       this.icon = Icons.mbean
     }
 
-    if (this.parent) this.parent.id = this.parent.generateId(true)
     this.id = this.generateId(folder)
   }
 
@@ -387,9 +386,6 @@ export class MBeanNode implements TreeViewDataItem {
 
     child.parent = this
     this.children.push(child)
-
-    //Refresh ids on adoption
-    this.initId(true)
   }
 
   /**
