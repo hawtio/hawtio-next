@@ -7,6 +7,7 @@ import fs from 'fs'
 import path from 'path'
 import { parseXML } from '@hawtiosrc/util/xml'
 import { IconNames } from './icons'
+import { xmlNodeLocalName } from './globals'
 
 jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
 
@@ -87,14 +88,19 @@ describe('routes-service', () => {
     type MBeanAttr = {
       id: string
       name: string
+      localName: string
       children?: MBeanAttr[]
     }
 
     const expected: MBeanAttr[] = [
-      { id: 'from', name: 'from' },
-      { id: 'setBody', name: 'setBody' },
-      { id: 'to', name: 'to' },
-      { id: 'to', name: 'to' },
+      {
+        id: 'quartz:simple?trigger.repeatInterval={{quartz.repeatInterval}}:from',
+        name: 'quartz:simple?trigger.repeatInterval={{quartz.repeatInterval}}: from',
+        localName: 'from'
+      },
+      { id: 'setBody2:setBody', name: 'setBody2: setBody', localName: 'setBody' },
+      { id: 'to3:to', name: 'to3: to', localName: 'to' },
+      { id: 'to4:to', name: 'to4: to', localName: 'to' },
     ]
 
     for (let i = 0; i < simpleRouteNode.childCount(); ++i) {
@@ -103,6 +109,7 @@ describe('routes-service', () => {
       childNode = childNode as MBeanNode
       expect(childNode.id).toBe(expected[i].id)
       expect(childNode.name).toBe(expected[i].name)
+      expect(childNode.getProperty(xmlNodeLocalName)).toBe(expected[i].localName)
       expect(childNode.getChildren().length).toBe(0)
       expect(childNode.icon).not.toBeNull()
       render(childNode.icon as React.ReactElement)

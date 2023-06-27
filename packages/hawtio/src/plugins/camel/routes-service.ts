@@ -1,7 +1,7 @@
 import React from 'react'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import { AttributeValues, jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
-import { contextNodeType, log, routeGroupsType, routeNodeType, routeXmlNodeType } from './globals'
+import { contextNodeType, log, routeGroupsType, routeNodeType, routeXmlNodeType, xmlNodeLocalName } from './globals'
 import { schemaService } from './schema-service'
 import * as ccs from './camel-content-service'
 import * as icons from './icons'
@@ -102,8 +102,16 @@ class RoutesService {
    * @method
    */
   private loadRouteChild(parent: MBeanNode, routeXml: Element): MBeanNode | null {
-    const nodeName = routeXml.localName
-    const nodeSettings = schemaService.getSchema(nodeName)
+    const nodeSettings = schemaService.getSchema(routeXml.localName)
+
+    /*
+     * if xml contains an id property then add that to node name
+     * if xml contains an uri property then add that to node name
+     */
+    const xmlId = routeXml.id
+    const xmlUri = routeXml.getAttribute('uri')
+    const nodeName = (xmlId ? xmlId + ': ' : (xmlUri ? xmlUri + ': ' : '')) + routeXml.localName
+
     if (nodeSettings) {
       const node = new MBeanNode(null, nodeName, false)
       node.setType(routeXmlNodeType)
@@ -127,6 +135,8 @@ class RoutesService {
    */
   loadRouteChildren(routeNode: MBeanNode, routeXml: Element) {
     routeNode.addProperty('xml', routeXml.outerHTML)
+    // Preserve the xml localname for use by views
+    routeNode.addProperty(xmlNodeLocalName, routeXml.localName)
 
     const routeGroup = routeXml.getAttribute('group')
     if (routeGroup) routeNode.addProperty('group', routeGroup)

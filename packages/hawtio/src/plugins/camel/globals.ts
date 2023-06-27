@@ -22,3 +22,11 @@ export const endpointNodeType = 'endpointNode'
 export const componentNodeType = 'componentNode'
 export const defaultRouteGroupsType = 'default'
 export const mbeansType = 'MBeans'
+
+/*
+ * The property name used to store the 'localName' property
+ * of the xml nodes, eg. <to id="red5" ... /> where localName is 'to'
+ * This is useful to retain since the camelSchema is keyed
+ * on these values.
+ */
+export const xmlNodeLocalName = 'xmlNodeLocalName'
