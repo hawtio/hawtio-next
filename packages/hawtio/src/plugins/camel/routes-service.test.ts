@@ -96,7 +96,7 @@ describe('routes-service', () => {
       {
         id: 'quartz:simple?trigger.repeatInterval={{quartz.repeatInterval}}:from',
         name: 'quartz:simple?trigger.repeatInterval={{quartz.repeatInterval}}: from',
-        localName: 'from'
+        localName: 'from',
       },
       { id: 'setBody2:setBody', name: 'setBody2: setBody', localName: 'setBody' },
       { id: 'to3:to', name: 'to3: to', localName: 'to' },

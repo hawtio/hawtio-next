@@ -263,6 +263,10 @@ export function hasRestServices(node: MBeanNode): boolean {
   return registry ? true : false
 }
 
+export function hasProperties(node: MBeanNode): boolean {
+  return isRouteNode(node) || isRouteXmlNode(node)
+}
+
 /**
  * Fetch the camel version and add it to the tree to avoid making a blocking call
  * elsewhere.
