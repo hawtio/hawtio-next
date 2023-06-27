@@ -1,0 +1,25 @@
+#properties-card-title-panel img {
+  margin-right: 1em;
+  vertical-align: middle;
+}
+
+#properties-card-title-panel-labelgroup {
+  margin-left: 1em;
+}
+
+.properties-list-panel {
+  margin-top: 1em !important;
+}
+
+.properties-list-panel .pf-c-panel__header {
+  color: darkblue;
+}
+
+.properties-no-properties {
+  font-style: italic !important;
+}
+
+.properties-name-tooltip-button {
+  margin-left: 0.5em;
+  color: grey;
+}

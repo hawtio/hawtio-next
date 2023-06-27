@@ -38,6 +38,7 @@ import { RouteDiagram } from './route-diagram/RouteDiagram'
 import { RouteDiagramContext, useRouteDiagramContext } from './route-diagram/route-diagram-context'
 import { CamelRoutes } from './routes/CamelRoutes'
 import { Source } from './routes/Source'
+import { Properties } from './properties'
 import { Trace } from './trace'
 import { TypeConverters } from './type-converters'
 
@@ -101,6 +102,7 @@ export const CamelContent: React.FunctionComponent = () => {
         !ccs.isEndpointsFolder(node) &&
         (ccs.isRouteNode(node) || ccs.isRoutesFolder(node)),
     },
+    { id: 'properties', title: 'Properties', component: <Properties />, isApplicable: ccs.hasProperties },
     { id: 'send', title: 'Send', component: <SendMessage />, isApplicable: ccs.isEndpointNode },
     {
       id: 'browse',

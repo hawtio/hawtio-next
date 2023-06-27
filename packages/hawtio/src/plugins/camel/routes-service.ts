@@ -61,7 +61,7 @@ export type RouteStats = Statistics & {
 }
 
 class RoutesService {
-  getIcon(nodeSettingsOrXmlNode: Record<string, unknown> | Element): React.ReactNode {
+  getIcon(nodeSettingsOrXmlNode: Record<string, unknown> | Element, size?: number): React.ReactNode {
     let nodeSettings: Record<string, unknown> | null = null
 
     if (nodeSettingsOrXmlNode instanceof Element) {
@@ -91,7 +91,7 @@ class RoutesService {
       //
       // Fetch the correct FunctionComponent icon from the icons module
       //
-      return icons.getIcon(iname)
+      return icons.getIcon(iname, size)
     }
 
     return null
@@ -110,7 +110,7 @@ class RoutesService {
      */
     const xmlId = routeXml.id
     const xmlUri = routeXml.getAttribute('uri')
-    const nodeName = (xmlId ? xmlId + ': ' : (xmlUri ? xmlUri + ': ' : '')) + routeXml.localName
+    const nodeName = (xmlId ? xmlId + ': ' : xmlUri ? xmlUri + ': ' : '') + routeXml.localName
 
     if (nodeSettings) {
       const node = new MBeanNode(null, nodeName, false)
