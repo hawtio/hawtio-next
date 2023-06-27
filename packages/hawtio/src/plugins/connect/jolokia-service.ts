@@ -1,6 +1,7 @@
 import { userService } from '@hawtiosrc/auth'
 import { eventService } from '@hawtiosrc/core'
 import { getCookie } from '@hawtiosrc/util/cookies'
+import { basicAuthHeaderValue } from '@hawtiosrc/util/http'
 import {
   escapeMBeanPath,
   onBulkSuccess,
@@ -33,9 +34,8 @@ import Jolokia, {
 import 'jolokia.js/jolokia-simple'
 import $ from 'jquery'
 import { func, is, object } from 'superstruct'
-import { connectService, PARAM_KEY_CONNECTION } from './connect-service'
+import { PARAM_KEY_CONNECTION, connectService } from './connect-service'
 import { log } from './globals'
-import { basicAuthHeaderValue } from '@hawtiosrc/util/http'
 
 export const DEFAULT_MAX_DEPTH = 7
 export const DEFAULT_MAX_COLLECTION_SIZE = 50000
@@ -417,13 +417,13 @@ class JolokiaService implements IJolokiaService {
 
   async search(mbeanPattern: string): Promise<string[]> {
     const jolokia = await this.jolokia
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       jolokia.search(
         mbeanPattern,
         onSimpleSuccessAndError(
           response => resolve(response as string[]),
           (response: IErrorResponse) => {
-            log.error('Error during the search: ' + response.value)
+            log.error('Error during the search:', response.value)
             resolve([])
           },
         ),
