@@ -79,7 +79,20 @@ export class MBeanNode implements TreeViewDataItem {
   private generateId(folder: boolean): string {
     const idPrefix = this.parent ? this.parent.id + this.idSeparator : ''
     const idPostFix = folder ? '-folder' : ''
-    return idPrefix + escapeHtmlId(this.name) + idPostFix
+    let id = idPrefix + escapeHtmlId(this.name) + idPostFix
+
+    // Check id is unique againt current siblings
+    if (this.parent) {
+      this.parent.getChildren().forEach(child => {
+        if (child === this) return
+
+        // id could possible still end up the same as another
+        // but pretty unlikely and not really worth doing more
+        if (child.id === id) id = id + '-' + Math.floor(Math.random() * 100)
+      })
+    }
+
+    return id
   }
 
   initId(recursive: boolean) {
