@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { CamelContext } from '@hawtiosrc/plugins/camel/context'
 import {
   Bullseye,
@@ -11,16 +11,11 @@ import {
   Flex,
   FlexItem,
   FormGroup,
-  Menu,
-  MenuContent,
-  MenuItem,
-  MenuList,
   Modal,
   ModalVariant,
   PageSection,
   Pagination,
   SearchInput,
-  Text,
   TextInput,
   Title,
   Toolbar,
@@ -40,81 +35,19 @@ import {
 import { eventService, NotificationType } from '@hawtiosrc/core'
 import { Position } from 'reactflow'
 import { MBeanNode } from '@hawtiosrc/plugins'
-
+import { InputWithSuggestions } from './InputWithSuggestions'
 const ForwardMessagesComponent: React.FunctionComponent<{
   onForwardMessages: (uri: string, message?: MessageData) => void
   currentMessage?: MessageData
   endpoints: string[]
 }> = ({ onForwardMessages, currentMessage, endpoints }) => {
   const [uri, setUri] = useState('')
-  const [menuIsOpen, setMenuIsOpen] = React.useState(false)
-  const suggestionsRef = useRef(null)
-
-  const handleOutsideClick = (event: MouseEvent) => {
-    if (suggestionsRef.current && !(suggestionsRef.current as HTMLElement).contains(event.target as Node)) {
-      setMenuIsOpen(false)
-    }
-  }
-
-  useEffect(() => {
-    document.addEventListener('mousedown', handleOutsideClick)
-    return () => {
-      document.removeEventListener('mousedown', handleOutsideClick)
-    }
-  }, [])
-
-  const onSelect = (event: React.MouseEvent<Element, MouseEvent> | undefined, itemId: string | number | undefined) => {
-    const selectedText = (event?.target as HTMLElement).innerText
-    setUri(selectedText)
-    setMenuIsOpen(false)
-    event?.stopPropagation()
-  }
-
-  const suggestionsList = endpoints
-    ?.filter(e => e.includes(uri))
-    .map((e, index) => {
-      const suggestion =
-        uri !== ''
-          ? e
-              .split(new RegExp(`(${uri})`, 'gi'))
-              .map((part, i) =>
-                part.toLowerCase() === uri.toLowerCase() ? <strong key={part + i}>{part}</strong> : part,
-              )
-          : e
-
-      return (
-        <MenuItem key={e} itemId={index}>
-          <Text>{suggestion}</Text>
-        </MenuItem>
-      )
-    })
-
-  const suggestions = (
-    <div ref={suggestionsRef}>
-      <Menu
-        style={{ position: 'absolute', top: '100%', zIndex: '999' }}
-        onSelect={onSelect}
-        onBlur={() => setMenuIsOpen(false)}
-      >
-        <MenuContent>
-          <MenuList data-testid='suggestions-menu-list'>{suggestionsList}</MenuList>
-        </MenuContent>
-      </Menu>
-    </div>
-  )
 
   return (
     <FormGroup label='URI:'>
       <Flex>
-        <FlexItem flex={{ default: 'flexNone', md: 'flex_3' }} style={{ position: 'relative' }}>
-          <TextInput
-            value={uri}
-            onChange={setUri}
-            onFocus={() => setMenuIsOpen(true)}
-            placeholder='uri'
-            aria-label='Search input'
-          />
-          {suggestionsList.length > 0 && menuIsOpen && suggestions}
+        <FlexItem flex={{ default: 'flexNone', md: 'flex_3' }}>
+          <InputWithSuggestions suggestions={endpoints} value={uri} onChange={setUri} />
         </FlexItem>
         <FlexItem flex={{ default: 'flexNone', md: 'flex_1' }}>
           <Button key='confirm' variant='primary' onClick={() => onForwardMessages(uri, currentMessage)}>
@@ -151,6 +84,7 @@ const ForwardMessagesModal: React.FunctionComponent<{
         title={'Forward Messages'}
         isOpen={isModalOpen}
         onClose={handleModalToggle}
+        style={{ overflow: 'visible' }}
       >
         <ForwardMessagesComponent endpoints={endpoints} onForwardMessages={onForwardMessages} />
       </Modal>
