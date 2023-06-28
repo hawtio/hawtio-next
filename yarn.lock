@@ -2032,7 +2032,7 @@ __metadata:
     jolokia.js: 1.7.2
     jquery: ^3.7.0
     js-logger: ^1.6.1
-    keycloak-js: ^21.1.1
+    keycloak-js: ^21.1.2
     monaco-editor: ^0.39.0
     react: ^18.2.0
     react-dom: ^18.2.0
@@ -11378,13 +11378,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"keycloak-js@npm:^21.1.1":
-  version: 21.1.1
-  resolution: "keycloak-js@npm:21.1.1"
+"keycloak-js@npm:^21.1.2":
+  version: 21.1.2
+  resolution: "keycloak-js@npm:21.1.2"
   dependencies:
     base64-js: ^1.5.1
     js-sha256: ^0.9.0
-  checksum: 73c0340bd39301336e95755b3304bf96d660600660ee4729c0e2e51463fdea3a8ddf767ac0e8b6284092cdd68006ecd81f3d461863543bfb55c70cd2458deab8
+  checksum: 518dcdeda38fb111c8382bc033503d24fe1a2aaa0fee1e6a3120187bab4b9a0009bad7e1366db66ca1aaeb15997132316d58c675d61f09c96b4043c43f3516c9
   languageName: node
   linkType: hard
 
