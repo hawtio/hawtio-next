@@ -21,6 +21,8 @@ import { CodeEditor, Language } from '@patternfly/react-code-editor'
 import { doSendMessage } from '@hawtiosrc/plugins/camel/endpoints/endpoints-service'
 import { eventService, NotificationType } from '@hawtiosrc/core'
 import { SelectOptionObject } from '@patternfly/react-core/src/components/Select/SelectOption'
+import { headers as exchangeHeaders } from './exchange-headers-camel-model.json'
+import { InputWithSuggestions } from './InputWithSuggestions'
 
 type SendBodyMessageProps = {
   onBodyChange: (body: string) => void
@@ -104,10 +106,11 @@ type MessageHeadersProps = {
 }
 const MessageHeaders: React.FunctionComponent<MessageHeadersProps> = props => {
   const [headers, setHeaders] = useState<Array<{ name: string; value: string }>>([])
+  const headersSuggestions = Object.keys(exchangeHeaders as Record<string, { type: string }>)
 
-  const handleInputChange = (index: number, newValue: string, event: React.FormEvent<HTMLInputElement>) => {
+  const handleInputChange = (index: number, newValue: string, headerName: string) => {
     const updatedHeaders = [...headers]
-    updatedHeaders[index] = { ...updatedHeaders[index], [event.currentTarget.name]: newValue }
+    updatedHeaders[index] = { ...updatedHeaders[index], [headerName]: newValue }
     setHeaders(updatedHeaders)
     props.onHeadersChange(updatedHeaders)
   }
@@ -145,12 +148,11 @@ const MessageHeaders: React.FunctionComponent<MessageHeadersProps> = props => {
           headers.map((header, index) => (
             <Flex key={index}>
               <FlexItem flex={{ default: 'flexNone', md: 'flex_2' }}>
-                <TextInput
-                  type='text'
+                <InputWithSuggestions
                   aria-label={'name-input-' + index}
-                  name='name'
+                  suggestions={headersSuggestions}
                   value={header.name}
-                  onChange={(newValue, event) => handleInputChange(index, newValue, event)}
+                  onChange={newValue => handleInputChange(index, newValue, 'name')}
                 />
               </FlexItem>
               <FlexItem flex={{ default: 'flexNone', md: 'flex_2' }}>
@@ -159,7 +161,7 @@ const MessageHeaders: React.FunctionComponent<MessageHeadersProps> = props => {
                   name='value'
                   aria-label={'value-input-' + index}
                   value={header.value}
-                  onChange={(newValue, event) => handleInputChange(index, newValue, event)}
+                  onChange={(newValue, event) => handleInputChange(index, newValue, 'value')}
                 />
               </FlexItem>
               <FlexItem flex={{ default: 'flexNone', md: 'flex_1' }} span={4}>
