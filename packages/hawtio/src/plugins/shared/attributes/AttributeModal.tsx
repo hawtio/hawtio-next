@@ -41,7 +41,7 @@ export const AttributeModal: React.FunctionComponent<AttributeModalProps> = prop
     return null
   }
 
-  const attribute = selectedNode.mbean.attr[name]
+  const attribute = selectedNode.mbean.attr?.[name]
   if (!attribute) {
     return null
   }
