@@ -136,17 +136,33 @@ function addOperation(node: MBeanNode, opList: string[], opName: string, op: IJm
   opList.push(opString)
 }
 
+type BulkResponse = { [name: string]: Operations }
+type Operations = { [name: string]: Operation }
+type Operation = { ObjectName: string; Method: string; CanInvoke: boolean }
+
 function applyCanInvoke(mbeans: Record<string, MBeanNode>, response: IResponse) {
   if (response.request.type !== 'exec') {
     return
   }
   const requestMBean = response.request.arguments?.[0]
-  if (!isString(requestMBean)) {
-    return
+  if (isString(requestMBean)) {
+    // single mbean request
+    const mbean = mbeans[requestMBean]
+    // update canInvoke and icon on the mbean node
+    mbean?.updateCanInvoke(response.value as boolean)
+  } else {
+    // batch mbean ops request
+    const bulkResponse: BulkResponse = response.value as BulkResponse
+    log.debug('Bulk operations response:', bulkResponse)
+    // apply canInvoke to op and opByString on each mbean node
+    Object.entries(bulkResponse).forEach(([mbeanName, ops]) =>
+      Object.entries(ops).forEach(([opName, op]) => {
+        const mbean = mbeans[mbeanName]
+        const mbeanOp = mbean?.mbean?.opByString?.[opName]
+        if (mbeanOp) {
+          mbeanOp.canInvoke = op.CanInvoke
+        }
+      }),
+    )
   }
-  const mbean = mbeans[requestMBean]
-  if (!mbean) {
-    return
-  }
-  mbean.updateCanInvoke(response.value as boolean)
 }
