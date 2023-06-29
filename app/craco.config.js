@@ -97,15 +97,6 @@ module.exports = {
     },
   },
   devServer: {
-    // TODO: We should update @hawtio/backend-middleware so that this workaround is not necessary
-    proxy: {
-      '/hawtio/proxy/**': {
-        target: 'http://localhost:3000',
-        pathRewrite: { '^/hawtio': '' },
-        changeOrigin: true,
-        logLevel: 'debug',
-      },
-    },
     setupMiddlewares: (middlewares, devServer) => {
       // Redirect / or /hawtio to /hawtio/
       devServer.app.get('/', (_, res) => res.redirect('/hawtio/'))
@@ -145,7 +136,7 @@ module.exports = {
 
       middlewares.push({
         name: 'hawtio-backend',
-        path: '/proxy',
+        path: '/hawtio/proxy',
         middleware: hawtioBackend({
           // Uncomment it if you want to see debug log for Hawtio backend
           logLevel: 'debug',
