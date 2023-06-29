@@ -23,26 +23,27 @@ export const InputWithSuggestions: React.FunctionComponent<{
   }, [])
 
   const onSelect = (event: React.MouseEvent<Element, MouseEvent> | undefined, itemId: string | number | undefined) => {
-    const selectedText = (event?.target as HTMLElement).innerText
+    const selectedText = itemId as string
     onChange(selectedText)
     setMenuIsOpen(false)
     event?.stopPropagation()
   }
 
   const suggestionsList = suggestions
-    ?.filter(e => e.includes(value))
+    ?.filter(e => e.toLowerCase().includes(value.toLowerCase()))
     .map((e, index) => {
+      const regex = value.replace(/[-\\/^$*+?.()|[\]{}]/g, '\\$&')
       const suggestion =
         value !== ''
           ? e
-              .split(new RegExp(`(${value})`, 'gi'))
+              .split(new RegExp(`(${regex})`, 'gi'))
               .map((part, i) =>
                 part.toLowerCase() === value.toLowerCase() ? <strong key={part + i}>{part}</strong> : part,
               )
           : e
 
       return (
-        <MenuItem key={e} itemId={index}>
+        <MenuItem key={e} itemId={e}>
           <Text>{suggestion}</Text>
         </MenuItem>
       )
