@@ -149,7 +149,7 @@ export function canBrowse(node: MBeanNode): boolean {
 }
 
 export function canBrowseMessages(node: MBeanNode): boolean {
-  const browseMessages = node.mbean?.op['browseMessageAsXml']
+  const browseMessages = node.mbean?.op?.['browseMessageAsXml']
   return !!browseMessages
 }
 

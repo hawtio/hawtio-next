@@ -17,7 +17,7 @@ export const Operations: React.FunctionComponent = () => {
   const objectName = selectedNode.objectName
   const mbean = selectedNode.mbean
 
-  if (isEmpty(mbean.op)) {
+  if (!mbean.op || isEmpty(mbean.op)) {
     return (
       <Card>
         <CardBody>
