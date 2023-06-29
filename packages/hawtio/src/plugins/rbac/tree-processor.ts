@@ -1,7 +1,7 @@
 import { MBeanNode, MBeanTree, TreeProcessor } from '@hawtiosrc/plugins/shared'
 import { operationToString } from '@hawtiosrc/util/jolokia'
 import { isArray } from '@hawtiosrc/util/objects'
-import { isString } from '@hawtiosrc/util/strings'
+import { isBlank, isString } from '@hawtiosrc/util/strings'
 import { IJmxOperation, IRequest, IResponse } from 'jolokia.js'
 import { JolokiaListMethod, jolokiaService } from '../connect'
 import { log } from './globals'
@@ -30,7 +30,7 @@ export const rbacTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
   log.debug('Processing tree:', tree)
   const aclMBean = await rbacService.getACLMBean()
 
-  if (!aclMBean || aclMBean.length === 0) {
+  if (isBlank(aclMBean)) {
     /*
      * Some implementations of jolokia provision, eg. running with java -javaagent
      * do not provide an acl mbean or implement server-side RBAC so need to skip
@@ -51,7 +51,7 @@ export const rbacTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
         // The tree already has everything related to RBAC in place including icons
       } else {
         log.debug('JMX tree not decorated with RBAC, fetching RBAC info now')
-        processRBAC(aclMBean, mbeans)
+        await processRBAC(aclMBean, mbeans)
       }
       log.debug('Processed tree mbeans with RBAC:', mbeans)
       break
@@ -60,7 +60,7 @@ export const rbacTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
     case JolokiaListMethod.UNDETERMINED:
     default:
       log.debug('Process JMX tree: general mode')
-      processRBAC(aclMBean, mbeans)
+      await processRBAC(aclMBean, mbeans)
       log.debug('Processed tree mbeans:', mbeans)
   }
 }
@@ -84,6 +84,7 @@ async function processRBAC(aclMBean: string, mbeans: Record<string, MBeanNode>) 
   // send batch request
   log.debug('Batch canInvoke request:', requests)
   const responses = await jolokiaService.bulkRequest(requests)
+  log.debug('Batch canInvoke response:', responses)
   responses.forEach(response => applyCanInvoke(mbeans, response))
 }
 
