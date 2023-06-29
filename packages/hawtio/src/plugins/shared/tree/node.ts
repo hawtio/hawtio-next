@@ -33,6 +33,8 @@ export type FilterFn = (node: MBeanNode) => boolean
 
 export type ForEachFn = (node: MBeanNode) => void
 
+const MBEAN_NODE_ID_SEPARATOR = '-'
+
 export class MBeanNode implements TreeViewDataItem {
   /**
    * ID of the tree view item in HTML.
@@ -49,8 +51,6 @@ export class MBeanNode implements TreeViewDataItem {
   // MBean info
   objectName?: string
   mbean?: OptimisedJmxMBean
-
-  private readonly idSeparator = '-'
 
   /**
    * A new node
@@ -77,7 +77,7 @@ export class MBeanNode implements TreeViewDataItem {
   }
 
   private generateId(folder: boolean): string {
-    const idPrefix = this.parent ? this.parent.id + this.idSeparator : ''
+    const idPrefix = this.parent ? this.parent.id + MBEAN_NODE_ID_SEPARATOR : ''
     const idPostFix = folder ? '-folder' : ''
     return idPrefix + escapeHtmlId(this.name) + idPostFix
   }
