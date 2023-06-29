@@ -445,7 +445,6 @@ class JolokiaService implements IJolokiaService {
           }
         }),
       )
-      resolve(bulkResponse)
     })
   }
 
