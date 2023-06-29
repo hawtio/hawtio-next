@@ -4,7 +4,7 @@ import { isEmpty } from '@hawtiosrc/util/objects'
 import { stringSorter, trimQuotes } from '@hawtiosrc/util/strings'
 import { TreeViewDataItem } from '@patternfly/react-core'
 import { CubeIcon, FolderIcon, FolderOpenIcon, LockIcon } from '@patternfly/react-icons'
-import { IJmxMBean } from 'jolokia.js'
+import { IJmxMBean, IJmxOperation } from 'jolokia.js'
 import React from 'react'
 import { pluginName } from '../globals'
 
@@ -26,7 +26,7 @@ export type OptimisedJmxDomain = {
 }
 
 export interface OptimisedJmxMBean extends IJmxMBean {
-  opByString?: { [name: string]: unknown }
+  opByString?: { [name: string]: IJmxOperation }
 }
 
 export type FilterFn = (node: MBeanNode) => boolean
