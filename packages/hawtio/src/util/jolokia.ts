@@ -23,6 +23,10 @@ export function onSuccess(successFn: IResponseFn, options: IOptions = {}): IOpti
   return onGenericSuccess(successFn, options)
 }
 
+export function onSuccessAndError(successFn: IResponseFn, errorFn: IErrorResponseFn, options: IOptions = {}): IOptions {
+  return onGenericSuccessAndError(successFn, errorFn, options)
+}
+
 export function onSimpleSuccess(successFn: ISimpleResponseFn, options: ISimpleOptions = {}): ISimpleOptions {
   return onGenericSuccess(successFn, options)
 }
@@ -51,8 +55,24 @@ export function onVersionSuccess(successFn: IVersionResponseFn, options: IVersio
   return onGenericSuccess(successFn, options)
 }
 
+export function onVersionSuccessAndError(
+  successFn: IVersionResponseFn,
+  errorFn: IErrorResponseFn,
+  options: IVersionOptions = {},
+): IVersionOptions {
+  return onGenericSuccessAndError(successFn, errorFn, options)
+}
+
 export function onBulkSuccess(successFn: IResponseFn | IResponseFn[], options: IBulkOptions = {}): IBulkOptions {
   return onGenericSuccess(successFn, options)
+}
+
+export function onBulkSuccessAndError(
+  successFn: IResponseFn | IResponseFn[],
+  errorFn: IErrorResponseFn,
+  options: IBulkOptions = {},
+): IBulkOptions {
+  return onGenericSuccessAndError(successFn, errorFn, options)
 }
 
 export function onGenericSuccess<R, O extends IOptionsBase>(successFn: R, options?: O): O {
