@@ -4,11 +4,10 @@ import { getCookie } from '@hawtiosrc/util/cookies'
 import { basicAuthHeaderValue } from '@hawtiosrc/util/http'
 import {
   escapeMBeanPath,
-  onBulkSuccess,
+  onBulkSuccessAndError,
   onListSuccessAndError,
-  onSimpleSuccess,
   onSimpleSuccessAndError,
-  onSuccess,
+  onSuccessAndError,
 } from '@hawtiosrc/util/jolokia'
 import { isObject } from '@hawtiosrc/util/objects'
 import { parseBoolean } from '@hawtiosrc/util/strings'
@@ -68,6 +67,8 @@ export enum JolokiaListMethod {
  * with optionally decorated RBAC info on the result.
  */
 const OPTIMISED_JOLOKIA_LIST_MBEAN = 'hawtio:type=security,name=RBACRegistry'
+
+const OPTIMISED_JOLOKIA_LIST_MAX_DEPTH = 9
 
 export type JolokiaConfig = {
   method: JolokiaListMethod
@@ -342,15 +343,20 @@ class JolokiaService implements IJolokiaService {
     const jolokia = await this.jolokia
     const { method, mbean } = this.config
 
-    return new Promise<unknown>((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       switch (method) {
         case JolokiaListMethod.OPTIMISED:
           log.debug('Invoke Jolokia list MBean in optimised mode')
-          options.maxDepth = 9
+          // Overwrite max depth as listing MBeans requires some constant depth to work
+          options.maxDepth = OPTIMISED_JOLOKIA_LIST_MAX_DEPTH
           jolokia.execute(
             mbean,
             'list()',
-            onSimpleSuccess(value => resolve(value), options),
+            onSimpleSuccessAndError(
+              value => resolve(value),
+              error => reject(error),
+              options,
+            ),
           )
           break
         case JolokiaListMethod.DEFAULT:
@@ -361,7 +367,7 @@ class JolokiaService implements IJolokiaService {
             null,
             onListSuccessAndError(
               value => resolve(value),
-              response => reject(response),
+              error => reject(error),
               options,
             ),
           )
@@ -374,7 +380,13 @@ class JolokiaService implements IJolokiaService {
     return new Promise(resolve => {
       jolokia.request(
         { type: 'read', mbean },
-        onSuccess(response => resolve(response.value as AttributeValues)),
+        onSuccessAndError(
+          response => resolve(response.value as AttributeValues),
+          error => {
+            log.error('Error during readAttributes:', error)
+            resolve({})
+          },
+        ),
       )
     })
   }
@@ -384,7 +396,13 @@ class JolokiaService implements IJolokiaService {
     return new Promise(resolve => {
       jolokia.request(
         { type: 'read', mbean, attribute },
-        onSuccess(response => resolve(response.value as unknown)),
+        onSuccessAndError(
+          response => resolve(response.value as unknown),
+          error => {
+            log.error('Error during readAttribute:', error)
+            resolve(null)
+          },
+        ),
       )
     })
   }
@@ -394,7 +412,13 @@ class JolokiaService implements IJolokiaService {
     return new Promise(resolve => {
       jolokia.request(
         { type: 'write', mbean, attribute, value },
-        onSuccess(response => resolve(response.value as unknown)),
+        onSuccessAndError(
+          response => resolve(response.value as unknown),
+          error => {
+            log.error('Error during writeAttribute:', error)
+            resolve(null)
+          },
+        ),
       )
     })
   }
@@ -407,9 +431,8 @@ class JolokiaService implements IJolokiaService {
         operation,
         ...args,
         onSimpleSuccessAndError(
-          (response: unknown) => resolve(response),
-          // TODO: move to OperationService
-          (response: IErrorResponse) => reject(response.stacktrace || response.error),
+          response => resolve(response),
+          error => reject(error.stacktrace || error.error),
         ),
       )
     })
@@ -422,8 +445,8 @@ class JolokiaService implements IJolokiaService {
         mbeanPattern,
         onSimpleSuccessAndError(
           response => resolve(response as string[]),
-          (response: IErrorResponse) => {
-            log.error('Error during the search:', response.value)
+          error => {
+            log.error('Error during search:', error)
             resolve([])
           },
         ),
@@ -437,13 +460,19 @@ class JolokiaService implements IJolokiaService {
       const bulkResponse: IResponse[] = []
       jolokia.request(
         requests,
-        onBulkSuccess((response: IResponse) => {
-          bulkResponse.push(response)
-          // Resolve only when all the responses from the bulk request are collected
-          if (bulkResponse.length === requests.length) {
+        onBulkSuccessAndError(
+          response => {
+            bulkResponse.push(response)
+            // Resolve only when all the responses from the bulk request are collected
+            if (bulkResponse.length === requests.length) {
+              resolve(bulkResponse)
+            }
+          },
+          error => {
+            log.error('Error during bulkRequest:', error)
             resolve(bulkResponse)
-          }
-        }),
+          },
+        ),
       )
     })
   }
