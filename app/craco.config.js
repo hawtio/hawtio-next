@@ -1,9 +1,11 @@
 const { ModuleFederationPlugin } = require('webpack').container
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
 const { dependencies } = require('./package.json')
+const CracoEsbuildPlugin = require('craco-esbuild')
 const { hawtioBackend } = require('@hawtio/backend-middleware')
 
 module.exports = {
+  plugins: [{ plugin: CracoEsbuildPlugin }],
   webpack: {
     plugins: {
       add: [

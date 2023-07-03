@@ -19,7 +19,8 @@
     "web-vitals": "^3.3.2"
   },
   "devDependencies": {
-    "@hawtio/backend-middleware": "^1.0.3"
+    "@hawtio/backend-middleware": "^1.0.3",
+    "craco-esbuild": "^0.5.2"
   },
   "browserslist": {
     "production": [
