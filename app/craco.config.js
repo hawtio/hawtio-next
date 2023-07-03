@@ -30,7 +30,7 @@ module.exports = {
             '@hawtio/react': {
               singleton: true,
               // Hardcoding needed because it cannot handle yarn 'workspace:*' version
-              requiredVersion: '^0.3.0-dev.2',
+              requiredVersion: '^0.3.0',
             },
           },
         }),
