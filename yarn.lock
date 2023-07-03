@@ -2429,7 +2429,7 @@ __metadata:
   resolution: "@hawtio/react@workspace:packages/hawtio"
   dependencies:
     "@hawtio/camel-model": ^3.20.6
-    "@module-federation/utilities": ^1.6.0
+    "@module-federation/utilities": ^2.0.0
     "@patternfly/react-charts": ^6.94.19
     "@patternfly/react-code-editor": ^4.82.113
     "@patternfly/react-core": ^4.276.8
@@ -3189,9 +3189,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@module-federation/utilities@npm:^1.6.0":
-  version: 1.6.0
-  resolution: "@module-federation/utilities@npm:1.6.0"
+"@module-federation/utilities@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@module-federation/utilities@npm:2.0.0"
+  dependencies:
+    webpack-sources: 3.2.3
   peerDependencies:
     next: ^12 || ^13
     react: ^16 || ^17 || ^18
@@ -3204,7 +3206,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 7da6d3f3c7640870b1f3264d1a83593c894e54ec1b5a5ac2058fe28c4206a27b47efb6e55869d693ab0417a3661e06011b05953f655acec7e61171d2b1e9e694
+  checksum: 8050ff6f130d3ee45d9ca4484658b5817f3b392d93325cf289da76a79565b6a5e00f18c06e454aee97a6ae82b897bac28c37aad6677764853a8dd99db5135346
   languageName: node
   linkType: hard
 
@@ -18869,6 +18871,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"webpack-sources@npm:3.2.3, webpack-sources@npm:^3.2.3":
+  version: 3.2.3
+  resolution: "webpack-sources@npm:3.2.3"
+  checksum: 989e401b9fe3536529e2a99dac8c1bdc50e3a0a2c8669cbafad31271eadd994bc9405f88a3039cd2e29db5e6d9d0926ceb7a1a4e7409ece021fe79c37d9c4607
+  languageName: node
+  linkType: hard
+
 "webpack-sources@npm:^1.4.3":
   version: 1.4.3
   resolution: "webpack-sources@npm:1.4.3"
@@ -18886,13 +18895,6 @@ __metadata:
     source-list-map: ^2.0.1
     source-map: ^0.6.1
   checksum: 6fd67f2274a84c5f51ad89767112ec8b47727134bf0f2ba0cff458c970f18966939a24128bdbddba621cd66eeb2bef0552642a9333cd8e54514f7b2a71776346
-  languageName: node
-  linkType: hard
-
-"webpack-sources@npm:^3.2.3":
-  version: 3.2.3
-  resolution: "webpack-sources@npm:3.2.3"
-  checksum: 989e401b9fe3536529e2a99dac8c1bdc50e3a0a2c8669cbafad31271eadd994bc9405f88a3039cd2e29db5e6d9d0926ceb7a1a4e7409ece021fe79c37d9c4607
   languageName: node
   linkType: hard
 
