@@ -2,11 +2,9 @@ import { isEmpty } from '@hawtiosrc/util/objects'
 import { stringSorter, trimEnd } from '@hawtiosrc/util/strings'
 import { IJmxOperation, IJmxOperations } from 'jolokia.js'
 
-type OperationMap = { [name: string]: Operation }
-
 export function createOperations(objectName: string, jmxOperations: IJmxOperations): Operation[] {
   const operations: Operation[] = []
-  const operationMap: OperationMap = {}
+  const operationMap: Record<string, Operation> = {}
   Object.entries(jmxOperations).forEach(([name, op]) => {
     if (Array.isArray(op)) {
       op.forEach(op => addOperation(operations, operationMap, name, op))
@@ -22,38 +20,45 @@ export function createOperations(objectName: string, jmxOperations: IJmxOperatio
   return operations
 }
 
-function addOperation(operations: Operation[], operationMap: OperationMap, name: string, op: IJmxOperation): void {
+function addOperation(
+  operations: Operation[],
+  operationMap: Record<string, Operation>,
+  name: string,
+  op: IJmxOperation,
+): void {
   const operation = new Operation(
     name,
     op.args.map(arg => new OperationArgument(arg.name, arg.type, arg.desc)),
     op.desc,
     op.ret,
+    op.canInvoke,
   )
   operations.push(operation)
   operationMap[operation.name] = operation
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function fetchPermissions(operationMap: OperationMap, objectName: string) {
+function fetchPermissions(operationMap: Record<string, Operation>, objectName: string) {
   // TODO: impl fetch permissions
 }
 
 export class Operation {
   readonly name: string
   readonly readableName: string
-  canInvoke: boolean
+  readonly readableReturnType: string
 
-  static IGNORED_PACKAGES = ['java.util', 'java.lang']
+  static readonly IGNORED_PACKAGES = ['java.util', 'java.lang']
 
   constructor(
-    method: string,
+    readonly method: string,
     readonly args: OperationArgument[],
     readonly description: string,
     readonly returnType: string,
+    readonly canInvoke: boolean = true,
   ) {
     this.name = this.buildName(method)
     this.readableName = this.buildReadableName(method)
-    this.canInvoke = true
+    this.readableReturnType = this.buildReadableReturnType()
   }
 
   private buildName(method: string): string {
@@ -64,7 +69,7 @@ export class Operation {
     return method + '(' + this.args.map(arg => arg.readableType).join(', ') + ')'
   }
 
-  getReadableReturnType(): string {
+  private buildReadableReturnType(): string {
     const splitName = this.returnType.split('.')
     const typeName = splitName.pop()
     const packageName = splitName.join('.')
