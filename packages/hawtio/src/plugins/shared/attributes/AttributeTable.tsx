@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import { Card, CardBody, Text } from '@patternfly/react-core'
 import { Table, TableBody, TableHeader, TableProps } from '@patternfly/react-table'
-import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/selectionNodeContext'
+import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
 import { AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { attributeService } from './attribute-service'
 import './AttributeTable.css'

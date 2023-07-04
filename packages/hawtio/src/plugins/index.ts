@@ -16,5 +16,5 @@ export const registerPlugins: HawtioPlugin = () => {
 }
 
 export * from './connect'
-export * from './selectionNodeContext'
+export * from './context'
 export * from './shared'

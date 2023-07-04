@@ -11,7 +11,7 @@ import {
 import { InfoCircleIcon } from '@patternfly/react-icons'
 import { ChartArea, ChartAxis, Chart as ChartDraw, ChartVoronoiContainer } from '@patternfly/react-charts'
 import { useContext, useEffect, useRef, useState } from 'react'
-import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/selectionNodeContext'
+import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import { AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { IResponse } from 'jolokia.js'

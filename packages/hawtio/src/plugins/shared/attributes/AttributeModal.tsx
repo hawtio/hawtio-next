@@ -10,7 +10,7 @@ import {
 } from '@patternfly/react-core'
 import React, { useEffect, useState, useContext } from 'react'
 import { attributeService } from './attribute-service'
-import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/selectionNodeContext'
+import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
 
 export interface AttributeModalProps {
   isOpen: boolean
