@@ -1,15 +1,19 @@
+import { useUser } from '@hawtiosrc/auth/hooks'
 import { DEFAULT_APP_NAME, useHawtconfig } from '@hawtiosrc/core'
 import { backgroundImages, hawtioLogo } from '@hawtiosrc/img'
 import { ListItem, ListVariant, LoginFooterItem, LoginForm, LoginPage } from '@patternfly/react-core'
 import { ExclamationCircleIcon } from '@patternfly/react-icons'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { HawtioNotification } from '../notification'
+import { HawtioLoading } from '../page/HawtioLoading'
+import { log } from './globals'
 import { loginService } from './login-service'
 
 export const HawtioLogin: React.FunctionComponent = () => {
   const navigate = useNavigate()
 
+  const { isLogin, userLoaded } = useUser()
   const { hawtconfig, hawtconfigLoaded } = useHawtconfig()
 
   const [username, setUsername] = useState(loginService.getUser())
@@ -19,9 +23,18 @@ export const HawtioLogin: React.FunctionComponent = () => {
   const [rememberMe, setRememberMe] = useState(username !== '')
   const [loginFailed, setLoginFailed] = useState(false)
 
-  if (!hawtconfigLoaded) {
-    return null
+  useEffect(() => {
+    if (isLogin) {
+      navigate('/')
+    }
+  }, [isLogin, navigate])
+
+  if (!userLoaded || !hawtconfigLoaded) {
+    log.debug('Loading:', 'user =', userLoaded, ', hawtconfig =', hawtconfigLoaded)
+    return <HawtioLoading />
   }
+
+  log.debug(`Login state: username = ${username}, isLogin = ${isLogin}`)
 
   const appLogo = hawtconfig.branding?.appLogoUrl || hawtioLogo
   const appName = hawtconfig.branding?.appName || DEFAULT_APP_NAME

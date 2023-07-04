@@ -33,7 +33,7 @@ export const HawtioPage: React.FunctionComponent = () => {
   const { selectedNode, setSelectedNode } = usePluginNodeSelected()
 
   if (!userLoaded || !pluginsLoaded) {
-    log.debug('Loading user and plugins:', 'user =', userLoaded, ', plugins =', pluginsLoaded)
+    log.debug('Loading:', 'user =', userLoaded, ', plugins =', pluginsLoaded)
     return <HawtioLoading />
   }
 
