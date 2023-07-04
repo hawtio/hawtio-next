@@ -1,3 +1,5 @@
+import { eventService } from '@hawtiosrc/core'
+import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/selectionNodeContext'
 import {
   ActionGroup,
   Button,
@@ -22,15 +24,9 @@ import {
   Title,
 } from '@patternfly/react-core'
 import React, { useContext, useState } from 'react'
+import './OperationForm.css'
 import { Operation } from './operation'
 import { operationService } from './operation-service'
-import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/selectionNodeContext'
-import './OperationForm.css'
-import { eventService } from '@hawtiosrc/core'
-export interface OperationFormProps {
-  name: string
-  operation: Operation
-}
 
 const ArgFormInput: React.FunctionComponent<{
   javaType: string
@@ -56,7 +52,7 @@ const ArgFormInput: React.FunctionComponent<{
   }
 }
 
-const defaultValue = (javaType: string) => {
+function defaultValue(javaType: string): unknown {
   switch (javaType) {
     case 'boolean':
     case 'java.lang.Boolean':
@@ -225,9 +221,11 @@ const OperationActions = ({
   )
 }
 
-export const OperationForm: React.FunctionComponent<OperationFormProps> = props => {
+export const OperationForm: React.FunctionComponent<{
+  name: string
+  operation: Operation
+}> = ({ name, operation }) => {
   const { selectedNode } = useContext(PluginNodeSelectionContext)
-  const { name, operation } = props
   const [isExpanded, setIsExpanded] = useState(false)
 
   if (!selectedNode || !selectedNode.objectName || !selectedNode.mbean) {
@@ -255,26 +253,23 @@ export const OperationForm: React.FunctionComponent<OperationFormProps> = props 
   )
 
   return (
-    <React.Fragment>
-      <DataListItem key={`operation-${name}`} aria-labelledby={`operation ${name}`} isExpanded={isExpanded}>
-        <DataListItemRow>
-          <DataListToggle onClick={handleToggle} isExpanded={isExpanded} id='ex-toggle1' aria-controls='ex-expand1' />
-          <OperationCells />
-          <OperationActions operation={operation} name={name} objectName={objectName} />
-        </DataListItemRow>
-        <OperationFormContents {...props} objectName={objectName} isExpanded={isExpanded} />
-      </DataListItem>
-    </React.Fragment>
+    <DataListItem key={`operation-${name}`} aria-labelledby={`operation ${name}`} isExpanded={isExpanded}>
+      <DataListItemRow>
+        <DataListToggle onClick={handleToggle} isExpanded={isExpanded} id='ex-toggle1' aria-controls='ex-expand1' />
+        <OperationCells />
+        <OperationActions name={name} operation={operation} objectName={objectName} />
+      </DataListItemRow>
+      <OperationFormContents name={name} operation={operation} objectName={objectName} isExpanded={isExpanded} />
+    </DataListItem>
   )
 }
 
-type OperationFormContentsProps = OperationFormProps & {
+const OperationFormContents: React.FunctionComponent<{
+  name: string
+  operation: Operation
   objectName: string
   isExpanded: boolean
-}
-
-const OperationFormContents: React.FunctionComponent<OperationFormContentsProps> = props => {
-  const { name, operation, objectName, isExpanded } = props
+}> = ({ name, operation, objectName, isExpanded }) => {
   const [isFailed, setIsFailed] = useState(false)
   const [result, setResult] = useState<string | null>(null)
 
