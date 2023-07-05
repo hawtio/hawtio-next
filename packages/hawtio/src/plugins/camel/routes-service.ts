@@ -60,6 +60,12 @@ export type RouteStats = Statistics & {
   processorStats: ProcessorStats[]
 }
 
+export const ROUTE_OPERATIONS = {
+  start: 'start()',
+  stop: 'stop()',
+  remove: 'remove()',
+} as const
+
 class RoutesService {
   getIcon(nodeSettingsOrXmlNode: Record<string, unknown> | Element, size?: number): React.ReactNode {
     let nodeSettings: Record<string, unknown> | null = null
@@ -267,15 +273,15 @@ class RoutesService {
   }
 
   async startRoute(objName: string) {
-    await jolokiaService.execute(objName, 'start()')
+    await jolokiaService.execute(objName, ROUTE_OPERATIONS.start)
   }
 
   async stopRoute(objName: string) {
-    await jolokiaService.execute(objName, 'stop()')
+    await jolokiaService.execute(objName, ROUTE_OPERATIONS.stop)
   }
 
   async deleteRoute(objName: string) {
-    await jolokiaService.execute(objName, 'remove()')
+    await jolokiaService.execute(objName, ROUTE_OPERATIONS.remove)
   }
 
   async dumpRoutesStatsXML(routesNode: MBeanNode): Promise<string | null> {
