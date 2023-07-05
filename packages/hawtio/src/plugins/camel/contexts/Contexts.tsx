@@ -19,7 +19,7 @@ export const Contexts: React.FunctionComponent = () => {
   const [selectedCtx, setSelectedCtx] = useState<ContextState[]>([])
 
   const onSelectContext = (ctx: ContextState, isSelecting: boolean) => {
-    const otherSelectedCtx = selectedCtx.filter(c => c.context !== ctx.context)
+    const otherSelectedCtx = selectedCtx.filter(c => c.node !== ctx.node)
     setSelectedCtx(isSelecting ? [...otherSelectedCtx, ctx] : [...otherSelectedCtx])
   }
 
@@ -56,13 +56,16 @@ export const Contexts: React.FunctionComponent = () => {
     // TODO: we should not invoke setContexts separately from multiple scheduler.
     // It should cause a bug of overwriting the other updates when we have multiple contexts.
     for (const [idx, ctx] of contexts.entries()) {
-      const mbean = ctx.mbean
-      contextsService.register({ type: 'read', mbean }, (response: IResponse) => {
+      const { objectName } = ctx.node
+      if (!objectName) {
+        continue
+      }
+      contextsService.register({ type: 'read', mbean: objectName }, (response: IResponse) => {
         log.debug('Scheduler - Contexts:', response.value)
 
         // Replace the context in the existing set with the new one
         const attrs = response.value as AttributeValues
-        const newCtx = contextsService.toContextState(ctx.context, mbean, attrs)
+        const newCtx = contextsService.toContextState(ctx.node, attrs)
 
         // Replace the context in the contexts array
         const newContexts = [...contexts]
@@ -106,7 +109,7 @@ export const Contexts: React.FunctionComponent = () => {
   const rows: TableProps['rows'] = []
   for (const ctx of contexts) {
     rows.push({
-      cells: [ctx.context, ctx.state],
+      cells: [ctx.node.name, ctx.state],
       selected: isContextSelected(ctx),
     })
   }

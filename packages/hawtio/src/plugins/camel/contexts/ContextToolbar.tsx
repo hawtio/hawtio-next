@@ -14,17 +14,24 @@ import {
 } from '@patternfly/react-core'
 import { AsleepIcon, PlayIcon, Remove2Icon } from '@patternfly/react-icons'
 import React, { useState } from 'react'
-import { CONTEXT_STATE_STARTED, CONTEXT_STATE_SUSPENDED, ContextState, contextsService } from './contexts-service'
+import {
+  CONTEXT_OPERATIONS,
+  CONTEXT_STATE_STARTED,
+  CONTEXT_STATE_SUSPENDED,
+  ContextState,
+  contextsService,
+} from './contexts-service'
 
-type ContextToolbarProps = {
+export const ContextToolbar: React.FunctionComponent<{
   contexts: ContextState[]
   deleteCallback: (contexts: ContextState[]) => void
-}
-
-export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = ({ contexts, deleteCallback }) => {
+}> = ({ contexts, deleteCallback }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+
+  // The first context is sampled only to check canInvoke on the context MBean
+  const firstContext = contexts[0]
 
   const onDropdownToggle = (isOpen: boolean) => {
     setIsDropdownOpen(isOpen)
@@ -36,7 +43,7 @@ export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = ({ c
     return contexts.some(ctx => ctx.state === CONTEXT_STATE_SUSPENDED)
   }
 
-  const onStartClicked = () => {
+  const startContexts = () => {
     contexts
       .filter(ctx => ctx.state === CONTEXT_STATE_SUSPENDED)
       .forEach(ctx =>
@@ -63,7 +70,7 @@ export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = ({ c
     return contexts.some(ctx => ctx.state === CONTEXT_STATE_STARTED)
   }
 
-  const onSuspendClicked = () => {
+  const suspendContexts = () => {
     contexts
       .filter(ctx => ctx.state === CONTEXT_STATE_STARTED)
       .forEach(ctx =>
@@ -141,9 +148,11 @@ export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = ({ c
         <Button
           variant='primary'
           isSmall={true}
-          isDisabled={!isStartEnabled()}
+          isDisabled={
+            !(firstContext && firstContext.node.hasInvokeRights(CONTEXT_OPERATIONS.start)) || !isStartEnabled()
+          }
           icon={<PlayIcon />}
-          onClick={onStartClicked}
+          onClick={startContexts}
         >
           Start
         </Button>
@@ -152,9 +161,11 @@ export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = ({ c
         <Button
           variant='danger'
           isSmall={true}
-          isDisabled={!isSuspendEnabled()}
+          isDisabled={
+            !(firstContext && firstContext.node.hasInvokeRights(CONTEXT_OPERATIONS.suspend)) || !isSuspendEnabled()
+          }
           icon={<AsleepIcon />}
-          onClick={onSuspendClicked}
+          onClick={suspendContexts}
         >
           Suspend
         </Button>
@@ -165,7 +176,7 @@ export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = ({ c
   const ConfirmDeleteModal = () => (
     <Modal
       variant={ModalVariant.small}
-      title='Are you sure?'
+      title='Delete Camel Contexts'
       titleIconVariant='danger'
       isOpen={isConfirmDeleteOpen}
       onClose={handleConfirmDeleteToggle}
@@ -187,7 +198,13 @@ export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = ({ c
     <DropdownItem
       key='delete'
       component={
-        <Button variant='plain' isDisabled={!isDeleteEnabled()} onClick={onDeleteClicked}>
+        <Button
+          variant='plain'
+          isDisabled={
+            !(firstContext && firstContext.node.hasInvokeRights(CONTEXT_OPERATIONS.stop)) || !isDeleteEnabled()
+          }
+          onClick={onDeleteClicked}
+        >
           <Remove2Icon /> Delete
         </Button>
       }
@@ -201,7 +218,6 @@ export const ContextToolbar: React.FunctionComponent<ContextToolbarProps> = ({ c
           {toolbarButtons}
           <ToolbarItem id='camel-contexts-toolbar-item-dropdown'>
             <Dropdown
-              autoFocus={true}
               toggle={<KebabToggle id='camel-contexts-toolbar-item-dropdown-toggle' onToggle={onDropdownToggle} />}
               isOpen={isDropdownOpen}
               dropdownItems={dropdownItems}
