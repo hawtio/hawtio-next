@@ -183,7 +183,7 @@ const CamelContentContextToolbar: React.FunctionComponent = () => {
       return
     }
 
-    const { name, objectName } = selectedNode
+    const { objectName } = selectedNode
     const readAttributes = async () => {
       const attr = await contextsService.getContext(selectedNode)
       if (attr) setContextState(attr)
@@ -193,7 +193,7 @@ const CamelContentContextToolbar: React.FunctionComponent = () => {
 
         // Replace the context in the existing set with the new one
         const attrs = response.value as AttributeValues
-        const newAttrs = contextsService.toContextState(name, objectName, attrs)
+        const newAttrs = contextsService.toContextState(selectedNode, attrs)
         if (newAttrs) setContextState(newAttrs)
       })
     }
