@@ -1,7 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { CamelContext } from '../context'
-import { CamelRoute, routesService } from '../routes-service'
-import { Caption, TableComposable, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
+import { eventService } from '@hawtiosrc/core'
+import { workspace } from '@hawtiosrc/plugins/shared'
+import { objectSorter } from '@hawtiosrc/util/objects'
 import {
   Button,
   Card,
@@ -11,45 +10,77 @@ import {
   KebabToggle,
   Modal,
   ModalVariant,
-  Page,
+  Skeleton,
   Text,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core'
 import { AsleepIcon, InfoCircleIcon, PlayIcon, Remove2Icon } from '@patternfly/react-icons'
-import { eventService } from '@hawtiosrc/core'
-import { workspace } from '@hawtiosrc/plugins/shared'
-import { objectSorter } from '@hawtiosrc/util/objects'
+import { TableComposable, Tbody, Td, Th, ThProps, Thead, Tr } from '@patternfly/react-table'
+import React, { useContext, useEffect, useState } from 'react'
+import { CamelContext } from '../context'
+import { CamelRoute, routesService } from '../routes-service'
 
 export const CamelRoutes: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
   const [routes, setRoutes] = useState<CamelRoute[]>([])
-  const [reload, setReload] = useState<boolean>(false)
+  const [isReading, setIsReading] = useState(true)
+  const [reload, setReload] = useState(false)
   const [selected, setSelected] = useState<string[]>([])
-  const [isOpen, setIsOpen] = useState<boolean>(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false)
-  const [activeSortIndex, setActiveSortIndex] = React.useState<number>(-1)
-  const [activeSortDirection, setActiveSortDirection] = React.useState<'asc' | 'desc'>('asc')
+  const [activeSortIndex, setActiveSortIndex] = useState(-1)
+  const [activeSortDirection, setActiveSortDirection] = useState<'asc' | 'desc'>('asc')
 
   useEffect(() => {
+    if (!selectedNode) {
+      return
+    }
+
+    setIsReading(true)
     let timeoutHandle: NodeJS.Timeout
     const getRouteAttributes = async () => {
       const routes = await routesService.getRoutesAttributes(selectedNode)
       setRoutes(routes)
+      setIsReading(false)
 
       timeoutHandle = setTimeout(getRouteAttributes, 10000)
     }
 
     getRouteAttributes()
 
-    return () => {
-      clearTimeout(timeoutHandle)
-    }
+    return () => timeoutHandle && clearTimeout(timeoutHandle)
   }, [selectedNode, reload])
 
+  if (!selectedNode) {
+    return null
+  }
+
+  if (isReading) {
+    return (
+      <Card>
+        <CardBody>
+          <Skeleton data-testid='loading' screenreaderText='Loading...' />
+        </CardBody>
+      </Card>
+    )
+  }
+
+  if (routes.length === 0) {
+    return (
+      <Card>
+        <CardBody>
+          <Text component='p'>
+            <InfoCircleIcon /> This context does not have any routes.
+          </Text>
+        </CardBody>
+      </Card>
+    )
+  }
+
   const onDropdownToggle = (isOpen: boolean) => {
-    setIsOpen(isOpen)
+    setIsDropdownOpen(isOpen)
   }
 
   const onSelect = (routeId: string, isSelecting: boolean) => {
@@ -75,12 +106,15 @@ export const CamelRoutes: React.FunctionComponent = () => {
     return res
   }
 
-  async function onStopClicked() {
+  const stopRoutes = async () => {
     let stoppedCount = 0
     for (const routeId of selected) {
       const route = routes.find(r => r.RouteId === routeId && r.State === 'Started')
+      if (!route || !route.objectName) {
+        continue
+      }
       try {
-        await routesService.stopRoute(route?.objectName as string)
+        await routesService.stopRoute(route.objectName)
         stoppedCount++
       } catch (error) {
         eventService.notify({
@@ -99,13 +133,15 @@ export const CamelRoutes: React.FunctionComponent = () => {
     setReload(!reload)
   }
 
-  async function onStartClicked() {
+  const startRoutes = async () => {
     let startedCount = 0
-
     for (const routeId of selected) {
       const route = routes.find(r => r.RouteId === routeId && r.State === 'Stopped')
+      if (!route || !route.objectName) {
+        continue
+      }
       try {
-        await routesService.startRoute(route?.objectName as string)
+        await routesService.startRoute(route.objectName)
         startedCount++
       } catch (error) {
         eventService.notify({
@@ -124,9 +160,9 @@ export const CamelRoutes: React.FunctionComponent = () => {
     setReload(!reload)
   }
 
-  function onDeleteClicked() {
-    setIsConfirmDeleteOpen(true)
-    setIsOpen(false)
+  const onDeleteClicked = () => {
+    handleConfirmDeleteToggle()
+    setIsDropdownOpen(false)
   }
 
   const handleConfirmDeleteToggle = () => {
@@ -158,6 +194,7 @@ export const CamelRoutes: React.FunctionComponent = () => {
       MeanProcessingTime,
     ]
   }
+
   const getSortParams = (columnIndex: number): ThProps['sort'] => ({
     sortBy: {
       index: activeSortIndex,
@@ -182,52 +219,16 @@ export const CamelRoutes: React.FunctionComponent = () => {
     }
     return sortedRoutes
   }
-  const dropdownItems = [
-    <DropdownItem key='action' componentID='deleteAction'>
-      <Button
-        variant='control'
-        isDisabled={!isSuspendEnabled('Stopped')}
-        isSmall={true}
-        icon={React.createElement(Remove2Icon)}
-        onClick={onDeleteClicked}
-      >
-        Delete
-      </Button>
-    </DropdownItem>,
-  ]
-  const toolbarButtons = (
-    <React.Fragment>
-      <ToolbarItem>
-        <Button
-          variant='secondary'
-          isSmall={true}
-          isDisabled={!isSuspendEnabled('Stopped')}
-          icon={React.createElement(PlayIcon)}
-          onClick={onStartClicked}
-        >
-          Start
-        </Button>
-      </ToolbarItem>
-      <ToolbarItem>
-        <Button
-          variant='secondary'
-          isSmall={true}
-          isDisabled={!isSuspendEnabled('Started')}
-          icon={React.createElement(AsleepIcon)}
-          onClick={onStopClicked}
-        >
-          Stop
-        </Button>
-      </ToolbarItem>
-    </React.Fragment>
-  )
 
-  async function onDeleteConfirmClicked() {
+  const deleteRoutes = async () => {
     let deleted = 0
     for (const routeId of selected) {
       const route = routes.find(r => r.RouteId === routeId && r.State === 'Stopped')
+      if (!route || !route.objectName) {
+        continue
+      }
       try {
-        await routesService.deleteRoute(route?.objectName as string)
+        await routesService.deleteRoute(route.objectName)
         deleted++
         workspace.refreshTree()
       } catch (error) {
@@ -251,12 +252,12 @@ export const CamelRoutes: React.FunctionComponent = () => {
   const ConfirmDeleteModal = () => (
     <Modal
       variant={ModalVariant.small}
-      title='Are you sure?'
+      title='Delete Camel Routes'
       titleIconVariant='danger'
       isOpen={isConfirmDeleteOpen}
       onClose={handleConfirmDeleteToggle}
       actions={[
-        <Button key='delete' variant='danger' onClick={onDeleteConfirmClicked}>
+        <Button key='delete' variant='danger' onClick={deleteRoutes}>
           Delete
         </Button>,
         <Button key='cancel' variant='link' onClick={handleConfirmDeleteToggle}>
@@ -268,103 +269,131 @@ export const CamelRoutes: React.FunctionComponent = () => {
       <p>This operation cannot be undone so please be careful.</p>
     </Modal>
   )
-  return (
-    <Page>
-      {routes.length === 0 && (
-        <Card>
-          <CardBody>
-            <Text component='p'>
-              <InfoCircleIcon /> This context does not have any routes.
-            </Text>
-          </CardBody>
-        </Card>
-      )}
-      {routes.length > 0 && (
-        <TableComposable aria-label='Simple table' variant={'compact'}>
-          <Caption>
-            Routes
-            <Toolbar id='toolbar-items'>
-              <ToolbarContent>
-                {toolbarButtons}
-                <ToolbarItem>
-                  <Dropdown
-                    autoFocus={true}
-                    toggle={<KebabToggle id='toggle-kebab' onToggle={onDropdownToggle} />}
-                    isOpen={isOpen}
-                    dropdownItems={dropdownItems}
-                  />
-                </ToolbarItem>
-                <ToolbarItem variant='separator' />
-              </ToolbarContent>
-            </Toolbar>
-          </Caption>
 
-          <Thead>
-            <Tr>
-              <Th
-                select={{
-                  onSelect: (_event, isSelecting) => onSelectAll(isSelecting),
-                  isSelected: isAllSelected(),
-                }}
-              />
-              <Th data-testid={'name-header'} sort={getSortParams(0)}>
-                {'Name'}
-              </Th>
-              <Th data-testid={'state-header'} sort={getSortParams(1)}>
-                {'State'}
-              </Th>
-              <Th data-testid={'uptime-header'} sort={getSortParams(2)}>
-                {'Uptime'}
-              </Th>
-              <Th data-testid={'completed-header'} sort={getSortParams(3)}>
-                {'Completed'}
-              </Th>
-              <Th data-testid={'failed-header'} sort={getSortParams(4)}>
-                {'Failed'}
-              </Th>
-              <Th data-testid={'handled-header'} sort={getSortParams(5)}>
-                {'Handled'}
-              </Th>
-              <Th data-testid={'total-header'} sort={getSortParams(6)}>
-                {'Total'}
-              </Th>
-              <Th data-testid={'inflight-header'} sort={getSortParams(7)}>
-                {'InFlight'}
-              </Th>
-              <Th data-testid={'meantime-header'} sort={getSortParams(8)}>
-                {'Meantime'}
-              </Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {sortRoutes().map((route, rowIndex) => {
-              return (
-                <Tr data-testid={'row' + rowIndex} key={route.RouteId}>
-                  <Td
-                    select={{
-                      rowIndex,
-                      onSelect: (_event, isSelected) => {
-                        onSelect(route.RouteId, isSelected)
-                      },
-                      isSelected: selected.includes(route.RouteId),
-                    }}
-                  />
-                  <Td dataLabel={'Name'}>{route.RouteId}</Td>
-                  <Td dataLabel={'State'}>{route.State}</Td>
-                  <Td dataLabel={'Uptime'}>{route.Uptime}</Td>
-                  <Td dataLabel={'Completed'}>{route.ExchangesCompleted}</Td>
-                  <Td dataLabel={'Failed'}>{route.ExchangesFailed}</Td>
-                  <Td dataLabel={'Handled'}>{route.FailuresHandled}</Td>
-                  <Td dataLabel={'Total'}>{route.ExchangesTotal}</Td>
-                  <Td dataLabel={'InFlight'}>{route.ExchangesInflight}</Td>
-                  <Td dataLabel={'Meantime'}>{route.MeanProcessingTime}</Td>
-                </Tr>
-              )
-            })}
-          </Tbody>
-        </TableComposable>
-      )}
+  const toolbarButtons = (
+    <React.Fragment>
+      <ToolbarItem>
+        <Button
+          variant='primary'
+          isSmall={true}
+          isDisabled={!isSuspendEnabled('Stopped')}
+          icon={<PlayIcon />}
+          onClick={startRoutes}
+        >
+          Start
+        </Button>
+      </ToolbarItem>
+      <ToolbarItem>
+        <Button
+          variant='danger'
+          isSmall={true}
+          isDisabled={!isSuspendEnabled('Started')}
+          icon={<AsleepIcon />}
+          onClick={stopRoutes}
+        >
+          Stop
+        </Button>
+      </ToolbarItem>
+    </React.Fragment>
+  )
+
+  const dropdownItems = [
+    <DropdownItem
+      key='action'
+      component={
+        <Button variant='plain' isDisabled={!isSuspendEnabled('Stopped')} onClick={onDeleteClicked}>
+          <Remove2Icon /> Delete
+        </Button>
+      }
+    />,
+  ]
+
+  return (
+    <React.Fragment>
+      <Toolbar id='camel-routes-toolbar'>
+        <ToolbarContent>
+          {toolbarButtons}
+          <ToolbarItem id='camel-routes-toolbar-item-dropdown'>
+            <Dropdown
+              toggle={<KebabToggle id='camel-routes-toolbar-item-dropdown-toggle' onToggle={onDropdownToggle} />}
+              isOpen={isDropdownOpen}
+              dropdownItems={dropdownItems}
+              isPlain
+            />
+          </ToolbarItem>
+        </ToolbarContent>
+      </Toolbar>
+      <TableComposable
+        id='camel-routes-table'
+        data-testid='camel-routes-table'
+        aria-label='Camel routes table'
+        variant='compact'
+      >
+        <Thead>
+          <Tr>
+            <Th
+              select={{
+                onSelect: (_event, isSelecting) => onSelectAll(isSelecting),
+                isSelected: isAllSelected(),
+              }}
+            />
+            <Th data-testid='name-header' sort={getSortParams(0)}>
+              Name
+            </Th>
+            <Th data-testid='state-header' sort={getSortParams(1)}>
+              State
+            </Th>
+            <Th data-testid='uptime-header' sort={getSortParams(2)}>
+              Uptime
+            </Th>
+            <Th data-testid='completed-header' sort={getSortParams(3)}>
+              Completed
+            </Th>
+            <Th data-testid='failed-header' sort={getSortParams(4)}>
+              Failed
+            </Th>
+            <Th data-testid='handled-header' sort={getSortParams(5)}>
+              Handled
+            </Th>
+            <Th data-testid='total-header' sort={getSortParams(6)}>
+              Total
+            </Th>
+            <Th data-testid='inflight-header' sort={getSortParams(7)}>
+              InFlight
+            </Th>
+            <Th data-testid='meantime-header' sort={getSortParams(8)}>
+              Meantime
+            </Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {sortRoutes().map((route, rowIndex) => {
+            return (
+              <Tr data-testid={'row' + rowIndex} key={route.RouteId}>
+                <Td
+                  select={{
+                    rowIndex,
+                    onSelect: (_event, isSelected) => {
+                      onSelect(route.RouteId, isSelected)
+                    },
+                    isSelected: selected.includes(route.RouteId),
+                  }}
+                />
+                <Td dataLabel='Name'>{route.RouteId}</Td>
+                <Td dataLabel='State'>{route.State}</Td>
+                <Td dataLabel='Uptime'>{route.Uptime}</Td>
+                <Td dataLabel='Completed'>{route.ExchangesCompleted}</Td>
+                <Td dataLabel='Failed'>{route.ExchangesFailed}</Td>
+                <Td dataLabel='Handled'>{route.FailuresHandled}</Td>
+                <Td dataLabel='Total'>{route.ExchangesTotal}</Td>
+                <Td dataLabel='InFlight'>{route.ExchangesInflight}</Td>
+                <Td dataLabel='Meantime'>{route.MeanProcessingTime}</Td>
+              </Tr>
+            )
+          })}
+        </Tbody>
+      </TableComposable>
       <ConfirmDeleteModal />
-    </Page>
+    </React.Fragment>
   )
 }
