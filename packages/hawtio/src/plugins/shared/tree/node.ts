@@ -1,10 +1,10 @@
 import { Logger } from '@hawtiosrc/core'
 import { escapeHtmlId, escapeTags } from '@hawtiosrc/util/jolokia'
-import { isEmpty } from '@hawtiosrc/util/objects'
+import { isArray, isEmpty } from '@hawtiosrc/util/objects'
 import { stringSorter, trimQuotes } from '@hawtiosrc/util/strings'
 import { TreeViewDataItem } from '@patternfly/react-core'
 import { CubeIcon, FolderIcon, FolderOpenIcon, LockIcon } from '@patternfly/react-icons'
-import { IJmxMBean, IJmxOperation } from 'jolokia.js'
+import { IJmxMBean, IJmxOperation, IJmxOperations } from 'jolokia.js'
 import React from 'react'
 import { pluginName } from '../globals'
 
@@ -437,6 +437,61 @@ export class MBeanNode implements TreeViewDataItem {
   setIcons(icon: React.ReactNode, expandedIcon: React.ReactNode = icon) {
     this.icon = icon
     this.expandedIcon = expandedIcon
+  }
+
+  hasInvokeRights(...methods: string[]): boolean {
+    const mbean = this.mbean
+    if (!mbean) return true
+
+    let canInvoke = mbean.canInvoke ?? true
+    if (canInvoke && methods && methods.length > 0) {
+      const opsByString = mbean.opByString
+      const ops = mbean.op
+      if (opsByString && ops) {
+        canInvoke = this.resolveCanInvokeInOps(ops, opsByString, methods)
+      }
+    }
+    return canInvoke
+  }
+
+  /**
+   * Returns true only if all relevant operations can be invoked.
+   */
+  private resolveCanInvokeInOps(
+    ops: IJmxOperations,
+    opsByString: Record<string, IJmxOperation>,
+    methods: string[],
+  ): boolean {
+    let canInvoke = true
+    methods.forEach(method => {
+      if (!canInvoke) {
+        return
+      }
+      let op = null
+      if (method.endsWith(')')) {
+        op = opsByString[method]
+      } else {
+        op = ops[method]
+      }
+      if (!op) {
+        log.debug('Could not find method:', method, 'to check permissions, skipping')
+        return
+      }
+      canInvoke = this.resolveCanInvoke(op)
+    })
+    return canInvoke
+  }
+
+  private resolveCanInvoke(op: IJmxOperation | IJmxOperation[]): boolean {
+    // for single method
+    if (!isArray(op)) {
+      return op.canInvoke ?? true
+    }
+
+    // for overloaded methods
+    // returns true only if all overloaded methods can be invoked (i.e. canInvoke=true)
+    const cantInvoke = op.find(o => o.canInvoke !== undefined && !o.canInvoke)
+    return cantInvoke === undefined
   }
 }
 

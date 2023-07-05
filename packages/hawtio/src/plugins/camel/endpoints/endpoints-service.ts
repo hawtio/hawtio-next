@@ -1,12 +1,12 @@
+import * as schema from '@hawtio/camel-model'
 import { eventService, NotificationType } from '@hawtiosrc/core'
 import { jolokiaService } from '@hawtiosrc/plugins/connect'
-import * as schema from '@hawtio/camel-model'
 import { MBeanNode, workspace } from '@hawtiosrc/plugins/shared'
+import { isObject } from '@hawtiosrc/util/objects'
+import { parseXML } from '@hawtiosrc/util/xml'
 import * as ccs from '../camel-content-service'
 import { getDefaultRuntimeEndpointRegistry } from '../camel-content-service'
 import { contextNodeType, endpointsType, log } from '../globals'
-import { isObject } from '@hawtiosrc/util/objects'
-import { parseXML } from '@hawtiosrc/util/xml'
 
 export type Endpoint = {
   uri: string
@@ -50,7 +50,7 @@ export async function getEndpoints(node: MBeanNode): Promise<Endpoint[]> {
 }
 
 export function canCreateEndpoints(node: MBeanNode | null): boolean {
-  return node ? workspace.hasInvokeRights(node, 'createEndpoint') : false
+  return node?.hasInvokeRights('createEndpoint') ?? false
 }
 
 export async function componentNames(node: MBeanNode): Promise<string[]> {
