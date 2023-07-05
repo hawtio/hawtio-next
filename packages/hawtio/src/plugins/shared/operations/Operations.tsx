@@ -1,11 +1,11 @@
+import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
 import { isEmpty } from '@hawtiosrc/util/objects'
 import { Card, CardBody, DataList, Text } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
 import React, { useContext } from 'react'
-import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
-import { createOperations } from './operation'
 import { OperationForm } from './OperationForm'
 import './Operations.css'
+import { createOperations } from './operation'
 
 export const Operations: React.FunctionComponent = () => {
   const { selectedNode } = useContext(PluginNodeSelectionContext)
@@ -14,8 +14,7 @@ export const Operations: React.FunctionComponent = () => {
     return null
   }
 
-  const objectName = selectedNode.objectName
-  const mbean = selectedNode.mbean
+  const { objectName, mbean } = selectedNode
 
   if (!mbean.op || isEmpty(mbean.op)) {
     return (
