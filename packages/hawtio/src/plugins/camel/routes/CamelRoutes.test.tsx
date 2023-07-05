@@ -67,7 +67,7 @@ describe('CamelRoutes.tsx', () => {
   test('CamelRoutes component is rendered', async () => {
     renderWithContext()
     await waitFor(() => {
-      expect(screen.getByText('Routes')).toBeInTheDocument()
+      expect(screen.getByTestId('camel-routes-table')).toBeInTheDocument()
 
       getMockedRoutes().forEach((r, index) => {
         const row = screen.getByTestId('row' + index)

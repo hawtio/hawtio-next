@@ -135,7 +135,7 @@ class RoutesService {
    */
   loadRouteChildren(routeNode: MBeanNode, routeXml: Element) {
     routeNode.addProperty('xml', routeXml.outerHTML)
-    // Preserve the xml localname for use by views
+    // Preserve the xml local name for use by views
     routeNode.addProperty(xmlNodeLocalName, routeXml.localName)
 
     const routeGroup = routeXml.getAttribute('group')
