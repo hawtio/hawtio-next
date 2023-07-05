@@ -1,6 +1,7 @@
-import { MBeanNode, workspace } from '@hawtiosrc/plugins/shared'
-import { isObject } from '@hawtiosrc/util/objects'
+import { eventService } from '@hawtiosrc/core'
 import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
+import { MBeanNode } from '@hawtiosrc/plugins/shared'
+import { isObject } from '@hawtiosrc/util/objects'
 import {
   componentNodeType,
   componentsType,
@@ -12,10 +13,9 @@ import {
   jmxDomain,
   mbeansType,
   routeNodeType,
-  routesType,
   routeXmlNodeType,
+  routesType,
 } from './globals'
-import { eventService } from '@hawtiosrc/core'
 
 export function notifyError(msg: string) {
   eventService.notify({
@@ -143,9 +143,7 @@ export function hasInflightRepository(node: MBeanNode): boolean {
 
 export function canBrowse(node: MBeanNode): boolean {
   const inflightNode = findInflightRepository(node)
-  if (!inflightNode) return false
-
-  return workspace.hasInvokeRights(inflightNode as MBeanNode, 'browse')
+  return inflightNode?.hasInvokeRights('browse') ?? false
 }
 
 export function canBrowseMessages(node: MBeanNode): boolean {
@@ -155,9 +153,7 @@ export function canBrowseMessages(node: MBeanNode): boolean {
 
 export function canSeeEndpointStats(node: MBeanNode): boolean {
   const registry = getDefaultRuntimeEndpointRegistry(node)
-  if (!registry) return false
-
-  const canInvoke = workspace.hasInvokeRights(registry, 'endpointStatistics')
+  const canInvoke = registry?.hasInvokeRights('endpointStatistics') ?? false
   return (
     !isEndpointsFolder(node) &&
     !isEndpointNode(node) &&
@@ -191,9 +187,7 @@ export function findTypeConverter(node: MBeanNode): MBeanNode | null {
 
 export function canListTypeConverters(node: MBeanNode): boolean {
   const tc = findTypeConverter(node)
-  if (!tc) return false
-
-  return workspace.hasInvokeRights(tc as MBeanNode, 'listTypeConverters')
+  return tc?.hasInvokeRights('listTypeConverters') ?? false
 }
 
 export function hasTypeConverter(node: MBeanNode): boolean {
@@ -223,16 +217,12 @@ export function canGetBreakpoints(node: MBeanNode): boolean {
   if (!isRouteNode(node)) return false
 
   const db = findDebugBean(node)
-  if (!db) return false
-
-  return workspace.hasInvokeRights(db as MBeanNode, 'getBreakpoints')
+  return db?.hasInvokeRights('getBreakpoints') ?? false
 }
 
 export function canDumpAllTracedMessagesAsXml(node: MBeanNode): boolean {
   const trace = findTraceBean(node)
-  if (!trace) return false
-
-  return workspace.hasInvokeRights(trace as MBeanNode, 'dumpAllTracedMessagesAsXml')
+  return trace?.hasInvokeRights('dumpAllTracedMessagesAsXml') ?? false
 }
 
 export function canTrace(node: MBeanNode): boolean {
@@ -250,9 +240,7 @@ export function findRestRegistryBean(node: MBeanNode): MBeanNode | null {
 
 export function canListRestServices(node: MBeanNode): boolean {
   const registry = findRestRegistryBean(node)
-  if (!registry) return false
-
-  return workspace.hasInvokeRights(registry as MBeanNode, 'listRestServices')
+  return registry?.hasInvokeRights('listRestServices') ?? false
 }
 
 export function hasRestServices(node: MBeanNode): boolean {
