@@ -1,7 +1,9 @@
-import { isEmpty } from '@hawtiosrc/util/objects'
 import { stringSorter, trimEnd } from '@hawtiosrc/util/strings'
 import { IJmxOperation, IJmxOperations } from 'jolokia.js'
 
+/**
+ * Factory function for Operation objects.
+ */
 export function createOperations(objectName: string, jmxOperations: IJmxOperations): Operation[] {
   const operations: Operation[] = []
   const operationMap: Record<string, Operation> = {}
@@ -12,12 +14,7 @@ export function createOperations(objectName: string, jmxOperations: IJmxOperatio
       addOperation(operations, operationMap, name, op)
     }
   })
-  operations.sort((a, b) => stringSorter(a.readableName, b.readableName))
-  if (!isEmpty(operationMap)) {
-    fetchPermissions(operationMap, objectName)
-  }
-
-  return operations
+  return operations.sort((a, b) => stringSorter(a.readableName, b.readableName))
 }
 
 function addOperation(
@@ -35,11 +32,6 @@ function addOperation(
   )
   operations.push(operation)
   operationMap[operation.name] = operation
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function fetchPermissions(operationMap: Record<string, Operation>, objectName: string) {
-  // TODO: impl fetch permissions
 }
 
 export class Operation {

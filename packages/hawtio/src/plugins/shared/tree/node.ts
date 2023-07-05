@@ -1,6 +1,6 @@
 import { Logger } from '@hawtiosrc/core'
 import { escapeHtmlId, escapeTags } from '@hawtiosrc/util/jolokia'
-import { isArray, isEmpty } from '@hawtiosrc/util/objects'
+import { isEmpty } from '@hawtiosrc/util/objects'
 import { stringSorter, trimQuotes } from '@hawtiosrc/util/strings'
 import { TreeViewDataItem } from '@patternfly/react-core'
 import { CubeIcon, FolderIcon, FolderOpenIcon, LockIcon } from '@patternfly/react-icons'
@@ -484,7 +484,7 @@ export class MBeanNode implements TreeViewDataItem {
 
   private resolveCanInvoke(op: IJmxOperation | IJmxOperation[]): boolean {
     // for single method
-    if (!isArray(op)) {
+    if (!Array.isArray(op)) {
       return op.canInvoke ?? true
     }
 

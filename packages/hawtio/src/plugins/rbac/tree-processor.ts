@@ -1,6 +1,5 @@
 import { MBeanNode, MBeanTree, TreeProcessor } from '@hawtiosrc/plugins/shared'
 import { operationToString } from '@hawtiosrc/util/jolokia'
-import { isArray } from '@hawtiosrc/util/objects'
 import { isBlank, isString } from '@hawtiosrc/util/strings'
 import { IJmxOperation, IRequest, IResponse } from 'jolokia.js'
 import { JolokiaListMethod, jolokiaService } from '../connect'
@@ -106,7 +105,7 @@ function addCanInvokeRequests(
   if (node.mbean?.op) {
     const opList: string[] = []
     Object.entries(node.mbean.op).forEach(([opName, op]) => {
-      if (isArray(op)) {
+      if (Array.isArray(op)) {
         // overloaded ops
         op.forEach(op => addOperation(node, opList, opName, op))
       } else {

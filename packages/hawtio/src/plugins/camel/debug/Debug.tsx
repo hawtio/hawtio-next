@@ -1,15 +1,17 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { MBeanNode } from '@hawtiosrc/plugins/shared'
+import { compareArrays } from '@hawtiosrc/util/arrays'
+import { childText, parseXML } from '@hawtiosrc/util/xml'
 import {
+  Button,
   Card,
+  CardActions,
   CardBody,
+  CardHeader,
+  CardTitle,
   Text,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
-  Button,
-  CardTitle,
-  CardHeader,
-  CardActions,
 } from '@patternfly/react-core'
 import {
   BanIcon,
@@ -23,20 +25,17 @@ import {
   TimesCircleIcon,
 } from '@patternfly/react-icons'
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
-import { ConditionalBreakpoint, debugService as ds, MessageData } from './debug-service'
+import { IResponse } from 'jolokia.js'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import * as ccs from '../camel-content-service'
-import { MBeanNode } from '@hawtiosrc/plugins/shared'
-import { isArray } from '@hawtiosrc/util/objects'
+import { log } from '../globals'
 import { RouteDiagram } from '../route-diagram/RouteDiagram'
-import './Debug.css'
 import { Annotation, RouteDiagramContext, useRouteDiagramContext } from '../route-diagram/route-diagram-context'
 import { CamelNodeData } from '../route-diagram/visualization-service'
-import { IResponse } from 'jolokia.js'
-import { log } from '../globals'
-import { childText, parseXML } from '@hawtiosrc/util/xml'
-import { MessageDrawer } from './MessageDrawer'
 import { ConditionalBreakpointModal } from './ConditionalBreakpointModel'
-import { compareArrays } from '@hawtiosrc/util/arrays'
+import './Debug.css'
+import { MessageDrawer } from './MessageDrawer'
+import { ConditionalBreakpoint, MessageData, debugService as ds } from './debug-service'
 
 export const Debug: React.FunctionComponent = () => {
   const {
@@ -62,7 +61,7 @@ export const Debug: React.FunctionComponent = () => {
   const bkpsRef = useRef<string[]>([])
 
   const applyBreakpoints = useCallback((response: unknown) => {
-    if (!isArray(response)) {
+    if (!Array.isArray(response)) {
       bkpsRef.current = []
       setBreakpoints([])
       return
