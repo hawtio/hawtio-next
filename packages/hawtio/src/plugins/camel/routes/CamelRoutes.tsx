@@ -20,7 +20,7 @@ import { AsleepIcon, InfoCircleIcon, PlayIcon, Remove2Icon } from '@patternfly/r
 import { TableComposable, Tbody, Td, Th, ThProps, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useState } from 'react'
 import { CamelContext } from '../context'
-import { CamelRoute, routesService } from '../routes-service'
+import { CamelRoute, ROUTE_OPERATIONS, routesService } from '../routes-service'
 
 export const CamelRoutes: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
@@ -276,7 +276,7 @@ export const CamelRoutes: React.FunctionComponent = () => {
         <Button
           variant='primary'
           isSmall={true}
-          isDisabled={!isSuspendEnabled('Stopped')}
+          isDisabled={!selectedNode.hasInvokeRights(ROUTE_OPERATIONS.start) || !isSuspendEnabled('Stopped')}
           icon={<PlayIcon />}
           onClick={startRoutes}
         >
@@ -287,7 +287,7 @@ export const CamelRoutes: React.FunctionComponent = () => {
         <Button
           variant='danger'
           isSmall={true}
-          isDisabled={!isSuspendEnabled('Started')}
+          isDisabled={!selectedNode.hasInvokeRights(ROUTE_OPERATIONS.stop) || !isSuspendEnabled('Started')}
           icon={<AsleepIcon />}
           onClick={stopRoutes}
         >
@@ -301,7 +301,11 @@ export const CamelRoutes: React.FunctionComponent = () => {
     <DropdownItem
       key='action'
       component={
-        <Button variant='plain' isDisabled={!isSuspendEnabled('Stopped')} onClick={onDeleteClicked}>
+        <Button
+          variant='plain'
+          isDisabled={!selectedNode.hasInvokeRights(ROUTE_OPERATIONS.remove) || !isSuspendEnabled('Stopped')}
+          onClick={onDeleteClicked}
+        >
           <Remove2Icon /> Delete
         </Button>
       }
