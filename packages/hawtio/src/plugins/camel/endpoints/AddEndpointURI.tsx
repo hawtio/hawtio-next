@@ -1,12 +1,17 @@
-import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import { ActionGroup, Button, Form, FormGroup, TextInput } from '@patternfly/react-core'
 import { useContext, useState } from 'react'
-import { AddEndpointContext } from './add-endpoint-context'
+import { CamelContext } from '../context'
+import { AddEndpointContext } from './context'
 import * as es from './endpoints-service'
 
 export const AddEndpointURI: React.FunctionComponent = () => {
+  const { selectedNode } = useContext(CamelContext)
   const ctx = useContext(AddEndpointContext)
   const [componentURI, setComponentURI] = useState('')
+
+  if (!selectedNode) {
+    return null
+  }
 
   const handleURIChange = (uri: string) => {
     setComponentURI(uri)
@@ -17,7 +22,7 @@ export const AddEndpointURI: React.FunctionComponent = () => {
   }
 
   const onSubmitClicked = () => {
-    es.createEndpoint(ctx.selectedNode as MBeanNode, componentURI)
+    es.createEndpoint(selectedNode, componentURI)
     ctx.showAddEndpoint(false)
   }
 
@@ -34,7 +39,7 @@ export const AddEndpointURI: React.FunctionComponent = () => {
         />
       </FormGroup>
       <ActionGroup>
-        <Button variant='primary' isDisabled={!componentURI || !ctx.selectedNode} onClick={onSubmitClicked}>
+        <Button variant='primary' isDisabled={!componentURI} onClick={onSubmitClicked}>
           Submit
         </Button>
         <Button variant='link' onClick={onCancelClicked}>

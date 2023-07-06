@@ -1,22 +1,16 @@
 import { Button, Card, CardBody, CardTitle, Form, FormGroup, Text } from '@patternfly/react-core'
 import React, { useContext, useState } from 'react'
-import { AddEndpointContext } from './add-endpoint-context'
+import { CamelContext } from '../context'
 import { AddEndpointURI } from './AddEndpointURI'
 import { AddEndpointWizard } from './AddEndpointWizard'
+import { AddEndpointContext } from './context'
 
 export const AddEndpoint: React.FunctionComponent = () => {
+  const { selectedNode } = useContext(CamelContext)
   const ctx = useContext(AddEndpointContext)
   const [createFrom, setCreateFrom] = useState('')
 
-  const onCreateFromURIClicked = () => {
-    setCreateFrom('URI')
-  }
-
-  const onCreateFromDataClicked = () => {
-    setCreateFrom('DATA')
-  }
-
-  if (!ctx.selectedNode) {
+  if (!selectedNode) {
     return (
       <Card>
         <CardBody>
@@ -24,6 +18,14 @@ export const AddEndpoint: React.FunctionComponent = () => {
         </CardBody>
       </Card>
     )
+  }
+
+  const onCreateFromURIClicked = () => {
+    setCreateFrom('URI')
+  }
+
+  const onCreateFromDataClicked = () => {
+    setCreateFrom('DATA')
   }
 
   const chooseWizard = (): JSX.Element => {

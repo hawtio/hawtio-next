@@ -11,7 +11,7 @@ import {
 } from '@patternfly/react-core'
 import React, { useContext, useEffect, useState } from 'react'
 import { ExclamationCircleIcon } from '@patternfly/react-icons'
-import { AddEndpointContext } from './add-endpoint-context'
+import { AddEndpointContext } from './context'
 import { parseBoolean } from '@hawtiosrc/util/strings'
 import './EndpointParametersForm.css'
 
@@ -68,33 +68,33 @@ export const EndpointParametersForm: React.FunctionComponent = () => {
     const valString = value as string
 
     const newEPParams = {
-      ...ctx.endPointParameters,
+      ...ctx.endpointParameters,
     }
     newEPParams[name] = valString
-    ctx.setEndPointParameters(newEPParams)
+    ctx.setEndpointParameters(newEPParams)
   }
 
   const onPlus = (name: string) => {
-    let value = parseInt(ctx.endPointParameters[name])
+    let value = parseInt(ctx.endpointParameters[name])
 
     if (Number.isNaN(value)) {
       value = parseInt(properties[name].defaultValue)
       if (Number.isNaN(value)) value = 0
     } else {
-      value = parseInt(ctx.endPointParameters[name])
+      value = parseInt(ctx.endpointParameters[name])
     }
 
     onSetPropValue(name, value + 1)
   }
 
   const onMinus = (name: string) => {
-    let value = parseInt(ctx.endPointParameters[name])
+    let value = parseInt(ctx.endpointParameters[name])
 
     if (Number.isNaN(value)) {
       value = parseInt(properties[name].defaultValue)
       if (Number.isNaN(value)) value = 100
     } else {
-      value = parseInt(ctx.endPointParameters[name])
+      value = parseInt(ctx.endpointParameters[name])
     }
 
     onSetPropValue(name, value - 1)
@@ -123,7 +123,7 @@ export const EndpointParametersForm: React.FunctionComponent = () => {
             <TextInput
               id={name + '-input'}
               key={index}
-              value={ctx.endPointParameters[name]}
+              value={ctx.endpointParameters[name]}
               isRequired={propertySpec.required}
               onChange={value => onSetPropValue(name, value)}
             />
@@ -145,7 +145,7 @@ export const EndpointParametersForm: React.FunctionComponent = () => {
             <NumberInput
               key={index}
               inputName={propertySpec.title}
-              value={numberValue(ctx.endPointParameters[name], propertySpec.defaultValue)}
+              value={numberValue(ctx.endpointParameters[name], propertySpec.defaultValue)}
               allowEmptyInput
               onPlus={() => onPlus(name)}
               onMinus={() => onMinus(name)}
@@ -165,7 +165,7 @@ export const EndpointParametersForm: React.FunctionComponent = () => {
             id={name + '-' + index}
             key={index}
             label={propertySpec.title}
-            isChecked={parseBoolean(ctx.endPointParameters[name])}
+            isChecked={parseBoolean(ctx.endpointParameters[name])}
             isRequired={propertySpec.required}
             description={propertySpec.description}
             onChange={value => onSetPropValue(name, value)}
@@ -193,7 +193,7 @@ export const EndpointParametersForm: React.FunctionComponent = () => {
                     key={index}
                     name={enumVal}
                     text={enumVal}
-                    isSelected={ctx.endPointParameters[name] === enumVal}
+                    isSelected={ctx.endpointParameters[name] === enumVal}
                     onChange={isSelected => {
                       if (isSelected) onSetPropValue(name, enumVal)
                     }}
