@@ -1,14 +1,15 @@
 import { eventService } from '@hawtiosrc/core'
-import { Card, CardBody, Text, Toolbar, ToolbarContent, ToolbarItem, Button } from '@patternfly/react-core'
-import { ISortBy, TableComposable, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
-import React, { useEffect, useState } from 'react'
+import { Button, Card, CardBody, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core'
 import { PlusIcon } from '@patternfly/react-icons'
-import * as es from './endpoints-service'
+import { ISortBy, TableComposable, Tbody, Td, Th, ThProps, Thead, Tr } from '@patternfly/react-table'
+import React, { useContext, useEffect, useState } from 'react'
+import { CamelContext } from '../context'
 import { AddEndpoint } from './AddEndpoint'
-import { useAddEndpointContext, AddEndpointContext } from './add-endpoint-context'
-import { MBeanNode } from '@hawtiosrc/plugins/shared'
+import { AddEndpointContext, useAddEndpointContext } from './context'
+import * as es from './endpoints-service'
 
 export const Endpoints: React.FunctionComponent = () => {
+  const { selectedNode } = useContext(CamelContext)
   const ctx = useAddEndpointContext()
   const [isReading, setIsReading] = useState(false)
   const emptyEndpoints: es.Endpoint[] = []
@@ -16,15 +17,14 @@ export const Endpoints: React.FunctionComponent = () => {
   const [activeSortDirection, setActiveSortDirection] = useState<'asc' | 'desc' | null>('asc')
 
   useEffect(() => {
-    if (!ctx.selectedNode) return
+    if (!selectedNode) return
 
     setIsReading(true)
-
     const readEndpoints = async () => {
       try {
-        const endps = await es.getEndpoints(ctx.selectedNode as MBeanNode)
+        const endps = await es.getEndpoints(selectedNode)
         setEndpoints(endps)
-        const cNames = await es.componentNames(ctx.selectedNode as MBeanNode)
+        const cNames = await es.componentNames(selectedNode)
         ctx.setComponentNames(cNames)
       } catch (error) {
         eventService.notify({
@@ -40,34 +40,9 @@ export const Endpoints: React.FunctionComponent = () => {
      * lint reporting that ctx should be a dependency which it really doesn't
      */
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ctx.selectedNode])
+  }, [selectedNode])
 
-  const isAddEnabled = () => {
-    return es.canCreateEndpoints(ctx.selectedNode)
-  }
-
-  const onAddClicked = () => {
-    if (!ctx.selectedNode) return
-    ctx.showAddEndpoint(true)
-  }
-
-  const sortParams = (): ThProps['sort'] => {
-    const sortBy: ISortBy = {
-      index: 0,
-      defaultDirection: 'asc',
-    }
-    if (activeSortDirection) sortBy.direction = activeSortDirection
-
-    return {
-      columnIndex: 0,
-      sortBy: sortBy,
-      onSort: (_event, _, direction) => {
-        setActiveSortDirection(direction)
-      },
-    }
-  }
-
-  if (!ctx.selectedNode) {
+  if (!selectedNode) {
     return (
       <Card>
         <CardBody>
@@ -109,6 +84,28 @@ export const Endpoints: React.FunctionComponent = () => {
     )
   }
 
+  const isAddEnabled = () => {
+    return es.canCreateEndpoints(selectedNode)
+  }
+
+  const onAddClicked = () => {
+    ctx.showAddEndpoint(true)
+  }
+
+  const sortParams = (): ThProps['sort'] => {
+    const sortBy: ISortBy = {
+      index: 0,
+      defaultDirection: 'asc',
+    }
+    if (activeSortDirection) sortBy.direction = activeSortDirection
+
+    return {
+      columnIndex: 0,
+      sortBy: sortBy,
+      onSort: (_event, _index, direction) => setActiveSortDirection(direction),
+    }
+  }
+
   // sorted endpoints is not stored in the state so does not require syncing
   const sortedEndpoints = endpoints
   sortedEndpoints.sort((a, b) => {
@@ -117,41 +114,38 @@ export const Endpoints: React.FunctionComponent = () => {
   })
 
   return (
-    <Card isFullHeight>
-      <CardBody>
-        <Toolbar id='toolbar-items'>
-          <ToolbarContent>
-            <ToolbarItem>
-              <Button
-                variant='secondary'
-                isSmall={true}
-                isDisabled={!isAddEnabled()}
-                icon={React.createElement(PlusIcon)}
-                onClick={onAddClicked}
-              >
-                Add
-              </Button>
-            </ToolbarItem>
-            <ToolbarItem variant='separator' />
-          </ToolbarContent>
-        </Toolbar>
-        <TableComposable aria-label='Endpoint Table'>
-          <Thead>
-            <Tr>
-              <Th sort={sortParams()}>URI</Th>
-              <Th modifier='wrap'>State</Th>
+    <React.Fragment>
+      <Toolbar id='camel-endpoints-toolbar'>
+        <ToolbarContent>
+          <ToolbarItem id='camel-endpoints-toolbar-item-add'>
+            <Button
+              variant='secondary'
+              isSmall={true}
+              isDisabled={!isAddEnabled()}
+              icon={<PlusIcon />}
+              onClick={onAddClicked}
+            >
+              Add
+            </Button>
+          </ToolbarItem>
+        </ToolbarContent>
+      </Toolbar>
+      <TableComposable id='camel-endpoints-table' aria-label='Camel endpoints table' variant='compact'>
+        <Thead>
+          <Tr>
+            <Th sort={sortParams()}>URI</Th>
+            <Th modifier='wrap'>State</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {sortedEndpoints.map(endpoint => (
+            <Tr key={endpoint.mbean}>
+              <Td dataLabel={endpoint.uri}>{endpoint.uri}</Td>
+              <Td dataLabel={endpoint.state}>{endpoint.state}</Td>
             </Tr>
-          </Thead>
-          <Tbody>
-            {sortedEndpoints.map(endpoint => (
-              <Tr key={endpoint.mbean}>
-                <Td dataLabel={endpoint.uri}>{endpoint.uri}</Td>
-                <Td dataLabel={endpoint.state}>{endpoint.state}</Td>
-              </Tr>
-            ))}
-          </Tbody>
-        </TableComposable>
-      </CardBody>
-    </Card>
+          ))}
+        </Tbody>
+      </TableComposable>
+    </React.Fragment>
   )
 }

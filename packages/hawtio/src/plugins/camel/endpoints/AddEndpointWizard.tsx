@@ -1,5 +1,3 @@
-import { MBeanNode } from '@hawtiosrc/plugins/shared'
-import React from 'react'
 import {
   ActionGroup,
   Button,
@@ -7,39 +5,43 @@ import {
   FormGroup,
   FormSection,
   Select,
-  SelectOption,
-  SelectVariant,
   SelectDirection,
+  SelectOption,
   SelectOptionObject,
-  Label,
+  SelectVariant,
   TextInput,
 } from '@patternfly/react-core'
-import { ChangeEvent, MouseEvent, useContext, useEffect, useRef, useState } from 'react'
 import { ExclamationCircleIcon } from '@patternfly/react-icons'
-import { AddEndpointContext } from './add-endpoint-context'
-import * as es from './endpoints-service'
-import './AddEndpointWizard.css'
+import React, { ChangeEvent, MouseEvent, useContext, useEffect, useRef, useState } from 'react'
+import { CamelContext } from '../context'
 import { EndpointParametersForm } from './EndpointParametersForm'
+import { AddEndpointContext } from './context'
+import * as es from './endpoints-service'
 
 const placeholder = 'Select Component Name'
 
 export const AddEndpointWizard: React.FunctionComponent = () => {
+  const { selectedNode } = useContext(CamelContext)
   const ctx = useContext(AddEndpointContext)
   const toggleRef = useRef<HTMLButtonElement | null>()
   const [isOpen, setIsOpen] = useState(false)
-  const [endPointValid, setEndpointValid] = useState<boolean>(false)
+  const [endpointValidated, setEndpointValidated] = useState<'success' | 'error' | 'default'>('default')
 
   useEffect(() => {
-    if (!ctx.selectedNode || !ctx.componentName) return
+    if (!selectedNode || !ctx.componentName) return
 
-    const schema = es.loadEndpointSchema(ctx.selectedNode as MBeanNode, ctx.componentName)
+    const schema = es.loadEndpointSchema(selectedNode, ctx.componentName)
     ctx.setComponentSchema(schema as Record<string, unknown>)
 
     /*
      * lint reporting that ctx should be a dependency which it really doesn't
      */
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ctx.selectedNode, ctx.componentName])
+  }, [selectedNode, ctx.componentName])
+
+  if (!selectedNode) {
+    return null
+  }
 
   const onToggle = (isOpen: boolean) => {
     setIsOpen(isOpen)
@@ -61,11 +63,11 @@ export const AddEndpointWizard: React.FunctionComponent = () => {
     ctx.setEndpointPath(value)
 
     const invalid = !value || value.length === 0 || !/^[a-zA-Z\d-_/:]+$/.test(value)
-    setEndpointValid(!invalid)
+    setEndpointValidated(invalid ? 'error' : 'success')
   }
 
   const endpointInvalidMessage = (): string => {
-    if (!ctx.endPointPath || ctx.endPointPath.length === 0) return 'Endpoint path is empty.'
+    if (!ctx.endpointPath || ctx.endpointPath.length === 0) return 'Endpoint path is empty.'
 
     return 'Endpoint path invalid. Only alphanumeric characters, underscore, and hyphen allowed'
   }
@@ -75,12 +77,7 @@ export const AddEndpointWizard: React.FunctionComponent = () => {
   }
 
   const onSubmitClicked = () => {
-    es.createEndpointFromData(
-      ctx.selectedNode as MBeanNode,
-      ctx.componentName,
-      ctx.endPointPath,
-      ctx.endPointParameters,
-    )
+    es.createEndpointFromData(selectedNode, ctx.componentName, ctx.endpointPath, ctx.endpointParameters)
     ctx.showAddEndpoint(false)
   }
 
@@ -98,28 +95,26 @@ export const AddEndpointWizard: React.FunctionComponent = () => {
           direction={SelectDirection.down}
           placeholderText={placeholder}
         >
-          {ctx.componentNames === null
-            ? []
-            : ctx.componentNames.map((name, index) => {
-                return <SelectOption key={index} value={name} />
-              })}
+          {ctx.componentNames?.map((name, index) => <SelectOption key={index} value={name} />) ?? []}
         </Select>
       </FormGroup>
       {ctx.componentName && (
         <React.Fragment>
-          <FormGroup label='Endpoint Path' fieldId='endpoint-path'>
+          <FormGroup
+            label='Endpoint Path'
+            fieldId='endpoint-path'
+            validated={endpointValidated}
+            helperTextInvalid={endpointInvalidMessage()}
+            helperTextInvalidIcon={<ExclamationCircleIcon />}
+          >
             <TextInput
               id='endpoint-path-input'
               type='text'
-              value={ctx.endPointPath}
+              value={ctx.endpointPath}
               isRequired={true}
               onChange={onEndpointPathChanged}
+              validated={endpointValidated}
             />
-            {!endPointValid && (
-              <Label color='red' icon={<ExclamationCircleIcon />} className='endpoint-invalid'>
-                {endpointInvalidMessage()}
-              </Label>
-            )}
           </FormGroup>
           {ctx.componentSchema && (
             <FormSection title='Endpoint Parameters'>
@@ -131,7 +126,7 @@ export const AddEndpointWizard: React.FunctionComponent = () => {
       <ActionGroup>
         <Button
           variant='primary'
-          isDisabled={!ctx.selectedNode || !ctx.endPointPath || ctx.endPointPath.length === 0 || !endPointValid}
+          isDisabled={!ctx.endpointPath || ctx.endpointPath.length === 0 || endpointValidated !== 'success'}
           onClick={onSubmitClicked}
         >
           Submit

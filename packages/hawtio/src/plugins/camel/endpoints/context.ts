@@ -1,35 +1,30 @@
-import { MBeanNode } from '@hawtiosrc/plugins/shared'
-import { createContext, useContext, useState } from 'react'
-import { CamelContext } from '../context'
+import { createContext, useState } from 'react'
 
 export function useAddEndpointContext() {
-  const { selectedNode } = useContext(CamelContext)
   const [addEndpoint, showAddEndpoint] = useState(false)
   const [componentNames, setComponentNames] = useState<string[] | null>(null)
   const [componentName, setComponentName] = useState('')
   const [componentSchema, setComponentSchema] = useState<Record<string, unknown>>({})
-  const [endPointPath, setEndpointPath] = useState<string>('')
-  const [endPointParameters, setEndPointParameters] = useState<Record<string, string>>({})
+  const [endpointPath, setEndpointPath] = useState<string>('')
+  const [endpointParameters, setEndpointParameters] = useState<Record<string, string>>({})
 
   return {
     addEndpoint,
     showAddEndpoint,
-    selectedNode,
     componentNames,
     setComponentNames,
     componentName,
     setComponentName,
     componentSchema,
     setComponentSchema,
-    endPointPath,
+    endpointPath,
     setEndpointPath,
-    endPointParameters,
-    setEndPointParameters,
+    endpointParameters,
+    setEndpointParameters,
   }
 }
 
 type AddEndpointContext = {
-  selectedNode: MBeanNode | null
   showAddEndpoint: (value: boolean) => void
   componentNames: string[] | null
   setComponentNames: (names: string[]) => void
@@ -37,14 +32,13 @@ type AddEndpointContext = {
   setComponentName: (names: string) => void
   componentSchema: Record<string, unknown>
   setComponentSchema: (componentSchema: Record<string, unknown>) => void
-  endPointPath: string
+  endpointPath: string
   setEndpointPath: (endPointPath: string) => void
-  endPointParameters: Record<string, string>
-  setEndPointParameters: (componentSchema: Record<string, string>) => void
+  endpointParameters: Record<string, string>
+  setEndpointParameters: (componentSchema: Record<string, string>) => void
 }
 
 export const AddEndpointContext = createContext<AddEndpointContext>({
-  selectedNode: null,
   showAddEndpoint: (value: boolean) => {
     /* no-op */
   },
@@ -60,12 +54,12 @@ export const AddEndpointContext = createContext<AddEndpointContext>({
   setComponentSchema: (componentSchema: Record<string, unknown>) => {
     /* no-op */
   },
-  endPointPath: '',
+  endpointPath: '',
   setEndpointPath: (endPointPath: string) => {
     /* no-op */
   },
-  endPointParameters: {},
-  setEndPointParameters: (endPointParameters: Record<string, string>) => {
+  endpointParameters: {},
+  setEndpointParameters: (endPointParameters: Record<string, string>) => {
     /* no-op */
   },
 })
