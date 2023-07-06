@@ -81,7 +81,9 @@ export const AttributeModal: React.FunctionComponent<AttributeModalProps> = prop
           />
         </FormGroup>
         <FormGroup label='Jolokia URL' fieldId='attribute-form-jolokia-url'>
-          <ClipboardCopy isReadOnly>{jolokiaUrl}</ClipboardCopy>
+          <ClipboardCopy isReadOnly removeFindDomNode>
+            {jolokiaUrl}
+          </ClipboardCopy>
         </FormGroup>
         <FormGroup label='Value' fieldId='attribute-form-value'>
           <TextInput id='attribute-form-value' name='attribute-form-value' value={value} readOnlyVariant='default' />
