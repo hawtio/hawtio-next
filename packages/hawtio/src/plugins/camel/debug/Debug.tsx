@@ -1,4 +1,4 @@
-import { MBeanNode } from '@hawtiosrc/plugins/shared'
+import { HawtioEmptyCard, HawtioLoadingCard, MBeanNode } from '@hawtiosrc/plugins/shared'
 import { compareArrays } from '@hawtiosrc/util/arrays'
 import { childText, parseXML } from '@hawtiosrc/util/xml'
 import {
@@ -354,25 +354,11 @@ export const Debug: React.FunctionComponent = () => {
   }
 
   if (!selectedNode) {
-    return (
-      <Card>
-        <CardBody>
-          <Text component='p'>No selection has been made</Text>
-        </CardBody>
-      </Card>
-    )
+    return <HawtioEmptyCard message='No selection has been made.' />
   }
 
   if (isReading) {
-    return (
-      <Card>
-        <CardBody>
-          <Text data-testid='loading' component='p'>
-            Loading...
-          </Text>
-        </CardBody>
-      </Card>
-    )
+    return <HawtioLoadingCard />
   }
 
   /**

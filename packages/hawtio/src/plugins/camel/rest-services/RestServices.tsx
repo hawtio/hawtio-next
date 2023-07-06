@@ -1,3 +1,4 @@
+import { HawtioEmptyCard, HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
 import {
   Card,
   CardBody,
@@ -9,20 +10,18 @@ import {
   SelectOption,
   SelectOptionObject,
   SelectVariant,
-  Skeleton,
-  Text,
   Toolbar,
   ToolbarContent,
   ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core'
-import React, { ChangeEvent, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
-import { CamelContext } from '../context'
-import { restServicesService, RestService } from './rest-services-service'
 import { IResponse } from 'jolokia.js'
+import React, { ChangeEvent, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { CamelContext } from '../context'
 import { log } from '../globals'
+import { RestService, restServicesService } from './rest-services-service'
 import './rest-services.css'
 
 const defaultFilterInputPlaceholder = 'Filter by URL ...'
@@ -124,23 +123,11 @@ export const RestServices: React.FunctionComponent = () => {
   }, [filterRestSvcData, restSvcData, filters])
 
   if (!selectedNode) {
-    return (
-      <Card>
-        <CardBody>
-          <Text component='p'>No selection has been made</Text>
-        </CardBody>
-      </Card>
-    )
+    return <HawtioEmptyCard message='No selection has been made.' />
   }
 
   if (isReading) {
-    return (
-      <Card>
-        <CardBody>
-          <Skeleton data-testid='loading' screenreaderText='Loading...' />
-        </CardBody>
-      </Card>
-    )
+    return <HawtioLoadingCard />
   }
 
   const clearFilters = () => {

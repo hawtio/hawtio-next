@@ -72,12 +72,7 @@ describe('BlockedExchanges', () => {
     expect(contextNode).not.toBeNull()
 
     const selectedNode = contextNode
-    const setSelectedNode = () =>
-      void (
-        {
-          /* no op */
-        }
-      )
+    const setSelectedNode = () => ({})
     render(
       <CamelContext.Provider value={{ tree, selectedNode, setSelectedNode }}>
         <BlockedExchanges />
@@ -110,12 +105,7 @@ describe('BlockedExchanges', () => {
     ]
 
     const selectedNode = contextNode
-    const setSelectedNode = () =>
-      void (
-        {
-          /* no op */
-        }
-      )
+    const setSelectedNode = () => ({})
     render(
       <CamelContext.Provider value={{ tree, selectedNode, setSelectedNode }}>
         <BlockedExchanges />
@@ -171,12 +161,7 @@ describe('BlockedExchanges', () => {
     ]
 
     const selectedNode = contextNode
-    const setSelectedNode = () =>
-      void (
-        {
-          /* no op */
-        }
-      )
+    const setSelectedNode = () => ({})
 
     const BlockedXchgs = (
       <CamelContext.Provider value={{ tree, selectedNode, setSelectedNode }}>

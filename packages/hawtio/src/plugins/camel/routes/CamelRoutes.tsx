@@ -1,22 +1,18 @@
 import { eventService } from '@hawtiosrc/core'
-import { workspace } from '@hawtiosrc/plugins/shared'
+import { HawtioEmptyCard, HawtioLoadingCard, workspace } from '@hawtiosrc/plugins/shared'
 import { objectSorter } from '@hawtiosrc/util/objects'
 import {
   Button,
-  Card,
-  CardBody,
   Dropdown,
   DropdownItem,
   KebabToggle,
   Modal,
   ModalVariant,
-  Skeleton,
-  Text,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core'
-import { AsleepIcon, InfoCircleIcon, PlayIcon, Remove2Icon } from '@patternfly/react-icons'
+import { AsleepIcon, PlayIcon, Remove2Icon } from '@patternfly/react-icons'
 import { TableComposable, Tbody, Td, Th, ThProps, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useState } from 'react'
 import { CamelContext } from '../context'
@@ -58,25 +54,11 @@ export const CamelRoutes: React.FunctionComponent = () => {
   }
 
   if (isReading) {
-    return (
-      <Card>
-        <CardBody>
-          <Skeleton data-testid='loading' screenreaderText='Loading...' />
-        </CardBody>
-      </Card>
-    )
+    return <HawtioLoadingCard />
   }
 
   if (routes.length === 0) {
-    return (
-      <Card>
-        <CardBody>
-          <Text component='p'>
-            <InfoCircleIcon /> This context does not have any routes.
-          </Text>
-        </CardBody>
-      </Card>
-    )
+    return <HawtioEmptyCard message='This context does not have any routes.' />
   }
 
   const onDropdownToggle = (isOpen: boolean) => {

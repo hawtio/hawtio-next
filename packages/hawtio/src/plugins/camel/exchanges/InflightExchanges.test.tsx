@@ -77,12 +77,7 @@ describe('InflightExchanges', () => {
     expect(contextNode).not.toBeNull()
 
     const selectedNode = contextNode
-    const setSelectedNode = () =>
-      void (
-        {
-          /* no op */
-        }
-      )
+    const setSelectedNode = () => ({})
     render(
       <CamelContext.Provider value={{ tree, selectedNode, setSelectedNode }}>
         <InflightExchanges />
@@ -116,12 +111,7 @@ describe('InflightExchanges', () => {
     ]
 
     const selectedNode = contextNode
-    const setSelectedNode = () =>
-      void (
-        {
-          /* no op */
-        }
-      )
+    const setSelectedNode = () => ({})
     render(
       <CamelContext.Provider value={{ tree, selectedNode, setSelectedNode }}>
         <InflightExchanges />
@@ -176,12 +166,7 @@ describe('InflightExchanges', () => {
     ]
 
     const selectedNode = contextNode
-    const setSelectedNode = () =>
-      void (
-        {
-          /* no op */
-        }
-      )
+    const setSelectedNode = () => ({})
     render(
       <CamelContext.Provider value={{ tree, selectedNode, setSelectedNode }}>
         <InflightExchanges />

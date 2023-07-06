@@ -1,4 +1,5 @@
-import { MBeanNode } from '@hawtiosrc/plugins/shared'
+import { HawtioEmptyCard, HawtioLoadingCard, MBeanNode } from '@hawtiosrc/plugins/shared'
+import { childText, parseXML } from '@hawtiosrc/util/xml'
 import {
   Button,
   Card,
@@ -11,23 +12,21 @@ import {
   PanelHeader,
   PanelMain,
   PanelMainBody,
-  Skeleton,
   Text,
 } from '@patternfly/react-core'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { BanIcon, PlayIcon } from '@patternfly/react-icons'
-import { RouteDiagramContext, useRouteDiagramContext } from '../route-diagram/route-diagram-context'
-import * as ccs from '../camel-content-service'
-import { tracingService as ts } from './tracing-service'
-import { debugService as ds } from '../debug'
-import './Tracing.css'
-import { IResponse } from 'jolokia.js'
-import { log } from '../globals'
-import { childText, parseXML } from '@hawtiosrc/util/xml'
-import { MessageData } from '../debug/debug-service'
-import { RouteDiagram } from '../route-diagram/RouteDiagram'
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { IResponse } from 'jolokia.js'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import * as ccs from '../camel-content-service'
+import { debugService as ds } from '../debug'
 import { MessageDrawer } from '../debug/MessageDrawer'
+import { MessageData } from '../debug/debug-service'
+import { log } from '../globals'
+import { RouteDiagram } from '../route-diagram/RouteDiagram'
+import { RouteDiagramContext, useRouteDiagramContext } from '../route-diagram/route-diagram-context'
+import './Tracing.css'
+import { tracingService as ts } from './tracing-service'
 
 const MESSAGES_LIMIT = 500
 
@@ -170,23 +169,11 @@ export const Trace: React.FunctionComponent = () => {
   }
 
   if (!selectedNode) {
-    return (
-      <Card>
-        <CardBody>
-          <Text component='p'>No selection has been made</Text>
-        </CardBody>
-      </Card>
-    )
+    return <HawtioEmptyCard message='No selection has been made.' />
   }
 
   if (isReading) {
-    return (
-      <Card>
-        <CardBody>
-          <Skeleton data-testid='loading' screenreaderText='Loading...' />
-        </CardBody>
-      </Card>
-    )
+    return <HawtioLoadingCard />
   }
 
   /**

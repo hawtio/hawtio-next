@@ -1,6 +1,7 @@
 import { eventService } from '@hawtiosrc/core'
 import { CamelContext } from '@hawtiosrc/plugins/camel/context'
 import { AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
+import { HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
 import { Card, CardBody, Text } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
 import { Table, TableBody, TableHeader, TableProps, wrappable } from '@patternfly/react-table'
@@ -78,23 +79,12 @@ export const Contexts: React.FunctionComponent = () => {
   }, [selectedNode, contexts])
 
   if (!selectedNode) {
-    return (
-      <Card>
-        <CardBody>
-          <Text component='p'>No selection has been made</Text>
-        </CardBody>
-      </Card>
-    )
+    // When this view is routed, the virtual 'Camel Contexts' node should be always selected
+    return null
   }
 
   if (isReading) {
-    return (
-      <Card>
-        <CardBody>
-          <Text component='p'>Reading contexts...</Text>
-        </CardBody>
-      </Card>
-    )
+    return <HawtioLoadingCard />
   }
 
   /*

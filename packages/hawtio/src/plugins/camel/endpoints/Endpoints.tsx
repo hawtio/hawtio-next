@@ -1,5 +1,6 @@
 import { eventService } from '@hawtiosrc/core'
-import { Button, Card, CardBody, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core'
+import { HawtioEmptyCard, HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
+import { Button, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core'
 import { PlusIcon } from '@patternfly/react-icons'
 import { ISortBy, TableComposable, Tbody, Td, Th, ThProps, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useState } from 'react'
@@ -43,37 +44,15 @@ export const Endpoints: React.FunctionComponent = () => {
   }, [selectedNode])
 
   if (!selectedNode) {
-    return (
-      <Card>
-        <CardBody>
-          <Text component='p'>No selection has been made</Text>
-        </CardBody>
-      </Card>
-    )
+    return null
   }
 
   if (isReading) {
-    return (
-      <Card>
-        <CardBody>
-          <Text data-testid='loading' component='p'>
-            Loading...
-          </Text>
-        </CardBody>
-      </Card>
-    )
+    return <HawtioLoadingCard />
   }
 
   if (endpoints.length === 0) {
-    return (
-      <Card>
-        <CardBody>
-          <Text data-testid='no-endpoints' component='p'>
-            No endpoints
-          </Text>
-        </CardBody>
-      </Card>
-    )
+    return <HawtioEmptyCard message='No endpoints found.' />
   }
 
   if (ctx.addEndpoint) {
@@ -86,9 +65,7 @@ export const Endpoints: React.FunctionComponent = () => {
 
   const isAddEnabled = () => es.canCreateEndpoints(selectedNode)
 
-  const onAddClicked = () => {
-    ctx.showAddEndpoint(true)
-  }
+  const onAddClicked = () => ctx.showAddEndpoint(true)
 
   const sortParams = (): ThProps['sort'] => {
     const sortBy: ISortBy = {

@@ -1,8 +1,8 @@
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
 import { isEmpty } from '@hawtiosrc/util/objects'
 import { Card, CardBody, DataList, Text } from '@patternfly/react-core'
-import { InfoCircleIcon } from '@patternfly/react-icons'
 import React, { useContext } from 'react'
+import { HawtioEmptyCard } from '../HawtioEmptyCard'
 import { OperationForm } from './OperationForm'
 import './Operations.css'
 import { createOperations } from './operation'
@@ -17,15 +17,7 @@ export const Operations: React.FunctionComponent = () => {
   const { objectName, mbean } = selectedNode
 
   if (!mbean.op || isEmpty(mbean.op)) {
-    return (
-      <Card>
-        <CardBody>
-          <Text component='p'>
-            <InfoCircleIcon /> This MBean has no JMX operations.
-          </Text>
-        </CardBody>
-      </Card>
-    )
+    return <HawtioEmptyCard message='This MBean has no JMX operations.' />
   }
 
   const operations = createOperations(objectName, mbean.op)

@@ -1,3 +1,4 @@
+import { HawtioEmptyCard, HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
 import {
   Card,
   CardBody,
@@ -8,20 +9,18 @@ import {
   Panel,
   PanelMain,
   PanelMainBody,
-  Skeleton,
-  Text,
 } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
-import React, { useContext, useEffect, useState } from 'react'
 import Logger from 'js-logger'
+import React, { useContext, useEffect, useState } from 'react'
 import { CamelContext } from '../context'
 import { log, xmlNodeLocalName } from '../globals'
-import { schemaService } from '../schema-service'
 import { routesService } from '../routes-service'
-import * as pps from './properties-service'
+import { schemaService } from '../schema-service'
 import { PropertiesList } from './PropertiesList'
-import { Property } from './property'
+import * as pps from './properties-service'
 import './properties.css'
+import { Property } from './property'
 
 export const Properties: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
@@ -81,23 +80,11 @@ export const Properties: React.FunctionComponent = () => {
   }, [selectedNode])
 
   if (!selectedNode) {
-    return (
-      <Card>
-        <CardBody>
-          <Text component='p'>No selection has been made</Text>
-        </CardBody>
-      </Card>
-    )
+    return <HawtioEmptyCard message='No selection has been made.' />
   }
 
   if (isReading) {
-    return (
-      <Card>
-        <CardBody>
-          <Skeleton data-testid='loading' screenreaderText='Loading...' />
-        </CardBody>
-      </Card>
-    )
+    return <HawtioLoadingCard />
   }
 
   return (

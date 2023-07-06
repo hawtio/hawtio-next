@@ -1,7 +1,7 @@
 import { Bullseye, Page, Spinner, Text, TextContent, TextVariants } from '@patternfly/react-core'
 import React from 'react'
 
-export const HawtioLoading: React.FunctionComponent = () => (
+export const HawtioLoadingPage: React.FunctionComponent = () => (
   <Page>
     <Bullseye>
       <div style={{ justifyContent: 'center' }}>
