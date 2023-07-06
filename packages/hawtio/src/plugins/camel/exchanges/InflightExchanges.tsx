@@ -1,15 +1,15 @@
-import React, { useEffect, useState, useContext } from 'react'
-import { CardBody, Text } from '@patternfly/react-core'
-import { Table, TableBody, TableHeader, TableProps, wrappable } from '@patternfly/react-table'
 import { CamelContext } from '@hawtiosrc/plugins/camel/context'
+import { HawtioEmptyCard, HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
+import { Card, CardBody, CardTitle } from '@patternfly/react-core'
+import { Table, TableBody, TableHeader, TableProps, wrappable } from '@patternfly/react-table'
+import React, { useContext, useEffect, useState } from 'react'
 import * as exs from './exchanges-service'
 
 export const InflightExchanges: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
   const [isReading, setIsReading] = useState(false)
   const [canDisplayInflight, setCanDisplayInflight] = useState(false)
-  const emptyExchgs: exs.Exchange[] = []
-  const [exchanges, setExchanges] = useState(emptyExchgs)
+  const [exchanges, setExchanges] = useState<exs.Exchange[]>([])
 
   useEffect(() => {
     if (!selectedNode) {
@@ -37,33 +37,21 @@ export const InflightExchanges: React.FunctionComponent = () => {
   }, [selectedNode])
 
   if (isReading) {
-    return (
-      <CardBody>
-        <Text data-testid='loading' component='p'>
-          Loading...
-        </Text>
-      </CardBody>
-    )
+    return <HawtioLoadingCard />
   }
 
   if (!canDisplayInflight) {
     return (
-      <CardBody>
-        <Text data-testid='exchanges-denied' component='p'>
-          Browsing of Inflight Exchanges has not been enabled.
-        </Text>
-      </CardBody>
+      <HawtioEmptyCard
+        title='Inflight Exchanges'
+        message='Browsing of Inflight Exchanges has not been enabled.'
+        testid='exchanges-denied'
+      />
     )
   }
 
   if (exchanges.length === 0) {
-    return (
-      <CardBody>
-        <Text data-testid='no-exchanges' component='p'>
-          No inflight exchanges
-        </Text>
-      </CardBody>
-    )
+    return <HawtioEmptyCard title='Inflight Exchanges' message='No inflight exchanges found.' testid='no-exchanges' />
   }
 
   const columns: TableProps['cells'] = []
@@ -76,11 +64,14 @@ export const InflightExchanges: React.FunctionComponent = () => {
   const rows: TableProps['rows'] = exchanges.map(ex => [ex.exchangeId, ex.routeId, ex.nodeId, ex.duration, ex.elapsed])
 
   return (
-    <CardBody>
-      <Table data-testid='exchange-table' aria-label='Inflight Exchanges' cells={columns} rows={rows}>
-        <TableHeader />
-        <TableBody />
-      </Table>
-    </CardBody>
+    <Card isFullHeight>
+      <CardTitle>Inflight Exchanges</CardTitle>
+      <CardBody>
+        <Table data-testid='exchange-table' aria-label='Inflight Exchanges' cells={columns} rows={rows}>
+          <TableHeader />
+          <TableBody />
+        </Table>
+      </CardBody>
+    </Card>
   )
 }

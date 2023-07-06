@@ -1,3 +1,8 @@
+import { AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
+import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
+import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
+import { isNumber } from '@hawtiosrc/util/objects'
+import { ChartArea, ChartAxis, Chart as ChartDraw, ChartVoronoiContainer } from '@patternfly/react-charts'
 import {
   Button,
   Card,
@@ -9,14 +14,11 @@ import {
   Text,
 } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
-import { ChartArea, ChartAxis, Chart as ChartDraw, ChartVoronoiContainer } from '@patternfly/react-charts'
-import { useContext, useEffect, useRef, useState } from 'react'
-import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
-import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
-import { AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { IResponse } from 'jolokia.js'
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import { HawtioEmptyCard } from '../HawtioEmptyCard'
+import { HawtioLoadingCard } from '../HawtioLoadingCard'
 import { attributeService } from '../attributes/attribute-service'
-import { isNumber } from '@hawtiosrc/util/objects'
 import { WatchableAttributesForm } from './WatchableAttributesForm'
 
 type MBeanChartData = {
@@ -135,33 +137,13 @@ export const Chart: React.FunctionComponent = () => {
   }
 
   if (Object.values(chartData).length === 0) {
-    //Data is still loading
-    return (
-      <PageSection variant={PageSectionVariants.light} isFilled>
-        <Card>
-          <CardBody>
-            <Text component='p'>
-              <InfoCircleIcon /> Data is loading
-            </Text>
-          </CardBody>
-        </Card>
-      </PageSection>
-    )
+    // Data is still loading
+    return <HawtioLoadingCard />
   }
 
   if (Object.values(attributesToWatch.current).flatMap(node => Object.values(node)).length === 0) {
-    //Data has been loaded but there are no numeric attributes.
-    return (
-      <PageSection variant={PageSectionVariants.light} isFilled>
-        <Card>
-          <CardBody>
-            <Text component='p'>
-              <InfoCircleIcon /> There are no chartable data in the MBean or its children
-            </Text>
-          </CardBody>
-        </Card>
-      </PageSection>
-    )
+    // Data has been loaded but there are no numeric attributes.
+    return <HawtioEmptyCard message='There are no chartable data in the MBean or its children.' />
   }
 
   if (
@@ -231,7 +213,7 @@ export const Chart: React.FunctionComponent = () => {
   )
 
   return (
-    <PageSection variant={PageSectionVariants.light} isFilled>
+    <React.Fragment>
       <WatchableAttributesForm
         isOpen={isWatchableAttributesModalOpen}
         onClose={(isClosed: boolean) => {
@@ -240,7 +222,7 @@ export const Chart: React.FunctionComponent = () => {
         attributesToWatch={attributesToWatch.current}
         onAttributesToWatchUpdate={newAttributes => (attributesToWatch.current = newAttributes)}
       />
-      <Card isPlain>
+      <Card isFullHeight>
         <CardHeader>
           <CardActions>
             <Button onClick={() => setIsWatchableAttributesModalOpen(true)}>Edit watches</Button>
@@ -268,6 +250,6 @@ export const Chart: React.FunctionComponent = () => {
             ))}
         </CardBody>
       </Card>
-    </PageSection>
+    </React.Fragment>
   )
 }

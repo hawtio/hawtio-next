@@ -20,7 +20,7 @@ import React from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { HawtioNotification } from '../notification'
 import { HawtioHeader } from './HawtioHeader'
-import { HawtioLoading } from './HawtioLoading'
+import { HawtioLoadingPage } from './HawtioLoadingPage'
 import { HawtioSidebar } from './HawtioSidebar'
 import { PageContext } from './context'
 import { log } from './globals'
@@ -34,7 +34,7 @@ export const HawtioPage: React.FunctionComponent = () => {
 
   if (!userLoaded || !pluginsLoaded) {
     log.debug('Loading:', 'user =', userLoaded, ', plugins =', pluginsLoaded)
-    return <HawtioLoading />
+    return <HawtioLoadingPage />
   }
 
   log.debug(`Login state: username = ${username}, isLogin = ${isLogin}`)

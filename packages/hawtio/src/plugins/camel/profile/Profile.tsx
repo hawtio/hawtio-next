@@ -1,10 +1,11 @@
-import { Card, CardBody, CardHeader, CardTitle, Skeleton, Text } from '@patternfly/react-core'
-import React, { useContext, useEffect, useState } from 'react'
+import { HawtioEmptyCard, HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
+import { Card, CardBody, CardHeader, CardTitle } from '@patternfly/react-core'
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
-import { CamelContext } from '../context'
-import { ProfileData, profileService } from './profile-service'
 import { IResponse } from 'jolokia.js'
+import React, { useContext, useEffect, useState } from 'react'
+import { CamelContext } from '../context'
 import { log } from '../globals'
+import { ProfileData, profileService } from './profile-service'
 
 export const Profile: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
@@ -43,23 +44,11 @@ export const Profile: React.FunctionComponent = () => {
   }, [selectedNode])
 
   if (!selectedNode) {
-    return (
-      <Card>
-        <CardBody>
-          <Text component='p'>No selection has been made</Text>
-        </CardBody>
-      </Card>
-    )
+    return <HawtioEmptyCard message='No selection has been made.' />
   }
 
   if (isReading) {
-    return (
-      <Card>
-        <CardBody>
-          <Skeleton data-testid='loading' screenreaderText='Loading...' />
-        </CardBody>
-      </Card>
-    )
+    return <HawtioLoadingCard />
   }
 
   return (

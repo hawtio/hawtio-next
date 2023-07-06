@@ -6,7 +6,7 @@ import { ExclamationCircleIcon } from '@patternfly/react-icons'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { HawtioNotification } from '../notification'
-import { HawtioLoading } from '../page/HawtioLoading'
+import { HawtioLoadingPage } from '../page/HawtioLoadingPage'
 import { log } from './globals'
 import { loginService } from './login-service'
 
@@ -31,7 +31,7 @@ export const HawtioLogin: React.FunctionComponent = () => {
 
   if (!userLoaded || !hawtconfigLoaded) {
     log.debug('Loading:', 'user =', userLoaded, ', hawtconfig =', hawtconfigLoaded)
-    return <HawtioLoading />
+    return <HawtioLoadingPage />
   }
 
   log.debug(`Login state: username = ${username}, isLogin = ${isLogin}`)

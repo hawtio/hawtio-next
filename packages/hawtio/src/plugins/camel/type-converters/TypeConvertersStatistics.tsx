@@ -1,19 +1,19 @@
-import React, { useContext, useEffect, useState } from 'react'
+import { eventService } from '@hawtiosrc/core'
+import { CamelContext } from '@hawtiosrc/plugins/camel/context'
+import { HawtioEmptyCard, HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
+import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import {
   Button,
   DescriptionList,
-  DescriptionListTerm,
-  DescriptionListGroup,
   DescriptionListDescription,
-  Text,
+  DescriptionListGroup,
+  DescriptionListTerm,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core'
 import { RedoIcon, TrendUpIcon } from '@patternfly/react-icons'
-import { CamelContext } from '@hawtiosrc/plugins/camel/context'
-import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
-import { eventService } from '@hawtiosrc/core'
+import React, { useContext, useEffect, useState } from 'react'
 import * as tcs from './type-converters-service'
 
 const enableButtonLabelValue = 'Enable Statistics'
@@ -89,23 +89,11 @@ export const TypeConvertersStatistics: React.FunctionComponent = () => {
   }, [selectedNode, statisticsEnabled])
 
   if (!selectedNode) {
-    return (
-      <React.Fragment>
-        <Text data-testid='no-stats-available' component='p'>
-          No statistics available.
-        </Text>
-      </React.Fragment>
-    )
+    return <HawtioEmptyCard message='No statistics available.' testid='no-stats-available' />
   }
 
   if (isReading) {
-    return (
-      <React.Fragment>
-        <Text data-testid='loading' component='p'>
-          Loading ...
-        </Text>
-      </React.Fragment>
-    )
+    return <HawtioLoadingCard />
   }
 
   return (

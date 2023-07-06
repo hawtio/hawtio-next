@@ -1,15 +1,14 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
-import { Button, CardBody, Modal, ModalVariant, Text } from '@patternfly/react-core'
-import { Table, TableBody, TableHeader, TableProps, TableText, fitContent, wrappable } from '@patternfly/react-table'
 import { CamelContext } from '@hawtiosrc/plugins/camel/context'
+import { HawtioEmptyCard, HawtioLoadingCard, MBeanNode } from '@hawtiosrc/plugins/shared'
+import { Button, Card, CardBody, CardTitle, Modal, ModalVariant } from '@patternfly/react-core'
+import { Table, TableBody, TableHeader, TableProps, TableText, fitContent, wrappable } from '@patternfly/react-table'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import * as exs from './exchanges-service'
-import { MBeanNode } from '@hawtiosrc/plugins/shared'
 
 export const BlockedExchanges: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
   const [isReading, setIsReading] = useState(false)
-  const emptyExchgs: exs.Exchange[] = []
-  const [exchanges, setExchanges] = useState(emptyExchgs)
+  const [exchanges, setExchanges] = useState<exs.Exchange[]>([])
   const [isConfirmUnblockOpen, setIsConfirmUnblockOpen] = useState(false)
   const [exchangeToUnblock, setExchangeToUnblock] = useState<exs.Exchange | null>(null)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
@@ -64,23 +63,11 @@ export const BlockedExchanges: React.FunctionComponent = () => {
   }, [selectedNode, isConfirmUnblockOpen])
 
   if (isReading) {
-    return (
-      <CardBody>
-        <Text data-testid='loading' component='p'>
-          Loading...
-        </Text>
-      </CardBody>
-    )
+    return <HawtioLoadingCard />
   }
 
   if (exchanges.length === 0) {
-    return (
-      <CardBody>
-        <Text data-testid='no-exchanges' component='p'>
-          No blocked exchanges
-        </Text>
-      </CardBody>
-    )
+    return <HawtioEmptyCard title='Blocked Exchanges' message='No blocked exchanges found.' testid='no-exchanges' />
   }
 
   const columns: TableProps['cells'] = []
@@ -125,12 +112,15 @@ export const BlockedExchanges: React.FunctionComponent = () => {
   )
 
   return (
-    <CardBody>
-      <Table data-testid='exchange-table' aria-label='Blocked Exchanges' cells={columns} rows={rows}>
-        <TableHeader />
-        <TableBody />
-      </Table>
-      <ConfirmUnblockModal />
-    </CardBody>
+    <Card isFullHeight>
+      <CardTitle>Blocked Exchanges</CardTitle>
+      <CardBody>
+        <Table data-testid='exchange-table' aria-label='Blocked Exchanges' cells={columns} rows={rows}>
+          <TableHeader />
+          <TableBody />
+        </Table>
+        <ConfirmUnblockModal />
+      </CardBody>
+    </Card>
   )
 }

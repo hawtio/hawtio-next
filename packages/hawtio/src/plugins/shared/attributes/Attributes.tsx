@@ -1,14 +1,15 @@
 import { AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
+import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
 import { isObject } from '@hawtiosrc/util/objects'
-import { Card, CardBody, Text } from '@patternfly/react-core'
-import { InfoCircleIcon } from '@patternfly/react-icons'
+import { Card } from '@patternfly/react-core'
 import { OnRowClick, Table, TableBody, TableHeader, TableProps } from '@patternfly/react-table'
 import { IResponse } from 'jolokia.js'
-import { useEffect, useState, useContext } from 'react'
-import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
+import { useContext, useEffect, useState } from 'react'
+import { HawtioEmptyCard } from '../HawtioEmptyCard'
+import { HawtioLoadingCard } from '../HawtioLoadingCard'
 import { log } from '../globals'
-import { attributeService } from './attribute-service'
 import { AttributeModal } from './AttributeModal'
+import { attributeService } from './attribute-service'
 
 export const Attributes: React.FunctionComponent = () => {
   const { selectedNode } = useContext(PluginNodeSelectionContext)
@@ -51,13 +52,7 @@ export const Attributes: React.FunctionComponent = () => {
   }
 
   if (isReading) {
-    return (
-      <Card>
-        <CardBody>
-          <Text component='p'>Reading attributes...</Text>
-        </CardBody>
-      </Card>
-    )
+    return <HawtioLoadingCard />
   }
 
   const columns: TableProps['cells'] = ['Attribute', 'Value']
@@ -67,15 +62,7 @@ export const Attributes: React.FunctionComponent = () => {
   ])
 
   if (rows.length === 0) {
-    return (
-      <Card>
-        <CardBody>
-          <Text component='p'>
-            <InfoCircleIcon /> This MBean has no attributes.
-          </Text>
-        </CardBody>
-      </Card>
-    )
+    return <HawtioEmptyCard message='This MBean has no attributes.' />
   }
 
   const selectAttribute: OnRowClick = (_event, row) => {
