@@ -84,9 +84,7 @@ export const Endpoints: React.FunctionComponent = () => {
     )
   }
 
-  const isAddEnabled = () => {
-    return es.canCreateEndpoints(selectedNode)
-  }
+  const isAddEnabled = () => es.canCreateEndpoints(selectedNode)
 
   const onAddClicked = () => {
     ctx.showAddEndpoint(true)

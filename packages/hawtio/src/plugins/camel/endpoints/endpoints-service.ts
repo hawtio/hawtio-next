@@ -30,13 +30,19 @@ export type MessageData = {
   body: string
   headers: { key: string; type: string; value: string }[]
 }
+
+export const ENDPOINT_OPERATIONS = {
+  createEndpoint: 'createEndpoint(java.lang.String)',
+  componentNames: 'componentNames()',
+} as const
+
 export async function getEndpoints(node: MBeanNode): Promise<Endpoint[]> {
   const endpoints: Endpoint[] = []
   const ctxNode = ccs.findContext(node)
   if (!ctxNode || ctxNode.childCount() === 0) return endpoints
 
-  const endPointsNode = ctxNode.get(endpointsType) as MBeanNode
-  for (const ep of endPointsNode.getChildren()) {
+  const endpointsNode = ctxNode.get(endpointsType) as MBeanNode
+  for (const ep of endpointsNode.getChildren()) {
     if (!ep.objectName) continue
     const attributes = await jolokiaService.readAttributes(ep.objectName)
     endpoints.push({
@@ -49,15 +55,19 @@ export async function getEndpoints(node: MBeanNode): Promise<Endpoint[]> {
   return endpoints
 }
 
-export function canCreateEndpoints(node: MBeanNode | null): boolean {
-  return node?.hasInvokeRights('createEndpoint') ?? false
+export function canCreateEndpoints(node: MBeanNode): boolean {
+  const contextNode = ccs.findContext(node)
+  if (!contextNode) {
+    return false
+  }
+  return contextNode.hasInvokeRights(ENDPOINT_OPERATIONS.createEndpoint)
 }
 
 export async function componentNames(node: MBeanNode): Promise<string[]> {
   const ctxNode = ccs.findContext(node)
   if (!ctxNode || ctxNode.childCount() === 0 || !ctxNode.objectName) return []
 
-  const names = await jolokiaService.execute(ctxNode.objectName, 'componentNames')
+  const names = await jolokiaService.execute(ctxNode.objectName, ENDPOINT_OPERATIONS.componentNames)
   return names as string[]
 }
 
@@ -81,7 +91,7 @@ export async function createEndpoint(node: MBeanNode, name: string) {
   }
 
   jolokiaService
-    .execute(ctxNode.objectName, 'createEndpoint(java.lang.String)', [name])
+    .execute(ctxNode.objectName, ENDPOINT_OPERATIONS.createEndpoint, [name])
     .then((value: unknown) => {
       if (value === true) {
         workspace.refreshTree()
