@@ -2,7 +2,7 @@ import React from 'react'
 import { Tooltip } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
 import { Property } from './property'
-import './properties.css'
+import './Properties.css'
 
 interface PropertiesTTNameProps {
   property: Property

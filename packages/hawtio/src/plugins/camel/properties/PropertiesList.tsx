@@ -1,4 +1,3 @@
-import React from 'react'
 import {
   DescriptionList,
   DescriptionListDescription,
@@ -9,9 +8,10 @@ import {
   PanelMain,
   PanelMainBody,
 } from '@patternfly/react-core'
+import React from 'react'
+import './Properties.css'
 import { PropertiesTooltippedName } from './PropertiesTooltippedName'
 import { Property } from './property'
-import './properties.css'
 
 interface PropertiesListProps {
   title: string

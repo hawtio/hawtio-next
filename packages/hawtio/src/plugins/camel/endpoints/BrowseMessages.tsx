@@ -1,8 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { CamelContext } from '@hawtiosrc/plugins/camel/context'
+import { NotificationType, eventService } from '@hawtiosrc/core'
 import {
   Bullseye,
   Button,
+  Card,
+  CardBody,
+  CardTitle,
   CodeBlock,
   CodeBlockCode,
   EmptyState,
@@ -13,7 +15,6 @@ import {
   FormGroup,
   Modal,
   ModalVariant,
-  PageSection,
   Pagination,
   SearchInput,
   TextInput,
@@ -24,18 +25,311 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core'
-import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import { SearchIcon } from '@patternfly/react-icons'
-import {
-  getMessagesFromTheEndpoint,
-  MessageData,
-  forwardMessagesToEndpoint,
-  getEndpoints,
-} from '@hawtiosrc/plugins/camel/endpoints/endpoints-service'
-import { eventService, NotificationType } from '@hawtiosrc/core'
+import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import React, { useContext, useEffect, useState } from 'react'
 import { Position } from 'reactflow'
-import { MBeanNode } from '@hawtiosrc/plugins'
+import { CamelContext } from '../context'
 import { InputWithSuggestions } from './InputWithSuggestions'
+import { MessageData, forwardMessagesToEndpoint, getEndpoints, getMessagesFromTheEndpoint } from './endpoints-service'
+
+export const BrowseMessages: React.FunctionComponent = () => {
+  const { selectedNode } = useContext(CamelContext)
+  const [messages, setMessages] = useState<MessageData[]>([])
+  const [filteredMessages, setFilteredMessages] = useState<MessageData[]>([])
+  const [searchTerm, setSearchTerm] = useState<string>('')
+  const [filters, setFilters] = useState<string[]>([])
+  const [selected, setSelected] = useState<string[]>([])
+  const [page, setPage] = useState(1)
+  const [perPage, setPerPage] = useState(10)
+  const [endpoints, setEndpoints] = useState<string[]>([])
+
+  useEffect(() => {
+    if (!selectedNode) {
+      return
+    }
+    const initLoad = async () => {
+      const messages = await getMessagesFromTheEndpoint(selectedNode, 0, -1)
+      updateMessages(messages)
+      const endps = await getEndpoints(selectedNode)
+      setEndpoints(endps.map(v => v.uri))
+    }
+    initLoad()
+  }, [selectedNode])
+
+  if (!selectedNode) {
+    return null
+  }
+
+  const loadMessages = async () => {
+    const messages = await getMessagesFromTheEndpoint(selectedNode, 0, -1)
+    updateMessages(messages)
+  }
+
+  const updateMessages = (messages: MessageData[]) => {
+    const data = messages.reverse()
+    setMessages(data)
+    setFilteredMessages(data)
+    setSelected([])
+    setFilters([])
+  }
+
+  const handleSearch = (value: string, filters: string[]) => {
+    setSearchTerm(value)
+    // filter with findTerm
+    let filtered: MessageData[] = []
+    if (value === '') {
+      filtered = [...messages]
+    } else {
+      filtered = messages.filter(
+        message => message.messageId.toLowerCase().includes(value.toLowerCase()) || message.body.includes(value),
+      )
+    }
+
+    // filter with the rest of the filters
+    filters.forEach(value => {
+      filtered = filtered.filter(
+        message => message.messageId.toLowerCase().includes(value.toLowerCase()) || message.body.includes(value),
+      )
+    })
+    setSearchTerm(value)
+    setPage(1)
+    setFilteredMessages([...filtered])
+  }
+
+  const addToFilters = () => {
+    setFilters([...filters, searchTerm])
+    setSearchTerm('')
+  }
+
+  const getFromIndex = (): number => {
+    return (page - 1) * perPage
+  }
+
+  const getToIndex = (): number => {
+    return getFromIndex() + perPage
+  }
+
+  const getPage = () => {
+    return filteredMessages.slice(getFromIndex(), getToIndex())
+  }
+
+  const handleNextMessage = (index: number): MessageData => {
+    return filteredMessages[index]
+  }
+
+  const getSubstring = (body: string): string => {
+    let res = body.substring(0, 100)
+    if (body.length > 100) {
+      res += '...'
+    }
+    return res
+  }
+
+  const onSelect = (messageId: string, isSelecting: boolean) => {
+    const selectedRoutes = selected.filter(m => messageId !== m)
+    setSelected(isSelecting ? [...selectedRoutes, messageId] : [...selectedRoutes])
+  }
+
+  const onSelectAll = (isSelected: boolean) => {
+    const selected = filteredMessages.map(m => m.messageId)
+    setSelected(isSelected ? selected : [])
+  }
+
+  const clearFilters = () => {
+    setFilters([])
+    setSearchTerm('')
+    setFilteredMessages([...messages])
+  }
+
+  const onDeleteFilter = (filter: string) => {
+    const newFilters = filters.filter(f => f !== filter)
+    setFilters(newFilters)
+    handleSearch(searchTerm, newFilters)
+  }
+
+  const isAllSelected = (): boolean => {
+    //  let res = true
+    for (const m of filteredMessages) {
+      if (!selected.includes(m.messageId)) {
+        return false
+      }
+    }
+    return true
+  }
+
+  const createNotification = (type: NotificationType, message: string) => {
+    eventService.notify({
+      type: type,
+      message: message,
+    })
+  }
+
+  const forwardMessages = async (uri: string, message?: MessageData) => {
+    if (selectedNode) {
+      let selectedMessages: MessageData[] = []
+      if (message) {
+        selectedMessages.push(message)
+      } else {
+        selectedMessages = messages.filter(m => selected.includes(m.messageId))
+      }
+      await forwardMessagesToEndpoint(selectedNode, uri, selectedMessages, createNotification)
+    }
+  }
+
+  const MessagesPagination = () => {
+    return (
+      <Pagination
+        itemCount={filteredMessages.length}
+        page={page}
+        perPage={perPage}
+        onSetPage={(_evt, value) => setPage(value)}
+        onPerPageSelect={(_evt, value) => setPerPage(value)}
+        variant='top'
+      />
+    )
+  }
+
+  return (
+    <Card isFullHeight>
+      <CardTitle>Browse Messages</CardTitle>
+      <CardBody>
+        <Toolbar clearAllFilters={clearFilters}>
+          <ToolbarContent>
+            <ToolbarGroup>
+              <ToolbarFilter
+                chips={filters}
+                deleteChip={(_e, filter) => onDeleteFilter(filter as string)}
+                deleteChipGroup={clearFilters}
+                categoryName='Filters'
+              >
+                <SearchInput
+                  type='text'
+                  data-testid='filter-input'
+                  id='search-input'
+                  placeholder='Search...'
+                  value={searchTerm}
+                  onChange={(_event, value) => handleSearch(value, filters)}
+                  aria-label='Search input'
+                />
+              </ToolbarFilter>
+              <Button variant='secondary' onClick={addToFilters}>
+                Add Filter
+              </Button>
+            </ToolbarGroup>
+            <ToolbarItem>
+              <Button variant='secondary' onClick={loadMessages}>
+                Refresh
+              </Button>
+            </ToolbarItem>
+            <ToolbarItem>
+              <ForwardMessagesModal
+                endpoints={endpoints}
+                enabled={selected.length > 0}
+                onForwardMessages={forwardMessages}
+              />
+            </ToolbarItem>
+            <ToolbarItem variant='pagination'>
+              <MessagesPagination />
+            </ToolbarItem>
+          </ToolbarContent>
+        </Toolbar>
+
+        {filteredMessages.length > 0 && (
+          <FormGroup>
+            <TableComposable aria-label='Message Table' variant='compact' height='80vh'>
+              <Thead>
+                <Tr>
+                  <Th
+                    select={{
+                      onSelect: (_event, isSelecting) => onSelectAll(isSelecting),
+                      isSelected: isAllSelected(),
+                    }}
+                  />
+                  <Th>Message ID</Th>
+                  <Th>Body</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {getPage().map((m, index) => {
+                  return (
+                    <Tr key={index}>
+                      <Td
+                        style={{ flex: 1 }}
+                        select={{
+                          rowIndex: index,
+                          onSelect: (_event, isSelected) => {
+                            onSelect(m.messageId, isSelected)
+                          },
+                          isSelected: selected.includes(m.messageId),
+                        }}
+                      />
+                      <Td style={{ width: '20%' }}>
+                        <MessageDetails
+                          aria-label={`message-details ${m.messageId}`}
+                          message={m}
+                          endpoints={endpoints}
+                          mid={m.messageId}
+                          index={getFromIndex() + index}
+                          getMessage={handleNextMessage}
+                          forwardMessages={forwardMessages}
+                          maxValue={filteredMessages.length}
+                        />
+                      </Td>
+                      <Td style={{ flex: 3 }}>{getSubstring(m.body)}</Td>
+                    </Tr>
+                  )
+                })}
+              </Tbody>
+            </TableComposable>
+          </FormGroup>
+        )}
+        {filteredMessages.length === 0 && (
+          <Bullseye>
+            <EmptyState>
+              <EmptyStateIcon icon={SearchIcon} />
+              <EmptyStateBody>No results found.</EmptyStateBody>
+            </EmptyState>
+          </Bullseye>
+        )}
+      </CardBody>
+    </Card>
+  )
+}
+
+const ForwardMessagesModal: React.FunctionComponent<{
+  onForwardMessages: (uri: string, message?: MessageData) => void
+  enabled: boolean
+  endpoints: string[]
+}> = ({ onForwardMessages, enabled, endpoints }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleModalToggle = () => {
+    setIsModalOpen(prevIsModalOpen => !prevIsModalOpen)
+  }
+
+  return (
+    <React.Fragment>
+      <Button isDisabled={!enabled} onClick={handleModalToggle}>
+        Forward
+      </Button>
+      <Modal
+        bodyAriaLabel='forward-message-modal'
+        aria-label='forward-message-modal'
+        position={Position.Top}
+        tabIndex={0}
+        variant={ModalVariant.small}
+        title={'Forward Messages'}
+        isOpen={isModalOpen}
+        onClose={handleModalToggle}
+        style={{ overflow: 'visible' }}
+      >
+        <ForwardMessagesComponent endpoints={endpoints} onForwardMessages={onForwardMessages} />
+      </Modal>
+    </React.Fragment>
+  )
+}
+
 const ForwardMessagesComponent: React.FunctionComponent<{
   onForwardMessages: (uri: string, message?: MessageData) => void
   currentMessage?: MessageData
@@ -59,65 +353,6 @@ const ForwardMessagesComponent: React.FunctionComponent<{
   )
 }
 
-const ForwardMessagesModal: React.FunctionComponent<{
-  onForwardMessages: (uri: string, message?: MessageData) => void
-  enabled: boolean
-  endpoints: string[]
-}> = ({ onForwardMessages, enabled, endpoints }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
-  const handleModalToggle = () => {
-    setIsModalOpen(prevIsModalOpen => !prevIsModalOpen)
-  }
-
-  return (
-    <>
-      <Button isDisabled={!enabled} onClick={handleModalToggle}>
-        Forward
-      </Button>
-      <Modal
-        bodyAriaLabel='forward-message-modal'
-        aria-label='forward-message-modal'
-        position={Position.Top}
-        tabIndex={0}
-        variant={ModalVariant.small}
-        title={'Forward Messages'}
-        isOpen={isModalOpen}
-        onClose={handleModalToggle}
-        style={{ overflow: 'visible' }}
-      >
-        <ForwardMessagesComponent endpoints={endpoints} onForwardMessages={onForwardMessages} />
-      </Modal>
-    </>
-  )
-}
-const MessageSelect: React.FunctionComponent<{
-  min: number
-  max: number
-  value: number
-  onNext: () => void
-  onPrevious: () => void
-  onFirst: () => void
-  onLast: () => void
-}> = ({ min, max, value, onNext, onPrevious, onFirst, onLast }) => {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', width: '300px' }}>
-      <Button data-testid='first-message-button' variant='plain' onClick={onFirst} isDisabled={value === min}>
-        {'<<'}
-      </Button>
-      <Button data-testid='previous-message-button' variant='plain' onClick={onPrevious} isDisabled={value === min}>
-        {'<'}
-      </Button>
-      <TextInput id='current-message-index' value={`${value}/${max}`} readOnly />
-      <Button data-testid='next-message-button' variant='plain' onClick={onNext} isDisabled={value === max}>
-        {'>'}
-      </Button>{' '}
-      <Button data-testid='last-message-button' variant='plain' onClick={onLast} isDisabled={value === max}>
-        {'>>'}
-      </Button>
-    </div>
-  )
-}
 const MessageDetails: React.FunctionComponent<{
   message: MessageData
   mid: string
@@ -165,7 +400,7 @@ const MessageDetails: React.FunctionComponent<{
     )
   }
   return (
-    <>
+    <React.Fragment>
       <Button variant='link' onClick={handleModalToggle}>
         {mid}
       </Button>
@@ -219,261 +454,34 @@ const MessageDetails: React.FunctionComponent<{
           </TableComposable>
         </FormGroup>
       </Modal>
-    </>
+    </React.Fragment>
   )
 }
 
-export const BrowseMessages: React.FunctionComponent = () => {
-  const { selectedNode } = useContext(CamelContext)
-  const [messages, setMessages] = useState<MessageData[]>([])
-  const [filteredMessages, setFilteredMessages] = useState<MessageData[]>([])
-  const [searchTerm, setSearchTerm] = useState<string>('')
-  const [filters, setFilters] = useState<string[]>([])
-  const [selected, setSelected] = useState<string[]>([])
-  const [page, setPage] = useState(1)
-  const [perPage, setPerPage] = useState(10)
-  const [endpoints, setEndpoints] = useState<string[]>([])
-
-  useEffect(() => {
-    const initLoad = async () => {
-      if (selectedNode) {
-        const messages = await getMessagesFromTheEndpoint(selectedNode, 0, -1)
-        updateMessages(messages)
-        const endps = await getEndpoints(selectedNode as MBeanNode)
-        setEndpoints(endps.map(v => v.uri))
-      }
-    }
-    initLoad()
-  }, [selectedNode])
-
-  async function loadMessages() {
-    if (selectedNode) {
-      const messages = await getMessagesFromTheEndpoint(selectedNode, 0, -1)
-      updateMessages(messages)
-    }
-  }
-  function updateMessages(messages: MessageData[]) {
-    const data = messages.reverse()
-    setMessages(data)
-    setFilteredMessages(data)
-    setSelected([])
-    setFilters([])
-  }
-
-  const handleSearch = (value: string, filters: string[]) => {
-    setSearchTerm(value)
-    //filter with findTerm
-    let filtered: MessageData[] = []
-    if (value === '') {
-      filtered = [...messages]
-    } else {
-      filtered = messages.filter(
-        message => message.messageId.toLowerCase().includes(value.toLowerCase()) || message.body.includes(value),
-      )
-    }
-
-    //filter with the rest of the filters
-    filters.forEach(value => {
-      filtered = filtered.filter(
-        message => message.messageId.toLowerCase().includes(value.toLowerCase()) || message.body.includes(value),
-      )
-    })
-    setSearchTerm(value)
-    setPage(1)
-    setFilteredMessages([...filtered])
-  }
-
-  const addToFilters = () => {
-    setFilters([...filters, searchTerm])
-    setSearchTerm('')
-  }
-
-  const getFromIndex = (): number => {
-    return (page - 1) * perPage
-  }
-
-  const getToIndex = (): number => {
-    return getFromIndex() + perPage
-  }
-
-  const getPage = () => {
-    return filteredMessages.slice(getFromIndex(), getToIndex())
-  }
-
-  const handleNextMessage = (index: number): MessageData => {
-    return filteredMessages[index]
-  }
-
-  const getSubstring = (body: string): string => {
-    let res = body.substring(0, 100)
-    if (body.length > 100) {
-      res += '...'
-    }
-    return res
-  }
-
-  const onSelect = (messageId: string, isSelecting: boolean) => {
-    const selectedRoutes = selected.filter(m => messageId !== m)
-    setSelected(isSelecting ? [...selectedRoutes, messageId] : [...selectedRoutes])
-  }
-
-  const onSelectAll = (isSelected: boolean) => {
-    const selected = filteredMessages.map(m => m.messageId)
-    setSelected(isSelected ? selected : [])
-  }
-  const clearFilters = () => {
-    setFilters([])
-    setSearchTerm('')
-    setFilteredMessages([...messages])
-  }
-
-  const onDeleteFilter = (filter: string) => {
-    const newFilters = filters.filter(f => f !== filter)
-    setFilters(newFilters)
-    handleSearch(searchTerm, newFilters)
-  }
-  const isAllSelected = (): boolean => {
-    //  let res = true
-    for (const m of filteredMessages) {
-      if (!selected.includes(m.messageId)) {
-        return false
-      }
-    }
-    return true
-  }
-
-  const createNotification = (type: NotificationType, message: string) => {
-    eventService.notify({
-      type: type,
-      message: message,
-    })
-  }
-  const forwardMessages = async (uri: string, message?: MessageData) => {
-    if (selectedNode) {
-      let selectedMessages: MessageData[] = []
-      if (message) {
-        selectedMessages.push(message)
-      } else {
-        selectedMessages = messages.filter(m => selected.includes(m.messageId))
-      }
-      await forwardMessagesToEndpoint(selectedNode, uri, selectedMessages, createNotification)
-    }
-  }
-
-  const MessagesPagination = () => {
-    return (
-      <Pagination
-        itemCount={filteredMessages.length}
-        page={page}
-        perPage={perPage}
-        onSetPage={(_evt, value) => {
-          setPage(value)
-        }}
-        onPerPageSelect={(_evt, value) => setPerPage(value)}
-        variant='top'
-      />
-    )
-  }
+const MessageSelect: React.FunctionComponent<{
+  min: number
+  max: number
+  value: number
+  onNext: () => void
+  onPrevious: () => void
+  onFirst: () => void
+  onLast: () => void
+}> = ({ min, max, value, onNext, onPrevious, onFirst, onLast }) => {
   return (
-    <PageSection variant='light'>
-      <Title headingLevel='h1'>Browse Messages</Title>
-
-      <Toolbar clearAllFilters={clearFilters}>
-        <ToolbarContent>
-          <ToolbarGroup>
-            <ToolbarFilter
-              chips={filters}
-              deleteChip={(_e, filter) => onDeleteFilter(filter as string)}
-              deleteChipGroup={clearFilters}
-              categoryName='Filters'
-            >
-              <SearchInput
-                type='text'
-                data-testid='filter-input'
-                id='search-input'
-                placeholder='Search...'
-                value={searchTerm}
-                onChange={(_event, value) => handleSearch(value, filters)}
-                aria-label='Search input'
-              />
-            </ToolbarFilter>
-            <Button onClick={addToFilters}>Add Filter</Button>
-          </ToolbarGroup>
-          <ToolbarItem>
-            <Button onClick={loadMessages}>Refresh</Button>
-          </ToolbarItem>
-          <ToolbarItem>
-            <ForwardMessagesModal
-              endpoints={endpoints}
-              enabled={selected.length > 0}
-              onForwardMessages={forwardMessages}
-            />
-          </ToolbarItem>
-          <ToolbarItem variant='pagination'>
-            <MessagesPagination />
-          </ToolbarItem>
-        </ToolbarContent>
-      </Toolbar>
-
-      {filteredMessages.length > 0 ? (
-        <FormGroup>
-          <TableComposable aria-label='Message Table' variant='compact' height='80vh'>
-            <Thead>
-              <Tr>
-                <Th
-                  select={{
-                    onSelect: (_event, isSelecting) => {
-                      onSelectAll(isSelecting)
-                    },
-                    isSelected: isAllSelected(),
-                  }}
-                />
-                <Th>Message ID</Th>
-                <Th>Body</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {getPage().map((m, index) => {
-                return (
-                  <Tr key={index}>
-                    <Td
-                      style={{ flex: 1 }}
-                      select={{
-                        rowIndex: index,
-                        onSelect: (_event, isSelected) => {
-                          onSelect(m.messageId, isSelected)
-                        },
-                        isSelected: selected.includes(m.messageId),
-                      }}
-                    />
-                    <Td style={{ width: '20%' }}>
-                      <MessageDetails
-                        aria-label={'message-details' + m.messageId}
-                        message={m}
-                        endpoints={endpoints}
-                        mid={m.messageId}
-                        index={getFromIndex() + index}
-                        getMessage={handleNextMessage}
-                        forwardMessages={forwardMessages}
-                        maxValue={filteredMessages.length}
-                      />
-                    </Td>
-                    <Td style={{ flex: 3 }}>{getSubstring(m.body)}</Td>
-                  </Tr>
-                )
-              })}
-            </Tbody>
-          </TableComposable>
-        </FormGroup>
-      ) : (
-        <Bullseye>
-          <EmptyState>
-            <EmptyStateIcon icon={SearchIcon} />
-            <EmptyStateBody>No results found.</EmptyStateBody>
-          </EmptyState>
-        </Bullseye>
-      )}
-    </PageSection>
+    <div style={{ display: 'flex', alignItems: 'center', width: '300px' }}>
+      <Button data-testid='first-message-button' variant='plain' onClick={onFirst} isDisabled={value === min}>
+        {'<<'}
+      </Button>
+      <Button data-testid='previous-message-button' variant='plain' onClick={onPrevious} isDisabled={value === min}>
+        {'<'}
+      </Button>
+      <TextInput id='current-message-index' value={`${value}/${max}`} readOnly />
+      <Button data-testid='next-message-button' variant='plain' onClick={onNext} isDisabled={value === max}>
+        {'>'}
+      </Button>{' '}
+      <Button data-testid='last-message-button' variant='plain' onClick={onLast} isDisabled={value === max}>
+        {'>>'}
+      </Button>
+    </div>
   )
-  // )
 }
