@@ -1,10 +1,10 @@
-import { MBeanNode } from '@hawtiosrc/plugins/shared'
-import { log } from '../globals'
-import * as ccs from '../camel-content-service'
 import { jolokiaService } from '@hawtiosrc/plugins/connect'
-import { camelPreferencesService } from '../camel-preferences-service'
-import { IRequest, IResponseFn } from 'jolokia.js'
+import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import { childText, xmlText } from '@hawtiosrc/util/xml'
+import { IRequest, IResponseFn } from 'jolokia.js'
+import { camelPreferencesService } from '../camel-preferences-service'
+import * as camelService from '../camel-service'
+import { log } from '../globals'
 
 export interface ConditionalBreakpoint {
   nodeId: string
@@ -40,8 +40,8 @@ class DebugService {
   }
 
   getDebugBean(node: MBeanNode): MBeanNode | null {
-    const db = ccs.findDebugBean(node)
-    if (!db || !db.objectName) ccs.notifyError('Could not find the debug bean')
+    const db = camelService.findDebugBean(node)
+    if (!db || !db.objectName) camelService.notifyError('Could not find the debug bean')
 
     return db
   }
@@ -85,8 +85,8 @@ class DebugService {
     await jolokiaService.execute(db.objectName, 'addBreakpoint', [breakpointId])
     const breakpoints = await this.getBreakpoints(node)
     const added = breakpoints.includes(breakpointId)
-    if (added) ccs.notifyInfo('breakpoint created')
-    else ccs.notifyError('breakpoint could not be added')
+    if (added) camelService.notifyInfo('breakpoint created')
+    else camelService.notifyError('breakpoint could not be added')
 
     return added
   }
@@ -98,8 +98,8 @@ class DebugService {
     await jolokiaService.execute(db.objectName, 'removeBreakpoint', [breakpointId])
     const breakpoints = await this.getBreakpoints(node)
     const removed = !breakpoints.includes(breakpointId)
-    if (removed) ccs.notifyInfo('breakpoint removed')
-    else ccs.notifyError('breakpoint could not be removed')
+    if (removed) camelService.notifyInfo('breakpoint removed')
+    else camelService.notifyError('breakpoint could not be removed')
 
     return removed
   }
@@ -129,8 +129,8 @@ class DebugService {
 
     const breakpoints = await this.getBreakpoints(node)
     const added = breakpoints.includes(conditionalBreakpoint.nodeId)
-    if (added) ccs.notifyInfo('conditional breakpoint created')
-    else ccs.notifyError('conditional breakpoint could not be added')
+    if (added) camelService.notifyInfo('conditional breakpoint created')
+    else camelService.notifyError('conditional breakpoint could not be added')
 
     return added
   }

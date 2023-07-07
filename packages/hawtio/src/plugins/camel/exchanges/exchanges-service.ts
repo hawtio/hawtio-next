@@ -1,7 +1,7 @@
-import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
-import { findContext, hasType } from '@hawtiosrc/plugins/camel/camel-content-service'
-import { mbeansType, routeNodeType } from '../globals'
 import { jolokiaService } from '@hawtiosrc/plugins/connect'
+import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
+import { findContext, hasType } from '../camel-service'
+import { mbeansType, routeNodeType } from '../globals'
 
 export type Exchange = {
   exchangeId: string

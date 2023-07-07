@@ -18,7 +18,7 @@ import { BanIcon, PlayIcon } from '@patternfly/react-icons'
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import { IResponse } from 'jolokia.js'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import * as ccs from '../camel-content-service'
+import * as camelService from '../camel-service'
 import { debugService as ds } from '../debug'
 import { MessageDrawer } from '../debug/MessageDrawer'
 import { MessageData } from '../debug/debug-service'
@@ -193,7 +193,7 @@ export const Trace: React.FunctionComponent = () => {
             isSmall={true}
             icon={!isTracing ? React.createElement(PlayIcon) : React.createElement(BanIcon)}
             onClick={onTracing}
-            isDisabled={!ccs.canTrace(selectedNode)}
+            isDisabled={!camelService.canTrace(selectedNode)}
           >
             {!isTracing ? 'Start Tracing' : 'Stop Tracing'}
           </Button>

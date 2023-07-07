@@ -4,8 +4,8 @@ import { jolokiaService } from '@hawtiosrc/plugins/connect'
 import { MBeanNode, workspace } from '@hawtiosrc/plugins/shared'
 import { isObject } from '@hawtiosrc/util/objects'
 import { parseXML } from '@hawtiosrc/util/xml'
-import * as ccs from '../camel-content-service'
-import { getDefaultRuntimeEndpointRegistry } from '../camel-content-service'
+import * as camelService from '../camel-service'
+import { getDefaultRuntimeEndpointRegistry } from '../camel-service'
 import { contextNodeType, endpointsType, log } from '../globals'
 
 export type Endpoint = {
@@ -38,7 +38,7 @@ export const ENDPOINT_OPERATIONS = {
 
 export async function getEndpoints(node: MBeanNode): Promise<Endpoint[]> {
   const endpoints: Endpoint[] = []
-  const ctxNode = ccs.findContext(node)
+  const ctxNode = camelService.findContext(node)
   if (!ctxNode || ctxNode.childCount() === 0) return endpoints
 
   const endpointsNode = ctxNode.get(endpointsType) as MBeanNode
@@ -56,7 +56,7 @@ export async function getEndpoints(node: MBeanNode): Promise<Endpoint[]> {
 }
 
 export function canCreateEndpoints(node: MBeanNode): boolean {
-  const contextNode = ccs.findContext(node)
+  const contextNode = camelService.findContext(node)
   if (!contextNode) {
     return false
   }
@@ -64,7 +64,7 @@ export function canCreateEndpoints(node: MBeanNode): boolean {
 }
 
 export async function componentNames(node: MBeanNode): Promise<string[]> {
-  const ctxNode = ccs.findContext(node)
+  const ctxNode = camelService.findContext(node)
   if (!ctxNode || ctxNode.childCount() === 0 || !ctxNode.objectName) return []
 
   const names = await jolokiaService.execute(ctxNode.objectName, ENDPOINT_OPERATIONS.componentNames)
@@ -79,7 +79,7 @@ function notifyError(msg: string) {
 }
 
 export async function createEndpoint(node: MBeanNode, name: string) {
-  const ctxNode = ccs.findContext(node)
+  const ctxNode = camelService.findContext(node)
   if (!ctxNode) {
     notifyError('Could not find the CamelContext!')
     return
@@ -144,7 +144,7 @@ export function createEndpointFromData(
 }
 
 export function loadEndpointSchema(node: MBeanNode, componentName: string): Record<string, unknown> | null {
-  const ctxNode = ccs.findContext(node)
+  const ctxNode = camelService.findContext(node)
   if (!ctxNode) {
     eventService.notify({
       type: 'danger',

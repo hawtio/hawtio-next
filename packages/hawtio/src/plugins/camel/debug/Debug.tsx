@@ -27,7 +27,7 @@ import {
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import { IResponse } from 'jolokia.js'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import * as ccs from '../camel-content-service'
+import * as camelService from '../camel-service'
 import { log } from '../globals'
 import { RouteDiagram } from '../route-diagram/RouteDiagram'
 import { Annotation, RouteDiagramContext, useRouteDiagramContext } from '../route-diagram/route-diagram-context'
@@ -173,7 +173,7 @@ export const Debug: React.FunctionComponent = () => {
       if (!selectedNode) return
 
       if (nodeData.routeIdx === 0) {
-        ccs.notifyError('Cannot breakpoint on the first node in the route')
+        camelService.notifyError('Cannot breakpoint on the first node in the route')
         return
       }
 
@@ -492,7 +492,7 @@ export const Debug: React.FunctionComponent = () => {
             isSmall={true}
             icon={!isDebugging ? React.createElement(PlayIcon) : React.createElement(BanIcon)}
             onClick={onDebugging}
-            isDisabled={!ccs.canGetBreakpoints(selectedNode)}
+            isDisabled={!camelService.canGetBreakpoints(selectedNode)}
           >
             {!isDebugging ? 'Start Debugging' : 'Stop Debugging'}
           </Button>

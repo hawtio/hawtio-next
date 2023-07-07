@@ -1,11 +1,11 @@
-import React from 'react'
-import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import { AttributeValues, jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
-import { contextNodeType, log, routeGroupsType, routeNodeType, routeXmlNodeType, xmlNodeLocalName } from './globals'
-import { schemaService } from './schema-service'
-import * as ccs from './camel-content-service'
-import * as icons from './icons'
+import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import { parseXML } from '@hawtiosrc/util/xml'
+import React from 'react'
+import * as camelService from './camel-service'
+import { contextNodeType, log, routeGroupsType, routeNodeType, routeXmlNodeType, xmlNodeLocalName } from './globals'
+import * as icons from './icons'
+import { schemaService } from './schema-service'
 
 export type CamelRoute = {
   objectName: string
@@ -121,7 +121,7 @@ class RoutesService {
     if (nodeSettings) {
       const node = new MBeanNode(null, nodeName, false)
       node.setType(routeXmlNodeType)
-      ccs.setDomain(node)
+      camelService.setDomain(node)
       const icon: React.ReactNode = this.getIcon(nodeSettings)
       node.setIcons(icon)
 
@@ -258,11 +258,11 @@ class RoutesService {
      */
     const routes: CamelRoute[] = []
     for (const child of children) {
-      if (ccs.hasType(child, routeNodeType)) {
+      if (camelService.hasType(child, routeNodeType)) {
         // read attributes of route
         const camelRoute = await this.readRouteAttributes(child)
         if (camelRoute) routes.push(camelRoute)
-      } else if (ccs.hasType(child, routeGroupsType)) {
+      } else if (camelService.hasType(child, routeGroupsType)) {
         // recurse into route group
         const camelRoutes = await this.getRoutesAttributes(child)
         routes.push(...camelRoutes)

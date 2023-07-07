@@ -1,10 +1,10 @@
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
-import * as ccs from './camel-content-service'
+import * as camelService from './camel-service'
 import { contextNodeType, endpointNodeType, endpointsType, jmxDomain } from './globals'
 
 jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
 
-describe('camel-content-service', () => {
+describe('camel-service', () => {
   test('syncChildProperties', async () => {
     const domainNode = new MBeanNode(null, jmxDomain, true)
     const endpointsNode = domainNode.create(endpointsType, true)
@@ -24,8 +24,8 @@ describe('camel-content-service', () => {
     expect(endpointsNode.childCount()).toBe(4)
 
     endpointsNode.setType(endpointsType)
-    ccs.setDomain(endpointsNode)
-    ccs.setChildProperties(endpointsNode, endpointNodeType)
+    camelService.setDomain(endpointsNode)
+    camelService.setChildProperties(endpointsNode, endpointNodeType)
 
     expect(endpointsNode.getType()).toBe(endpointsType)
     expect(endpointsNode.getProperty('domain')).toBe(jmxDomain)
@@ -56,13 +56,13 @@ describe('camel-content-service', () => {
     ]
 
     for (const data of versions) {
-      expect(ccs.compareVersions(data.v, data.ma, data.mi)).toEqual(data.r)
+      expect(camelService.compareVersions(data.v, data.ma, data.mi)).toEqual(data.r)
     }
   })
 
   test('isCamelVersionEQGT', () => {
     const ctxNode = new MBeanNode(null, 'sampleapp', true)
-    ccs.setDomain(ctxNode)
+    camelService.setDomain(ctxNode)
     ctxNode.setType(contextNodeType)
 
     let versions = [
@@ -75,7 +75,7 @@ describe('camel-content-service', () => {
     ]
     for (const version of versions) {
       ctxNode.addProperty('version', version.v)
-      expect(ccs.isCamelVersionEQGT_2_13(ctxNode)).toBe(version.r)
+      expect(camelService.isCamelVersionEQGT_2_13(ctxNode)).toBe(version.r)
     }
 
     versions = [
@@ -88,7 +88,7 @@ describe('camel-content-service', () => {
     ]
     for (const version of versions) {
       ctxNode.addProperty('version', version.v)
-      expect(ccs.isCamelVersionEQGT_2_14(ctxNode)).toBe(version.r)
+      expect(camelService.isCamelVersionEQGT_2_14(ctxNode)).toBe(version.r)
     }
 
     versions = [
@@ -101,7 +101,7 @@ describe('camel-content-service', () => {
     ]
     for (const version of versions) {
       ctxNode.addProperty('version', version.v)
-      expect(ccs.isCamelVersionEQGT_2_15(ctxNode)).toBe(version.r)
+      expect(camelService.isCamelVersionEQGT_2_15(ctxNode)).toBe(version.r)
     }
 
     versions = [
@@ -114,7 +114,7 @@ describe('camel-content-service', () => {
     ]
     for (const version of versions) {
       ctxNode.addProperty('version', version.v)
-      expect(ccs.isCamelVersionEQGT_2_16(ctxNode)).toBe(version.r)
+      expect(camelService.isCamelVersionEQGT_2_16(ctxNode)).toBe(version.r)
     }
   })
 })
