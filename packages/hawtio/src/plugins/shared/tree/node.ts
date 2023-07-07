@@ -439,6 +439,9 @@ export class MBeanNode implements TreeViewDataItem {
     this.expandedIcon = expandedIcon
   }
 
+  /**
+   * Returns true only if all the given methods can be invoked.
+   */
   hasInvokeRights(...methods: string[]): boolean {
     const mbean = this.mbean
     if (!mbean) return true
