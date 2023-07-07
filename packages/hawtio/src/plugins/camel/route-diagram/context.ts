@@ -1,6 +1,4 @@
-import { MBeanNode } from '@hawtiosrc/plugins/shared'
-import { createContext, useContext, useState } from 'react'
-import { CamelContext } from '../context'
+import { createContext, useState } from 'react'
 import { CamelNodeData } from './visualization-service'
 
 const noOpAction = (nodeData: CamelNodeData) => {
@@ -8,7 +6,6 @@ const noOpAction = (nodeData: CamelNodeData) => {
 }
 
 export function useRouteDiagramContext() {
-  const { selectedNode, setSelectedNode } = useContext(CamelContext)
   const [graphNodeData, setGraphNodeData] = useState<CamelNodeData[]>([])
   const [graphSelection, setGraphSelection] = useState<string>('')
   const [showStatistics, setShowStatistics] = useState<boolean>(true)
@@ -16,8 +13,6 @@ export function useRouteDiagramContext() {
   const [annotations, setAnnotations] = useState<Annotation[]>([])
 
   return {
-    selectedNode,
-    setSelectedNode,
     graphNodeData,
     setGraphNodeData,
     graphSelection,
@@ -37,7 +32,6 @@ export type Annotation = {
 }
 
 export type RouteDiagramContext = {
-  selectedNode: MBeanNode | null
   graphNodeData?: CamelNodeData[]
   setGraphNodeData: (graphNodeData: CamelNodeData[]) => void
   graphSelection?: string
@@ -51,7 +45,6 @@ export type RouteDiagramContext = {
 }
 
 export const RouteDiagramContext = createContext<RouteDiagramContext>({
-  selectedNode: null,
   graphNodeData: [],
   setGraphNodeData: (graphNodeData: CamelNodeData[]) => {
     /* no-op */

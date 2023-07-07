@@ -1,9 +1,9 @@
-import { schemaService } from '@hawtiosrc/plugins/camel/schema-service'
 import { routesService, RouteStats, Statistics } from '@hawtiosrc/plugins/camel/routes-service'
+import { schemaService } from '@hawtiosrc/plugins/camel/schema-service'
 import { parseXML } from '@hawtiosrc/util/xml'
-import { Edge, Node, Position } from 'reactflow'
-import { ReactNode } from 'react'
 import dagre from 'dagre'
+import { ReactNode } from 'react'
+import { Edge, MarkerType, Node, Position } from 'reactflow'
 
 export type CamelNodeData = {
   id: string
@@ -41,7 +41,11 @@ class VisualizationService {
     this.dagreGraph.setDefaultEdgeLabel(() => ({}))
   }
 
-  getLayoutedElements(nodes: Node[], edges: Edge[], direction = 'TB') {
+  getLayoutedElements(
+    nodes: Node[],
+    edges: Edge[],
+    direction = 'TB',
+  ): { layoutedNodes: Node[]; layoutedEdges: Edge[] } {
     const isHorizontal = direction === 'LR'
     this.dagreGraph.setGraph({ rankdir: direction })
 
@@ -54,7 +58,7 @@ class VisualizationService {
     })
     dagre.layout(this.dagreGraph)
 
-    const nw = nodes.map(node => {
+    nodes.forEach(node => {
       const nodeWithPosition = this.dagreGraph.node(node.id)
       node.targetPosition = isHorizontal ? Position.Left : Position.Top
       node.sourcePosition = isHorizontal ? Position.Right : Position.Bottom
@@ -66,35 +70,33 @@ class VisualizationService {
         x: nodeWithPosition.x - this.nodeWidth / 2 + this.margin.left,
         y: nodeWithPosition.y - this.nodeHeight / 2 + this.margin.top,
       }
-
-      return node
     })
 
-    return { nodes: nw, edges }
+    return { layoutedNodes: nodes, layoutedEdges: edges }
   }
 
-  getRouteNodeUri(node: Element) {
-    let uri: string | null = ''
-    if (node) {
-      uri = node.getAttribute('uri')
-      if (!uri) {
-        const ref = node.getAttribute('ref')
-        if (ref) {
-          const method = node.getAttribute('method')
-          if (method) {
-            uri = ref + '.' + method + '()'
-          } else {
-            uri = 'ref:' + ref
-          }
-        }
-      }
+  getRouteNodeUri(node: Element): string | null {
+    if (!node) {
+      return null
     }
-    return uri
+
+    const uri = node.getAttribute('uri')
+    if (uri) {
+      return uri
+    }
+
+    const ref = node.getAttribute('ref')
+    if (!ref) {
+      return null
+    }
+
+    const method = node.getAttribute('method')
+    return method ? `${ref}.${method}()` : `ref:${ref}`
   }
 
-  loadRouteXmlNodes(xml: string, selectedRouteId?: string) {
+  loadRouteXmlNodes(xml: string, selectedRouteId?: string): { camelNodes: Node[]; edges: Edge[] } {
     const nodes: CamelNodeData[] = []
-    const links: Edge[] = []
+    const edges: Edge[] = []
     const doc: XMLDocument = parseXML(xml as string)
 
     const allRoutes = doc.getElementsByTagName('route')
@@ -102,10 +104,10 @@ class VisualizationService {
     for (const route of allRoutes) {
       const routeId = route.id
       if (!selectedRouteId || !routeId || selectedRouteId === routeId) {
-        this.addRouteXmlChildren(route, nodes, links, routeId, '')
+        this.addRouteXmlChildren(route, nodes, edges, routeId, '')
       }
     }
-    //parse stats
+    // parse stats
     const camelNodes = nodes.map(node => ({
       id: node.id,
       data: node,
@@ -116,7 +118,11 @@ class VisualizationService {
       type: 'camel',
     }))
 
-    const edges = links.map(edge => ({ ...edge, markerEnd: { type: 'arrow' }, type: this.edgeType, animated: true }))
+    edges.forEach(edge => {
+      edge.markerEnd = { type: MarkerType.Arrow }
+      edge.type = this.edgeType
+      edge.animated = true
+    })
     return { camelNodes, edges }
   }
 
@@ -142,7 +148,7 @@ class VisualizationService {
     routeId: string,
     parentId: string,
     parentNode: CamelNodeData | null = null,
-  ) {
+  ): number[] {
     let rid = parent.getAttribute('id')
     let siblingNodes: number[] = []
     const parenNodeName: string = parent.localName

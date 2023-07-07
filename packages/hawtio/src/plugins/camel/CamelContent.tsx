@@ -36,15 +36,15 @@ import { Profile } from './profile/Profile'
 import { Properties } from './properties'
 import { RestServices } from './rest-services/RestServices'
 import { RouteDiagram } from './route-diagram/RouteDiagram'
-import { RouteDiagramContext, useRouteDiagramContext } from './route-diagram/route-diagram-context'
 import { CamelRoutes } from './routes/CamelRoutes'
 import { Source } from './routes/Source'
 import { Trace } from './trace'
 import { TypeConverters } from './type-converters'
+import { RouteDiagramContext, useRouteDiagramContext } from './route-diagram/context'
 
 export const CamelContent: React.FunctionComponent = () => {
-  const ctx = useRouteDiagramContext()
-  const { selectedNode } = ctx
+  const { selectedNode } = useContext(CamelContext)
+  const routeDiagramContext = useRouteDiagramContext()
   const { pathname, search } = useLocation()
 
   if (!selectedNode) {
@@ -90,9 +90,8 @@ export const CamelContent: React.FunctionComponent = () => {
     {
       id: 'routeDiagram',
       title: 'Route Diagram',
-      // TODO: The context provider should be applied inside RouteDiagram component
       component: (
-        <RouteDiagramContext.Provider value={ctx}>
+        <RouteDiagramContext.Provider value={routeDiagramContext}>
           <RouteDiagram />
         </RouteDiagramContext.Provider>
       ),

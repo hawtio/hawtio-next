@@ -26,11 +26,12 @@ import {
 } from '@patternfly/react-icons'
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import { IResponse } from 'jolokia.js'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import * as camelService from '../camel-service'
+import { CamelContext } from '../context'
 import { log } from '../globals'
 import { RouteDiagram } from '../route-diagram/RouteDiagram'
-import { Annotation, RouteDiagramContext, useRouteDiagramContext } from '../route-diagram/route-diagram-context'
+import { Annotation, RouteDiagramContext, useRouteDiagramContext } from '../route-diagram/context'
 import { CamelNodeData } from '../route-diagram/visualization-service'
 import { ConditionalBreakpointModal } from './ConditionalBreakpointModel'
 import './Debug.css'
@@ -38,8 +39,8 @@ import { MessageDrawer } from './MessageDrawer'
 import { ConditionalBreakpoint, MessageData, debugService as ds } from './debug-service'
 
 export const Debug: React.FunctionComponent = () => {
+  const { selectedNode } = useContext(CamelContext)
   const {
-    selectedNode,
     graphNodeData,
     setGraphNodeData,
     graphSelection,
@@ -523,16 +524,15 @@ export const Debug: React.FunctionComponent = () => {
               <div id='route-diagram-breakpoint-view'>
                 <RouteDiagramContext.Provider
                   value={{
-                    selectedNode: selectedNode,
-                    graphNodeData: graphNodeData,
-                    setGraphNodeData: setGraphNodeData,
-                    graphSelection: graphSelection,
-                    setGraphSelection: setGraphSelection,
-                    setShowStatistics: setShowStatistics,
-                    doubleClickAction: doubleClickAction,
-                    setDoubleClickAction: setDoubleClickAction,
-                    annotations: annotations,
-                    setAnnotations: setAnnotations,
+                    graphNodeData,
+                    setGraphNodeData,
+                    graphSelection,
+                    setGraphSelection,
+                    setShowStatistics,
+                    doubleClickAction,
+                    setDoubleClickAction,
+                    annotations,
+                    setAnnotations,
                   }}
                 >
                   <RouteDiagram />
