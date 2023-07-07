@@ -11,15 +11,14 @@ import {
   PanelMainBody,
 } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
-import Logger from 'js-logger'
 import React, { useContext, useEffect, useState } from 'react'
 import { CamelContext } from '../context'
 import { log, xmlNodeLocalName } from '../globals'
 import { routesService } from '../routes-service'
 import { schemaService } from '../schema-service'
+import './Properties.css'
 import { PropertiesList } from './PropertiesList'
 import * as pps from './properties-service'
-import './properties.css'
 import { Property } from './property'
 
 export const Properties: React.FunctionComponent = () => {
@@ -56,9 +55,7 @@ export const Properties: React.FunctionComponent = () => {
         const groupStr = schema['group'] as string
         groups = groupStr.split(',')
 
-        if (log.enabledFor(Logger.DEBUG)) {
-          log.debug('Properties - schema:', JSON.stringify(schema, null, '  '))
-        }
+        log.debug('Properties - schema:', schema)
 
         const schemaProps = schema['properties'] as Record<string, Record<string, string>>
         pps.populateProperties(selectedNode, schemaProps)
