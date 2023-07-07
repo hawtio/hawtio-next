@@ -5,7 +5,7 @@ import { workspace, MBeanNode, MBeanTree } from '@hawtiosrc/plugins/shared'
 import { pluginName, pluginPath, jmxDomain } from './globals'
 import { useNavigate } from 'react-router-dom'
 import { eventService, EVENT_REFRESH } from '@hawtiosrc/core'
-import * as ccs from './camel-content-service'
+import * as camelService from './camel-service'
 
 /**
  * Custom React hook for using Camel MBean tree.
@@ -46,8 +46,8 @@ export function useCamelTree() {
        */
       if (
         refSelectedNode.current &&
-        ccs.hasDomain(refSelectedNode.current) &&
-        !ccs.isDomainNode(refSelectedNode.current)
+        camelService.hasDomain(refSelectedNode.current) &&
+        !camelService.isDomainNode(refSelectedNode.current)
       ) {
         path.push(...refSelectedNode.current.path())
       } else {

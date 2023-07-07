@@ -20,7 +20,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { AttributeValues } from '../connect'
 import './CamelContent.css'
-import * as ccs from './camel-content-service'
+import * as camelService from './camel-service'
 import { CamelContext } from './context'
 import { Contexts } from './contexts'
 import { ContextToolbar } from './contexts/ContextToolbar'
@@ -33,12 +33,12 @@ import { SendMessage } from './endpoints/SendMessage'
 import { Exchanges } from './exchanges'
 import { log, pluginPath } from './globals'
 import { Profile } from './profile/Profile'
+import { Properties } from './properties'
 import { RestServices } from './rest-services/RestServices'
 import { RouteDiagram } from './route-diagram/RouteDiagram'
 import { RouteDiagramContext, useRouteDiagramContext } from './route-diagram/route-diagram-context'
 import { CamelRoutes } from './routes/CamelRoutes'
 import { Source } from './routes/Source'
-import { Properties } from './properties'
 import { Trace } from './trace'
 import { TypeConverters } from './type-converters'
 
@@ -71,7 +71,12 @@ export const CamelContent: React.FunctionComponent = () => {
    * Test if nav should contain general mbean tabs
    */
   const isDefaultApplicable = (node: MBeanNode) => {
-    return ccs.hasMBean(node) && !ccs.isContextsFolder(node) && !ccs.isRoutesFolder(node) && !ccs.isRouteXmlNode(node)
+    return (
+      camelService.hasMBean(node) &&
+      !camelService.isContextsFolder(node) &&
+      !camelService.isRoutesFolder(node) &&
+      !camelService.isRouteXmlNode(node)
+    )
   }
 
   // The order of the items in the following list is the order in will the tabs will be visualized.
@@ -79,9 +84,9 @@ export const CamelContent: React.FunctionComponent = () => {
   const allNavItems: NavItem[] = [
     { id: 'attributes', title: 'Attributes', component: <Attributes />, isApplicable: isDefaultApplicable },
     { id: 'operations', title: 'Operations', component: <Operations />, isApplicable: isDefaultApplicable },
-    { id: 'contexts', title: 'Contexts', component: <Contexts />, isApplicable: ccs.isContextsFolder },
-    { id: 'routes', title: 'Routes', component: <CamelRoutes />, isApplicable: ccs.isRoutesFolder },
-    { id: 'endpoints', title: 'Endpoints', component: <Endpoints />, isApplicable: ccs.isEndpointsFolder },
+    { id: 'contexts', title: 'Contexts', component: <Contexts />, isApplicable: camelService.isContextsFolder },
+    { id: 'routes', title: 'Routes', component: <CamelRoutes />, isApplicable: camelService.isRoutesFolder },
+    { id: 'endpoints', title: 'Endpoints', component: <Endpoints />, isApplicable: camelService.isEndpointsFolder },
     {
       id: 'routeDiagram',
       title: 'Route Diagram',
@@ -91,44 +96,49 @@ export const CamelContent: React.FunctionComponent = () => {
           <RouteDiagram />
         </RouteDiagramContext.Provider>
       ),
-      isApplicable: node => ccs.isRouteNode(node) || ccs.isRoutesFolder(node),
+      isApplicable: node => camelService.isRouteNode(node) || camelService.isRoutesFolder(node),
     },
     {
       id: 'source',
       title: 'Source',
       component: <Source />,
       isApplicable: node =>
-        !ccs.isEndpointNode(node) &&
-        !ccs.isEndpointsFolder(node) &&
-        (ccs.isRouteNode(node) || ccs.isRoutesFolder(node)),
+        !camelService.isEndpointNode(node) &&
+        !camelService.isEndpointsFolder(node) &&
+        (camelService.isRouteNode(node) || camelService.isRoutesFolder(node)),
     },
-    { id: 'properties', title: 'Properties', component: <Properties />, isApplicable: ccs.hasProperties },
-    { id: 'send', title: 'Send', component: <SendMessage />, isApplicable: ccs.isEndpointNode },
+    { id: 'properties', title: 'Properties', component: <Properties />, isApplicable: camelService.hasProperties },
+    { id: 'send', title: 'Send', component: <SendMessage />, isApplicable: camelService.isEndpointNode },
     {
       id: 'browse',
       title: 'Browse',
       component: <BrowseMessages />,
-      isApplicable: node => ccs.isEndpointNode(node) && ccs.canBrowseMessages(node),
+      isApplicable: node => camelService.isEndpointNode(node) && camelService.canBrowseMessages(node),
     },
     {
       id: 'endpoint-stats',
       title: 'Endpoints (in/out)',
       component: <EndpointStats />,
-      isApplicable: ccs.canSeeEndpointStats,
+      isApplicable: camelService.canSeeEndpointStats,
     },
-    { id: 'exchanges', title: 'Exchanges', component: <Exchanges />, isApplicable: ccs.hasExchange },
-    { id: 'rest-services', title: 'Rest Services', component: <RestServices />, isApplicable: ccs.hasRestServices },
+    { id: 'exchanges', title: 'Exchanges', component: <Exchanges />, isApplicable: camelService.hasExchange },
+    {
+      id: 'rest-services',
+      title: 'Rest Services',
+      component: <RestServices />,
+      isApplicable: camelService.hasRestServices,
+    },
     {
       id: 'type-converters',
       title: 'Type Converters',
       component: <TypeConverters />,
-      isApplicable: ccs.hasTypeConverter,
+      isApplicable: camelService.hasTypeConverter,
     },
     { id: 'chart', title: 'Chart', component: <Chart />, isApplicable: isDefaultApplicable },
     // Applicable for same criteria as trace
-    { id: 'profile', title: 'Profile', component: <Profile />, isApplicable: ccs.canTrace },
-    { id: 'trace', title: 'Trace', component: <Trace />, isApplicable: ccs.canTrace },
-    { id: 'debug', title: 'Debug', component: <Debug />, isApplicable: ccs.canGetBreakpoints },
+    { id: 'profile', title: 'Profile', component: <Profile />, isApplicable: camelService.canTrace },
+    { id: 'trace', title: 'Trace', component: <Trace />, isApplicable: camelService.canTrace },
+    { id: 'debug', title: 'Debug', component: <Debug />, isApplicable: camelService.canGetBreakpoints },
   ]
 
   /* Filter the nav items to those applicable to the selected node */
@@ -152,7 +162,7 @@ export const CamelContent: React.FunctionComponent = () => {
     <React.Fragment>
       <PageGroup>
         <PageSection id='camel-content-header' variant={PageSectionVariants.light}>
-          {ccs.isContext(selectedNode) && <CamelContentContextToolbar />}
+          {camelService.isContext(selectedNode) && <CamelContentContextToolbar />}
           <Title headingLevel='h1'>{selectedNode.name}</Title>
           <Text component='small'>{selectedNode.objectName}</Text>
         </PageSection>
@@ -179,7 +189,7 @@ const CamelContentContextToolbar: React.FunctionComponent = () => {
 
   useEffect(() => {
     // Attributes only needed if a context has been selected
-    if (!selectedNode || !selectedNode.objectName || !ccs.isContext(selectedNode)) {
+    if (!selectedNode || !selectedNode.objectName || !camelService.isContext(selectedNode)) {
       return
     }
 

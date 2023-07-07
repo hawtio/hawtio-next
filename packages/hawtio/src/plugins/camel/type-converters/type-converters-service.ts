@@ -1,6 +1,6 @@
 import { jolokiaService } from '@hawtiosrc/plugins/connect'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
-import { findContext } from '@hawtiosrc/plugins/camel/camel-content-service'
+import { findContext } from '../camel-service'
 import { mbeansType } from '../globals'
 
 export class TypeConvertersStats {

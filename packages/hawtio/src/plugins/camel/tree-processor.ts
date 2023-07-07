@@ -1,6 +1,6 @@
 import { MBeanNode, MBeanTree, TreeProcessor } from '@hawtiosrc/plugins/shared/tree'
 import React from 'react'
-import * as ccs from './camel-content-service'
+import * as camelService from './camel-service'
 import {
   camelContexts,
   componentNodeType,
@@ -26,11 +26,11 @@ function adoptChild(parent: MBeanNode | null, child: MBeanNode | null, type: str
 
   parent.adopt(child)
   child.setIcons(childIcon)
-  if (ccs.isContext(parent)) {
+  if (camelService.isContext(parent)) {
     child.addProperty(contextNodeType, parent.objectName ?? '')
   }
   child.setType(type)
-  ccs.setDomain(child)
+  camelService.setDomain(child)
 }
 
 function setChildIcon(node: MBeanNode | null, childIcon: React.ReactNode) {
@@ -70,7 +70,7 @@ function groupRoutes(routesNode: MBeanNode | null) {
     }
 
     groupNode.setType(routeGroupsType)
-    ccs.setDomain(groupNode)
+    camelService.setDomain(groupNode)
 
     adoptChild(groupNode, routeNode, routeNodeType, routeIcon)
   }
@@ -86,7 +86,7 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
 
   camelDomain.setIcons(getIcon(IconNames.CamelIcon))
   camelDomain.setType(domainNodeType)
-  ccs.setDomain(camelDomain)
+  camelService.setDomain(camelDomain)
 
   // Detach current children from domain node
   const oldContexts = camelDomain.removeChildren()
@@ -98,7 +98,7 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
   groupCtxsNode.addProperty('key', camelContexts)
   groupCtxsNode.addProperty('name', camelContexts)
   groupCtxsNode.setType(contextsType)
-  ccs.setDomain(groupCtxsNode)
+  camelService.setDomain(groupCtxsNode)
 
   for (const context of oldContexts) {
     const contextCategory = context.get(contextNodeType)
@@ -110,9 +110,9 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
     if (!newCtxNode) return
 
     newCtxNode.setType(contextNodeType)
-    ccs.setDomain(newCtxNode)
+    camelService.setDomain(newCtxNode)
     // Set the camel version as a property on the context
-    ccs.setCamelVersion(newCtxNode)
+    camelService.setCamelVersion(newCtxNode)
     newCtxNode.setIcons(getIcon(IconNames.CamelIcon))
 
     const endPointFolderIcon = getIcon(IconNames.EndpointsFolderIcon)
@@ -122,7 +122,7 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
     const routesNode = context.get(routesType)
     adoptChild(newCtxNode, routesNode, routesType, endPointFolderIcon)
     setChildIcon(routesNode, routeIcon)
-    ccs.setChildProperties(routesNode, routeNodeType)
+    camelService.setChildProperties(routesNode, routeNodeType)
     routesNode?.addProperty(contextNodeType, newCtxNode.objectName ?? '')
 
     await routesService.transformXml(newCtxNode, routesNode)
@@ -133,12 +133,12 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
     const endpointsNode = context.get(endpointsType)
     adoptChild(newCtxNode, endpointsNode, endpointsType, endPointFolderIcon)
     setChildIcon(endpointsNode, endPointIcon)
-    ccs.setChildProperties(endpointsNode, endpointNodeType)
+    camelService.setChildProperties(endpointsNode, endpointNodeType)
 
     const componentsNode = context.get(componentsType)
     adoptChild(newCtxNode, componentsNode, componentsType, endPointFolderIcon)
     setChildIcon(componentsNode, endPointIcon)
-    ccs.setChildProperties(componentsNode, componentNodeType)
+    camelService.setChildProperties(componentsNode, componentNodeType)
 
     const dataFormatsNode = context.get(dataformatsType)
     adoptChild(newCtxNode, dataFormatsNode, dataformatsType, endPointFolderIcon)
@@ -149,7 +149,7 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
     //
     const mBeansNode = newCtxNode.getOrCreate(mbeansType, true)
     mBeansNode.setType(mbeansType)
-    ccs.setDomain(mBeansNode)
+    camelService.setDomain(mBeansNode)
 
     const predefinedTypes = new Set([contextNodeType, routesType, endpointsType, componentsType, dataformatsType])
     context

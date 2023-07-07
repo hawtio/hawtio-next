@@ -1,8 +1,8 @@
 import { jolokiaService } from '@hawtiosrc/plugins/connect'
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import { IRequest, IResponseFn } from 'jolokia.js'
-import * as ccs from '../camel-content-service'
 import { camelPreferencesService } from '../camel-preferences-service'
+import * as camelService from '../camel-service'
 import { log } from '../globals'
 
 class TracingService {
@@ -21,8 +21,8 @@ class TracingService {
   }
 
   getTracingBean(node: MBeanNode) {
-    const db = ccs.findTraceBean(node) as MBeanNode
-    if (!db || !db.objectName) ccs.notifyError('Could not find the tracing bean')
+    const db = camelService.findTraceBean(node) as MBeanNode
+    if (!db || !db.objectName) camelService.notifyError('Could not find the tracing bean')
 
     return db
   }

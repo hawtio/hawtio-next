@@ -1,9 +1,9 @@
 import { jolokiaService } from '@hawtiosrc/plugins/connect'
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
-import { IRequest, IResponseFn } from 'jolokia.js'
-import { log } from '../globals'
-import * as ccs from '../camel-content-service'
 import { isObject } from '@hawtiosrc/util/objects'
+import { IRequest, IResponseFn } from 'jolokia.js'
+import * as camelService from '../camel-service'
+import { log } from '../globals'
 
 export interface RestService {
   url: string
@@ -31,7 +31,7 @@ class RestServicesService {
   async getRestServices(node: MBeanNode): Promise<RestService[]> {
     if (!node) return []
 
-    const registry = ccs.findRestRegistryBean(node)
+    const registry = camelService.findRestRegistryBean(node)
     if (!registry || !registry.objectName) return []
 
     const obj = await jolokiaService.execute(registry.objectName, 'listRestServices()')
