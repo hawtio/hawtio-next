@@ -34,6 +34,12 @@ export type MessageData = {
 export const ENDPOINT_OPERATIONS = {
   createEndpoint: 'createEndpoint(java.lang.String)',
   componentNames: 'componentNames()',
+  canSendToEndpoint: 'canSendToEndpoint(java.lang.String)',
+  sendBodyAndHeaders: 'sendBodyAndHeaders(java.lang.String, java.lang.Object, java.util.Map)',
+  sendStringBody: 'sendStringBody(java.lang.String, java.lang.String)',
+  browseAllMessagesAsXml: 'browseAllMessagesAsXml(java.lang.Boolean)',
+  browseRangeMessagesAsXml: 'browseRangeMessagesAsXml(java.lang.Integer,java.lang.Integer, java.lang.Boolean)',
+  endpointStatistics: 'endpointStatistics()',
 } as const
 
 export async function getEndpoints(node: MBeanNode): Promise<Endpoint[]> {
@@ -170,21 +176,19 @@ export async function doSendMessage(
   notify: (type: NotificationType, message: string) => void,
 ) {
   const messageHeaders: Record<string, string> = {}
-  if (headers.length > 0) {
-    headers.forEach(header => {
-      const key = header.name
-      if (key && key !== '') {
-        messageHeaders[key] = header.value
-      }
-    })
-  }
+  headers.forEach(header => {
+    const key = header.name
+    if (key && key !== '') {
+      messageHeaders[key] = header.value
+    }
+  })
 
   const context = mbean.parent?.getProperty(contextNodeType)
   const uri = mbean.name
   if (context && uri) {
     let ok = true
 
-    const reply = await jolokiaService.execute(context, 'canSendToEndpoint(java.lang.String)', [uri])
+    const reply = await jolokiaService.execute(context, ENDPOINT_OPERATIONS.canSendToEndpoint, [uri])
     if (!reply) {
       notify('warning', 'Camel does not support sending to this endpoint.')
       ok = false
@@ -193,16 +197,12 @@ export async function doSendMessage(
     if (ok) {
       if (Object.keys(messageHeaders).length > 0) {
         jolokiaService
-          .execute(context, 'sendBodyAndHeaders(java.lang.String, java.lang.Object, java.util.Map)', [
-            uri,
-            body,
-            messageHeaders,
-          ])
+          .execute(context, ENDPOINT_OPERATIONS.sendBodyAndHeaders, [uri, body, messageHeaders])
           .then(ok => {
             notify('success', `Message and headers were sent to the ${uri} endpoint`)
           })
       } else {
-        jolokiaService.execute(context, 'sendStringBody(java.lang.String, java.lang.String)', [uri, body]).then(ok => {
+        jolokiaService.execute(context, ENDPOINT_OPERATIONS.sendStringBody, [uri, body]).then(ok => {
           notify('success', `Message was sent to the ${uri} endpoint`)
         })
       }
@@ -227,7 +227,7 @@ export async function forwardMessagesToEndpoint(
 
   if (context && uri && messages && messages.length) {
     try {
-      await jolokiaService.execute(context, 'createEndpoint(java.lang.String)', [uri])
+      await jolokiaService.execute(context, ENDPOINT_OPERATIONS.createEndpoint, [uri])
     } catch (err) {
       notify('danger', `Error: ${err}`)
       return
@@ -245,11 +245,7 @@ export async function forwardMessagesToEndpoint(
         })
       }
       try {
-        await jolokiaService.execute(context, 'sendBodyAndHeaders(java.lang.String, java.lang.Object, java.util.Map)', [
-          uri,
-          body,
-          messageHeaders,
-        ])
+        await jolokiaService.execute(context, ENDPOINT_OPERATIONS.sendBodyAndHeaders, [uri, body, messageHeaders])
         forwarded++
       } catch (err) {
         notify('danger', `Error: ${err}`)
@@ -267,13 +263,13 @@ export async function getMessagesFromTheEndpoint(mbean: MBeanNode, from: number,
   if (context) {
     let reply
     if (browseAll) {
-      reply = await jolokiaService.execute(mbean.objectName ?? '', 'browseAllMessagesAsXml(java.lang.Boolean)', [true])
+      reply = await jolokiaService.execute(mbean.objectName ?? '', ENDPOINT_OPERATIONS.browseAllMessagesAsXml, [true])
     } else {
-      reply = await jolokiaService.execute(
-        mbean.objectName ?? '',
-        'browseRangeMessagesAsXml(java.lang.Integer,java.lang.Integer, java.lang.Boolean)',
-        [from, to, true],
-      )
+      reply = await jolokiaService.execute(mbean.objectName ?? '', ENDPOINT_OPERATIONS.browseRangeMessagesAsXml, [
+        from,
+        to,
+        true,
+      ])
     }
     const messagesXml = parseXML(reply as string)
     messageData = parseMessagesFromXml(messagesXml)
@@ -307,7 +303,7 @@ export async function getEndpointStatistics(node: MBeanNode) {
   let stats: EndpointStatistics[] = []
   const registry = getDefaultRuntimeEndpointRegistry(node)
   if (registry && registry.objectName) {
-    const res = await jolokiaService.execute(registry.objectName, 'endpointStatistics()')
+    const res = await jolokiaService.execute(registry.objectName, ENDPOINT_OPERATIONS.endpointStatistics)
     stats = Object.values(res as { [key: string]: EndpointStatistics })
   } else {
     log.error('Error with the retrieving the registry')

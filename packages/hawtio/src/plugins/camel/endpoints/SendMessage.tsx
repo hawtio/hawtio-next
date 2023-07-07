@@ -1,5 +1,4 @@
 import { NotificationType, eventService } from '@hawtiosrc/core'
-import { doSendMessage } from '@hawtiosrc/plugins/camel/endpoints/endpoints-service'
 import { isBlank } from '@hawtiosrc/util/strings'
 import { CodeEditor, Language } from '@patternfly/react-code-editor'
 import {
@@ -13,16 +12,17 @@ import {
   FormGroup,
   Select,
   SelectOption,
+  SelectOptionObject,
   SelectVariant,
   TextInput,
 } from '@patternfly/react-core'
-import { SelectOptionObject } from '@patternfly/react-core/src/components/Select/SelectOption'
 import { TrashIcon } from '@patternfly/react-icons'
 import * as monacoEditor from 'monaco-editor'
 import React, { FormEvent, useContext, useRef, useState } from 'react'
 import xmlFormat from 'xml-formatter'
 import { CamelContext } from '../context'
 import { InputWithSuggestions } from './InputWithSuggestions'
+import { doSendMessage } from './endpoints-service'
 import { headers as exchangeHeaders } from './exchange-headers-camel-model.json'
 
 export const SendMessage: React.FunctionComponent = () => {

@@ -30,6 +30,7 @@ import { Endpoints } from './endpoints'
 import { BrowseMessages } from './endpoints/BrowseMessages'
 import { EndpointStats } from './endpoints/EndpointsStats'
 import { SendMessage } from './endpoints/SendMessage'
+import { ENDPOINT_OPERATIONS } from './endpoints/endpoints-service'
 import { Exchanges } from './exchanges'
 import { log, pluginPath } from './globals'
 import { Profile } from './profile/Profile'
@@ -112,7 +113,15 @@ export const CamelContent: React.FunctionComponent = () => {
         (camelService.isRouteNode(node) || camelService.isRoutesFolder(node)),
     },
     { id: 'properties', title: 'Properties', component: <Properties />, isApplicable: camelService.hasProperties },
-    { id: 'send', title: 'Send', component: <SendMessage />, isApplicable: camelService.isEndpointNode },
+    {
+      id: 'send',
+      title: 'Send',
+      component: <SendMessage />,
+      isApplicable: node =>
+        contextNode !== null &&
+        contextNode.hasInvokeRights(ENDPOINT_OPERATIONS.sendBodyAndHeaders, ENDPOINT_OPERATIONS.sendStringBody) &&
+        camelService.isEndpointNode(node),
+    },
     {
       id: 'browse',
       title: 'Browse',
