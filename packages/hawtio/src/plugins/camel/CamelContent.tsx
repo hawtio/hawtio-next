@@ -36,11 +36,19 @@ import { Profile } from './profile/Profile'
 import { Properties } from './properties'
 import { RestServices } from './rest-services/RestServices'
 import { RouteDiagram } from './route-diagram/RouteDiagram'
+import { RouteDiagramContext, useRouteDiagramContext } from './route-diagram/context'
+import { ROUTE_OPERATIONS } from './routes-service'
 import { CamelRoutes } from './routes/CamelRoutes'
 import { Source } from './routes/Source'
 import { Trace } from './trace'
 import { TypeConverters } from './type-converters'
-import { RouteDiagramContext, useRouteDiagramContext } from './route-diagram/context'
+
+type NavItem = {
+  id: string
+  title: string
+  component: JSX.Element
+  isApplicable: (node: MBeanNode) => boolean
+}
 
 export const CamelContent: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
@@ -60,12 +68,7 @@ export const CamelContent: React.FunctionComponent = () => {
     )
   }
 
-  type NavItem = {
-    id: string
-    title: string
-    component: JSX.Element
-    isApplicable: (node: MBeanNode) => boolean
-  }
+  const contextNode = camelService.findContext(selectedNode)
 
   /*
    * Test if nav should contain general mbean tabs
@@ -102,6 +105,8 @@ export const CamelContent: React.FunctionComponent = () => {
       title: 'Source',
       component: <Source />,
       isApplicable: node =>
+        contextNode !== null &&
+        contextNode.hasInvokeRights(ROUTE_OPERATIONS.dumpRoutesAsXml) &&
         !camelService.isEndpointNode(node) &&
         !camelService.isEndpointsFolder(node) &&
         (camelService.isRouteNode(node) || camelService.isRoutesFolder(node)),
