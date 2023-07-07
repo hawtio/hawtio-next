@@ -1,8 +1,8 @@
+import { TooltipHelpIcon } from '@hawtiosrc/ui/icons'
 import { CardBody, Checkbox, Form, FormGroup, FormSection, TextInput } from '@patternfly/react-core'
 import React, { useState } from 'react'
-import { camelPreferencesService, CamelOptions } from './camel-preferences-service'
 import './CamelPreferences.css'
-import { TooltipHelpIcon } from '@hawtiosrc/plugins/shared'
+import { CamelOptions, camelPreferencesService } from './camel-preferences-service'
 
 export const CamelPreferences: React.FunctionComponent = () => (
   <CardBody>

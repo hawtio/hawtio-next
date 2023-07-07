@@ -1,3 +1,4 @@
+import { TooltipHelpIcon } from '@hawtiosrc/ui/icons'
 import {
   Alert,
   Button,
@@ -17,7 +18,6 @@ import { jolokiaService } from '../connect/jolokia-service'
 import { RESET } from './connections'
 import { useConnections } from './context'
 import { log } from './globals'
-import { TooltipHelpIcon } from '@hawtiosrc/plugins/shared'
 
 export const ConnectPreferences: React.FunctionComponent = () => (
   <CardBody>
