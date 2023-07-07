@@ -1,18 +1,20 @@
 import { NotificationType, eventService } from '@hawtiosrc/core'
 import { doSendMessage } from '@hawtiosrc/plugins/camel/endpoints/endpoints-service'
+import { isBlank } from '@hawtiosrc/util/strings'
 import { CodeEditor, Language } from '@patternfly/react-code-editor'
 import {
   Button,
+  Card,
+  CardBody,
+  CardTitle,
   Flex,
   FlexItem,
   Form,
   FormGroup,
-  PageSection,
   Select,
   SelectOption,
   SelectVariant,
   TextInput,
-  Title,
 } from '@patternfly/react-core'
 import { SelectOptionObject } from '@patternfly/react-core/src/components/Select/SelectOption'
 import { TrashIcon } from '@patternfly/react-icons'
@@ -27,6 +29,10 @@ export const SendMessage: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
   const messageHeaders = useRef<{ name: string; value: string }[]>([])
   const messageBody = useRef('')
+
+  if (!selectedNode) {
+    return null
+  }
 
   const updateHeaders = (headers: { name: string; value: string }[]) => {
     messageHeaders.current = [...headers]
@@ -45,24 +51,24 @@ export const SendMessage: React.FunctionComponent = () => {
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
-    if (selectedNode) {
-      doSendMessage(selectedNode, messageBody.current, messageHeaders.current, createNotification)
-    }
+    doSendMessage(selectedNode, messageBody.current, messageHeaders.current, createNotification)
   }
 
   return (
-    <PageSection variant='light'>
-      <Title headingLevel='h2'>Send Message</Title>
-      <Form onSubmit={handleSubmit}>
-        <MessageHeaders onHeadersChange={updateHeaders} />
-        <MessageBody onBodyChange={updateTheMessageBody} />
-        <FormGroup>
-          <Button type='submit' className='pf-m-1-col'>
-            Send
-          </Button>
-        </FormGroup>
-      </Form>
-    </PageSection>
+    <Card isFullHeight>
+      <CardTitle>Send Message</CardTitle>
+      <CardBody>
+        <Form onSubmit={handleSubmit}>
+          <MessageHeaders onHeadersChange={updateHeaders} />
+          <MessageBody onBodyChange={updateTheMessageBody} />
+          <FormGroup>
+            <Button type='submit' className='pf-m-1-col'>
+              Send
+            </Button>
+          </FormGroup>
+        </Form>
+      </CardBody>
+    </Card>
   )
 }
 
@@ -153,11 +159,15 @@ const MessageBody: React.FunctionComponent<{
   }
 
   const handleAutoFormat = () => {
+    if (isBlank(messageBody)) {
+      return
+    }
+
     if (editorRef.current) {
       const model = editorRef.current.getModel()
       if (model) {
         if (selectedFormat === Language.xml) {
-          //monaco doesn't have built in xml formatter
+          // monaco doesn't have built in xml formatter
           updateMessageBody(xmlFormat(messageBody))
         } else {
           const range = model.getFullModelRange()
@@ -208,7 +218,9 @@ const MessageBody: React.FunctionComponent<{
             </Select>
           </FlexItem>{' '}
           <FlexItem flex={{ default: 'flexNone', md: 'flex_1' }}>
-            <Button onClick={handleAutoFormat}>Format</Button>
+            <Button variant='secondary' isSmall onClick={handleAutoFormat}>
+              Format
+            </Button>
           </FlexItem>
         </Flex>
       </FormGroup>
