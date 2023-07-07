@@ -1,10 +1,8 @@
-import { Page } from '@patternfly/react-core'
 import { TableComposable, Tbody, Td, Tr } from '@patternfly/react-table'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import ReactFlow, {
   Connection,
   ConnectionLineType,
-  Edge,
   Handle,
   Node,
   NodeProps,
@@ -15,12 +13,103 @@ import ReactFlow, {
   useNodesState,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
+import { CamelContext } from '../context'
 import { routesService } from '../routes-service'
-import { Annotation, RouteDiagramContext } from './route-diagram-context'
-import './routeDiagram.css'
+import './RouteDiagram.css'
+import { Annotation, RouteDiagramContext } from './context'
 import { CamelNodeData, visualizationService } from './visualization-service'
 
-const CamelNode = ({ data, selected, sourcePosition, targetPosition }: NodeProps<CamelNodeData>) => {
+export const RouteDiagram: React.FunctionComponent = () => {
+  const { selectedNode } = useContext(CamelContext)
+  const { setGraphNodeData, graphSelection, setGraphSelection } = useContext(RouteDiagramContext)
+  const [nodes, setNodes, onNodesChange] = useNodesState([])
+  const [edges, setEdges, onEdgesChange] = useEdgesState([])
+  const [statsXml, setStatsXml] = useState('')
+  const nodeTypes = useMemo(() => ({ camel: CamelNode }), [])
+
+  useEffect(() => {
+    const xml = selectedNode?.getProperty('xml')
+    if (!xml) {
+      return
+    }
+
+    const { camelNodes, edges } = visualizationService.loadRouteXmlNodes(xml)
+
+    setGraphNodeData(camelNodes.map(camelNode => camelNode.data))
+
+    if (statsXml) {
+      visualizationService.updateStats(statsXml, camelNodes)
+    }
+    const { layoutedNodes, layoutedEdges } = visualizationService.getLayoutedElements(camelNodes, edges)
+
+    layoutedNodes.forEach(node => {
+      node.selected = graphSelection === node.data.cid
+    })
+
+    setEdges([...layoutedEdges])
+
+    if (statsXml) {
+      const nodesWithStats = visualizationService.updateStats(statsXml, layoutedNodes)
+      setNodes(nodesWithStats)
+    } else {
+      setNodes([...layoutedNodes])
+    }
+  }, [selectedNode, setEdges, setNodes, statsXml, setGraphNodeData, graphSelection])
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (selectedNode) {
+        const xml = await routesService.dumpRoutesStatsXML(selectedNode)
+        if (xml) {
+          setStatsXml(xml)
+        }
+      }
+    }
+    // fetch for the first time
+    fetchStats()
+    // fetch periodically
+    const interval = setInterval(() => fetchStats(), 2000)
+    return () => clearInterval(interval)
+  }, [selectedNode])
+
+  const onConnect = useCallback(
+    (params: Connection) =>
+      setEdges(eds => addEdge({ ...params, type: ConnectionLineType.SmoothStep, animated: true }, eds)),
+    [setEdges],
+  )
+
+  if (!selectedNode) {
+    return null
+  }
+
+  const onNodeClick = (_event: React.MouseEvent, node: Node) => {
+    setGraphSelection(node.data.cid)
+  }
+
+  return (
+    <div className='camel-route-diagram'>
+      <ReactFlow
+        nodeTypes={nodeTypes}
+        nodes={nodes}
+        edges={edges}
+        connectionLineType={ConnectionLineType.SmoothStep}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        fitView={true}
+        elementsSelectable={true}
+        onNodeClick={onNodeClick}
+      />
+    </div>
+  )
+}
+
+const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
+  data,
+  selected,
+  sourcePosition,
+  targetPosition,
+}) => {
   const { showStatistics, doubleClickAction, annotations } = useContext(RouteDiagramContext)
   const [isVisible, setVisible] = useState(false)
   const [showFull] = useState(false)
@@ -32,11 +121,8 @@ const CamelNode = ({ data, selected, sourcePosition, targetPosition }: NodeProps
       return
     }
 
-    const a = annotations.find((a: Annotation) => {
-      return a.nodeId === data.cid
-    })
-
-    setAnnotation(a)
+    const ann = annotations.find(a => a.nodeId === data.cid)
+    setAnnotation(ann)
   }, [annotations, data.cid])
 
   const handleDoubleClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -131,91 +217,5 @@ const CamelNode = ({ data, selected, sourcePosition, targetPosition }: NodeProps
         </NodeToolbar>
       )}
     </div>
-  )
-}
-
-export const RouteDiagram: React.FunctionComponent = () => {
-  const { selectedNode, setGraphNodeData, graphSelection, setGraphSelection } = useContext(RouteDiagramContext)
-  const [nodes, setNodes, onNodesChange] = useNodesState([])
-  const [edges, setEdges, onEdgesChange] = useEdgesState([])
-  const [statsXml, setStatsXml] = useState('')
-  const nodeTypes = useMemo(() => ({ camel: CamelNode }), [])
-
-  useEffect(() => {
-    const xml = selectedNode?.getProperty('xml')
-
-    if (xml) {
-      const { camelNodes, edges } = visualizationService.loadRouteXmlNodes(xml)
-
-      setGraphNodeData(camelNodes.map(camelNode => camelNode.data))
-
-      if (statsXml) {
-        visualizationService.updateStats(statsXml, camelNodes)
-      }
-      const { nodes: layoutedNodes, edges: layoutedEdges } = visualizationService.getLayoutedElements(
-        camelNodes,
-        edges as Edge[],
-      )
-
-      layoutedNodes.forEach(node => {
-        node.selected = graphSelection === node.data.cid
-      })
-
-      setEdges([...layoutedEdges])
-
-      if (statsXml) {
-        const nodesWithStats = visualizationService.updateStats(statsXml, layoutedNodes)
-        setNodes(nodesWithStats)
-      } else {
-        setNodes([...layoutedNodes])
-      }
-    }
-  }, [selectedNode, setEdges, setNodes, statsXml, setGraphNodeData, graphSelection])
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      if (selectedNode) {
-        const xml = await routesService.dumpRoutesStatsXML(selectedNode)
-        if (xml) {
-          setStatsXml(xml)
-        }
-      }
-    }
-    //fetch for the first time
-    fetchStats()
-    //fetch periodically
-    const interval = setInterval(async () => {
-      fetchStats()
-    }, 2000)
-    return () => clearInterval(interval)
-  }, [selectedNode])
-
-  const onConnect = useCallback(
-    (params: Connection) =>
-      setEdges(eds => addEdge({ ...params, type: ConnectionLineType.SmoothStep, animated: true }, eds)),
-    [setEdges],
-  )
-
-  const onNodeClick = (_event: React.MouseEvent, node: Node) => {
-    setGraphSelection(node.data.cid)
-  }
-
-  return (
-    <Page className='route-diagram-page'>
-      <div className='route-diagram'>
-        <ReactFlow
-          nodeTypes={nodeTypes}
-          nodes={nodes}
-          edges={edges}
-          connectionLineType={ConnectionLineType.SmoothStep}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          fitView={true}
-          elementsSelectable={true}
-          onNodeClick={onNodeClick}
-        />
-      </div>
-    </Page>
   )
 }

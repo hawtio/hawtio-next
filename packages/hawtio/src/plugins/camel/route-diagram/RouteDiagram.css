@@ -63,16 +63,10 @@
   font-size: x-small;
 }
 
-.route-diagram {
+.camel-route-diagram {
   flex-grow: 1;
   position: relative;
   height: 80vh;
-}
-
-.route-diagram-page {
-  height: 90vh;
-  width: 70vw;
-  background-color: white;
 }
 
 .highlighted {

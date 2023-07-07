@@ -17,21 +17,23 @@ import {
 import { BanIcon, PlayIcon } from '@patternfly/react-icons'
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import { IResponse } from 'jolokia.js'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import * as camelService from '../camel-service'
+import { CamelContext } from '../context'
 import { debugService as ds } from '../debug'
 import { MessageDrawer } from '../debug/MessageDrawer'
 import { MessageData } from '../debug/debug-service'
 import { log } from '../globals'
 import { RouteDiagram } from '../route-diagram/RouteDiagram'
-import { RouteDiagramContext, useRouteDiagramContext } from '../route-diagram/route-diagram-context'
+import { RouteDiagramContext, useRouteDiagramContext } from '../route-diagram/context'
 import './Tracing.css'
 import { tracingService as ts } from './tracing-service'
 
 const MESSAGES_LIMIT = 500
 
 export const Trace: React.FunctionComponent = () => {
-  const { selectedNode, graphNodeData, setGraphNodeData, graphSelection, setGraphSelection, setShowStatistics } =
+  const { selectedNode } = useContext(CamelContext)
+  const { graphNodeData, setGraphNodeData, graphSelection, setGraphSelection, setShowStatistics } =
     useRouteDiagramContext()
   const [isReading, setIsReading] = useState(true)
   const [isTracing, setIsTracing] = useState(false)
@@ -223,12 +225,11 @@ export const Trace: React.FunctionComponent = () => {
                 <PanelMainBody>
                   <RouteDiagramContext.Provider
                     value={{
-                      selectedNode: selectedNode,
-                      graphNodeData: graphNodeData,
-                      setGraphNodeData: setGraphNodeData,
-                      graphSelection: graphSelection,
-                      setGraphSelection: setGraphSelection,
-                      setShowStatistics: setShowStatistics,
+                      graphNodeData,
+                      setGraphNodeData,
+                      graphSelection,
+                      setGraphSelection,
+                      setShowStatistics,
                     }}
                   >
                     <RouteDiagram />
