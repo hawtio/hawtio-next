@@ -1,8 +1,6 @@
-import React, { FormEvent, useContext, useRef, useState } from 'react'
-import * as monacoEditor from 'monaco-editor'
-import { CamelContext } from '../context'
-import xmlFormat from 'xml-formatter'
-
+import { NotificationType, eventService } from '@hawtiosrc/core'
+import { doSendMessage } from '@hawtiosrc/plugins/camel/endpoints/endpoints-service'
+import { CodeEditor, Language } from '@patternfly/react-code-editor'
 import {
   Button,
   Flex,
@@ -16,95 +14,61 @@ import {
   TextInput,
   Title,
 } from '@patternfly/react-core'
-import { TrashIcon } from '@patternfly/react-icons'
-import { CodeEditor, Language } from '@patternfly/react-code-editor'
-import { doSendMessage } from '@hawtiosrc/plugins/camel/endpoints/endpoints-service'
-import { eventService, NotificationType } from '@hawtiosrc/core'
 import { SelectOptionObject } from '@patternfly/react-core/src/components/Select/SelectOption'
-import { headers as exchangeHeaders } from './exchange-headers-camel-model.json'
+import { TrashIcon } from '@patternfly/react-icons'
+import * as monacoEditor from 'monaco-editor'
+import React, { FormEvent, useContext, useRef, useState } from 'react'
+import xmlFormat from 'xml-formatter'
+import { CamelContext } from '../context'
 import { InputWithSuggestions } from './InputWithSuggestions'
+import { headers as exchangeHeaders } from './exchange-headers-camel-model.json'
 
-type SendBodyMessageProps = {
-  onBodyChange: (body: string) => void
-}
-const MessageBody: React.FunctionComponent<SendBodyMessageProps> = props => {
-  const [messageBody, setMessageBody] = useState<string>('')
-  const [selectedFormat, setSelectedFormat] = useState<Language>(Language.xml)
-  const [isDropdownOpen, setDropdownOpen] = useState(false)
-  const editorRef = useRef<monacoEditor.editor.IStandaloneCodeEditor | null>(null)
+export const SendMessage: React.FunctionComponent = () => {
+  const { selectedNode } = useContext(CamelContext)
+  const messageHeaders = useRef<{ name: string; value: string }[]>([])
+  const messageBody = useRef('')
 
-  const editorDidMount = (editor: monacoEditor.editor.IStandaloneCodeEditor) => {
-    editorRef.current = editor
+  const updateHeaders = (headers: { name: string; value: string }[]) => {
+    messageHeaders.current = [...headers]
   }
 
-  const handleAutoFormat = () => {
-    if (editorRef.current) {
-      const model = editorRef.current.getModel()
-      if (model) {
-        if (selectedFormat === Language.xml) {
-          //monaco doesn't have built in xml formatter
-          updateMessageBody(xmlFormat(messageBody))
-        } else {
-          const range = model.getFullModelRange()
-          editorRef.current.trigger('', 'editor.action.formatDocument', { range })
-        }
-      }
+  const updateTheMessageBody = (body: string) => {
+    messageBody.current = body
+  }
+
+  const createNotification = (type: NotificationType, message: string) => {
+    eventService.notify({
+      type: type,
+      message: message,
+    })
+  }
+
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault()
+    if (selectedNode) {
+      doSendMessage(selectedNode, messageBody.current, messageHeaders.current, createNotification)
     }
   }
 
-  const updateMessageBody = (body: string) => {
-    setMessageBody(body)
-    props.onBodyChange(body)
-  }
-  const handleToggle = () => {
-    setDropdownOpen(!isDropdownOpen)
-  }
-  const handleFormatChange = (event: React.MouseEvent | React.ChangeEvent, value: string | SelectOptionObject) => {
-    setSelectedFormat(value as Language)
-    setDropdownOpen(false)
-  }
-
   return (
-    <>
-      <FormGroup label='Message'>
-        <CodeEditor
-          code={messageBody}
-          onEditorDidMount={editorDidMount}
-          language={selectedFormat}
-          height={'300px'}
-          onChange={updateMessageBody}
-        />
-      </FormGroup>
-      <FormGroup>
-        <Flex>
-          <FlexItem flex={{ default: 'flexNone', md: 'flex_2' }}>
-            {' '}
-            <Select
-              variant={SelectVariant.single}
-              aria-label='Select Format'
-              onToggle={handleToggle}
-              onSelect={handleFormatChange}
-              selections={selectedFormat}
-              isOpen={isDropdownOpen}
-            >
-              <SelectOption label='xml' value={Language.xml} />
-              <SelectOption label='json' value={Language.json} />
-              <SelectOption label='plaintext' value={Language.plaintext} />
-            </Select>
-          </FlexItem>{' '}
-          <FlexItem flex={{ default: 'flexNone', md: 'flex_1' }}>
-            <Button onClick={handleAutoFormat}>Format</Button>
-          </FlexItem>
-        </Flex>
-      </FormGroup>
-    </>
+    <PageSection variant='light'>
+      <Title headingLevel='h2'>Send Message</Title>
+      <Form onSubmit={handleSubmit}>
+        <MessageHeaders onHeadersChange={updateHeaders} />
+        <MessageBody onBodyChange={updateTheMessageBody} />
+        <FormGroup>
+          <Button type='submit' className='pf-m-1-col'>
+            Send
+          </Button>
+        </FormGroup>
+      </Form>
+    </PageSection>
   )
 }
 
-type MessageHeadersProps = {
+const MessageHeaders: React.FunctionComponent<{
   onHeadersChange: (headers: { name: string; value: string }[]) => void
-}
-const MessageHeaders: React.FunctionComponent<MessageHeadersProps> = props => {
+}> = ({ onHeadersChange }) => {
   const [headers, setHeaders] = useState<Array<{ name: string; value: string }>>([])
   const headersSuggestions = Object.keys(exchangeHeaders as Record<string, { type: string }>)
 
@@ -112,23 +76,23 @@ const MessageHeaders: React.FunctionComponent<MessageHeadersProps> = props => {
     const updatedHeaders = [...headers]
     updatedHeaders[index] = { ...updatedHeaders[index], [headerName]: newValue }
     setHeaders(updatedHeaders)
-    props.onHeadersChange(updatedHeaders)
+    onHeadersChange(updatedHeaders)
   }
   const handleAddHeader = () => {
     const updatedHeaders = [...headers, { name: '', value: '' }]
     setHeaders(updatedHeaders)
-    props.onHeadersChange(updatedHeaders)
+    onHeadersChange(updatedHeaders)
   }
 
   const handleRemoveHeader = (index: number) => {
     const updatedHeaders = [...headers]
     updatedHeaders.splice(index, 1)
     setHeaders(updatedHeaders)
-    props.onHeadersChange(updatedHeaders)
+    onHeadersChange(updatedHeaders)
   }
 
   return (
-    <>
+    <React.Fragment>
       <FormGroup>
         {/* eslint-disable-next-line react/jsx-no-undef */}
         <Button variant='link' onClick={handleAddHeader}>
@@ -172,46 +136,82 @@ const MessageHeaders: React.FunctionComponent<MessageHeadersProps> = props => {
             </Flex>
           ))}
       </FormGroup>
-    </>
+    </React.Fragment>
   )
 }
 
-export const SendMessage: React.FunctionComponent = () => {
-  const { selectedNode } = useContext(CamelContext)
-  const messageHeaders = useRef<Array<{ name: string; value: string }>>([])
-  const messageBody = useRef<string>('')
+const MessageBody: React.FunctionComponent<{
+  onBodyChange: (body: string) => void
+}> = ({ onBodyChange }) => {
+  const [messageBody, setMessageBody] = useState<string>('')
+  const [selectedFormat, setSelectedFormat] = useState<Language>(Language.xml)
+  const [isDropdownOpen, setDropdownOpen] = useState(false)
+  const editorRef = useRef<monacoEditor.editor.IStandaloneCodeEditor | null>(null)
 
-  const updateHeaders = (headers: { name: string; value: string }[]) => {
-    messageHeaders.current = [...headers]
+  const editorDidMount = (editor: monacoEditor.editor.IStandaloneCodeEditor) => {
+    editorRef.current = editor
   }
-  const updateTheMessageBody = (body: string) => {
-    messageBody.current = body
-  }
-  const createNotification = (type: NotificationType, message: string) => {
-    eventService.notify({
-      type: type,
-      message: message,
-    })
-  }
-  const handleSubmit = (event: FormEvent) => {
-    event.preventDefault()
-    if (selectedNode) {
-      doSendMessage(selectedNode, messageBody.current, messageHeaders.current, createNotification)
+
+  const handleAutoFormat = () => {
+    if (editorRef.current) {
+      const model = editorRef.current.getModel()
+      if (model) {
+        if (selectedFormat === Language.xml) {
+          //monaco doesn't have built in xml formatter
+          updateMessageBody(xmlFormat(messageBody))
+        } else {
+          const range = model.getFullModelRange()
+          editorRef.current.trigger('', 'editor.action.formatDocument', { range })
+        }
+      }
     }
   }
 
+  const updateMessageBody = (body: string) => {
+    setMessageBody(body)
+    onBodyChange(body)
+  }
+  const handleToggle = () => {
+    setDropdownOpen(!isDropdownOpen)
+  }
+  const handleFormatChange = (event: React.MouseEvent | React.ChangeEvent, value: string | SelectOptionObject) => {
+    setSelectedFormat(value as Language)
+    setDropdownOpen(false)
+  }
+
   return (
-    <PageSection variant='light'>
-      <Title headingLevel='h1'>Send Message</Title>
-      <Form onSubmit={handleSubmit}>
-        <MessageHeaders onHeadersChange={updateHeaders} />
-        <MessageBody onBodyChange={updateTheMessageBody} />
-        <FormGroup>
-          <Button type='submit' className='pf-m-1-col'>
-            Send
-          </Button>
-        </FormGroup>
-      </Form>
-    </PageSection>
+    <React.Fragment>
+      <FormGroup label='Message'>
+        <CodeEditor
+          code={messageBody}
+          onEditorDidMount={editorDidMount}
+          language={selectedFormat}
+          height='300px'
+          onChange={updateMessageBody}
+        />
+      </FormGroup>
+      <FormGroup>
+        <Flex>
+          <FlexItem flex={{ default: 'flexNone', md: 'flex_2' }}>
+            {' '}
+            <Select
+              variant={SelectVariant.single}
+              aria-label='Select Format'
+              onToggle={handleToggle}
+              onSelect={handleFormatChange}
+              selections={selectedFormat}
+              isOpen={isDropdownOpen}
+            >
+              <SelectOption label='xml' value={Language.xml} />
+              <SelectOption label='json' value={Language.json} />
+              <SelectOption label='plaintext' value={Language.plaintext} />
+            </Select>
+          </FlexItem>{' '}
+          <FlexItem flex={{ default: 'flexNone', md: 'flex_1' }}>
+            <Button onClick={handleAutoFormat}>Format</Button>
+          </FlexItem>
+        </Flex>
+      </FormGroup>
+    </React.Fragment>
   )
 }
