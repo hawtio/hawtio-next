@@ -35,13 +35,16 @@ class PreferencesService implements IPreferencesService {
     // Ideally, the preferences would be better organised under structured keys
     // that would be provided to the preferences registry, so that a local storage
     // complete clear operation and restore of hard-coded K/V pairs could be avoided.
-    const backup = STORAGE_KEYS_TO_PRESERVE.reduce((acc, key) => {
-      const value = localStorage.getItem(key)
-      if (value) {
-        acc[key] = value
-      }
-      return acc
-    }, {} as Record<string, string>)
+    const backup = STORAGE_KEYS_TO_PRESERVE.reduce(
+      (acc, key) => {
+        const value = localStorage.getItem(key)
+        if (value) {
+          acc[key] = value
+        }
+        return acc
+      },
+      {} as Record<string, string>,
+    )
 
     localStorage.clear()
 

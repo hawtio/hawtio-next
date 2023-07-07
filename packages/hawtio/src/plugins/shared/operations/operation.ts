@@ -77,7 +77,11 @@ export class Operation {
 export class OperationArgument {
   readonly readableType: string
 
-  constructor(readonly name: string, readonly type: string, readonly desc: string) {
+  constructor(
+    readonly name: string,
+    readonly type: string,
+    readonly desc: string,
+  ) {
     this.readableType = this.buildReadableType()
   }
 
