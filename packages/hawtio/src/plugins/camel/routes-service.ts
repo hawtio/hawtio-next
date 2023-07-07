@@ -64,6 +64,7 @@ export const ROUTE_OPERATIONS = {
   start: 'start()',
   stop: 'stop()',
   remove: 'remove()',
+  dumpRoutesAsXml: 'dumpRoutesAsXml()',
 } as const
 
 class RoutesService {
@@ -169,7 +170,7 @@ class RoutesService {
 
     let xml = null
     try {
-      xml = await jolokiaService.execute(mbeanName, 'dumpRoutesAsXml()')
+      xml = await jolokiaService.execute(mbeanName, ROUTE_OPERATIONS.dumpRoutesAsXml)
     } catch (error) {
       throw new Error('Failed to dump xml from mbean: ' + mbeanName)
     }
