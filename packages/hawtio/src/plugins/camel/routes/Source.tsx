@@ -1,23 +1,20 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { CodeEditor, Language } from '@patternfly/react-code-editor'
 import { CamelContext } from '@hawtiosrc/plugins/camel/context'
+import { CodeEditor, Language } from '@patternfly/react-code-editor'
+import React, { useContext, useEffect, useState } from 'react'
+import { log } from '../globals'
 
 export const Source: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
-  const [xmlSource, setxmlSource] = useState<string>('')
+  const [xmlSource, setXmlSource] = useState('')
 
   useEffect(() => {
     const xml = selectedNode?.getProperty('xml')
     if (xml) {
-      setxmlSource(xml)
+      setXmlSource(xml)
     } else {
-      console.log('Unable to fetch XML')
+      log.warn('Source - Unable to fetch XML from', selectedNode)
     }
   }, [selectedNode])
 
-  return (
-    <div>
-      <CodeEditor isReadOnly code={xmlSource} language={Language.xml} height='500px' />
-    </div>
-  )
+  return <CodeEditor isReadOnly code={xmlSource} language={Language.xml} height='500px' />
 }
