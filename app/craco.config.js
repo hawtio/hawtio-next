@@ -55,6 +55,14 @@ module.exports = {
         miniCssExtractPlugin.options.ignoreOrder = true
       }
 
+      webpackConfig['resolve'] = {
+        ...webpackConfig['resolve'],
+        fallback: {
+          path: require.resolve('path-browserify'),
+          os: require.resolve('os-browserify'),
+        },
+      }
+
       // ***** Debugging *****
       /*
       const fs = require('fs')
