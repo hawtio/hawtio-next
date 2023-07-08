@@ -30,7 +30,6 @@ import { Endpoints } from './endpoints'
 import { BrowseMessages } from './endpoints/BrowseMessages'
 import { EndpointStats } from './endpoints/EndpointsStats'
 import { SendMessage } from './endpoints/SendMessage'
-import { ENDPOINT_OPERATIONS } from './endpoints/endpoints-service'
 import { Exchanges } from './exchanges'
 import { log, pluginPath } from './globals'
 import { Profile } from './profile/Profile'
@@ -38,7 +37,6 @@ import { Properties } from './properties'
 import { RestServices } from './rest-services/RestServices'
 import { RouteDiagram } from './route-diagram/RouteDiagram'
 import { RouteDiagramContext, useRouteDiagramContext } from './route-diagram/context'
-import { ROUTE_OPERATIONS } from './routes-service'
 import { CamelRoutes } from './routes/CamelRoutes'
 import { Source } from './routes/Source'
 import { Trace } from './trace'
@@ -69,8 +67,6 @@ export const CamelContent: React.FunctionComponent = () => {
     )
   }
 
-  const contextNode = camelService.findContext(selectedNode)
-
   /*
    * Test if nav should contain general mbean tabs
    */
@@ -99,46 +95,32 @@ export const CamelContent: React.FunctionComponent = () => {
           <RouteDiagram />
         </RouteDiagramContext.Provider>
       ),
-      isApplicable: node => camelService.isRouteNode(node) || camelService.isRoutesFolder(node),
+      isApplicable: camelService.canViewRouteDiagram,
     },
     {
       id: 'source',
       title: 'Source',
       component: <Source />,
-      isApplicable: node =>
-        contextNode !== null &&
-        contextNode.hasInvokeRights(ROUTE_OPERATIONS.dumpRoutesAsXml) &&
-        !camelService.isEndpointNode(node) &&
-        !camelService.isEndpointsFolder(node) &&
-        (camelService.isRouteNode(node) || camelService.isRoutesFolder(node)),
+      isApplicable: camelService.canViewSource,
     },
     { id: 'properties', title: 'Properties', component: <Properties />, isApplicable: camelService.hasProperties },
     {
       id: 'send',
       title: 'Send',
       component: <SendMessage />,
-      isApplicable: node =>
-        contextNode !== null &&
-        contextNode.hasInvokeRights(ENDPOINT_OPERATIONS.sendBodyAndHeaders, ENDPOINT_OPERATIONS.sendStringBody) &&
-        camelService.isEndpointNode(node),
+      isApplicable: camelService.canSendMessage,
     },
     {
       id: 'browse',
       title: 'Browse',
       component: <BrowseMessages />,
-      isApplicable: node =>
-        node.hasInvokeRights(
-          ENDPOINT_OPERATIONS.browseAllMessagesAsXml,
-          ENDPOINT_OPERATIONS.browseRangeMessagesAsXml,
-        ) &&
-        camelService.isEndpointNode(node) &&
-        camelService.canBrowseMessages(node),
+      isApplicable: camelService.canBrowseMessages,
     },
     {
       id: 'endpoint-stats',
       title: 'Endpoints (in/out)',
       component: <EndpointStats />,
-      isApplicable: camelService.canSeeEndpointStats,
+      isApplicable: camelService.canViewEndpointStats,
     },
     { id: 'exchanges', title: 'Exchanges', component: <Exchanges />, isApplicable: camelService.hasExchange },
     {

@@ -2,6 +2,7 @@ import { eventService } from '@hawtiosrc/core'
 import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import { isObject } from '@hawtiosrc/util/objects'
+import { ENDPOINT_OPERATIONS } from './endpoints/endpoints-service'
 import {
   componentNodeType,
   componentsType,
@@ -16,6 +17,7 @@ import {
   routeXmlNodeType,
   routesType,
 } from './globals'
+import { ROUTE_OPERATIONS } from './routes-service'
 
 export function notifyError(msg: string) {
   eventService.notify({
@@ -133,25 +135,37 @@ function findMBean(node: MBeanNode, folder: string, id: string): MBeanNode | nul
   return !service ? null : service
 }
 
-export function findInflightRepository(node: MBeanNode): MBeanNode | null {
-  return findMBean(node, 'services', 'DefaultInflightRepository')
-}
-
 export function hasInflightRepository(node: MBeanNode): boolean {
-  return findInflightRepository(node) !== null
+  return findMBean(node, 'services', 'DefaultInflightRepository') !== null
 }
 
-export function canBrowse(node: MBeanNode): boolean {
-  const inflightNode = findInflightRepository(node)
-  return inflightNode?.hasInvokeRights('browse') ?? false
+export function canViewRouteDiagram(node: MBeanNode): boolean {
+  return isRouteNode(node) || isRoutesFolder(node)
+}
+
+export function canViewSource(node: MBeanNode): boolean {
+  if (isEndpointNode(node) || isEndpointsFolder(node)) return false
+  if (!isRouteNode(node) && !isRoutesFolder(node)) return false
+
+  const context = findContext(node)
+  return context?.hasInvokeRights(ROUTE_OPERATIONS.dumpRoutesAsXml) ?? false
+}
+
+export function canSendMessage(node: MBeanNode): boolean {
+  if (isEndpointNode(node)) return false
+
+  const context = findContext(node)
+  return context?.hasInvokeRights(ENDPOINT_OPERATIONS.sendBodyAndHeaders, ENDPOINT_OPERATIONS.sendStringBody) ?? false
 }
 
 export function canBrowseMessages(node: MBeanNode): boolean {
-  const browseMessages = node.mbean?.op?.['browseMessageAsXml']
-  return !!browseMessages
+  if (!isEndpointNode(node)) return false
+  if (!node.hasOperations('browseMessageAsXml')) return false
+
+  return node.hasInvokeRights(ENDPOINT_OPERATIONS.browseAllMessagesAsXml, ENDPOINT_OPERATIONS.browseRangeMessagesAsXml)
 }
 
-export function canSeeEndpointStats(node: MBeanNode): boolean {
+export function canViewEndpointStats(node: MBeanNode): boolean {
   const registry = getDefaultRuntimeEndpointRegistry(node)
   const canInvoke = registry?.hasInvokeRights('endpointStatistics') ?? false
   return (
@@ -168,6 +182,7 @@ export function canSeeEndpointStats(node: MBeanNode): boolean {
 export function getDefaultRuntimeEndpointRegistry(node: MBeanNode): MBeanNode | null {
   return findMBean(node, 'services', 'DefaultRuntimeEndpointRegistry')
 }
+
 export function hasExchange(node: MBeanNode): boolean {
   return (
     node &&
@@ -220,18 +235,11 @@ export function canGetBreakpoints(node: MBeanNode): boolean {
   return db?.hasInvokeRights('getBreakpoints') ?? false
 }
 
-export function canDumpAllTracedMessagesAsXml(node: MBeanNode): boolean {
-  const trace = findTraceBean(node)
-  return trace?.hasInvokeRights('dumpAllTracedMessagesAsXml') ?? false
-}
-
 export function canTrace(node: MBeanNode): boolean {
   if (!isRouteNode(node)) return false
 
   const trace = findTraceBean(node)
-  if (!trace) return false
-
-  return canDumpAllTracedMessagesAsXml(node)
+  return trace?.hasInvokeRights('dumpAllTracedMessagesAsXml') ?? false
 }
 
 export function findRestRegistryBean(node: MBeanNode): MBeanNode | null {
