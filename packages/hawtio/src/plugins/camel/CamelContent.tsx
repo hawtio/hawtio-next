@@ -126,7 +126,13 @@ export const CamelContent: React.FunctionComponent = () => {
       id: 'browse',
       title: 'Browse',
       component: <BrowseMessages />,
-      isApplicable: node => camelService.isEndpointNode(node) && camelService.canBrowseMessages(node),
+      isApplicable: node =>
+        node.hasInvokeRights(
+          ENDPOINT_OPERATIONS.browseAllMessagesAsXml,
+          ENDPOINT_OPERATIONS.browseRangeMessagesAsXml,
+        ) &&
+        camelService.isEndpointNode(node) &&
+        camelService.canBrowseMessages(node),
     },
     {
       id: 'endpoint-stats',
