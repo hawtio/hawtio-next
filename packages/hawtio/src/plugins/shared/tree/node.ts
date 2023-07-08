@@ -440,6 +440,18 @@ export class MBeanNode implements TreeViewDataItem {
   }
 
   /**
+   * Returns true only if all the given operations exist in this MBean node.
+   */
+  hasOperations(...names: string[]): boolean {
+    if (!this.mbean || !this.mbean.op) {
+      return false
+    }
+
+    const operations = this.mbean.op
+    return names.every(name => operations[name] !== undefined)
+  }
+
+  /**
    * Returns true only if all the given methods can be invoked.
    */
   hasInvokeRights(...methods: string[]): boolean {
