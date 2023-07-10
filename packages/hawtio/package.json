@@ -43,7 +43,7 @@
     "@testing-library/user-event": "^14.4.3",
     "@types/dagre": "^0.7.48",
     "@types/dagre-layout": "^0.8.2",
-    "@types/jest": "^29.5.2",
+    "@types/jest": "^29.5.3",
     "@types/node": "^18.16.19",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
