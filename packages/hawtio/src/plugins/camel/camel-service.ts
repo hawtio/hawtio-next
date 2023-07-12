@@ -152,7 +152,7 @@ export function canViewSource(node: MBeanNode): boolean {
 }
 
 export function canSendMessage(node: MBeanNode): boolean {
-  if (isEndpointNode(node)) return false
+  if (!isEndpointNode(node)) return false
 
   const context = findContext(node)
   return context?.hasInvokeRights(ENDPOINT_OPERATIONS.sendBodyAndHeaders, ENDPOINT_OPERATIONS.sendStringBody) ?? false
