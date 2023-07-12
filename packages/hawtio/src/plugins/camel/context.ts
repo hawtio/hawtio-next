@@ -29,6 +29,9 @@ export function useCamelTree() {
     const rootNode = wkspTree.findDescendant(node => node.name === jmxDomain)
     if (rootNode && rootNode.children && rootNode.children.length > 0) {
       const contextsNode = rootNode.getChildren()[0]
+      if (!contextsNode) {
+        return
+      }
 
       /*
        * Using the camel domain nodes from the original tree means it is the same

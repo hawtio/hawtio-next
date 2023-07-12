@@ -72,7 +72,7 @@ class ConnectService implements IConnectService {
 
   getConnection(name: string): Connection | null {
     const connections = this.loadConnections()
-    return connections[name]
+    return connections[name] ?? null
   }
 
   connectionToUrl(connection: Connection): string {

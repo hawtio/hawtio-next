@@ -55,7 +55,7 @@ describe('EndpointStats.tsx', () => {
     renderWithContext()
     const input = within(screen.getByTestId('filter-input')).getByRole('textbox')
 
-    const statistic = getMockedStatistics()[2]
+    const statistic = getMockedStatistics()[2] as EndpointStatistics
     expect(input).toBeInTheDocument()
     await userEvent.type(input, statistic.url)
 
@@ -69,7 +69,7 @@ describe('EndpointStats.tsx', () => {
     // search acording different attribute
     const dropdown = screen.getByTestId('attribute-select-toggle')
     await userEvent.click(dropdown)
-    await userEvent.click(screen.getAllByText('Route ID')[0])
+    await userEvent.click(screen.getAllByText('Route ID')[0] as HTMLElement)
 
     await userEvent.clear(input)
     await userEvent.type(input, statistic.url)

@@ -75,14 +75,17 @@ export const SendMessage: React.FunctionComponent = () => {
 const MessageHeaders: React.FunctionComponent<{
   onHeadersChange: (headers: { name: string; value: string }[]) => void
 }> = ({ onHeadersChange }) => {
-  const [headers, setHeaders] = useState<Array<{ name: string; value: string }>>([])
+  const [headers, setHeaders] = useState<{ name: string; value: string }[]>([])
   const headersSuggestions = Object.keys(exchangeHeaders as Record<string, { type: string }>)
 
   const handleInputChange = (index: number, newValue: string, headerName: string) => {
     const updatedHeaders = [...headers]
-    updatedHeaders[index] = { ...updatedHeaders[index], [headerName]: newValue }
-    setHeaders(updatedHeaders)
-    onHeadersChange(updatedHeaders)
+    const updatedHeader = updatedHeaders[index]
+    if (updatedHeader) {
+      updatedHeaders[index] = { ...updatedHeader, [headerName]: newValue }
+      setHeaders(updatedHeaders)
+      onHeadersChange(updatedHeaders)
+    }
   }
   const handleAddHeader = () => {
     const updatedHeaders = [...headers, { name: '', value: '' }]

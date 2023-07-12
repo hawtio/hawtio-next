@@ -26,7 +26,7 @@ jolokiaService.execute = jest.fn(async (mbean: string, operation: string, args?:
 jolokiaService.readAttributes = jest.fn(async (mbean: string): Promise<AttributeValues> => {
   const values: AttributeValues = {}
 
-  const uri = mbean.split('name=')[1].replace(/"/g, '')
+  const uri = mbean.split('name=')[1]?.replace(/"/g, '')
   values.EndpointUri = uri
   values.state = 'started'
 

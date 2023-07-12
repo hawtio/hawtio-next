@@ -7,6 +7,6 @@ describe('Logger', () => {
     Logger.get('hawtio-core-test')
     const availableLoggers = Logger.getAvailableChildLoggers()
     expect(availableLoggers).toHaveLength(1)
-    expect(availableLoggers[0].name).toEqual('hawtio-core-test')
+    expect(availableLoggers[0]?.name).toEqual('hawtio-core-test')
   })
 })

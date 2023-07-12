@@ -49,9 +49,9 @@ describe('BrowseMessages.tsx', () => {
     await waitFor(() => {
       const messageDetails = screen.getByTestId('message-details')
       expect(messageDetails).toBeInTheDocument()
-      headerKey = within(messageDetails).getByText(message.headers[0].key)
-      headerValue = within(messageDetails).getByText(message.headers[0].value)
-      headerType = within(messageDetails).getByText(message.headers[0].type)
+      headerKey = within(messageDetails).getByText(message.headers[0]?.key as string)
+      headerValue = within(messageDetails).getByText(message.headers[0]?.value as string)
+      headerType = within(messageDetails).getByText(message.headers[0]?.type as string)
     })
 
     expect(headerKey).toBeInTheDocument()
@@ -79,14 +79,14 @@ describe('BrowseMessages.tsx', () => {
     const message = getMockedMessages()[0]
     let element
     await waitFor(() => {
-      element = screen.getByText(message.messageId)
+      element = screen.getByText(message?.messageId as string)
     })
     expect(element).toBeInTheDocument()
     if (element) {
       await userEvent.click(element)
     }
     // Check if the modal is open and the message ID is displayed
-    await testMessageDetails(message)
+    await testMessageDetails(message as MessageData)
   })
 
   test('Messages can be browsed from details modal', async () => {
@@ -94,7 +94,7 @@ describe('BrowseMessages.tsx', () => {
     const messages = getMockedMessages()
     let element
     await waitFor(() => {
-      element = screen.getByText(messages[0].messageId)
+      element = screen.getByText(messages[0]?.messageId as string)
     })
     expect(element).toBeInTheDocument()
     if (element) {
@@ -108,10 +108,10 @@ describe('BrowseMessages.tsx', () => {
       const button = screen.getByTestId(btn)
       expect(button).toBeInTheDocument()
       await userEvent.click(button)
-      await testMessageDetails(messages[messageIndex])
+      await testMessageDetails(messages[messageIndex] as MessageData)
     }
     // Check if the modal is open and the message ID is displayed
-    await testMessageDetails(messages[0])
+    await testMessageDetails(messages[0] as MessageData)
 
     await testButtonActions('next-message-button', 1)
     await testButtonActions('previous-message-button', 0)
@@ -128,7 +128,7 @@ describe('BrowseMessages.tsx', () => {
     expect(element).toBeInTheDocument()
     expect(element).toBeDisabled()
     // Select the first message
-    await userEvent.click(screen.getAllByRole('checkbox')[1])
+    await userEvent.click(screen.getAllByRole('checkbox')[1] as HTMLElement)
     expect(element).not.toBeDisabled()
 
     // Click on the forward button
@@ -146,18 +146,18 @@ describe('BrowseMessages.tsx', () => {
     })
 
     //check select-all and test
-    if (checkBoxes.length > 0) await userEvent.click(checkBoxes[0])
+    if (checkBoxes.length > 0) await userEvent.click(checkBoxes[0] as HTMLElement)
     checkBoxes.forEach(e => {
       expect(e).toBeChecked()
     })
 
-    if (checkBoxes.length > 0) await userEvent.click(checkBoxes[0])
+    if (checkBoxes.length > 0) await userEvent.click(checkBoxes[0] as HTMLElement)
     checkBoxes.forEach(e => {
       expect(e).not.toBeChecked()
     })
     expect(checkBoxes[0]).not.toBeChecked()
     for (let i = 1; i < checkBoxes.length; i++) {
-      await userEvent.click(checkBoxes[i])
+      await userEvent.click(checkBoxes[i] as HTMLElement)
     }
     expect(checkBoxes[0]).toBeChecked()
   })
@@ -174,6 +174,6 @@ describe('BrowseMessages.tsx', () => {
     expect(checkBoxes.length).toBe(2)
 
     expect(screen.getByText('anotherBody')).toBeInTheDocument()
-    expect(screen.queryByText(getMockedMessages()[0].body)).not.toBeInTheDocument()
+    expect(screen.queryByText(getMockedMessages()[0]?.body as string)).not.toBeInTheDocument()
   })
 })

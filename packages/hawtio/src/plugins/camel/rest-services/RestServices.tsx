@@ -43,7 +43,7 @@ export const RestServices: React.FunctionComponent = () => {
   // Set of filters created by filter control and displayed as chips
   const [filters, setFilters] = useState<TypeFilter[]>([])
   // The type of filter to be created - chosen by the Select control
-  const [filterType, setFilterType] = useState<string>(headers[0])
+  const [filterType, setFilterType] = useState(headers[0] ?? '')
   // Flag to determine whether the Select control is open or closed
   const [isFilterTypeOpen, setIsFilterTypeOpen] = useState(false)
   // The text value of the filter to be created

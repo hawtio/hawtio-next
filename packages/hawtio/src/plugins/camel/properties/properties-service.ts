@@ -34,13 +34,13 @@ export function populateProperties(node: MBeanNode, schemaProperties: Record<str
 export function getDefinedProperties(schemaProperties: Record<string, Record<string, string>>): Property[] {
   return Object.keys(schemaProperties)
     .filter(key => {
-      const obj = schemaProperties[key]
+      const obj = schemaProperties[key] ?? {}
       return Object.keys(obj).includes('value')
     })
     .map(key => {
       const propertySchema = schemaProperties[key]
-      const name = propertySchema['title'] || key
-      return new Property(name, propertySchema['value'], propertySchema['description'])
+      const name = propertySchema?.['title'] ?? key
+      return new Property(name, propertySchema?.['value'] ?? null, propertySchema?.['description'] ?? '')
     })
     .sort(Property.sortByName)
 }
@@ -48,13 +48,13 @@ export function getDefinedProperties(schemaProperties: Record<string, Record<str
 export function getDefaultProperties(schemaProperties: Record<string, Record<string, string>>): Property[] {
   return Object.keys(schemaProperties)
     .filter(key => {
-      const obj = schemaProperties[key]
+      const obj = schemaProperties[key] ?? {}
       return !Object.keys(obj).includes('value') && Object.keys(obj).includes('defaultValue')
     })
     .map(key => {
       const propertySchema = schemaProperties[key]
-      const name = propertySchema['title'] || key
-      return new Property(name, propertySchema['defaultValue'], propertySchema['description'])
+      const name = propertySchema?.['title'] ?? key
+      return new Property(name, propertySchema?.['defaultValue'] ?? null, propertySchema?.['description'] ?? '')
     })
     .sort(Property.sortByName)
 }
@@ -62,13 +62,13 @@ export function getDefaultProperties(schemaProperties: Record<string, Record<str
 export function getUndefinedProperties(schemaProperties: Record<string, Record<string, string>>): Property[] {
   return Object.keys(schemaProperties)
     .filter(key => {
-      const obj = schemaProperties[key]
+      const obj = schemaProperties[key] ?? {}
       return !Object.keys(obj).includes('value') && !Object.keys(obj).includes('defaultValue')
     })
     .map(key => {
       const propertySchema = schemaProperties[key]
-      const name = propertySchema['title'] || key
-      return new Property(name, null, propertySchema['description'])
+      const name = propertySchema?.['title'] ?? key
+      return new Property(name, null, propertySchema?.['description'] ?? '')
     })
     .sort(Property.sortByName)
 }

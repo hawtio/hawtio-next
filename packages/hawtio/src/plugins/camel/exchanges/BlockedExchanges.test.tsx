@@ -130,11 +130,12 @@ describe('BlockedExchanges', () => {
 
     const data = screen.getAllByRole('cell')
     expect(data.length).toBe(6)
-    expect(data[0]).toHaveTextContent(xchgs[0].exchangeId)
-    expect(data[1]).toHaveTextContent(xchgs[0].routeId)
-    expect(data[2]).toHaveTextContent(xchgs[0].nodeId)
-    expect(data[3]).toHaveTextContent(xchgs[0].duration)
-    expect(data[4]).toHaveTextContent(xchgs[0].elapsed)
+    const xchg = xchgs[0] as Exchange
+    expect(data[0]).toHaveTextContent(xchg.exchangeId)
+    expect(data[1]).toHaveTextContent(xchg.routeId)
+    expect(data[2]).toHaveTextContent(xchg.nodeId)
+    expect(data[3]).toHaveTextContent(xchg.duration)
+    expect(data[4]).toHaveTextContent(xchg.elapsed)
 
     const unblockButton = screen.getByRole('button', { name: /unblock/i })
     expect(unblockButton).toBeInTheDocument()

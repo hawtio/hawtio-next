@@ -145,7 +145,7 @@ export const CamelContent: React.FunctionComponent = () => {
   /* Filter the nav items to those applicable to the selected node */
   const navItems = allNavItems.filter(nav => nav.isApplicable(selectedNode))
 
-  const camelNav = navItems.length > 0 && (
+  const camelNav = (
     <Nav aria-label='Camel Nav' variant='tertiary'>
       <NavList>
         {navItems.map(nav => (
@@ -165,7 +165,7 @@ export const CamelContent: React.FunctionComponent = () => {
         <PageSection id='camel-content-header' variant={PageSectionVariants.light}>
           {camelService.isContext(selectedNode) && <CamelContentContextToolbar />}
           <Title headingLevel='h1'>{selectedNode.name}</Title>
-          <Text component='small'>{selectedNode.objectName}</Text>
+          {selectedNode.objectName && <Text component='small'>{selectedNode.objectName}</Text>}
         </PageSection>
         {navItems.length > 1 && <PageNavigation>{camelNav}</PageNavigation>}
       </PageGroup>
@@ -174,7 +174,7 @@ export const CamelContent: React.FunctionComponent = () => {
         {navItems.length > 0 && (
           <Routes>
             {camelNavRoutes}
-            <Route key='root' path='/' element={<Navigate to={navItems[0].id} />} />
+            <Route key='root' path='/' element={<Navigate to={navItems[0]?.id ?? ''} />} />
           </Routes>
         )}
         {navItems.length === 0 && !selectedNode.objectName && <JmxContentMBeans />}

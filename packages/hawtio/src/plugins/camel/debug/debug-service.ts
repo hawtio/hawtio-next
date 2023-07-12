@@ -1,5 +1,6 @@
 import { jolokiaService } from '@hawtiosrc/plugins/connect'
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
+import { isBlank } from '@hawtiosrc/util/strings'
 import { childText, xmlText } from '@hawtiosrc/util/xml'
 import { IRequest, IResponseFn } from 'jolokia.js'
 import { camelPreferencesService } from '../camel-preferences-service'
@@ -205,7 +206,7 @@ class DebugService {
     const headers: Record<string, string> = {}
     const headerTypes: Record<string, string> = {}
     let headerHtml = ''
-    Array.from(headerElements).forEach(headerElement => {
+    headerElements.forEach(headerElement => {
       const key = headerElement.getAttribute('key')
       const typeName = headerElement.getAttribute('type')
       const value = xmlText(headerElement)
@@ -227,45 +228,36 @@ class DebugService {
       }
     })
 
-    let id = headers['breadcrumbId']
-    if (!id) {
-      const postFixes = ['MessageID', 'ID', 'Path', 'Name']
-      for (const postFix of postFixes) {
-        if (id) break
-
-        for (const [value, key] of Object.entries(headers)) {
-          if (!id && key.endsWith(postFix)) id = value
-        }
-      }
-
-      // lets find the first header with a name or Path in it
-      // if still no value, lets use the first :)
-      Object.entries(headers).forEach(([value, key]) => {
-        if (!id) id = value
-      })
-    }
+    const id = this.getIdFromHeaders(headers)
 
     const bodyElement = message.querySelector('body')
-    let bodyText = ''
+    let body = ''
     let bodyType: string | null = ''
     if (bodyElement) {
-      bodyText = bodyElement.textContent || ''
+      body = bodyElement.textContent || ''
       bodyType = bodyElement.getAttribute('type')
       bodyType = this.humanizeJavaType(bodyType)
     }
 
-    const messageData: MessageData = {
-      headers: headers,
-      headerTypes: headerTypes,
-      id: id,
-      uid: uid,
-      timestamp: timestamp,
-      headerHtml: headerHtml,
-      body: bodyText,
-      bodyType: bodyType,
+    return { headers, headerTypes, id, uid, timestamp, headerHtml, body, bodyType }
+  }
+
+  private getIdFromHeaders(headers: Record<string, string>): string {
+    if (headers['breadcrumbId']) {
+      return headers['breadcrumbId']
     }
 
-    return messageData
+    const suffixes = ['MessageID', 'ID', 'Path', 'Name']
+    const id = Object.entries(headers)
+      .filter(([_, key]) => suffixes.some(suffix => key.endsWith(suffix)))
+      .find(([value, _]) => !isBlank(value))?.[0]
+    if (id !== undefined) {
+      return id
+    }
+
+    // lets find the first header with a name or Path in it
+    // if still no value, lets use the first :)
+    return Object.values(headers).find(v => !isBlank(v)) ?? ''
   }
 }
 

@@ -55,6 +55,7 @@ export const MessageDrawer: React.FunctionComponent<MessageDrawerProps> = (props
     if (!props.messages || props.messages.length === 0) return <em key='header-no-messages'>No Messages</em>
 
     const message = props.messages[0]
+    if (!message) return <em key='header-no-messages'>No Messages</em>
 
     return (
       <TableComposable key={'header-' + message.uid} aria-label='Header table' variant='compact'>
@@ -80,6 +81,7 @@ export const MessageDrawer: React.FunctionComponent<MessageDrawerProps> = (props
     if (!props.messages || props.messages.length === 0) return <em key='body-no-messages'>No Messages</em>
 
     const message = props.messages[0]
+    if (!message) return <em key='body-no-messages'>No Messages</em>
     if (message.body === '[Body is null]') return <em key={'body-' + message.uid}>No Body</em>
 
     return <p key={'body-' + message.uid}>{message.body}</p>
@@ -120,7 +122,7 @@ export const MessageDrawer: React.FunctionComponent<MessageDrawerProps> = (props
       <DrawerHead>
         <div tabIndex={props.expanded ? 0 : -1} ref={panelRef}>
           <Text>
-            <em>{props.messages && props.messages.length > 0 ? props.messages[0].uid : ''}</em>
+            <em>{props.messages && props.messages.length > 0 ? props.messages[0]?.uid : ''}</em>
           </Text>
           <Nav
             onSelect={onSelectTab}

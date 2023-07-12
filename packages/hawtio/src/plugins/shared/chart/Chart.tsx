@@ -71,13 +71,16 @@ export const Chart: React.FunctionComponent = () => {
     if (!chartData[mbeanObjectName]) chartData[mbeanObjectName] = []
 
     // Don't add repeated responses to avoid duplicate points
-    if (!chartData[mbeanObjectName].find(value => value.time === data.time)) chartData[mbeanObjectName]?.push(data)
+    if (!chartData[mbeanObjectName]?.find(value => value.time === data.time)) {
+      chartData[mbeanObjectName]?.push(data)
+    }
 
     if (!attributesToWatch.current[data.name]) {
       attributesToWatch.current[data.name] = {}
     }
 
-    updateNumericAttributesToWatch(attributesToWatch.current[data.name], data.data)
+    const current = attributesToWatch.current[data.name] ?? {}
+    updateNumericAttributesToWatch(current, data.data)
 
     setChartData({ ...chartData })
     attributesToWatch.current = { ...attributesToWatch.current }
@@ -235,19 +238,23 @@ export const Chart: React.FunctionComponent = () => {
                 .filter(([_, isShown]) => isShown)
                 .map(([attributeName, _]) => [name, attributeName]),
             )
-            .map(([name, attributeName]) => (
-              <AttributeChart
-                key={`${name} ${attributeName}`}
-                name={`${name} ${attributeName}`}
-                data={[
-                  ...(chartData[name] ?? []).map(value => ({
-                    name: new Date(value.time * 1000).toLocaleTimeString(),
-                    x: value.time,
-                    y: (value.data[attributeName] as number) ?? 0,
-                  })),
-                ]}
-              />
-            ))}
+            .map(
+              ([name, attributeName]) =>
+                name &&
+                attributeName && (
+                  <AttributeChart
+                    key={`${name} ${attributeName}`}
+                    name={`${name} ${attributeName}`}
+                    data={[
+                      ...(chartData[name] ?? []).map(value => ({
+                        name: new Date(value.time * 1000).toLocaleTimeString(),
+                        x: value.time,
+                        y: (value.data[attributeName] as number) ?? 0,
+                      })),
+                    ]}
+                  />
+                ),
+            )}
         </CardBody>
       </Card>
     </React.Fragment>

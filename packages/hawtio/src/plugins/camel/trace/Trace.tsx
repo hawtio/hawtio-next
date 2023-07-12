@@ -64,6 +64,8 @@ export const Trace: React.FunctionComponent = () => {
     const newMsgs = []
     for (let idx = allMessages.length - 1; idx >= 0; --idx) {
       const message = allMessages[idx]
+      if (!message) continue
+
       const routeId = childText(message, 'routeId')
       if (routeId !== routeNode.name) continue
 
@@ -158,8 +160,9 @@ export const Trace: React.FunctionComponent = () => {
 
   const onRowSelected = (message: MessageData) => {
     let nodeId = message.toNode ? message.toNode : ''
-    if (nodeId === selectedNode?.name) {
-      nodeId = graphNodeData[0].cid
+    const firstData = graphNodeData[0]
+    if (nodeId === selectedNode?.name && firstData) {
+      nodeId = firstData.cid
     }
 
     setMessage(message)

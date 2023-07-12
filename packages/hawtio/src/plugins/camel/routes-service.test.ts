@@ -107,9 +107,9 @@ describe('routes-service', () => {
       let childNode: MBeanNode | null = simpleRouteNode.getIndex(i)
       expect(childNode).not.toBeNull()
       childNode = childNode as MBeanNode
-      expect(childNode.id).toBe(expected[i].id)
-      expect(childNode.name).toBe(expected[i].name)
-      expect(childNode.getProperty(xmlNodeLocalName)).toBe(expected[i].localName)
+      expect(childNode.id).toBe(expected[i]?.id)
+      expect(childNode.name).toBe(expected[i]?.name)
+      expect(childNode.getProperty(xmlNodeLocalName)).toBe(expected[i]?.localName)
       expect(childNode.getChildren().length).toBe(0)
       expect(childNode.icon).not.toBeNull()
       render(childNode.icon as React.ReactElement)

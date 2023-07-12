@@ -1,20 +1,21 @@
-import { useContext, useEffect, useState } from 'react'
-import { Card, CardBody, Text } from '@patternfly/react-core'
-import { Table, TableBody, TableHeader, TableProps } from '@patternfly/react-table'
-import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
 import { AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
-import { attributeService } from './attribute-service'
-import './AttributeTable.css'
-import { InfoCircleIcon } from '@patternfly/react-icons'
+import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
 import { JmxContentMBeans } from '@hawtiosrc/plugins/shared/JmxContentMBeans'
 import { humanizeLabels } from '@hawtiosrc/util/strings'
-import { MBeanNode } from '../tree'
+import { Card, CardBody, Text } from '@patternfly/react-core'
+import { InfoCircleIcon } from '@patternfly/react-icons'
+import { Table, TableBody, TableHeader, TableProps } from '@patternfly/react-table'
 import { IResponse } from 'jolokia.js'
+import { useContext, useEffect, useState } from 'react'
+import { MBeanNode } from '../tree'
+import './AttributeTable.css'
+import { attributeService } from './attribute-service'
 
 export const AttributeTable: React.FunctionComponent = () => {
   const { selectedNode } = useContext(PluginNodeSelectionContext)
   const [attributesList, setAttributesList] = useState<{ [name: string]: AttributeValues }>({})
-  const [isReading, setIsReading] = useState<boolean>(false)
+  const [isReading, setIsReading] = useState(false)
+
   const attributesEntries = Object.values(attributesList)
 
   function checkIfAllMBeansHaveSameAttributes(attributesEntries: AttributeValues[]): boolean {
@@ -22,16 +23,17 @@ export const AttributeTable: React.FunctionComponent = () => {
       return true
     }
 
-    const firstMBeanAttributesElements = attributesEntries[0].length
-
-    if (!attributesEntries.every(mbeanAttributes => mbeanAttributes.length === firstMBeanAttributesElements)) {
+    const firstEntry = attributesEntries[0]
+    if (!firstEntry) {
+      return false
+    }
+    const firstAttrsLength = Object.keys(firstEntry).length
+    if (attributesEntries.some(attrs => Object.keys(attrs).length !== firstAttrsLength)) {
       return false
     }
 
-    const labelSet: Set<string> = new Set()
-    Object.keys(attributesEntries[0]).forEach(label => labelSet.add(label))
-
-    return attributesEntries.every(attributes => Object.keys(attributes).every(label => labelSet.has(label)))
+    const labelSet = Object.keys(firstEntry).reduce((set, label) => set.add(label), new Set<string>())
+    return attributesEntries.every(attrs => Object.keys(attrs).every(label => labelSet.has(label)))
   }
 
   useEffect(() => {
@@ -115,7 +117,7 @@ export const AttributeTable: React.FunctionComponent = () => {
     return <JmxContentMBeans />
   }
 
-  const labels = Object.keys(attributesEntries[0])
+  const labels = Object.keys(attributesEntries[0] ?? {})
   const columns: TableProps['cells'] = labels.map(label => humanizeLabels(label))
   const rows: TableProps['rows'] = attributesEntries.map(attribute =>
     labels.map(label => JSON.stringify(attribute[label])),
