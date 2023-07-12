@@ -92,10 +92,14 @@ export const Debug: React.FunctionComponent = () => {
         setDebugPanelExpanded(false)
         return
       }
+      const suspendedBreakpoint = suspendedBkps[0]
+      if (!suspendedBreakpoint) {
+        return
+      }
 
-      setGraphSelection(suspendedBkps[0])
+      setGraphSelection(suspendedBreakpoint)
 
-      const msgs = await ds.getTracedMessages(routeNode, suspendedBkps[0])
+      const msgs = await ds.getTracedMessages(routeNode, suspendedBreakpoint)
       log.debug('onMessage ->', msgs)
 
       if (!msgs || msgs.length === 0) {
@@ -343,7 +347,10 @@ export const Debug: React.FunctionComponent = () => {
 
     if (!suspendedBreakpoints || suspendedBreakpoints.length === 0) return
 
-    await ds.stepBreakpoint(selectedNode, suspendedBreakpoints[0])
+    const suspendedBreakpoint = suspendedBreakpoints[0]
+    if (!suspendedBreakpoint) return
+
+    await ds.stepBreakpoint(selectedNode, suspendedBreakpoint)
   }
 
   const onResume = () => {

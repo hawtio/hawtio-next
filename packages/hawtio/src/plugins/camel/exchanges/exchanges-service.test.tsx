@@ -106,7 +106,7 @@ describe('exchange-service', () => {
     let resXchgs = await exs.getBlockedExchanges(contextNode)
     expect(resXchgs.length).toBe(1)
 
-    await exs.unblockExchange(contextNode, resXchgs[0])
+    await exs.unblockExchange(contextNode, resXchgs[0] as exs.Exchange)
 
     resXchgs = await exs.getBlockedExchanges(contextNode)
     expect(resXchgs.length).toBe(0)

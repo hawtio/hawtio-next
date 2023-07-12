@@ -51,7 +51,7 @@ describe('CamelTreeView', () => {
 
     if (rootNode) {
       const ctxNode = rootNode.getChildren()[0]
-      tree = MBeanTree.createFromNodes(pluginName, ctxNode.getChildren())
+      tree = MBeanTree.createFromNodes(pluginName, ctxNode?.getChildren() ?? [])
     }
   })
 

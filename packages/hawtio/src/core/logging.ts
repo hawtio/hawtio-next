@@ -57,10 +57,11 @@ class LocalStorageHawtioLogger implements HawtioLogger {
   } as const
 
   get(name: string): ILogger {
-    if (this.loggers[name]) {
-      return this.loggers[name]
+    let logger = this.loggers[name]
+    if (logger) {
+      return logger
     }
-    const logger = jsLogger.get(name)
+    logger = jsLogger.get(name)
     this.loggers[name] = logger
     return logger
   }
@@ -92,15 +93,14 @@ class LocalStorageHawtioLogger implements HawtioLogger {
   }
 
   private toLogLevel(level: ILogLevel | string): ILogLevel {
-    let logLevel = this.INFO
-    if (typeof level === 'string') {
-      logLevel = this.LOG_LEVEL_MAP[level]
-      if (!logLevel) {
-        console.error('Unknown log level:', level)
-        return this.INFO
-      }
-    } else {
-      logLevel = level
+    if (typeof level !== 'string') {
+      return level
+    }
+
+    const logLevel = this.LOG_LEVEL_MAP[level]
+    if (!logLevel) {
+      console.error('Unknown log level:', level)
+      return this.INFO
     }
     return logLevel
   }

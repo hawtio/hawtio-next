@@ -4,5 +4,5 @@ export function getCookie(name: string): string | null {
   }
   const cookies = document.cookie.split(';')
   const cookie = cookies.map(cookie => cookie.split('=')).find(cookie => cookie.length > 1 && cookie[0] === name)
-  return cookie ? cookie[1] : null
+  return cookie?.[1] ?? null
 }

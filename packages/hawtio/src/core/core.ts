@@ -163,7 +163,11 @@ class HawtioCore {
           log.debug('Loading remote', remote)
           try {
             const plugin = await importRemote<{ [entry: string]: HawtioPlugin }>(remote)
-            plugin[remote.pluginEntry || DEFAULT_PLUGIN_ENTRY]()
+            const entryFn = plugin[remote.pluginEntry || DEFAULT_PLUGIN_ENTRY]
+            if (!entryFn) {
+              throw new Error(`Plugin entry not found: ${remote.pluginEntry || DEFAULT_PLUGIN_ENTRY}`)
+            }
+            entryFn()
             log.debug('Loaded remote', remote)
           } catch (err) {
             log.error('Error loading remote:', remote, '-', err)

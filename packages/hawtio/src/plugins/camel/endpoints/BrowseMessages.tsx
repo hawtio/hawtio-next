@@ -114,8 +114,8 @@ export const BrowseMessages: React.FunctionComponent = () => {
     return filteredMessages.slice(getFromIndex(), getToIndex())
   }
 
-  const handleNextMessage = (index: number): MessageData => {
-    return filteredMessages[index]
+  const handleNextMessage = (index: number): MessageData | null => {
+    return filteredMessages[index] ?? null
   }
 
   const getSubstring = (body: string): string => {
@@ -358,7 +358,7 @@ const MessageDetails: React.FunctionComponent<{
   mid: string
   index: number
   maxValue: number
-  getMessage: (index: number) => MessageData
+  getMessage: (index: number) => MessageData | null
   forwardMessages: (uri: string, message?: MessageData) => void
   endpoints: string[]
 }> = ({ message, mid, index, maxValue, getMessage, forwardMessages, endpoints }) => {
@@ -374,8 +374,10 @@ const MessageDetails: React.FunctionComponent<{
 
   const switchToMessage = (index: number) => {
     const message = getMessage(index)
-    setCurrentMessage(message)
-    setCurrentIndex(index)
+    if (message) {
+      setCurrentMessage(message)
+      setCurrentIndex(index)
+    }
   }
   const MessageHeader = () => {
     return (

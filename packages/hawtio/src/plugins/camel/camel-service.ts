@@ -295,15 +295,13 @@ export function compareVersions(version: string, major: number, minor: number): 
   const arr = version.split('.')
 
   // parse int or default to 0
-  const vmaj = parseInt(arr[0]) || 0
-  const vmin = parseInt(arr[1]) || 0
+  const vmaj = parseInt(arr[0] ?? '0') || 0
+  const vmin = parseInt(arr[1] ?? '0') || 0
   if (vmaj < major) return -1
-
   if (vmaj > major) return 1
 
-  // maj == major
+  // vmaj == major
   if (vmin < minor) return -1
-
   if (vmin > minor) return 1
 
   // major and minor are the same

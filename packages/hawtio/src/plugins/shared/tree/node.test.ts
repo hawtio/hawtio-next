@@ -104,7 +104,7 @@ describe('MBeanNode', () => {
     const node2 = new MBeanNode(null, 'test.node', false)
     node2.populateMBean('context=SampleContext,type=context,name="SampleCamel"', mbean)
 
-    const child2 = node2.children?.[0].children?.[0].children?.[0]
+    const child2 = node2.children?.[0]?.children?.[0]?.children?.[0]
     expect(child2?.name).toEqual('SampleCamel')
     expect(child2?.mbean).toBe(mbean)
     expect(child2?.icon).toBe(Icons.locked)

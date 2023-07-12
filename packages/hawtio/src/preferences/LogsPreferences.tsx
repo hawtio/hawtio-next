@@ -56,7 +56,10 @@ const LOG_LEVEL_OPTIONS = ['OFF', 'ERROR', 'WARN', 'INFO', 'DEBUG'] as const
 const GlobalForms: React.FunctionComponent = () => {
   const [logLevel, setLogLevel] = useState(Logger.getLevel().name)
 
-  const handleLogLevelChange = (level: string) => {
+  const handleLogLevelChange = (level?: string) => {
+    if (!level) {
+      return
+    }
     setLogLevel(level)
     Logger.setLevel(level)
   }
@@ -129,7 +132,10 @@ const ChildLoggerItem: React.FunctionComponent<ChildLoggerItemProps> = props => 
 
   const name = logger.name
 
-  const onLogLevelChange = (level: string) => {
+  const onLogLevelChange = (level?: string) => {
+    if (!level) {
+      return
+    }
     Logger.updateChildLogger(logger.name, level)
     reloadChildLoggers()
   }

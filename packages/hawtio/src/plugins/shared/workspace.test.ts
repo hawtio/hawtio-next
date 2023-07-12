@@ -42,26 +42,26 @@ describe('workspace', () => {
 
   test('parseMBean', () => {
     const testdata = [
-      { on: 'jolokia:type=Config', r: { attributes: { type: 'Config' }, domain: 'jolokia' } },
+      { mbean: 'jolokia:type=Config', expected: { attributes: { type: 'Config' }, domain: 'jolokia' } },
       {
-        on: 'jdk.management.jfr:type=FlightRecorder',
-        r: { attributes: { type: 'FlightRecorder' }, domain: 'jdk.management.jfr' },
+        mbean: 'jdk.management.jfr:type=FlightRecorder',
+        expected: { attributes: { type: 'FlightRecorder' }, domain: 'jdk.management.jfr' },
       },
       {
-        on: 'jboss.threads:name="XNIO-1",type=thread-pool',
-        r: { attributes: { name: '"XNIO-1"', type: 'thread-pool' }, domain: 'jboss.threads' },
+        mbean: 'jboss.threads:name="XNIO-1",type=thread-pool',
+        expected: { attributes: { name: '"XNIO-1"', type: 'thread-pool' }, domain: 'jboss.threads' },
       },
       {
-        on: 'org.apache.camel:context=SampleCamelLog4J,type=context,name="SampleCamelLog4J"',
-        r: {
+        mbean: 'org.apache.camel:context=SampleCamelLog4J,type=context,name="SampleCamelLog4J"',
+        expected: {
           attributes: { context: 'SampleCamelLog4J', name: '"SampleCamelLog4J"', type: 'context' },
           domain: 'org.apache.camel',
         },
       },
     ]
 
-    for (const td of testdata) {
-      expect(workspace.parseMBean(td.on)).toEqual(td.r)
+    for (const test of testdata) {
+      expect(workspace.parseMBean(test.mbean)).toEqual(test.expected)
     }
   })
 })

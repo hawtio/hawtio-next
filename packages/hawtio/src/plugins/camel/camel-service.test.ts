@@ -56,7 +56,12 @@ describe('camel-service', () => {
     ]
 
     for (const data of versions) {
-      expect(camelService.compareVersions(data.v, data.ma, data.mi)).toEqual(data.r)
+      expect({
+        v: data.v,
+        ma: data.ma,
+        mi: data.mi,
+        r: camelService.compareVersions(data.v, data.ma, data.mi),
+      }).toEqual(data)
     }
   })
 

@@ -75,26 +75,26 @@ export const EndpointParametersForm: React.FunctionComponent = () => {
   }
 
   const onPlus = (name: string) => {
-    let value = parseInt(ctx.endpointParameters[name])
+    let value = parseInt(ctx.endpointParameters[name] ?? '')
 
     if (Number.isNaN(value)) {
-      value = parseInt(properties[name].defaultValue)
+      value = parseInt(properties[name]?.defaultValue ?? '')
       if (Number.isNaN(value)) value = 0
     } else {
-      value = parseInt(ctx.endpointParameters[name])
+      value = parseInt(ctx.endpointParameters[name] ?? '')
     }
 
     onSetPropValue(name, value + 1)
   }
 
   const onMinus = (name: string) => {
-    let value = parseInt(ctx.endpointParameters[name])
+    let value = parseInt(ctx.endpointParameters[name] ?? '')
 
     if (Number.isNaN(value)) {
-      value = parseInt(properties[name].defaultValue)
+      value = parseInt(properties[name]?.defaultValue ?? '')
       if (Number.isNaN(value)) value = 100
     } else {
-      value = parseInt(ctx.endpointParameters[name])
+      value = parseInt(ctx.endpointParameters[name] ?? '')
     }
 
     onSetPropValue(name, value - 1)
@@ -145,7 +145,7 @@ export const EndpointParametersForm: React.FunctionComponent = () => {
             <NumberInput
               key={index}
               inputName={propertySpec.title}
-              value={numberValue(ctx.endpointParameters[name], propertySpec.defaultValue)}
+              value={numberValue(ctx.endpointParameters[name] ?? '', propertySpec.defaultValue)}
               allowEmptyInput
               onPlus={() => onPlus(name)}
               onMinus={() => onMinus(name)}
@@ -165,7 +165,7 @@ export const EndpointParametersForm: React.FunctionComponent = () => {
             id={name + '-' + index}
             key={index}
             label={propertySpec.title}
-            isChecked={parseBoolean(ctx.endpointParameters[name])}
+            isChecked={parseBoolean(ctx.endpointParameters[name] ?? '')}
             isRequired={propertySpec.required}
             description={propertySpec.description}
             onChange={value => onSetPropValue(name, value)}
@@ -215,9 +215,7 @@ export const EndpointParametersForm: React.FunctionComponent = () => {
 
   return (
     <React.Fragment>
-      {Object.keys(properties).map((name, index) => {
-        return inputControl(name, index, properties[name])
-      })}
+      {Object.entries(properties).map(([key, value], index) => inputControl(key, index, value))}
     </React.Fragment>
   )
 }

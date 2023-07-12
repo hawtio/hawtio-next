@@ -90,9 +90,7 @@ class RoutesService {
       iname = iname.replace('-icon', '') // Remove -icon suffix
       iname = iname.replace('icon', '') // Remove remaining icon suffix
       iname = iname.charAt(0).toUpperCase() + iname.slice(1) // Capitalize
-      iname = iname.replace(/-([a-z])/g, (g: string) => {
-        return g[1].toUpperCase()
-      })
+      iname = iname.replace(/-([a-z])/g, s => s[1]?.toUpperCase() ?? s)
       iname = `${iname}Icon`
 
       //

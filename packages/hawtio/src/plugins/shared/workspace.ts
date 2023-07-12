@@ -237,26 +237,23 @@ class Workspace {
     return true
   }
 
-  parseMBean(mbean: string) {
-    const answer: { domain: string; attributes: Record<string, string> } = {
-      domain: '',
-      attributes: {},
-    }
-    let parts: string[] = mbean.split(':')
+  parseMBean(mbean: string): { domain: string; attributes: Record<string, string> } {
+    let domain = ''
+    const attributes: Record<string, string> = {}
+    let parts = mbean.split(':')
     if (parts.length > 1) {
-      answer.domain = parts[0]
-      parts = parts.filter((v: string) => v !== answer.domain)
+      domain = parts[0] ?? ''
+      parts = parts.filter(p => p !== domain)
       const parts2 = parts.join(':')
-      answer.attributes = {}
       const nameValues = parts2.split(',')
-      nameValues.forEach((p: string) => {
-        let nameValue = p.split('=')
-        const name = nameValue[0].trim()
-        nameValue = nameValue.filter((v: string) => v !== name)
-        answer.attributes[name] = nameValue.join('=').trim()
+      nameValues.forEach(nv => {
+        let nameValue = nv.split('=')
+        const name = nameValue[0]?.trim() ?? ''
+        nameValue = nameValue.filter(nv => nv !== name)
+        attributes[name] = nameValue.join('=').trim()
       })
     }
-    return answer
+    return { domain, attributes }
   }
 }
 

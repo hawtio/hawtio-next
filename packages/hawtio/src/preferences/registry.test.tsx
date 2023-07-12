@@ -9,9 +9,9 @@ describe('preferencesRegistry', () => {
     expect(preferencesRegistry.getPreferences()).toEqual([])
     preferencesRegistry.add('test', 'Test', () => <React.Fragment />)
     expect(preferencesRegistry.getPreferences()).toHaveLength(1)
-    expect(preferencesRegistry.getPreferences()[0].id).toEqual('test')
-    expect(preferencesRegistry.getPreferences()[0].title).toEqual('Test')
-    expect(preferencesRegistry.getPreferences()[0].component).not.toBeNull()
+    expect(preferencesRegistry.getPreferences()[0]?.id).toEqual('test')
+    expect(preferencesRegistry.getPreferences()[0]?.title).toEqual('Test')
+    expect(preferencesRegistry.getPreferences()[0]?.component).not.toBeNull()
 
     // duplicate preferences not allowed
     expect(() => preferencesRegistry.add('test', 'Test', () => <React.Fragment />)).toThrowError(

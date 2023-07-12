@@ -291,7 +291,7 @@ function parseMessagesFromXml(pDoc: XMLDocument): MessageData[] {
     }
     messagesData.push({
       messageId: message.getAttribute('exchangeId') ?? '',
-      body: message.getElementsByTagName('body')[0].textContent ?? '',
+      body: message.getElementsByTagName('body')[0]?.textContent ?? '',
       headers: headers,
     })
   }

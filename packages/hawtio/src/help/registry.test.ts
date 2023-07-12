@@ -15,9 +15,9 @@ describe('helpRegistry', () => {
     expect(helpRegistry.getHelps()).toEqual([])
     helpRegistry.add('test', 'Test', payload)
     expect(helpRegistry.getHelps()).toHaveLength(1)
-    expect(helpRegistry.getHelps()[0].id).toEqual('test')
-    expect(helpRegistry.getHelps()[0].title).toEqual('Test')
-    expect(helpRegistry.getHelps()[0].content).toEqual(`
+    expect(helpRegistry.getHelps()[0]?.id).toEqual('test')
+    expect(helpRegistry.getHelps()[0]?.title).toEqual('Test')
+    expect(helpRegistry.getHelps()[0]?.content).toEqual(`
       # Help Test
       Test help content.
     `)

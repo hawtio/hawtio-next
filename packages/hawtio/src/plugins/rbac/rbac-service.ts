@@ -24,9 +24,10 @@ class RBACService implements IRBACService {
       return ''
     }
 
-    if (mbeans.length === 1) {
-      log.info('Use MBean', mbeans[0], 'for client-side RBAC')
-      return mbeans[0]
+    const mbean = mbeans[0]
+    if (mbean && mbeans.length === 1) {
+      log.info('Use MBean', mbean, 'for client-side RBAC')
+      return mbean
     }
 
     // mbeans > 1

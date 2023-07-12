@@ -56,16 +56,14 @@ export const EndpointStats: React.FunctionComponent = () => {
     if (value === '') {
       filtered = [...stats]
     } else {
-      filtered = stats.filter(stat => {
-        return (stat[attribute] as string).toLowerCase().includes(value.toLowerCase())
-      })
+      filtered = stats.filter(stat => (stat[attribute] as string).toLowerCase().includes(value.toLowerCase()))
     }
 
     //filter with the rest of the filters
     filters.forEach(value => {
-      const attr = value.split(':')[0]
-      const searchTerm = value.split(':')[1]
-      filtered = filtered.filter(stat => (stat[attr] as string).toLowerCase().includes(searchTerm.toLowerCase()))
+      const attr = value.split(':')[0] ?? ''
+      const searchTerm = value.split(':')[1] ?? ''
+      filtered = filtered.filter(stat => String(stat[attr]).toLowerCase().includes(searchTerm.toLowerCase()))
     })
 
     setSearchTerm(value)

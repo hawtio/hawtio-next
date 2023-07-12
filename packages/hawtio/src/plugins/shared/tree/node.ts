@@ -31,8 +31,6 @@ export interface OptimisedJmxMBean extends IJmxMBean {
 
 export type FilterFn = (node: MBeanNode) => boolean
 
-export type ForEachFn = (node: MBeanNode) => void
-
 const MBEAN_NODE_ID_SEPARATOR = '-'
 
 export class MBeanNode implements TreeViewDataItem {
@@ -81,12 +79,12 @@ export class MBeanNode implements TreeViewDataItem {
     const idPostFix = folder ? '-folder' : ''
     let id = idPrefix + escapeHtmlId(this.name) + idPostFix
 
-    // Check id is unique againt current siblings
+    // Check id is unique against current siblings
     if (this.parent) {
       this.parent.getChildren().forEach(child => {
         if (child === this) return
 
-        // id could possible still end up the same as another
+        // id could still end up the same as another
         // but pretty unlikely and not really worth doing more
         if (child.id === id) id = id + '-' + Math.floor(Math.random() * 100)
       })
@@ -112,7 +110,11 @@ export class MBeanNode implements TreeViewDataItem {
     log.debug('    JMX tree property:', paths[0])
     if (paths.length === 1) {
       // final mbean node
-      const mbeanNode = this.create(paths[0], false)
+      const path = paths[0]
+      if (!path) {
+        throw new Error('path should not be empty')
+      }
+      const mbeanNode = this.create(path, false)
       mbeanNode.configureMBean(props, mbean)
       return
     }
@@ -157,7 +159,7 @@ export class MBeanNode implements TreeViewDataItem {
   }
 
   getIndex(index: number): MBeanNode | null {
-    return this.children ? this.children[index] : null
+    return this.children?.[index] ?? null
   }
 
   getChildren(): MBeanNode[] {
@@ -241,10 +243,12 @@ export class MBeanNode implements TreeViewDataItem {
     const index = this.children.indexOf(child)
     if (index === -1) return null
 
-    const removed = this.children.splice(index, 1)
-    removed[0].parent = null
+    const removed = this.children.splice(index, 1)[0] ?? null
+    if (removed) {
+      removed.parent = null
+    }
 
-    return removed[0]
+    return removed
   }
 
   childCount(): number {
@@ -252,7 +256,7 @@ export class MBeanNode implements TreeViewDataItem {
   }
 
   getProperty(key: string): string {
-    return this.properties ? this.properties[key] : ''
+    return this.properties?.[key] ?? ''
   }
 
   addProperty(key: string, value: string) {
@@ -283,17 +287,20 @@ export class MBeanNode implements TreeViewDataItem {
     return path
   }
 
-  private getDescendentOrThis(pathEntry: string): MBeanNode | null {
+  private getDescendantOrThis(pathEntry: string): MBeanNode | null {
     if (pathEntry === this.name || this.matches({ name: pathEntry })) return this
 
-    return this.findDescendant(node => node.name === pathEntry || node.matches({ name: pathEntry })) || null
+    return this.findDescendant(node => node.name === pathEntry || node.matches({ name: pathEntry }))
   }
 
   navigate(...namePath: string[]): MBeanNode | null {
     if (namePath.length === 0) return this // path is empty so return this node
 
-    const child: MBeanNode | null = this.getDescendentOrThis(namePath[0])
-    return !child ? null : child.navigate(...namePath.slice(1))
+    const name = namePath[0]
+    if (!name) return null
+
+    const child = this.getDescendantOrThis(name)
+    return child?.navigate(...namePath.slice(1)) ?? null
   }
 
   /**
@@ -301,10 +308,13 @@ export class MBeanNode implements TreeViewDataItem {
    * where the namePath drills down to descendants from
    * this node
    */
-  forEach(namePath: string[], eachFn: ForEachFn) {
+  forEach(namePath: string[], eachFn: (node: MBeanNode) => void) {
     if (namePath.length === 0) return // path empty so nothing to do
 
-    const child: MBeanNode | null = this.getDescendentOrThis(namePath[0])
+    const name = namePath[0]
+    if (!name) return
+
+    const child = this.getDescendantOrThis(name)
     if (!child) return
 
     eachFn(child)
@@ -613,7 +623,9 @@ function reorderObjects(objs: object[], key: string, order: string[]) {
     const index = objs.findIndex(o => o[objKey] === value)
     if (index >= 0) {
       const obj = objs.splice(index, 1)[0]
-      objs.unshift(obj)
+      if (obj) {
+        objs.unshift(obj)
+      }
     }
   })
 }
@@ -630,5 +642,5 @@ function checkReorderNeeded(objs: object[], key: string, order: string[]): boole
   if (objs.length < order.length) {
     return objs.some((o, i) => o[objKey] !== order[i])
   }
-  return order.some((v, i) => v !== objs[i][objKey])
+  return order.some((v, i) => v !== objs[i]?.[objKey])
 }

@@ -134,7 +134,9 @@ export const Contexts: React.FunctionComponent = () => {
             selectAllContexts(isSelecting)
           } else {
             const ctx = contexts[rowIndex]
-            onSelectContext(ctx, isSelecting)
+            if (ctx) {
+              onSelectContext(ctx, isSelecting)
+            }
           }
         }}
         canSelectAll={true}

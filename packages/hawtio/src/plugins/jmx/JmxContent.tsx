@@ -92,7 +92,7 @@ export const JmxContent: React.FunctionComponent = () => {
         <React.Fragment>
           <Routes>
             {mbeanRoutes}
-            <Route key='root' path='/' element={<Navigate to={navItems[0].id} />} />
+            <Route key='root' path='/' element={<Navigate to={navItems[0]?.id ?? ''} />} />
           </Routes>
         </React.Fragment>
       </PageSection>

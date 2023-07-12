@@ -13,7 +13,7 @@ for (const [key, value] of Object.entries(svg)) {
   if (key === 'IconNames') {
     continue // not applicable
   }
-  const iconName = key[0].toUpperCase() + key.substr(1) + 'Icon'
+  const iconName = (key[0]?.toUpperCase() ?? '') + key.substring(1) + 'Icon'
   elementMap.set(iconName, buildIcon(iconName, value, 16))
 }
 
@@ -41,10 +41,8 @@ export function getIcon(name: string, size?: number): JSX.Element {
       // No icon in cache so build the icon then cache it
       const iconKey = name.replace('Icon', '').toLowerCase()
       Object.entries(svg)
-        .filter(([key, value]) => {
-          return iconKey === key
-        })
-        .forEach(([key, value]) => {
+        .filter(([key, _]) => iconKey === key)
+        .forEach(([_, value]) => {
           log.debug("Building custom sized icon '" + name + "' with size '" + size + "'")
           element = buildIcon(customIconName, value, size)
           elementMap.set(customIconName, element)
@@ -52,5 +50,5 @@ export function getIcon(name: string, size?: number): JSX.Element {
     }
   }
 
-  return element ? element : (elementMap.get(IconNames.GenericIcon) as JSX.Element)
+  return element ? element : elementMap.get(IconNames.GenericIcon) ?? svg.generic
 }
