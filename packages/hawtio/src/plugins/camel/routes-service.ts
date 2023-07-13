@@ -1,26 +1,13 @@
-import { AttributeValues, jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
+import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import { parseXML } from '@hawtiosrc/util/xml'
 import React from 'react'
 import * as camelService from './camel-service'
-import { contextNodeType, log, routeGroupsType, routeNodeType, routeXmlNodeType, xmlNodeLocalName } from './globals'
+import { contextNodeType, log, routeXmlNodeType, xmlNodeLocalName } from './globals'
 import * as icons from './icons'
 import { schemaService } from './schema-service'
 
-export type CamelRoute = {
-  objectName: string
-  RouteId: string
-  State: string | null
-  Uptime: string
-  ExchangesCompleted: number
-  ExchangesFailed: number
-  FailuresHandled: number
-  ExchangesTotal: number
-  ExchangesInflight: number
-  MeanProcessingTime: number
-}
-
-export interface Statistics {
+export type Statistics = {
   id: string
   state: string
   exchangesInflight?: string
@@ -61,12 +48,10 @@ export type RouteStats = Statistics & {
 }
 
 export const ROUTE_OPERATIONS = {
-  start: 'start()',
-  stop: 'stop()',
-  remove: 'remove()',
   dumpRoutesAsXml: 'dumpRoutesAsXml()',
 } as const
 
+// TODO: This service should be named more properly like RoutesXmlService, RouteStatisticsService, etc.
 class RoutesService {
   getIcon(nodeSettingsOrXmlNode: Record<string, unknown> | Element, size?: number): React.ReactNode {
     let nodeSettings: Record<string, unknown> | null = null
@@ -219,68 +204,6 @@ class RoutesService {
         log.error(`Failed to process route xml for ${routeNode.name}: ` + error)
       }
     })
-  }
-
-  private createCamelRoute(objName: string, attr: AttributeValues) {
-    const route: CamelRoute = {
-      objectName: objName,
-      ExchangesCompleted: attr['ExchangesCompleted'] as number,
-      ExchangesTotal: attr['ExchangesTotal'] as number,
-      ExchangesInflight: attr['ExchangesInflight'] as number,
-      RouteId: attr['RouteId'] as string,
-      State: attr['State'] as string,
-      Uptime: attr['Uptime'] as string,
-      ExchangesFailed: attr['ExchangesFailed'] as number,
-      FailuresHandled: attr['FailuresHandled'] as number,
-      MeanProcessingTime: attr['MeanProcessingTime'] as number,
-    }
-
-    return route
-  }
-
-  private async readRouteAttributes(node: MBeanNode): Promise<CamelRoute | null> {
-    if (!node.objectName) return null
-
-    const attributes: AttributeValues = await jolokiaService.readAttributes(node.objectName as string)
-    return this.createCamelRoute(node.objectName as string, attributes)
-  }
-
-  async getRoutesAttributes(routeFolder: MBeanNode | null): Promise<CamelRoute[]> {
-    if (!routeFolder) return []
-
-    const children = routeFolder.getChildren()
-    if (children.length === 0) return []
-
-    /*
-     * If the children are route groups then it recurses
-     * to return the contents of the groups
-     */
-    const routes: CamelRoute[] = []
-    for (const child of children) {
-      if (camelService.hasType(child, routeNodeType)) {
-        // read attributes of route
-        const camelRoute = await this.readRouteAttributes(child)
-        if (camelRoute) routes.push(camelRoute)
-      } else if (camelService.hasType(child, routeGroupsType)) {
-        // recurse into route group
-        const camelRoutes = await this.getRoutesAttributes(child)
-        routes.push(...camelRoutes)
-      }
-    }
-
-    return routes
-  }
-
-  async startRoute(objName: string) {
-    await jolokiaService.execute(objName, ROUTE_OPERATIONS.start)
-  }
-
-  async stopRoute(objName: string) {
-    await jolokiaService.execute(objName, ROUTE_OPERATIONS.stop)
-  }
-
-  async deleteRoute(objName: string) {
-    await jolokiaService.execute(objName, ROUTE_OPERATIONS.remove)
   }
 
   async dumpRoutesStatsXML(routesNode: MBeanNode): Promise<string | null> {
