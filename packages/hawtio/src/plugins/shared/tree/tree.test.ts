@@ -1,4 +1,4 @@
-import { escapeHtmlId } from '@hawtiosrc/util/jolokia'
+import { escapeHtmlId } from '@hawtiosrc/util/htmls'
 import { workspace } from '../workspace'
 import { MBeanNode } from './node'
 import { treeProcessorRegistry } from './processor-registry'

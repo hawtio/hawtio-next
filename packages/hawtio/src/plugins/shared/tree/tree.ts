@@ -1,4 +1,4 @@
-import { escapeTags } from '@hawtiosrc/util/jolokia'
+import { escapeTags } from '@hawtiosrc/util/htmls'
 import { stringSorter } from '@hawtiosrc/util/strings'
 import { log } from '../globals'
 import { FilterFn, MBeanNode, OptimisedJmxDomain, OptimisedJmxDomains } from './node'
