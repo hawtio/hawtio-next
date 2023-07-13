@@ -1,6 +1,8 @@
+import { MBeanNode } from '@hawtiosrc/plugins/shared'
+
 export class CamelRoute {
   constructor(
-    public objectName: string,
+    public node: MBeanNode,
     public routeId: string,
     public state: string | null,
     public uptime: string,

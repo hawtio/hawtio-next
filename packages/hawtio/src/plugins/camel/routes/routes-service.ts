@@ -12,16 +12,17 @@ export const ROUTE_OPERATIONS = {
 
 interface IRoutesService {
   getRoutesAttributes(routeFolder: MBeanNode | null): Promise<CamelRoute[]>
-  startRoute(objectName: string): Promise<void>
-  stopRoute(objectName: string): Promise<void>
-  deleteRoute(objectName: string): Promise<void>
+  canStartRoute(node: MBeanNode): boolean
+  startRoute(node: MBeanNode): Promise<void>
+  canStopRoute(node: MBeanNode): boolean
+  stopRoute(node: MBeanNode): Promise<void>
+  canDeleteRoute(node: MBeanNode): boolean
+  deleteRoute(node: MBeanNode): Promise<void>
 }
 
 class RoutesService implements IRoutesService {
-  async getRoutesAttributes(routeFolder: MBeanNode | null): Promise<CamelRoute[]> {
-    if (!routeFolder) return []
-
-    const children = routeFolder.getChildren()
+  async getRoutesAttributes(routesFolder: MBeanNode): Promise<CamelRoute[]> {
+    const children = routesFolder.getChildren()
     if (children.length === 0) return []
 
     /*
@@ -44,13 +45,13 @@ class RoutesService implements IRoutesService {
     return routes
   }
 
-  private async readRouteAttributes(node: MBeanNode): Promise<CamelRoute | null> {
-    const { objectName } = node
+  private async readRouteAttributes(routeNode: MBeanNode): Promise<CamelRoute | null> {
+    const { objectName } = routeNode
     if (!objectName) return null
 
     const attributes = await jolokiaService.readAttributes(objectName)
     return new CamelRoute(
-      objectName,
+      routeNode,
       attributes['RouteId'] as string,
       attributes['State'] as string,
       attributes['Uptime'] as string,
@@ -63,15 +64,36 @@ class RoutesService implements IRoutesService {
     )
   }
 
-  async startRoute(objectName: string) {
+  canStartRoute(node: MBeanNode): boolean {
+    return node.hasInvokeRights(ROUTE_OPERATIONS.start)
+  }
+
+  async startRoute(node: MBeanNode) {
+    const { objectName } = node
+    if (!objectName) return
+
     await jolokiaService.execute(objectName, ROUTE_OPERATIONS.start)
   }
 
-  async stopRoute(objectName: string) {
+  canStopRoute(node: MBeanNode): boolean {
+    return node.hasInvokeRights(ROUTE_OPERATIONS.stop)
+  }
+
+  async stopRoute(node: MBeanNode) {
+    const { objectName } = node
+    if (!objectName) return
+
     await jolokiaService.execute(objectName, ROUTE_OPERATIONS.stop)
   }
 
-  async deleteRoute(objectName: string) {
+  canDeleteRoute(node: MBeanNode): boolean {
+    return node.hasInvokeRights(ROUTE_OPERATIONS.remove)
+  }
+
+  async deleteRoute(node: MBeanNode) {
+    const { objectName } = node
+    if (!objectName) return
+
     await jolokiaService.execute(objectName, ROUTE_OPERATIONS.remove)
   }
 }
