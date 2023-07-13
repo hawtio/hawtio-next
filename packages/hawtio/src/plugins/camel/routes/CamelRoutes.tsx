@@ -16,7 +16,7 @@ import { TableComposable, Tbody, Td, Th, ThProps, Thead, Tr } from '@patternfly/
 import React, { useContext, useEffect, useState } from 'react'
 import { CamelContext } from '../context'
 import { CamelRoute } from './route'
-import { ROUTE_OPERATIONS, routesService } from './routes-service'
+import { routesService } from './routes-service'
 
 const ROUTES_REFRESH_INTERVAL = 10000 // milliseconds
 
@@ -105,11 +105,11 @@ export const CamelRoutes: React.FunctionComponent = () => {
     let deleted = 0
     for (const routeId of selected) {
       const route = routes.find(r => r.routeId === routeId && r.state === 'Stopped')
-      if (!route || !route.objectName) {
+      if (!route) {
         continue
       }
       try {
-        await routesService.deleteRoute(route.objectName)
+        await routesService.deleteRoute(route.node)
         deleted++
         workspace.refreshTree()
       } catch (error) {
@@ -245,6 +245,12 @@ const CamelRoutesToolbar: React.FunctionComponent<{
     return null
   }
 
+  // The first route is sampled only to check RBAC on the route MBean
+  const firstRoute = routes[0]
+  if (!firstRoute) {
+    return null
+  }
+
   const isSuspendEnabled = (state: string): boolean => {
     let res = false
     selectedRoutes.forEach(id => {
@@ -258,11 +264,11 @@ const CamelRoutesToolbar: React.FunctionComponent<{
     let startedCount = 0
     for (const routeId of selectedRoutes) {
       const route = routes.find(r => r.routeId === routeId && r.state === 'Stopped')
-      if (!route || !route.objectName) {
+      if (!route) {
         continue
       }
       try {
-        await routesService.startRoute(route.objectName)
+        await routesService.startRoute(route.node)
         startedCount++
       } catch (error) {
         eventService.notify({
@@ -284,11 +290,11 @@ const CamelRoutesToolbar: React.FunctionComponent<{
     let stoppedCount = 0
     for (const routeId of selectedRoutes) {
       const route = routes.find(r => r.routeId === routeId && r.state === 'Started')
-      if (!route || !route.objectName) {
+      if (!route) {
         continue
       }
       try {
-        await routesService.stopRoute(route.objectName)
+        await routesService.stopRoute(route.node)
         stoppedCount++
       } catch (error) {
         eventService.notify({
@@ -321,7 +327,7 @@ const CamelRoutesToolbar: React.FunctionComponent<{
         <Button
           variant='primary'
           isSmall={true}
-          isDisabled={!selectedNode.hasInvokeRights(ROUTE_OPERATIONS.start) || !isSuspendEnabled('Stopped')}
+          isDisabled={!routesService.canStartRoute(firstRoute.node) || !isSuspendEnabled('Stopped')}
           icon={<PlayIcon />}
           onClick={startRoutes}
         >
@@ -332,7 +338,7 @@ const CamelRoutesToolbar: React.FunctionComponent<{
         <Button
           variant='danger'
           isSmall={true}
-          isDisabled={!selectedNode.hasInvokeRights(ROUTE_OPERATIONS.stop) || !isSuspendEnabled('Started')}
+          isDisabled={!routesService.canStopRoute(firstRoute.node) || !isSuspendEnabled('Started')}
           icon={<AsleepIcon />}
           onClick={stopRoutes}
         >
@@ -348,7 +354,7 @@ const CamelRoutesToolbar: React.FunctionComponent<{
       component={
         <Button
           variant='plain'
-          isDisabled={!selectedNode.hasInvokeRights(ROUTE_OPERATIONS.remove) || !isSuspendEnabled('Stopped')}
+          isDisabled={!routesService.canDeleteRoute(firstRoute.node) || !isSuspendEnabled('Stopped')}
           onClick={onDeleteClicked}
         >
           <Remove2Icon /> Delete

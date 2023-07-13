@@ -8,9 +8,9 @@ import { routesService } from './routes-service'
 
 function getMockedRoutes(): CamelRoute[] {
   return [
-    new CamelRoute('', 'route1', 'start', '1h1', 1, 11, 111, 1111, 11111, 111111),
-    new CamelRoute('', 'route2', 'started', '2h2', 2, 22, 222, 2222, 22222, 222222),
-    new CamelRoute('', 'route3', 'stopped', '3h3', 3, 33, 333, 3333, 33333, 333333),
+    new CamelRoute(new MBeanNode(null, 'route1', false), 'route1', 'start', '1h1', 1, 11, 111, 1111, 11111, 111111),
+    new CamelRoute(new MBeanNode(null, 'route2', false), 'route2', 'started', '2h2', 2, 22, 222, 2222, 22222, 222222),
+    new CamelRoute(new MBeanNode(null, 'route3', false), 'route3', 'stopped', '3h3', 3, 33, 333, 3333, 33333, 333333),
   ]
 }
 
