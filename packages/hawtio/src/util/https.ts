@@ -1,3 +1,8 @@
+export function basicAuthHeaderValue(username: string, password: string): string {
+  const base64UserPass = window.btoa(`${username}:${password}`)
+  return `Basic ${base64UserPass}`
+}
+
 export function getCookie(name: string): string | null {
   if (name == null) {
     return null

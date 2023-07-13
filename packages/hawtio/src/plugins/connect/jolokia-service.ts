@@ -1,7 +1,6 @@
 import { userService } from '@hawtiosrc/auth'
 import { eventService } from '@hawtiosrc/core'
-import { getCookie } from '@hawtiosrc/util/cookies'
-import { basicAuthHeaderValue } from '@hawtiosrc/util/http'
+import { basicAuthHeaderValue, getCookie } from '@hawtiosrc/util/https'
 import {
   escapeMBeanPath,
   onBulkSuccessAndError,
