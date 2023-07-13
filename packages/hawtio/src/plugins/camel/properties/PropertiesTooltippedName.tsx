@@ -18,7 +18,12 @@ export const PropertiesTooltippedName: React.FunctionComponent<PropertiesTTNameP
       <span ref={tooltipRef} className='properties-name-tooltip-button'>
         <InfoCircleIcon />
       </span>
-      <Tooltip id='tooltip-ref1' reference={tooltipRef} content={<div>{props.property.description}</div>} />
+      <Tooltip
+        id='tooltip-ref1'
+        reference={tooltipRef}
+        content={<div>{props.property.description}</div>}
+        removeFindDomNode
+      />
     </React.Fragment>
   )
 }
