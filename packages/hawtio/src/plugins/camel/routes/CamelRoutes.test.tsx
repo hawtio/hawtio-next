@@ -1,48 +1,16 @@
-import { render, screen, waitFor, within } from '@testing-library/react'
-import { CamelContext } from '@hawtiosrc/plugins/camel/context'
 import { MBeanNode, MBeanTree } from '@hawtiosrc/plugins'
-import { CamelRoute, routesService } from '@hawtiosrc/plugins/camel/routes-service'
+import { CamelContext } from '@hawtiosrc/plugins/camel/context'
 import { CamelRoutes } from '@hawtiosrc/plugins/camel/routes/CamelRoutes'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { CamelRoute } from './route'
+import { routesService } from './routes-service'
 
 function getMockedRoutes(): CamelRoute[] {
   return [
-    {
-      objectName: '',
-      RouteId: 'route1',
-      Uptime: '1h1',
-      ExchangesCompleted: 1,
-      ExchangesFailed: 11,
-      ExchangesInflight: 111,
-      ExchangesTotal: 1111,
-      FailuresHandled: 11111,
-      State: 'start',
-      MeanProcessingTime: 111111,
-    },
-    {
-      objectName: '',
-      RouteId: 'route2',
-      Uptime: '2h2',
-      ExchangesCompleted: 2,
-      ExchangesFailed: 22,
-      ExchangesInflight: 222,
-      ExchangesTotal: 2222,
-      FailuresHandled: 22222,
-      State: 'started',
-      MeanProcessingTime: 222222,
-    },
-    {
-      objectName: '',
-      RouteId: 'route3',
-      Uptime: '3h3',
-      ExchangesCompleted: 3,
-      ExchangesFailed: 33,
-      ExchangesInflight: 333,
-      ExchangesTotal: 3333,
-      FailuresHandled: 33333,
-      State: 'stopped',
-      MeanProcessingTime: 333333,
-    },
+    new CamelRoute('', 'route1', 'start', '1h1', 1, 11, 111, 1111, 11111, 111111),
+    new CamelRoute('', 'route2', 'started', '2h2', 2, 22, 222, 2222, 22222, 222222),
+    new CamelRoute('', 'route3', 'stopped', '3h3', 3, 33, 333, 3333, 33333, 333333),
   ]
 }
 
@@ -71,15 +39,15 @@ describe('CamelRoutes.tsx', () => {
 
       getMockedRoutes().forEach((r, index) => {
         const row = screen.getByTestId('row' + index)
-        expect(within(row).getByText(r.RouteId)).toBeInTheDocument()
-        expect(within(row).getByText(r.State ?? '-11')).toBeInTheDocument()
-        expect(within(row).getByText(r.MeanProcessingTime)).toBeInTheDocument()
-        expect(within(row).getByText(r.FailuresHandled)).toBeInTheDocument()
-        expect(within(row).getByText(r.Uptime)).toBeInTheDocument()
-        expect(within(row).getByText(r.ExchangesTotal)).toBeInTheDocument()
-        expect(within(row).getByText(r.ExchangesCompleted)).toBeInTheDocument()
-        expect(within(row).getByText(r.ExchangesFailed)).toBeInTheDocument()
-        expect(within(row).getByText(r.ExchangesInflight)).toBeInTheDocument()
+        expect(within(row).getByText(r.routeId)).toBeInTheDocument()
+        expect(within(row).getByText(r.state ?? '-11')).toBeInTheDocument()
+        expect(within(row).getByText(r.meanProcessingTime)).toBeInTheDocument()
+        expect(within(row).getByText(r.failuresHandled)).toBeInTheDocument()
+        expect(within(row).getByText(r.uptime)).toBeInTheDocument()
+        expect(within(row).getByText(r.exchangesTotal)).toBeInTheDocument()
+        expect(within(row).getByText(r.exchangesCompleted)).toBeInTheDocument()
+        expect(within(row).getByText(r.exchangesFailed)).toBeInTheDocument()
+        expect(within(row).getByText(r.exchangesInflight)).toBeInTheDocument()
       })
     })
   })
