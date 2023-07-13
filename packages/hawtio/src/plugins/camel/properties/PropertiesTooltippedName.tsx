@@ -1,27 +1,25 @@
-import React from 'react'
 import { Tooltip } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
-import { Property } from './property'
+import React, { useRef } from 'react'
 import './Properties.css'
+import { Property } from './property'
 
-interface PropertiesTTNameProps {
+export const PropertiesTooltippedName: React.FunctionComponent<{
   property: Property
-}
-
-export const PropertiesTooltippedName: React.FunctionComponent<PropertiesTTNameProps> = props => {
-  const tooltipRef = React.useRef<HTMLSpanElement>(null)
+}> = ({ property }) => {
+  const tooltipRef = useRef<HTMLSpanElement>(null)
 
   return (
     <React.Fragment>
-      {props.property.name}
+      {property.name}
 
       <span ref={tooltipRef} className='properties-name-tooltip-button'>
         <InfoCircleIcon />
       </span>
       <Tooltip
-        id='tooltip-ref1'
+        id={`camel-properties-${property.id}-tooltip`}
         reference={tooltipRef}
-        content={<div>{props.property.description}</div>}
+        content={<div>{property.description}</div>}
         removeFindDomNode
       />
     </React.Fragment>

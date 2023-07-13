@@ -1,5 +1,5 @@
 import { Logger } from '@hawtiosrc/core'
-import { escapeHtmlId, escapeTags } from '@hawtiosrc/util/jolokia'
+import { escapeHtmlId, escapeTags } from '@hawtiosrc/util/htmls'
 import { isEmpty } from '@hawtiosrc/util/objects'
 import { stringSorter, trimQuotes } from '@hawtiosrc/util/strings'
 import { TreeViewDataItem } from '@patternfly/react-core'
