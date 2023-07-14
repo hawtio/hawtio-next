@@ -1,8 +1,7 @@
-import { MBeanNode, MBeanTree, TreeProcessor } from '@hawtiosrc/plugins/shared'
+import { JolokiaListMethod, MBeanNode, MBeanTree, TreeProcessor, jolokiaService } from '@hawtiosrc/plugins/shared'
 import { operationToString } from '@hawtiosrc/util/jolokia'
 import { isBlank, isString } from '@hawtiosrc/util/strings'
 import { IJmxOperation, IRequest, IResponse } from 'jolokia.js'
-import { JolokiaListMethod, jolokiaService } from '../connect'
 import { log } from './globals'
 import { rbacService } from './rbac-service'
 

@@ -3,7 +3,7 @@ import path from 'path'
 import fs from 'fs'
 import { RouteStats } from '@hawtiosrc/plugins/camel/routes-service'
 
-jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
+jest.mock('@hawtiosrc/plugins/shared/jolokia-service')
 
 describe('visualization-service', () => {
   const routesXmlPath = path.resolve(__dirname, '../testdata', 'camel-choice-route.xml')

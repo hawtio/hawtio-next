@@ -1,5 +1,5 @@
-import { AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
+import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { isObject } from '@hawtiosrc/util/objects'
 import { Card } from '@patternfly/react-core'
 import { OnRowClick, Table, TableBody, TableHeader, TableProps } from '@patternfly/react-table'

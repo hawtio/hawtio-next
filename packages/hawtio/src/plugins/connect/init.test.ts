@@ -1,8 +1,8 @@
 import fetchMock from 'jest-fetch-mock'
-import { connectService } from './connect-service'
+import { connectService } from '@hawtiosrc/plugins/shared/connect-service'
 import { isActive } from './init'
 
-jest.mock('@hawtiosrc/plugins/connect/connect-service')
+jest.mock('@hawtiosrc/plugins/shared/connect-service')
 
 describe('isActive', () => {
   beforeEach(() => {

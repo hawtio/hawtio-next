@@ -1,7 +1,6 @@
 import * as schema from '@hawtio/camel-model'
 import { eventService, NotificationType } from '@hawtiosrc/core'
-import { jolokiaService } from '@hawtiosrc/plugins/connect'
-import { MBeanNode, workspace } from '@hawtiosrc/plugins/shared'
+import { jolokiaService, MBeanNode, workspace } from '@hawtiosrc/plugins/shared'
 import { isObject } from '@hawtiosrc/util/objects'
 import { parseXML } from '@hawtiosrc/util/xml'
 import * as camelService from '../camel-service'

@@ -1,5 +1,4 @@
-import { jolokiaService } from '@hawtiosrc/plugins/connect'
-import { MBeanNode } from '@hawtiosrc/plugins/shared'
+import { MBeanNode, jolokiaService } from '@hawtiosrc/plugins/shared'
 import { IRequest, IResponseFn } from 'jolokia.js'
 import { log } from '../globals'
 import { routesService } from '../routes-service'

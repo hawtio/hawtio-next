@@ -2,7 +2,7 @@ import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import * as camelService from './camel-service'
 import { contextNodeType, endpointNodeType, endpointsType, jmxDomain } from './globals'
 
-jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
+jest.mock('@hawtiosrc/plugins/shared/jolokia-service')
 
 describe('camel-service', () => {
   test('syncChildProperties', async () => {

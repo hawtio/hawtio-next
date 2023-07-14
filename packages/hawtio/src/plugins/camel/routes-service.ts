@@ -1,4 +1,4 @@
-import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
+import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import { parseXML } from '@hawtiosrc/util/xml'
 import React from 'react'

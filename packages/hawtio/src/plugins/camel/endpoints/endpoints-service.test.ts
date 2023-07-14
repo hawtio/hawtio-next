@@ -1,17 +1,16 @@
-import { MBeanNode, MBeanTree, workspace } from '@hawtiosrc/plugins/shared'
-import { camelContexts, jmxDomain } from '../globals'
 import { camelTreeProcessor } from '@hawtiosrc/plugins/camel/tree-processor'
-import * as es from './endpoints-service'
+import { AttributeValues, MBeanNode, MBeanTree, jolokiaService, workspace } from '@hawtiosrc/plugins/shared'
+import { isObject } from '@hawtiosrc/util/objects'
 import fs from 'fs'
 import path from 'path'
-import { jolokiaService } from '@hawtiosrc/plugins/connect'
-import { isObject } from '@hawtiosrc/util/objects'
-import { AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
+import { camelContexts, jmxDomain } from '../globals'
+import * as es from './endpoints-service'
 
 const routesXmlPath = path.resolve(__dirname, '..', 'testdata', 'camel-sample-app-routes.xml')
 const sampleRoutesXml = fs.readFileSync(routesXmlPath, { encoding: 'utf8', flag: 'r' })
 
-jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
+jest.mock('@hawtiosrc/plugins/shared/jolokia-service')
+
 jolokiaService.execute = jest.fn(async (mbean: string, operation: string, args?: unknown[]): Promise<unknown> => {
   if (
     mbean === 'org.apache.camel:context=SampleCamel,type=context,name="SampleCamel"' &&

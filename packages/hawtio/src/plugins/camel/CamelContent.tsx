@@ -1,5 +1,5 @@
 import { eventService } from '@hawtiosrc/core'
-import { Attributes, Chart, JmxContentMBeans, MBeanNode, Operations } from '@hawtiosrc/plugins/shared'
+import { AttributeValues, Attributes, Chart, JmxContentMBeans, MBeanNode, Operations } from '@hawtiosrc/plugins/shared'
 import {
   EmptyState,
   EmptyStateIcon,
@@ -18,7 +18,6 @@ import { CubesIcon } from '@patternfly/react-icons'
 import { IResponse } from 'jolokia.js'
 import React, { useContext, useEffect, useState } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
-import { AttributeValues } from '../connect'
 import './CamelContent.css'
 import * as camelService from './camel-service'
 import { CamelContext } from './context'

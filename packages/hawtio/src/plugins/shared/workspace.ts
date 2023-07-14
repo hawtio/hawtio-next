@@ -1,5 +1,5 @@
 import { eventService, Logger } from '@hawtiosrc/core'
-import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
+import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { isString } from '@hawtiosrc/util/strings'
 import { IErrorResponse, IResponse, ISimpleOptions } from 'jolokia.js'
 import { is, object } from 'superstruct'

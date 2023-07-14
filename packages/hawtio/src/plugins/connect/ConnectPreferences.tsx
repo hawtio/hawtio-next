@@ -1,3 +1,4 @@
+import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { TooltipHelpIcon } from '@hawtiosrc/ui/icons'
 import {
   Alert,
@@ -14,7 +15,6 @@ import {
 } from '@patternfly/react-core'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { jolokiaService } from '../connect/jolokia-service'
 import { RESET } from './connections'
 import { useConnections } from './context'
 import { log } from './globals'

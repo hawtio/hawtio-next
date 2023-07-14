@@ -1,3 +1,4 @@
+import { Connection, ConnectionTestResult, connectService } from '@hawtiosrc/plugins/shared/connect-service'
 import { isBlank } from '@hawtiosrc/util/strings'
 import {
   ActionGroup,
@@ -14,8 +15,7 @@ import {
 } from '@patternfly/react-core'
 import { ExclamationCircleIcon } from '@patternfly/react-icons'
 import React, { useContext, useState } from 'react'
-import { ConnectionTestResult, connectService } from './connect-service'
-import { ADD, Connection, UPDATE } from './connections'
+import { ADD, UPDATE } from './connections'
 import { ConnectContext } from './context'
 
 type ConnectModalProps = {

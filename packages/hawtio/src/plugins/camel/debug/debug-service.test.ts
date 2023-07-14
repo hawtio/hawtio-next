@@ -1,11 +1,9 @@
-import { MBeanNode, MBeanTree, workspace } from '@hawtiosrc/plugins/shared'
-import { camelContexts, jmxDomain } from '../globals'
 import { camelTreeProcessor } from '@hawtiosrc/plugins/camel/tree-processor'
-import { ConditionalBreakpoint, debugService as ds } from './debug-service'
+import { AttributeValues, MBeanNode, MBeanTree, jolokiaService, workspace } from '@hawtiosrc/plugins/shared'
 import fs from 'fs'
 import path from 'path'
-import { jolokiaService } from '@hawtiosrc/plugins/connect'
-import { AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
+import { camelContexts, jmxDomain } from '../globals'
+import { ConditionalBreakpoint, debugService as ds } from './debug-service'
 
 const routesXmlPath = path.resolve(__dirname, '..', 'testdata', 'camel-sample-app-routes.xml')
 const sampleRoutesXml = fs.readFileSync(routesXmlPath, { encoding: 'utf8', flag: 'r' })
@@ -16,7 +14,8 @@ let debuggingEnabled = true
 let breakpointIds = ['bkp1', 'bkp2', 'bkp3']
 const newBkp = 'bkp4'
 
-jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
+jest.mock('@hawtiosrc/plugins/shared/jolokia-service')
+
 jolokiaService.execute = jest.fn(async (mbean: string, operation: string, args?: unknown[]): Promise<unknown> => {
   if (mbean === camelCtx && operation === 'dumpRoutesAsXml()') return sampleRoutesXml
 

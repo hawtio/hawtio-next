@@ -1,6 +1,6 @@
 import { eventService } from '@hawtiosrc/core'
-import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
+import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { isObject } from '@hawtiosrc/util/objects'
 import { ENDPOINT_OPERATIONS } from './endpoints/endpoints-service'
 import {

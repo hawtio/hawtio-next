@@ -1,4 +1,4 @@
-import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
+import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { MBeanNode, MBeanTree, workspace } from '@hawtiosrc/plugins/shared'
 import fs from 'fs'
 import path from 'path'
@@ -16,7 +16,7 @@ import {
 } from './globals'
 import { camelTreeProcessor } from './tree-processor'
 
-jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
+jest.mock('@hawtiosrc/plugins/shared/jolokia-service')
 
 const CAMEL_MODEL_VERSION = '3.20.2'
 

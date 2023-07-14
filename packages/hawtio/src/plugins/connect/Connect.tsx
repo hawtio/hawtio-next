@@ -1,3 +1,4 @@
+import { Connection, connectService } from '@hawtiosrc/plugins/shared/connect-service'
 import {
   Button,
   ButtonVariant,
@@ -24,10 +25,9 @@ import {
 } from '@patternfly/react-core'
 import { OutlinedQuestionCircleIcon, PluggedIcon, PlusIcon, UnpluggedIcon } from '@patternfly/react-icons'
 import React, { useContext, useEffect, useState } from 'react'
-import { connectService } from './connect-service'
 import { ConnectImportModal } from './ConnectImportModal'
-import { Connection, DELETE } from './connections'
 import { ConnectModal } from './ConnectModal'
+import { DELETE } from './connections'
 import { ConnectContext, useConnections } from './context'
 import { log } from './globals'
 

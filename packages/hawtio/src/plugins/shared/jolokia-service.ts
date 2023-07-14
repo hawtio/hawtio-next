@@ -32,7 +32,7 @@ import Jolokia, {
 import 'jolokia.js/jolokia-simple'
 import $ from 'jquery'
 import { func, is, object } from 'superstruct'
-import { PARAM_KEY_CONNECTION, connectService } from './connect-service'
+import { PARAM_KEY_CONNECTION, connectService } from '../shared/connect-service'
 import { log } from './globals'
 
 export const DEFAULT_MAX_DEPTH = 7

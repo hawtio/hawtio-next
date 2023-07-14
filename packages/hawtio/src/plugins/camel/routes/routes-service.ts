@@ -1,4 +1,4 @@
-import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
+import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import * as camelService from '../camel-service'
 import { routeGroupsType, routeNodeType } from '../globals'

@@ -1,6 +1,6 @@
 import { eventService } from '@hawtiosrc/core'
 import { CamelContext } from '@hawtiosrc/plugins/camel/context'
-import { AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
+import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
 import { Card, CardBody, Text } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'

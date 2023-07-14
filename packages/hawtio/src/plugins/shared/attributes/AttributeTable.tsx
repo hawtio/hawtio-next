@@ -1,6 +1,6 @@
-import { AttributeValues } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
 import { JmxContentMBeans } from '@hawtiosrc/plugins/shared/JmxContentMBeans'
+import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { humanizeLabels } from '@hawtiosrc/util/strings'
 import { Card, CardBody, Text } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'

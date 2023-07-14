@@ -1,6 +1,6 @@
-import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
-import { log } from '../globals'
+import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { escapeMBean } from '@hawtiosrc/util/jolokia'
+import { log } from '../globals'
 
 class OperationService {
   async execute(mbean: string, operation: string, args: unknown[]): Promise<unknown> {
