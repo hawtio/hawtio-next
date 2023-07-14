@@ -1,5 +1,4 @@
-import { jolokiaService } from '@hawtiosrc/plugins/connect'
-import { MBeanNode } from '@hawtiosrc/plugins/shared'
+import { MBeanNode, jolokiaService } from '@hawtiosrc/plugins/shared'
 import { isBlank } from '@hawtiosrc/util/strings'
 import { childText, xmlText } from '@hawtiosrc/util/xml'
 import { IRequest, IResponseFn } from 'jolokia.js'

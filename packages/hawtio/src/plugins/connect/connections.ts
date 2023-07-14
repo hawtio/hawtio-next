@@ -1,20 +1,4 @@
-export interface Connections {
-  [key: string]: Connection
-}
-
-export interface Connection {
-  name: string
-  scheme: string
-  host: string
-  port: number
-  path: string
-
-  useProxy?: boolean
-  jolokiaUrl?: string
-  username?: string
-  password?: string
-  token?: string
-}
+import { Connection, Connections } from '@hawtiosrc/plugins/shared'
 
 export const ADD = 'ADD'
 export const UPDATE = 'UPDATE'

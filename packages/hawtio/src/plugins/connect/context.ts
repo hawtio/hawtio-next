@@ -1,6 +1,6 @@
+import { Connections, connectService } from '@hawtiosrc/plugins/shared/connect-service'
 import React, { createContext, useEffect, useReducer } from 'react'
-import { connectService } from './connect-service'
-import { Connections, ConnectionsAction, reducer } from './connections'
+import { ConnectionsAction, reducer } from './connections'
 
 /**
  * Custom React hook for using connections and their reducer.

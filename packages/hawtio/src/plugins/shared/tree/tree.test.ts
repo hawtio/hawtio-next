@@ -4,7 +4,7 @@ import { MBeanNode } from './node'
 import { treeProcessorRegistry } from './processor-registry'
 import { MBeanTree } from './tree'
 
-jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
+jest.mock('@hawtiosrc/plugins/shared/jolokia-service')
 
 describe('MBeanTree', () => {
   let wkspTree: MBeanTree

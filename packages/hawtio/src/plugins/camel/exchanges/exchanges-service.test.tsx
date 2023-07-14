@@ -1,10 +1,9 @@
-import { MBeanNode, MBeanTree, workspace } from '@hawtiosrc/plugins/shared'
-import { jmxDomain } from '../globals'
 import { camelTreeProcessor } from '@hawtiosrc/plugins/camel/tree-processor'
-import { jolokiaService } from '@hawtiosrc/plugins/connect'
-import * as exs from './exchanges-service'
+import { MBeanNode, MBeanTree, jolokiaService, workspace } from '@hawtiosrc/plugins/shared'
 import fs from 'fs'
 import path from 'path'
+import { jmxDomain } from '../globals'
+import * as exs from './exchanges-service'
 
 const routesXmlPath = path.resolve(__dirname, '..', 'testdata', 'camel-sample-app-routes.xml')
 const sampleRoutesXml = fs.readFileSync(routesXmlPath, { encoding: 'utf8', flag: 'r' })
@@ -26,7 +25,7 @@ let inflightBrowseEnabled = true
 /**
  * Mock the routes xml to provide a full tree
  */
-jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
+jest.mock('@hawtiosrc/plugins/shared/jolokia-service')
 jolokiaService.execute = jest.fn(async (mbean: string, operation: string, args?: unknown[]): Promise<unknown> => {
   if (
     mbean === 'org.apache.camel:context=SampleCamel,type=context,name="SampleCamel"' &&

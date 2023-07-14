@@ -1,4 +1,4 @@
-import { connectService } from './connect-service'
+import { connectService } from '@hawtiosrc/plugins/shared/connect-service'
 import { log, PATH_PROXY_ENABLED } from './globals'
 
 export async function isActive(): Promise<boolean> {

@@ -1,4 +1,4 @@
-import { jolokiaService } from '@hawtiosrc/plugins/connect'
+import { jolokiaService } from '@hawtiosrc/plugins/shared'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import { findContext, hasType } from '../camel-service'
 import { mbeansType, routeNodeType } from '../globals'

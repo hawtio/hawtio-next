@@ -1,5 +1,4 @@
-import { ConnectionTestResult, IConnectService } from '../connect-service'
-import { Connection, Connections } from '../connections'
+import { Connection, ConnectionTestResult, Connections, IConnectService } from '../connect-service'
 
 class MockConnectService implements IConnectService {
   constructor() {

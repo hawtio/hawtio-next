@@ -1,5 +1,4 @@
-import { jolokiaService } from '@hawtiosrc/plugins/connect'
-import { MBeanNode } from '@hawtiosrc/plugins/shared'
+import { MBeanNode, jolokiaService } from '@hawtiosrc/plugins/shared'
 import { isObject } from '@hawtiosrc/util/objects'
 import { IRequest, IResponseFn } from 'jolokia.js'
 import * as camelService from '../camel-service'

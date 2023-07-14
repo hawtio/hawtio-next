@@ -1,5 +1,5 @@
-import { AttributeValues, jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
+import { AttributeValues, jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { IRequest, IResponseFn } from 'jolokia.js'
 import { log } from '../globals'
 

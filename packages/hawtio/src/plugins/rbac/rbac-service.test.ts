@@ -1,7 +1,7 @@
-import { jolokiaService } from '../connect'
+import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { __testing__ } from './rbac-service'
 
-jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
+jest.mock('@hawtiosrc/plugins/shared/jolokia-service')
 
 describe('RBACService', () => {
   beforeEach(() => {

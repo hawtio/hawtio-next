@@ -1,12 +1,11 @@
-import { render, screen } from '@testing-library/react'
-import { MBeanNode, MBeanTree, workspace } from '@hawtiosrc/plugins/shared'
-import { CamelTreeView } from './CamelTreeView'
-import { camelContexts, jmxDomain, pluginName } from './globals'
 import { camelTreeProcessor } from '@hawtiosrc/plugins/camel/tree-processor'
-import { jolokiaService } from '@hawtiosrc/plugins/connect'
+import { MBeanNode, MBeanTree, jolokiaService, workspace } from '@hawtiosrc/plugins/shared'
+import { render, screen } from '@testing-library/react'
 import fs from 'fs'
 import path from 'path'
+import { CamelTreeView } from './CamelTreeView'
 import { CamelContext } from './context'
+import { camelContexts, jmxDomain, pluginName } from './globals'
 
 const routesXmlPath = path.resolve(__dirname, 'testdata', 'camel-sample-app-routes.xml')
 const sampleRoutesXml = fs.readFileSync(routesXmlPath, { encoding: 'utf8', flag: 'r' })
@@ -24,7 +23,7 @@ jest.mock('react-router-dom', () => ({
 /**
  * Mock the routes xml to provide a full tree
  */
-jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
+jest.mock('@hawtiosrc/plugins/shared/jolokia-service')
 jolokiaService.execute = jest.fn(async (mbean: string, operation: string, args?: unknown[]): Promise<unknown> => {
   if (
     mbean === 'org.apache.camel:context=SampleCamel,type=context,name="SampleCamel"' &&

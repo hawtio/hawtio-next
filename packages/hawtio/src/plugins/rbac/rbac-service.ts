@@ -1,4 +1,4 @@
-import { jolokiaService } from '@hawtiosrc/plugins/connect'
+import { jolokiaService } from '@hawtiosrc/plugins/shared'
 import { isBlank } from '@hawtiosrc/util/strings'
 import { log } from './globals'
 

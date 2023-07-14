@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, screen, cleanup } from '@testing-library/react'
-import { jolokiaService } from '@hawtiosrc/plugins/connect/jolokia-service'
+import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { routesService } from './routes-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import fs from 'fs'
@@ -9,7 +9,7 @@ import { parseXML } from '@hawtiosrc/util/xml'
 import { IconNames } from './icons'
 import { xmlNodeLocalName } from './globals'
 
-jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
+jest.mock('@hawtiosrc/plugins/shared/jolokia-service')
 
 describe('routes-service', () => {
   let contextNode: MBeanNode

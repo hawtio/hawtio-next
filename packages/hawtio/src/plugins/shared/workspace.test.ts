@@ -1,7 +1,7 @@
 import { MBeanTree } from '@hawtiosrc/plugins/shared/tree'
 import { workspace } from './workspace'
 
-jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
+jest.mock('@hawtiosrc/plugins/shared/jolokia-service')
 
 describe('workspace', () => {
   test('getting the tree', async () => {

@@ -2,8 +2,25 @@ import { hawtio } from '@hawtiosrc/core'
 import { toString } from '@hawtiosrc/util/strings'
 import { joinPaths } from '@hawtiosrc/util/urls'
 import Jolokia, { IJolokia } from 'jolokia.js'
-import { Connection, Connections } from './connections'
 import { log } from './globals'
+
+export type Connections = {
+  [key: string]: Connection
+}
+
+export type Connection = {
+  name: string
+  scheme: string
+  host: string
+  port: number
+  path: string
+
+  useProxy?: boolean
+  jolokiaUrl?: string
+  username?: string
+  password?: string
+  token?: string
+}
 
 export type ConnectionTestResult = {
   ok: boolean

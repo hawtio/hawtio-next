@@ -1,14 +1,14 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { camelTreeProcessor } from '@hawtiosrc/plugins/camel/tree-processor'
+import { jolokiaService } from '@hawtiosrc/plugins/shared'
 import { MBeanNode, MBeanTree } from '@hawtiosrc/plugins/shared/tree'
 import { workspace } from '@hawtiosrc/plugins/shared/workspace'
-import { CamelContext } from '../context'
-import { jmxDomain } from '../globals'
-import { camelTreeProcessor } from '@hawtiosrc/plugins/camel/tree-processor'
-import { jolokiaService } from '@hawtiosrc/plugins/connect'
-import { TypeConvertersStatistics } from './TypeConvertersStatistics'
-import { TypeConvertersStats } from './type-converters-service'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import fs from 'fs'
 import path from 'path'
+import { CamelContext } from '../context'
+import { jmxDomain } from '../globals'
+import { TypeConvertersStatistics } from './TypeConvertersStatistics'
+import { TypeConvertersStats } from './type-converters-service'
 
 const routesXmlPath = path.resolve(__dirname, '..', 'testdata', 'camel-sample-app-routes.xml')
 const sampleRoutesXml = fs.readFileSync(routesXmlPath, { encoding: 'utf8', flag: 'r' })
@@ -16,7 +16,7 @@ const sampleRoutesXml = fs.readFileSync(routesXmlPath, { encoding: 'utf8', flag:
 /**
  * Mock the routes xml to provide a full tree
  */
-jest.mock('@hawtiosrc/plugins/connect/jolokia-service')
+jest.mock('@hawtiosrc/plugins/shared/jolokia-service')
 jolokiaService.execute = jest.fn(async (mbean: string, operation: string, args?: unknown[]): Promise<unknown> => {
   if (
     mbean === 'org.apache.camel:context=SampleCamel,type=context,name="SampleCamel"' &&
