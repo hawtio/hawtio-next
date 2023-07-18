@@ -18,7 +18,7 @@ yarn build:all
 yarn test:all
 ```
 
-## @hawtio/react
+## Releasing @hawtio/react
 
 To release the `@hawtio/react` package, follow these steps:
 
@@ -66,32 +66,32 @@ To release the `@hawtio/react` package, follow these steps:
    yarn release:hawtio
    ```
 
-## @hawtio/camel-model
+## Releasing other @hawtio/\<package-name\> packages
 
-To release the `@hawtio/camel-model` package, follow these steps:
+To release a `@hawtio/<package-name>` package, follow these steps:
 
-1. Manually increase the `version` in [packages/camel-model/package.json](../packages/camel-model/package.json). (Currently, we don't use any automation tool for increasing versions yet.)
+1. Manually increase the `version` in packages/\<package-name\>/package.json. (Currently, we don't use any automation tool for increasing versions yet.)
 
    ```diff
     {
-      "name": "@hawtio/camel-model",
-   -  "version": "3.20.2",
-   +  "version": "3.20.3",
-      "description": "Camel Catalog Definition Model",
+      "name": "@hawtio/<package-name>",
+   -  "version": "1.0.0",
+   +  "version": "1.1.0",
+      "description": "...",
    ```
 
-2. Commit the change and tag the version. Note we prefix `@hawtio/camel-model v` to a version in commit messages and `camel-model-v` to tags, since it is monorepo and different packages coexist in the single `main` branch.
+2. Commit the change and tag the version. Note we prefix `@hawtio/<package-name> v` to a version in commit messages and `<package-name>-v` to tags, since it is monorepo and different packages coexist in the single `main` branch.
 
    ```console
-   git commit -m '@hawtio/camel-model v3.20.3'
-   git tag camel-model-v3.20.3
+   git commit -m '@hawtio/<package-name> v1.1.0'
+   git tag <package-name>-v1.1.0
    ```
 
 3. Check the contents to be packaged before the actual release is made with `yarn pack` command.
 
    ```console
-   $ yarn workspace @hawtio/camel-model pack
-   $ tar -tf packages/camel-model/package.tgz
+   $ yarn workspace @hawtio/<package-name> pack
+   $ tar -tf packages/<package-name>/package.tgz
    package/LICENSE
    package/dist/index.d.ts
    package/dist/index.js
@@ -107,5 +107,5 @@ To release the `@hawtio/camel-model` package, follow these steps:
 4. Perform the release.
 
    ```console
-   yarn release:camel-model
+   yarn release:<package-name>
    ```
