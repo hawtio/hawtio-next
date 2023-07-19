@@ -1,5 +1,5 @@
 import { MBeanNode, MBeanTree, TreeProcessor } from '@hawtiosrc/plugins/shared/tree'
-import React from 'react'
+import { ReactNode } from 'react'
 import * as camelService from './camel-service'
 import {
   camelContexts,
@@ -21,9 +21,7 @@ import {
 import { IconNames, getIcon } from './icons'
 import { routesService } from './routes-service'
 
-function adoptChild(parent: MBeanNode | null, child: MBeanNode | null, type: string, childIcon: React.ReactNode) {
-  if (!parent || !child) return
-
+function adoptChild(parent: MBeanNode, child: MBeanNode, type: string, childIcon: ReactNode) {
   parent.adopt(child)
   child.setIcons(childIcon)
   if (camelService.isContext(parent)) {
@@ -33,17 +31,13 @@ function adoptChild(parent: MBeanNode | null, child: MBeanNode | null, type: str
   camelService.setDomain(child)
 }
 
-function setChildIcon(node: MBeanNode | null, childIcon: React.ReactNode) {
-  if (!node) return
-
+function setChildIcon(node: MBeanNode, childIcon: ReactNode) {
   node.getChildren().forEach(child => {
     child.setIcons(childIcon)
   })
 }
 
-function groupRoutes(routesNode: MBeanNode | null) {
-  if (!routesNode) return // Nothing to do
-
+function groupRoutes(routesNode: MBeanNode) {
   let haveGroups = false
   for (const routeNode of routesNode.getChildren()) {
     const groupId = routeNode.getProperty('group')
@@ -115,33 +109,41 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
     camelService.setCamelVersion(newCtxNode)
     newCtxNode.setIcons(getIcon(IconNames.CamelIcon))
 
-    const endPointFolderIcon = getIcon(IconNames.EndpointsFolderIcon)
-    const endPointIcon = getIcon(IconNames.EndpointsNodeIcon)
+    const endpointsFolderIcon = getIcon(IconNames.EndpointsFolderIcon)
+    const endpointsIcon = getIcon(IconNames.EndpointsNodeIcon)
     const routeIcon = getIcon(IconNames.CamelRouteIcon)
 
     const routesNode = context.get(routesType)
-    adoptChild(newCtxNode, routesNode, routesType, endPointFolderIcon)
-    setChildIcon(routesNode, routeIcon)
-    camelService.setChildProperties(routesNode, routeNodeType)
-    routesNode?.addProperty(contextNodeType, newCtxNode.objectName ?? '')
+    if (routesNode) {
+      adoptChild(newCtxNode, routesNode, routesType, endpointsFolderIcon)
+      setChildIcon(routesNode, routeIcon)
+      camelService.setChildProperties(routesNode, routeNodeType)
+      routesNode.addProperty(contextNodeType, newCtxNode.objectName ?? '')
 
-    await routesService.transformXml(newCtxNode, routesNode)
+      await routesService.loadRoutesXml(newCtxNode, routesNode)
 
-    // Once XML has been processed then group the routes if they have groupIds
-    groupRoutes(routesNode)
+      // Once XML has been processed then group the routes if they have groupIds
+      groupRoutes(routesNode)
+    }
 
     const endpointsNode = context.get(endpointsType)
-    adoptChild(newCtxNode, endpointsNode, endpointsType, endPointFolderIcon)
-    setChildIcon(endpointsNode, endPointIcon)
-    camelService.setChildProperties(endpointsNode, endpointNodeType)
+    if (endpointsNode) {
+      adoptChild(newCtxNode, endpointsNode, endpointsType, endpointsFolderIcon)
+      setChildIcon(endpointsNode, endpointsIcon)
+      camelService.setChildProperties(endpointsNode, endpointNodeType)
+    }
 
     const componentsNode = context.get(componentsType)
-    adoptChild(newCtxNode, componentsNode, componentsType, endPointFolderIcon)
-    setChildIcon(componentsNode, endPointIcon)
-    camelService.setChildProperties(componentsNode, componentNodeType)
+    if (componentsNode) {
+      adoptChild(newCtxNode, componentsNode, componentsType, endpointsFolderIcon)
+      setChildIcon(componentsNode, endpointsIcon)
+      camelService.setChildProperties(componentsNode, componentNodeType)
+    }
 
     const dataFormatsNode = context.get(dataformatsType)
-    adoptChild(newCtxNode, dataFormatsNode, dataformatsType, endPointFolderIcon)
+    if (dataFormatsNode) {
+      adoptChild(newCtxNode, dataFormatsNode, dataformatsType, endpointsFolderIcon)
+    }
 
     //
     // Add all other entries which are not one of
