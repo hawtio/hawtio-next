@@ -1,7 +1,7 @@
 import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import { parseXML } from '@hawtiosrc/util/xml'
-import React from 'react'
+import { ReactNode } from 'react'
 import * as camelService from './camel-service'
 import { contextNodeType, log, routeXmlNodeType, xmlNodeLocalName } from './globals'
 import * as icons from './icons'
@@ -53,7 +53,7 @@ export const ROUTE_OPERATIONS = {
 
 // TODO: This service should be named more properly like RoutesXmlService, RouteStatisticsService, etc.
 class RoutesService {
-  getIcon(nodeSettingsOrXmlNode: Record<string, unknown> | Element, size?: number): React.ReactNode {
+  getIcon(nodeSettingsOrXmlNode: Record<string, unknown> | Element, size?: number): ReactNode {
     let nodeSettings: Record<string, unknown> | null = null
 
     if (nodeSettingsOrXmlNode instanceof Element) {
@@ -65,143 +65,142 @@ class RoutesService {
       nodeSettings = nodeSettingsOrXmlNode
     }
 
-    if (nodeSettings) {
-      const nsObj: Record<string, unknown> = nodeSettings as Record<string, unknown>
-      const iconName: string = (nsObj['icon'] as string) || 'generic24.png'
-
-      // transform name into icon component name
-      let iname = iconName.replace('.png', '') // Remove png file extension
-      iname = iname.replace('24', '') // Remove 24 suffix
-      iname = iname.replace('-icon', '') // Remove -icon suffix
-      iname = iname.replace('icon', '') // Remove remaining icon suffix
-      iname = iname.charAt(0).toUpperCase() + iname.slice(1) // Capitalize
-      iname = iname.replace(/-([a-z])/g, s => s[1]?.toUpperCase() ?? s)
-      iname = `${iname}Icon`
-
-      //
-      // Fetch the correct FunctionComponent icon from the icons module
-      //
-      return icons.getIcon(iname, size)
+    if (!nodeSettings) {
+      return null
     }
 
-    return null
+    const iconName = (nodeSettings['icon'] as string) || 'generic24.png'
+
+    // transform name into icon component name
+    let iname = iconName.replace('.png', '') // Remove png file extension
+    iname = iname.replace('24', '') // Remove 24 suffix
+    iname = iname.replace('-icon', '') // Remove -icon suffix
+    iname = iname.replace('icon', '') // Remove remaining icon suffix
+    iname = iname.charAt(0).toUpperCase() + iname.slice(1) // Capitalize
+    iname = iname.replace(/-([a-z])/g, s => s[1]?.toUpperCase() ?? s)
+    iname = `${iname}Icon`
+
+    //
+    // Fetch the correct FunctionComponent icon from the icons module
+    //
+    return icons.getIcon(iname, size)
   }
 
   /**
-   * Adds a child to the given folder / route
-   * @method
+   * Populates a route step node with the given XML.
    */
-  private loadRouteChild(parent: MBeanNode, routeXml: Element): MBeanNode | null {
-    const nodeSettings = schemaService.getSchema(routeXml.localName)
+  private populateStepNode(parent: MBeanNode, stepXml: Element) {
+    const nodeSettings = schemaService.getSchema(stepXml.localName)
+    if (!nodeSettings) {
+      return
+    }
 
     /*
      * if xml contains an id property then add that to node name
      * if xml contains an uri property then add that to node name
      */
-    const xmlId = routeXml.id
-    const xmlUri = routeXml.getAttribute('uri')
-    const nodeName = (xmlId ? xmlId + ': ' : xmlUri ? xmlUri + ': ' : '') + routeXml.localName
+    const xmlId = stepXml.id
+    const xmlUri = stepXml.getAttribute('uri')
+    const nodeName = (xmlId ? xmlId + ': ' : xmlUri ? xmlUri + ': ' : '') + stepXml.localName
 
-    if (nodeSettings) {
-      const node = new MBeanNode(null, nodeName, false)
-      node.setType(routeXmlNodeType)
-      camelService.setDomain(node)
-      const icon: React.ReactNode = this.getIcon(nodeSettings)
-      node.setIcons(icon)
+    const node = new MBeanNode(null, nodeName, false)
+    node.setType(routeXmlNodeType)
+    camelService.setDomain(node)
+    node.setIcons(this.getIcon(nodeSettings))
 
-      // TODO - tooltips to be implemented
-      // updateRouteNodeLabelAndTooltip(node, route, nodeSettings)
+    // TODO - tooltips to be implemented
+    // updateRouteNodeLabelAndTooltip(node, route, nodeSettings)
 
-      this.loadRouteChildren(node, routeXml)
-      return node
-    }
-
-    return null
+    // Cascade XML loading to the child steps
+    this.loadStepXml(node, stepXml)
+    parent.adopt(node)
   }
 
   /**
-   * Adds the route children to the given folder for each step in the route
-   * @method
+   * Adds the XML to the given step node, and populates its child nodes with the
+   * inner steps of the XML.
    */
-  loadRouteChildren(routeNode: MBeanNode, routeXml: Element) {
+  private loadStepXml(stepNode: MBeanNode, stepXml: Element) {
+    stepNode.addProperty('xml', stepXml.outerHTML)
+    // Preserve the xml local name for use by views
+    stepNode.addProperty(xmlNodeLocalName, stepXml.localName)
+
+    // Populate child nodes
+    for (const childXml of stepXml.children) {
+      this.populateStepNode(stepNode, childXml)
+    }
+  }
+
+  /**
+   * Adds the route XML to the route node, and populates its child nodes with the
+   * route steps of the XML.
+   */
+  loadRouteXml(routeNode: MBeanNode, routeXml: Element) {
     routeNode.addProperty('xml', routeXml.outerHTML)
     // Preserve the xml local name for use by views
     routeNode.addProperty(xmlNodeLocalName, routeXml.localName)
 
+    // If route is grouped with the 'group' attribute, add it to the node.
     const routeGroup = routeXml.getAttribute('group')
     if (routeGroup) routeNode.addProperty('group', routeGroup)
 
-    for (const childXml of routeXml.children) {
-      const child = this.loadRouteChild(routeNode, childXml)
-      if (child) routeNode.adopt(child)
+    // Populate child nodes
+    for (const stepXml of routeXml.children) {
+      this.populateStepNode(routeNode, stepXml)
     }
   }
 
   /**
-   * Gets routes xml from the context node
-   * @param contextNode
+   * Fetches the routes XML for the context node from Jolokia.
    */
-  async getRoutesXml(contextNode: MBeanNode | null): Promise<string | null> {
-    if (!contextNode) {
-      return null
-    }
-
-    const mbeanName = contextNode.objectName
-    if (!mbeanName) {
+  async fetchRoutesXml(contextNode: MBeanNode): Promise<string> {
+    const { objectName } = contextNode
+    if (!objectName) {
       throw new Error('Cannot process route xml as mbean name not available')
     }
 
-    let xml = null
+    let xml: string | null = null
     try {
-      xml = await jolokiaService.execute(mbeanName, ROUTE_OPERATIONS.dumpRoutesAsXml)
+      xml = (await jolokiaService.execute(objectName, ROUTE_OPERATIONS.dumpRoutesAsXml)) as string
     } catch (error) {
-      throw new Error('Failed to dump xml from mbean: ' + mbeanName)
+      throw new Error('Failed to dump xml from mbean: ' + objectName)
     }
 
     if (!xml) {
-      throw new Error('Failed to extract any xml from mbean: ' + mbeanName)
+      throw new Error('Failed to extract any xml from mbean: ' + objectName)
     }
 
-    contextNode.addProperty('xml', xml as string)
-    return xml as string
+    return xml
   }
 
   /**
-   * Looks up the route XML for the given context and selected route and
-   * processes the selected route's XML with the given function
-   * @method processRouteXml
-   * @param xml
-   * @param routeNode the actual route to be examined
+   * Looks up the routes XML for the selected route and processes the selected route's XML.
    */
-  processRouteXml(xml: string, routeNode: MBeanNode | null): Element | null {
-    if (!routeNode) {
-      throw new Error('Route node not available')
+  processRouteXml(xml: string, routeNode: MBeanNode): Element {
+    const doc = parseXML(xml)
+    const routeXml = doc.getElementById(routeNode.name)
+    if (!routeXml || routeXml.tagName?.toLowerCase() !== 'route') {
+      throw new Error(`No routes named '${routeNode.name}' found in the routes xml`)
     }
-
-    const doc: XMLDocument = parseXML(xml as string)
-    const route = doc.getElementById(routeNode.name)
-    if (!route || route?.tagName?.toLowerCase() !== 'route') {
-      throw new Error(`No routes in ${routeNode.name} route xml`)
-    }
-    return route
+    return routeXml
   }
 
-  async transformXml(contextNode: MBeanNode | null, routesNode: MBeanNode | null) {
-    if (!contextNode || !routesNode || routesNode.getType() !== 'routes') {
+  /**
+   * Loads the routes XML from the context and adds it to the routes and children.
+   */
+  async loadRoutesXml(contextNode: MBeanNode, routesNode: MBeanNode) {
+    if (routesNode.getType() !== 'routes') {
       return
     }
-    // routesNode.addProperty('xml', routeXml.outerHTML)
-    const xml = await this.getRoutesXml(contextNode)
-    if (!xml) return
 
+    const xml = await this.fetchRoutesXml(contextNode)
     routesNode.addProperty('xml', xml)
-    routesNode.getChildren().forEach((routeNode: MBeanNode) => {
+    routesNode.getChildren().forEach(routeNode => {
       try {
-        const xmlNode = this.processRouteXml(xml, routeNode)
-        if (!xmlNode) return
-        this.loadRouteChildren(routeNode, xmlNode)
+        const routeXml = this.processRouteXml(xml, routeNode)
+        this.loadRouteXml(routeNode, routeXml)
       } catch (error) {
-        log.error(`Failed to process route xml for ${routeNode.name}: ` + error)
+        log.error(`Failed to process route xml for ${routeNode.name}:`, error)
       }
     })
   }
@@ -218,10 +217,10 @@ class RoutesService {
     try {
       xml = await jolokiaService.execute(mbeanToQuery, operationForMBean, [true, true])
     } catch (error) {
-      throw new Error('Failed to dump routes stats from mbean: ' + mbeanName + error)
+      throw new Error('Failed to dump routes stats from mbean ' + mbeanName + ': ' + error)
     }
     if (!xml) {
-      throw new Error('Failed to extract any xml from mbean: ' + mbeanName)
+      throw new Error('Failed to extract any xml from mbean ' + mbeanName)
     }
     return xml as string
   }

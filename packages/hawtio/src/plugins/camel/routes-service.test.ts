@@ -1,13 +1,13 @@
-import React from 'react'
-import { render, screen, cleanup } from '@testing-library/react'
 import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
-import { routesService } from './routes-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
+import { parseXML } from '@hawtiosrc/util/xml'
+import { cleanup, render, screen } from '@testing-library/react'
 import fs from 'fs'
 import path from 'path'
-import { parseXML } from '@hawtiosrc/util/xml'
-import { IconNames } from './icons'
+import React from 'react'
 import { xmlNodeLocalName } from './globals'
+import { IconNames } from './icons'
+import { routesService } from './routes-service'
 
 jest.mock('@hawtiosrc/plugins/shared/jolokia-service')
 
@@ -47,9 +47,25 @@ describe('routes-service', () => {
     contextNode.adopt(routesNode)
   })
 
-  test('getRoutesXml', async () => {
-    const xml = await routesService.getRoutesXml(contextNode)
+  test('fetchRoutesXml', async () => {
+    const xml = await routesService.fetchRoutesXml(contextNode)
     expect(xml).not.toBeNull()
+  })
+
+  test('fetchRoutesXml no mbean', async () => {
+    contextNode.objectName = undefined
+
+    await expect(() => routesService.fetchRoutesXml(contextNode)).rejects.toThrow(
+      'Cannot process route xml as mbean name not available',
+    )
+  })
+
+  test('fetchRoutesXml wrong mbean', async () => {
+    contextNode.objectName = 'wrong:mbean:name'
+
+    await expect(() => routesService.fetchRoutesXml(contextNode)).rejects.toThrow(
+      'Failed to extract any xml from mbean: ' + contextNode.objectName,
+    )
   })
 
   test('processRouteXml', async () => {
@@ -58,30 +74,8 @@ describe('routes-service', () => {
     expect((route as Element).id).toBe(testRouteId)
   })
 
-  test('getRoutesXml no contextNode', async () => {
-    const nullCtx: MBeanNode | null = null
-    const route = await routesService.getRoutesXml(nullCtx)
-    expect(route).toBeNull()
-  })
-
-  test('getRoutesXml no mbean', async () => {
-    contextNode.objectName = undefined
-
-    await expect(() => routesService.getRoutesXml(contextNode)).rejects.toThrow(
-      'Cannot process route xml as mbean name not available',
-    )
-  })
-
-  test('getRoutesXml wrong mbean', async () => {
-    contextNode.objectName = 'wrong:mbean:name'
-
-    await expect(() => routesService.getRoutesXml(contextNode)).rejects.toThrow(
-      'Failed to extract any xml from mbean: ' + contextNode.objectName,
-    )
-  })
-
-  test('loadRouteChildren', async () => {
-    routesService.loadRouteChildren(simpleRouteNode, simpleRouteXml)
+  test('loadRouteXml', async () => {
+    routesService.loadRouteXml(simpleRouteNode, simpleRouteXml)
     expect(simpleRouteNode.getProperty('xml')).toBe(simpleRouteXml.outerHTML)
     expect(simpleRouteNode.childCount()).toBe(4)
 

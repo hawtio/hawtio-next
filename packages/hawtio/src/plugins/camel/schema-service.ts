@@ -48,9 +48,11 @@ class SchemaService {
   }
 
   getSchema(nodeIdOrDefinition: Record<string, unknown> | string): Record<string, unknown> | null {
-    if (typeof nodeIdOrDefinition === 'string' || nodeIdOrDefinition instanceof String)
+    if (typeof nodeIdOrDefinition === 'string' || nodeIdOrDefinition instanceof String) {
       return this.lookupDefinition(nodeIdOrDefinition as string, definitions)
-    else return nodeIdOrDefinition
+    } else {
+      return nodeIdOrDefinition
+    }
   }
 }
 
