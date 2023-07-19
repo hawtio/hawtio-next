@@ -93,3 +93,9 @@ It is recommended to run linting against the code periodically with the followin
 ```console
 yarn lint
 ```
+
+### Contributing
+
+When making a PR E2E tests from hawtio/hawtio will be run against your frontend.
+If you want to specify a different branch to run the tests from you can add
+`` `branch: [remote:]branch` `` to the PR description, ie. `branch: e2e-test-fix` or in your own fork `branch: jdoe:my-branch`.
