@@ -1,0 +1,194 @@
+on:
+  pull_request_target:
+    paths-ignore: '**.md'
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
+    branches:
+      - main
+      - e2e-check
+
+jobs:
+  test:
+    permissions:
+      pull-requests: read
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['11', '17']
+        node: ['16', '18']
+        runtime: ['springboot', 'quarkus']
+        browser: ['firefox', 'chrome']
+    env:
+      REPORT_DIR: results-${{matrix.runtime}}-node(${{matrix.node}})-java(${{matrix.java}})-${{matrix.browser}}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: 'refs/pull/${{ github.event.number }}/merge'
+      - name: Docker Setup QEMU
+        uses: docker/setup-qemu-action@v2.2.0
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@v3
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Install
+        run: yarn install
+      - name: Build
+        run: yarn build:all
+      - name: Start server
+        run: |
+          yarn start > log &
+          timeout 1m bash -c "while ! grep 'You can now view app in the browser.' log ; do cat log; sleep 1; done"
+      - name: Detect testsuite branch
+        id: get-images
+        run: |
+          body='${{ github.event.pull_request.body }}'
+          if [[ $body =~ \`branch:[[:space:]]([[:alnum:]\/_.-]+)(:([[:alnum:]\/_.-]+))?\` ]]; then
+            if [ -z "${BASH_REMATCH[2]}" ]; then
+              echo "repo=hawtio/hawtio" >> $GITHUB_OUTPUT
+              echo "branch=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+            else
+              echo "repo=${BASH_REMATCH[1]}/hawtio" >> $GITHUB_OUTPUT
+              echo "branch=${BASH_REMATCH[2]:1}" >> $GITHUB_OUTPUT
+            fi
+          else
+            branch=3.x
+            app_image=quay.io/hawtio/hawtio-${{ matrix.runtime }}-test-app:$branch-${{ matrix.java }}
+            testsuite_image=quay.io/hawtio/hawtio-test-suite:$branch-${{ matrix.java }}
+
+            docker pull $app_image
+            docker pull $testsuite_image
+
+            echo "app-image=$app_image" >> $GITHUB_ENV
+            echo "testsuite-image=$testsuite_image" >> $GITHUB_ENV
+          fi
+      - name: Checkout Hawtio
+        if: ${{ steps.get-images.outputs.repo != ''}}
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ steps.get-images.outputs.repo }}
+          ref: ${{ steps.get-images.outputs.branch }}
+          path: hawtio
+      - name: Set up Java
+        if: ${{ steps.get-images.outputs.repo != ''}}
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 11
+          cache: 'maven'
+      - name: Build Hawtio
+        if: ${{ steps.get-images.outputs.repo != ''}}
+        run: |
+          cd hawtio
+          mvn --batch-mode --no-transfer-progress install -DskipTests -Pe2e -Pdocker-testsuite -Ptests-docker -Dhawtio-container -pl :hawtio-test-suite,:hawtio-tests-quarkus,:hawtio-tests-springboot -am
+          echo 'app-image=hawtio-${{ matrix.runtime }}-app:11' >> $GITHUB_ENV
+          echo 'testsuite-image=hawtio-test-suite:11' >> $GITHUB_ENV
+      - name: Setup application
+        run: |
+          case ${{ matrix.runtime }} in
+              quarkus)
+              APP_PORT=8080
+                echo "url-suffix=hawtio" >> $GITHUB_ENV
+              ;;
+              
+              springboot)
+                APP_PORT=10001
+                echo "url-suffix=actuator/hawtio" >> $GITHUB_ENV
+              ;;
+          esac
+
+          id=$(docker run -p 10001:$APP_PORT -d ${{ env.app-image }})
+          timeout 30 bash -c "while ! docker logs $id 2>&1 | grep -q 'Hello Camel!'; do sleep 1; done"
+      - name: Run tests
+        run: |
+          docker run --rm \
+          -v $PWD/$REPORT_DIR:/hawtio-test-suite/tests/hawtio-test-suite/target \
+          -v $PWD/$REPORT_DIR/build:/hawtio-test-suite/tests/hawtio-test-suite/build/ \
+          --shm-size="2g" --add-host=host.docker.internal:host-gateway \
+          ${{ env.testsuite-image }} -Pe2e-${{ matrix.runtime }} -Dselenide.browser=${{ matrix.browser }} \
+          -Dio.hawt.test.url=http://host.docker.internal:3000/hawtio \
+          -Dio.hawt.test.app.connect.url=http://localhost:10001/${{env.url-suffix}}/jolokia \
+          -Dhawtio-next-ci
+      - name: Prepare report artifacts
+        if: always()
+        run: |
+          mkdir -p results/$REPORT_DIR/
+          cp $REPORT_DIR/cucumber-reports/* results/$REPORT_DIR/ 
+          ls $REPORT_DIR/cucumber-reports/
+      - name: Archive test artifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: 'test-${{ env.REPORT_DIR }}'
+          path: |
+            ${{ env.REPORT_DIR }}/build/reports/tests/*.png
+            ${{ env.REPORT_DIR }}/*.log
+            ${{ env.REPORT_DIR }}/cucumber-reports/*
+
+      - name: Archive failed test reports
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: 'test-results'
+          path: |
+            results/**/*
+
+  publish-results:
+    runs-on: ubuntu-latest
+    needs: test
+    if: always()
+    permissions:
+      checks: write
+      actions: read
+      pull-requests: write
+    steps:
+      - name: Download Test Results
+        uses: actions/download-artifact@v3
+        with:
+          name: 'test-results'
+          path: 'test-results'
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: |
+            **/Cucumber.xml
+          json_file: results.json
+      - name: Install xmllint
+        run: sudo apt-get install -y xmlstarlet jq
+      - name: Generate summary
+        run: |
+          export CHECK_URL=$(jq -r .check_url results.json)
+          wget https://raw.githubusercontent.com/hawtio/hawtio/3.x/tests/hawtio-test-suite/process_test_results.sh
+          wget https://raw.githubusercontent.com/hawtio/hawtio/3.x/tests/hawtio-test-suite/pr_results_template.xsl
+          bash process_test_results.sh test-results > summary.md
+      - name: Update summary
+        run: |
+          cat summary.md >> $GITHUB_STEP_SUMMARY
+      - uses: tibdex/github-app-token@v1
+        if: github.event_name == 'pull_request_target'
+        id: generate-token
+        with:
+          app_id: ${{ secrets.HAWTIO_CI_APP_ID }}
+          private_key: ${{ secrets.HAWTIO_CI_PRIVATE_KEY }}
+      - name: Comment PR with summary
+        if: github.event_name == 'pull_request_target'
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+          filePath: summary.md
+          comment_tag: execution
