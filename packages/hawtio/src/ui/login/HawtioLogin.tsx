@@ -34,7 +34,7 @@ export const HawtioLogin: React.FunctionComponent = () => {
     return <HawtioLoadingPage />
   }
 
-  log.debug(`Login state: username = ${username}, isLogin = ${isLogin}`)
+  log.info(`Login state: username = ${username}, isLogin = ${isLogin}`)
 
   const appLogo = hawtconfig.branding?.appLogoUrl || hawtioLogo
   const appName = hawtconfig.branding?.appName || DEFAULT_APP_NAME
