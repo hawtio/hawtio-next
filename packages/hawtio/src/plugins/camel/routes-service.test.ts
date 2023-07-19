@@ -76,7 +76,7 @@ describe('routes-service', () => {
 
   test('loadRouteXml', async () => {
     routesService.loadRouteXml(simpleRouteNode, simpleRouteXml)
-    expect(simpleRouteNode.getProperty('xml')).toBe(simpleRouteXml.outerHTML)
+    expect(simpleRouteNode.getProperty('xml')).toBe('    ' + simpleRouteXml.outerHTML)
     expect(simpleRouteNode.childCount()).toBe(4)
 
     type MBeanAttr = {
