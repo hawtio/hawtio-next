@@ -136,7 +136,7 @@ class RoutesService {
    * route steps of the XML.
    */
   loadRouteXml(routeNode: MBeanNode, routeXml: Element) {
-    routeNode.addProperty('xml', routeXml.outerHTML)
+    routeNode.addProperty('xml', '    ' + routeXml.outerHTML) // Indent route XML for better readability
     // Preserve the xml local name for use by views
     routeNode.addProperty(xmlNodeLocalName, routeXml.localName)
 
