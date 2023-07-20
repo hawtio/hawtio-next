@@ -159,13 +159,7 @@ class RoutesService {
       throw new Error('Cannot process route xml as mbean name not available')
     }
 
-    let xml: string | null = null
-    try {
-      xml = (await jolokiaService.execute(objectName, ROUTE_OPERATIONS.dumpRoutesAsXml)) as string
-    } catch (error) {
-      throw new Error('Failed to dump xml from mbean: ' + objectName)
-    }
-
+    const xml = (await jolokiaService.execute(objectName, ROUTE_OPERATIONS.dumpRoutesAsXml)) as string
     if (!xml) {
       throw new Error('Failed to extract any xml from mbean: ' + objectName)
     }
@@ -193,16 +187,20 @@ class RoutesService {
       return
     }
 
-    const xml = await this.fetchRoutesXml(contextNode)
-    routesNode.addProperty('xml', xml)
-    routesNode.getChildren().forEach(routeNode => {
-      try {
-        const routeXml = this.processRouteXml(xml, routeNode)
-        this.loadRouteXml(routeNode, routeXml)
-      } catch (error) {
-        log.error(`Failed to process route xml for ${routeNode.name}:`, error)
-      }
-    })
+    try {
+      const xml = await this.fetchRoutesXml(contextNode)
+      routesNode.addProperty('xml', xml)
+      routesNode.getChildren().forEach(routeNode => {
+        try {
+          const routeXml = this.processRouteXml(xml, routeNode)
+          this.loadRouteXml(routeNode, routeXml)
+        } catch (error) {
+          log.error(`Failed to process route xml for '${routeNode.name}':`, error)
+        }
+      })
+    } catch (error) {
+      log.error(`Failed to load routes xml for '${contextNode.name}':`, error)
+    }
   }
 
   async dumpRoutesStatsXML(routesNode: MBeanNode): Promise<string | null> {
