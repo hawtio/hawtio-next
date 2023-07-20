@@ -2,6 +2,7 @@ import { visualizationService } from './visualization-service'
 import path from 'path'
 import fs from 'fs'
 import { RouteStats } from '@hawtiosrc/plugins/camel/routes-service'
+import { MBeanNode } from '@hawtiosrc/plugins/shared'
 
 jest.mock('@hawtiosrc/plugins/shared/jolokia-service')
 
@@ -13,7 +14,8 @@ describe('visualization-service', () => {
 
   describe('loadRouteXmlNodes', () => {
     test('nodes and edges were correctly loaded from the file', () => {
-      const { camelNodes, edges } = visualizationService.loadRouteXmlNodes(sampleRoutesXml)
+      const node = new MBeanNode(null, 'test', true)
+      const { camelNodes, edges } = visualizationService.loadRouteXmlNodes(node, sampleRoutesXml)
       expect(camelNodes.length).toBe(11)
       expect(camelNodes[1]?.data.cid).toBe('choice1')
       expect(camelNodes[1]?.data.label).toBe('Choice')
@@ -37,7 +39,8 @@ describe('visualization-service', () => {
   })
   describe('updateStats', () => {
     test('processor stats were updates on the nodes', () => {
-      const { camelNodes } = visualizationService.loadRouteXmlNodes(sampleRoutesXml)
+      const node = new MBeanNode(null, 'test', true)
+      const { camelNodes } = visualizationService.loadRouteXmlNodes(node, sampleRoutesXml)
       const nodesWithStats = visualizationService.updateStats(sampleRoutesStatsXml, camelNodes)
 
       const to2 = nodesWithStats.find(n => n.data.cid === 'to2')
@@ -66,7 +69,8 @@ describe('visualization-service', () => {
       expect(stats?.lastExchangeFailureExchangeId).toEqual('14')
     })
     test('route stats were updates on the from node', () => {
-      const { camelNodes } = visualizationService.loadRouteXmlNodes(sampleRoutesXml)
+      const node = new MBeanNode(null, 'test', true)
+      const { camelNodes } = visualizationService.loadRouteXmlNodes(node, sampleRoutesXml)
       const nodesWithStats = visualizationService.updateStats(sampleRoutesStatsXml, camelNodes)
 
       const from = nodesWithStats.find(n => n.data.type === 'from')

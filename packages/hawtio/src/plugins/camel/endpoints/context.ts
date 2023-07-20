@@ -1,4 +1,5 @@
 import { createContext, useState } from 'react'
+import { CamelModelSchema } from '../camel-service'
 
 export function useAddEndpointContext() {
   const [addEndpoint, showAddEndpoint] = useState(false)
@@ -31,7 +32,7 @@ type AddEndpointContext = {
   componentName: string
   setComponentName: (names: string) => void
   componentSchema: Record<string, unknown>
-  setComponentSchema: (componentSchema: Record<string, unknown>) => void
+  setComponentSchema: (componentSchema: CamelModelSchema) => void
   endpointPath: string
   setEndpointPath: (endPointPath: string) => void
   endpointParameters: Record<string, string>

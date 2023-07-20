@@ -27,7 +27,7 @@ const CAMEL_MODEL_VERSION = '3.20.2'
 jest.mock('./camel-service', () => {
   return {
     ...jest.requireActual('./camel-service'),
-    setCamelVersion: jest.fn((contextNode: MBeanNode | null) => {
+    fetchCamelVersion: jest.fn((contextNode: MBeanNode | null) => {
       if (contextNode) contextNode.addProperty('version', CAMEL_MODEL_VERSION)
     }),
   }

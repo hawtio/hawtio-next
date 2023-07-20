@@ -1,9 +1,9 @@
-import { apacheCamelModelVersion } from '@hawtio/camel-model'
 import { hawtio, HawtioPlugin } from '@hawtiosrc/core'
 import { helpRegistry } from '@hawtiosrc/help/registry'
 import { treeProcessorRegistry, workspace } from '@hawtiosrc/plugins/shared'
 import { preferencesRegistry } from '@hawtiosrc/preferences/registry'
 import { Camel } from './Camel'
+import { getCamelVersions } from './camel-service'
 import { CamelPreferences } from './CamelPreferences'
 import { jmxDomain, log, pluginPath } from './globals'
 import help from './help.md'
@@ -24,5 +24,5 @@ export const camel: HawtioPlugin = () => {
   helpRegistry.add('camel', 'Camel', help, 13)
   preferencesRegistry.add('camel', 'Camel', CamelPreferences, 13)
 
-  log.info('Using Camel version:', apacheCamelModelVersion)
+  log.info('Using Camel versions:', getCamelVersions())
 }

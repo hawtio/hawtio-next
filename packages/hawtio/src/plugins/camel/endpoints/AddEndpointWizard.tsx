@@ -31,7 +31,9 @@ export const AddEndpointWizard: React.FunctionComponent = () => {
     if (!selectedNode || !ctx.componentName) return
 
     const schema = es.loadEndpointSchema(selectedNode, ctx.componentName)
-    ctx.setComponentSchema(schema as Record<string, unknown>)
+    if (schema) {
+      ctx.setComponentSchema(schema)
+    }
 
     /*
      * lint reporting that ctx should be a dependency which it really doesn't

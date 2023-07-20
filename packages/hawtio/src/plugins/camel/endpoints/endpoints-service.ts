@@ -1,7 +1,6 @@
-import * as schema from '@hawtio/camel-model'
 import { eventService, NotificationType } from '@hawtiosrc/core'
 import { jolokiaService, MBeanNode, workspace } from '@hawtiosrc/plugins/shared'
-import { isObject } from '@hawtiosrc/util/objects'
+import { isBlank } from '@hawtiosrc/util/strings'
 import { parseXML } from '@hawtiosrc/util/xml'
 import * as camelService from '../camel-service'
 import { getDefaultRuntimeEndpointRegistry } from '../camel-service'
@@ -148,7 +147,7 @@ export function createEndpointFromData(
   createEndpoint(node, uri)
 }
 
-export function loadEndpointSchema(node: MBeanNode, componentName: string): Record<string, unknown> | null {
+export function loadEndpointSchema(node: MBeanNode, componentName: string): camelService.CamelModelSchema | null {
   const ctxNode = camelService.findContext(node)
   if (!ctxNode) {
     eventService.notify({
@@ -157,15 +156,10 @@ export function loadEndpointSchema(node: MBeanNode, componentName: string): Reco
     })
     return null
   }
+  if (isBlank(componentName)) return null
 
-  if (!componentName) return null
-
-  if (!schema) return null
-
-  if (!isObject(schema.components)) return null
-
-  const compSchema: Record<string, unknown> = schema.components.components
-  return compSchema[componentName] as Record<string, unknown>
+  const camelModel = camelService.getCamelModel(ctxNode)
+  return camelModel.components.components[componentName] ?? null
 }
 
 export async function doSendMessage(

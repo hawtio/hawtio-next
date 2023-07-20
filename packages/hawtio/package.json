@@ -32,7 +32,8 @@
     "prepack": "yarn build && yarn replace-version"
   },
   "dependencies": {
-    "@hawtio/camel-model": "^3.20.6",
+    "@hawtio/camel-model-v3": "npm:@hawtio/camel-model@^3.21.0",
+    "@hawtio/camel-model-v4": "npm:@hawtio/camel-model@^4.0.0-rc.1",
     "@module-federation/utilities": "^2.0.4",
     "@patternfly/react-charts": "^6.94.19",
     "@patternfly/react-code-editor": "^4.82.113",

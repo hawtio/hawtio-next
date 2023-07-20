@@ -1,5 +1,6 @@
-import { definitions } from '@hawtio/camel-model'
-import { cloneObject, isObject } from '@hawtiosrc/util/objects'
+import { cloneObject, isObject, isString } from '@hawtiosrc/util/objects'
+import { MBeanNode } from '../shared'
+import { getCamelModel } from './camel-service'
 
 class SchemaService {
   /**
@@ -47,9 +48,9 @@ class SchemaService {
     return fullSchema
   }
 
-  getSchema(nodeIdOrDefinition: Record<string, unknown> | string): Record<string, unknown> | null {
-    if (typeof nodeIdOrDefinition === 'string' || nodeIdOrDefinition instanceof String) {
-      return this.lookupDefinition(nodeIdOrDefinition as string, definitions)
+  getSchema(node: MBeanNode, nodeIdOrDefinition: Record<string, unknown> | string): Record<string, unknown> | null {
+    if (isString(nodeIdOrDefinition)) {
+      return this.lookupDefinition(nodeIdOrDefinition, getCamelModel(node).definitions)
     } else {
       return nodeIdOrDefinition
     }

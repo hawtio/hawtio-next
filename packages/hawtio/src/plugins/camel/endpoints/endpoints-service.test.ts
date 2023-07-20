@@ -60,8 +60,8 @@ describe('endpoints-service', () => {
 
     const timerSchema = es.loadEndpointSchema(contextNode, 'timer') as Record<string, unknown>
     expect(timerSchema).not.toBeNull()
-    expect(timerSchema['type']).toBe('object')
-    expect(timerSchema['title']).toBe('Timer')
+    expect(timerSchema.type).toBe('object')
+    expect(timerSchema.title).toBe('Timer')
     expect(isObject(timerSchema['properties'])).toBeTruthy()
   })
 })
