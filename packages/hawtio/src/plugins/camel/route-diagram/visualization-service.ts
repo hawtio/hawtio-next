@@ -1,5 +1,6 @@
 import { routesService, RouteStats, Statistics } from '@hawtiosrc/plugins/camel/routes-service'
 import { schemaService } from '@hawtiosrc/plugins/camel/schema-service'
+import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import { parseXML } from '@hawtiosrc/util/xml'
 import dagre from 'dagre'
 import { ReactNode } from 'react'
@@ -94,17 +95,17 @@ class VisualizationService {
     return method ? `${ref}.${method}()` : `ref:${ref}`
   }
 
-  loadRouteXmlNodes(xml: string, selectedRouteId?: string): { camelNodes: Node[]; edges: Edge[] } {
+  loadRouteXmlNodes(node: MBeanNode, xml: string, selectedRouteId?: string): { camelNodes: Node[]; edges: Edge[] } {
     const nodes: CamelNodeData[] = []
     const edges: Edge[] = []
-    const doc: XMLDocument = parseXML(xml as string)
+    const doc: XMLDocument = parseXML(xml)
 
     const allRoutes = doc.getElementsByTagName('route')
 
     for (const route of allRoutes) {
       const routeId = route.id
       if (!selectedRouteId || !routeId || selectedRouteId === routeId) {
-        this.addRouteXmlChildren(route, nodes, edges, routeId, '')
+        this.addRouteXmlChildren(node, route, nodes, edges, routeId, '')
       }
     }
     // parse stats
@@ -142,8 +143,9 @@ class VisualizationService {
   }
 
   addRouteXmlChildren(
+    node: MBeanNode,
     parent: Element,
-    nodes: CamelNodeData[],
+    nodeDatas: CamelNodeData[],
     links: Edge[],
     routeId: string,
     parentId: string,
@@ -159,15 +161,15 @@ class VisualizationService {
      */
     let routeIdx = -1
     for (const route of parent.children) {
-      const id: string = nodes.length + ''
+      const id: string = nodeDatas.length + ''
       routeIdx++
       // from acts as a parent even though its a previous sibling :)
       const nodeId = route.localName
       if (nodeId === 'from' && parentId !== '-1') {
         parentId = id
       }
-      const nodeSettings = schemaService.getSchema(nodeId)
-      let node: CamelNodeData | null = null
+      const nodeSettings = schemaService.getSchema(node, nodeId)
+      let nodeData: CamelNodeData | null = null
       if (nodeSettings) {
         let label: string = (nodeSettings['title'] as string) || (nodeId as string)
         const uri = this.getRouteNodeUri(route)
@@ -195,7 +197,7 @@ class VisualizationService {
           labelSummary = label + '\n\n' + labelSummary
           label = label.substring(0, labelLimit) + '..'
         }
-        const imageUrl = routesService.getIcon(nodeSettings)
+        const imageUrl = routesService.getIcon(node, nodeSettings)
 
         if ((nodeId === 'from' || nodeId === 'to') && uri) {
           const uriIdx = uri.indexOf(':')
@@ -211,7 +213,7 @@ class VisualizationService {
         }
 
         let cid = route.getAttribute('_cid') || route.getAttribute('id')
-        node = {
+        nodeData = {
           id: id,
           routeIdx: routeIdx,
           name: nodeId,
@@ -227,17 +229,17 @@ class VisualizationService {
           routeId: routeId,
         }
         if (rid) {
-          node.cid = rid
+          nodeData.cid = rid
         }
         if (!cid) {
-          cid = nodeId + (nodes.length + 1)
+          cid = nodeId + (nodeDatas.length + 1)
         }
         if (cid) {
-          node.cid = cid
+          nodeData.cid = cid
         }
         // only use the route id on the first from node
         rid = null
-        nodes.push(node)
+        nodeDatas.push(nodeData)
         if (parentId !== null && parentId !== id) {
           if (siblingNodes.length === 0 || parenNodeName === 'choice') {
             links.push({ id: parentId + '-' + id, source: parentId + '', target: id })
@@ -265,7 +267,7 @@ class VisualizationService {
         }
       }
 
-      const siblings = this.addRouteXmlChildren(route, nodes, links, routeId, id, node)
+      const siblings = this.addRouteXmlChildren(node, route, nodeDatas, links, routeId, id, nodeData)
       if (parenNodeName === 'choice') {
         siblingNodes = siblingNodes.concat(siblings)
       } else if (
@@ -286,7 +288,7 @@ class VisualizationService {
       ) {
         siblingNodes = siblings
       } else {
-        siblingNodes = [nodes.length - 1]
+        siblingNodes = [nodeDatas.length - 1]
       }
     }
     return siblingNodes

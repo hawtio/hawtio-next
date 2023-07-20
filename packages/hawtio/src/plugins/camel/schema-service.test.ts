@@ -1,8 +1,9 @@
-import { schemaService } from './schema-service'
-import * as camelSchema from '@hawtio/camel-model'
+import * as camelService from './camel-service'
 import { isObject } from '@hawtiosrc/util/objects'
-import path from 'path'
 import fs from 'fs'
+import path from 'path'
+import { MBeanNode } from '../shared'
+import { schemaService } from './schema-service'
 
 describe('schema-service', () => {
   test('lookupDefinition type extends', () => {
@@ -33,7 +34,9 @@ describe('schema-service', () => {
   })
 
   test('lookupDefinition of routes', () => {
-    const routeDefn: Record<string, unknown> | null = schemaService.lookupDefinition('routes', camelSchema.definitions)
+    const node = new MBeanNode(null, 'test', true)
+    const camelModel = camelService.getCamelModel(node)
+    const routeDefn = schemaService.lookupDefinition('routes', camelModel.definitions)
     expect(routeDefn).not.toBeNull()
     const rd: Record<string, unknown> = routeDefn as Record<string, unknown>
     expect(rd.type).toBe('object')
@@ -43,10 +46,11 @@ describe('schema-service', () => {
   })
 
   test('getSchema nodeId', () => {
-    const routeDefn: Record<string, unknown> | null = schemaService.getSchema('routes')
+    const node = new MBeanNode(null, 'test', true)
+    const routeDefn: Record<string, unknown> | null = schemaService.getSchema(node, 'routes')
     expect(routeDefn).not.toBeNull()
 
-    const rd: Record<string, unknown> = routeDefn as Record<string, unknown>
+    const rd = routeDefn as Record<string, unknown>
     expect(rd.type).toBe('object')
     expect(rd.title).toBe('Routes')
     expect(rd.group).toBe('configuration')
@@ -64,7 +68,8 @@ describe('schema-service', () => {
       acceptOutput: 'false',
     }
 
-    const rd: Record<string, unknown> | null = schemaService.getSchema(routeDefn)
+    const node = new MBeanNode(null, 'test', true)
+    const rd = schemaService.getSchema(node, routeDefn)
     expect(rd).toBe(routeDefn)
   })
 })

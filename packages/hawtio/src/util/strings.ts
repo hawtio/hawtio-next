@@ -1,10 +1,3 @@
-export function isString(value: unknown): value is string {
-  if (value != null && typeof value.valueOf() === 'string') {
-    return true
-  }
-  return false
-}
-
 /**
  * Return true if the string is either null or empty.
  */

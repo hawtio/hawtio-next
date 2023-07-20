@@ -28,12 +28,16 @@ export const RouteDiagram: React.FunctionComponent = () => {
   const nodeTypes = useMemo(() => ({ camel: CamelNode }), [])
 
   useEffect(() => {
-    const xml = selectedNode?.getProperty('xml')
+    if (!selectedNode) {
+      return
+    }
+
+    const xml = selectedNode.getProperty('xml')
     if (!xml) {
       return
     }
 
-    const { camelNodes, edges } = visualizationService.loadRouteXmlNodes(xml)
+    const { camelNodes, edges } = visualizationService.loadRouteXmlNodes(selectedNode, xml)
 
     setGraphNodeData(camelNodes.map(camelNode => camelNode.data))
 

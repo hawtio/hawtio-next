@@ -23,6 +23,7 @@ import xmlFormat from 'xml-formatter'
 import { CamelContext } from '../context'
 import { InputWithSuggestions } from './InputWithSuggestions'
 import { doSendMessage } from './endpoints-service'
+// TODO: Parameterise the version of Camel mode for the exchange headers
 import { headers as exchangeHeaders } from './exchange-headers-camel-model.json'
 
 export const SendMessage: React.FunctionComponent = () => {

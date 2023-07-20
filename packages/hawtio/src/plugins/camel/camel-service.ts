@@ -1,7 +1,10 @@
+import * as camel3 from '@hawtio/camel-model-v3'
+import * as camel4 from '@hawtio/camel-model-v4'
 import { eventService } from '@hawtiosrc/core'
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { isObject } from '@hawtiosrc/util/objects'
+import { isBlank } from '@hawtiosrc/util/strings'
 import { ENDPOINT_OPERATIONS } from './endpoints/endpoints-service'
 import {
   componentNodeType,
@@ -12,12 +15,47 @@ import {
   endpointNodeType,
   endpointsType,
   jmxDomain,
+  log,
   mbeansType,
   routeNodeType,
   routeXmlNodeType,
   routesType,
 } from './globals'
 import { ROUTE_OPERATIONS } from './routes-service'
+
+// TODO: Should be provided by @hawtio/camel-model package
+// TODO: Why are the properties redundant? (e.g. components.components, dataformats.dataformats)
+export type CamelModel = {
+  apacheCamelModelVersion: string
+  components: { components: { [name: string]: CamelModelSchema } }
+  dataformats: { dataformats: { [name: string]: CamelModelSchema } }
+  definitions: { definitions: { [name: string]: CamelModelSchema } }
+  languages: { languages: { [name: string]: CamelModelSchema } }
+  rests: { rests: { [name: string]: CamelModelSchema } }
+}
+
+export type CamelModelSchema = {
+  type: string
+  title: string
+  group: string
+  icon: string
+  description: string
+  acceptInput?: string
+  acceptOutput?: string
+  nextSiblingAddedAsChild?: boolean
+  properties: { [name: string]: CamelModelProperty }
+}
+
+export type CamelModelProperty = {
+  kind: string
+  type: string
+  defaultValue?: string
+  enum?: string[]
+  description: string
+  title: string
+  required: boolean
+  deprecated: boolean
+}
 
 export function notifyError(msg: string) {
   eventService.notify({
@@ -82,16 +120,16 @@ export function findContext(node: MBeanNode): MBeanNode | null {
   if (isContextsFolder(node)) {
     if (node.childCount() === 0) return null
 
-    /* Find first context node in the list */
+    // Find first context node in the list
     return node.getIndex(0)
   }
 
   if (isContext(node)) {
     return node
-  } else {
-    /* Node is below a context so navigate up the tree */
-    return node.findAncestor((ancestor: MBeanNode) => isContext(ancestor))
   }
+
+  // Node is below a context so navigate up the tree
+  return node.findAncestor(ancestor => isContext(ancestor))
 }
 
 export function isRoutesFolder(node: MBeanNode): boolean {
@@ -174,7 +212,6 @@ export function canViewEndpointStats(node: MBeanNode): boolean {
     !isComponentsFolder(node) &&
     !isComponentNode(node) &&
     (isContext(node) || isRoutesFolder(node)) &&
-    isCamelVersionEQGT_2_16(node) &&
     canInvoke
   )
 }
@@ -191,7 +228,6 @@ export function hasExchange(node: MBeanNode): boolean {
     !isComponentsFolder(node) &&
     !isComponentNode(node) &&
     (isContext(node) || isRoutesFolder(node) || isRouteNode(node)) &&
-    isCamelVersionEQGT_2_15(node) &&
     hasInflightRepository(node)
   )
 }
@@ -215,7 +251,6 @@ export function hasTypeConverter(node: MBeanNode): boolean {
     !isComponentsFolder(node) &&
     !isComponentNode(node) &&
     (isContext(node) || isRoutesFolder(node)) &&
-    isCamelVersionEQGT_2_13(node) &&
     canListTypeConverters(node)
   )
 }
@@ -253,7 +288,7 @@ export function canListRestServices(node: MBeanNode): boolean {
 
 export function hasRestServices(node: MBeanNode): boolean {
   if (!isContext(node) && !isRoutesFolder(node)) return false
-  if (!isCamelVersionEQGT_2_14(node) && !canListRestServices(node)) return false
+  if (!canListRestServices(node)) return false
 
   const registry = findRestRegistryBean(node)
   return registry ? true : false
@@ -263,30 +298,44 @@ export function hasProperties(node: MBeanNode): boolean {
   return isRouteNode(node) || isRouteXmlNode(node)
 }
 
+export function getCamelVersions(): string[] {
+  return [camel3.apacheCamelModelVersion, camel4.apacheCamelModelVersion]
+}
+
+/**
+ * Returns the corresponding version of Camel model based on the Camel version of
+ * the given node. Currently, it supports Camel v3 and v4.
+ */
+export function getCamelModel(node: MBeanNode): CamelModel {
+  if (isCamelVersionEQGT(node, 4, 0)) {
+    return camel4 as unknown as CamelModel
+  }
+  return camel3 as unknown as CamelModel
+}
+
 /**
  * Fetch the camel version and add it to the tree to avoid making a blocking call
  * elsewhere.
  */
-export async function setCamelVersion(contextNode: MBeanNode | null) {
-  if (!contextNode) return
-
-  const v = contextNode.getProperty('version')
-  if (v && v.length !== 0)
-    /* Already retrieved */
-    return
-
-  if (!contextNode.objectName) {
-    contextNode.addProperty('version', 'Camel Version not available')
+export async function fetchCamelVersion(contextNode: MBeanNode) {
+  const version = contextNode.getProperty('version')
+  if (!isBlank(version)) {
+    // Already retrieved
     return
   }
 
-  const camelVersion = await jolokiaService.readAttribute(contextNode.objectName, 'CamelVersion')
-  contextNode.addProperty('version', camelVersion as string)
+  if (!contextNode.objectName) {
+    log.warn('Camel version not available due to absence of ObjectName in context node:', contextNode)
+    return
+  }
+
+  const camelVersion = (await jolokiaService.readAttribute(contextNode.objectName, 'CamelVersion')) as string
+  contextNode.addProperty('version', camelVersion)
 }
 
-export function getCamelVersion(node: MBeanNode | null): string {
-  const ctxNode = findContext(node as MBeanNode)
-  if (!ctxNode) return ''
+export function getCamelVersion(node: MBeanNode): string | null {
+  const ctxNode = findContext(node)
+  if (!ctxNode) return null
 
   return ctxNode.getProperty('version')
 }
@@ -316,22 +365,9 @@ export function compareVersions(version: string, major: number, minor: number): 
  */
 export function isCamelVersionEQGT(node: MBeanNode, major: number, minor: number) {
   const camelVersion = getCamelVersion(node)
-  if (camelVersion) {
-    return compareVersions(camelVersion, major, minor) >= 0
+  if (!camelVersion) {
+    return false
   }
 
-  return false
-}
-
-export function isCamelVersionEQGT_2_13(node: MBeanNode) {
-  return isCamelVersionEQGT(node, 2, 13)
-}
-export function isCamelVersionEQGT_2_14(node: MBeanNode) {
-  return isCamelVersionEQGT(node, 2, 14)
-}
-export function isCamelVersionEQGT_2_15(node: MBeanNode) {
-  return isCamelVersionEQGT(node, 2, 15)
-}
-export function isCamelVersionEQGT_2_16(node: MBeanNode) {
-  return isCamelVersionEQGT(node, 2, 16)
+  return compareVersions(camelVersion, major, minor) >= 0
 }

@@ -53,13 +53,13 @@ export const ROUTE_OPERATIONS = {
 
 // TODO: This service should be named more properly like RoutesXmlService, RouteStatisticsService, etc.
 class RoutesService {
-  getIcon(nodeSettingsOrXmlNode: Record<string, unknown> | Element, size?: number): ReactNode {
+  getIcon(node: MBeanNode, nodeSettingsOrXmlNode: Record<string, unknown> | Element, size?: number): ReactNode {
     let nodeSettings: Record<string, unknown> | null = null
 
     if (nodeSettingsOrXmlNode instanceof Element) {
       const nodeName = nodeSettingsOrXmlNode.localName
       if (nodeName) {
-        nodeSettings = schemaService.getSchema(nodeName)
+        nodeSettings = schemaService.getSchema(node, nodeName)
       }
     } else {
       nodeSettings = nodeSettingsOrXmlNode
@@ -90,7 +90,7 @@ class RoutesService {
    * Populates a route step node with the given XML.
    */
   private populateStepNode(parent: MBeanNode, stepXml: Element) {
-    const nodeSettings = schemaService.getSchema(stepXml.localName)
+    const nodeSettings = schemaService.getSchema(parent, stepXml.localName)
     if (!nodeSettings) {
       return
     }
@@ -106,14 +106,17 @@ class RoutesService {
     const node = new MBeanNode(null, nodeName, false)
     node.setType(routeXmlNodeType)
     camelService.setDomain(node)
-    node.setIcons(this.getIcon(nodeSettings))
+    node.setIcons(this.getIcon(parent, nodeSettings))
 
     // TODO - tooltips to be implemented
     // updateRouteNodeLabelAndTooltip(node, route, nodeSettings)
 
+    // Adopt child before cascading to grandchildren so that the parent is traceable
+    // from the child
+    parent.adopt(node)
+
     // Cascade XML loading to the child steps
     this.loadStepXml(node, stepXml)
-    parent.adopt(node)
   }
 
   /**

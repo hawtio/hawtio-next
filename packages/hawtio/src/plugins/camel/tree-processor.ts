@@ -106,7 +106,7 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
     newCtxNode.setType(contextNodeType)
     camelService.setDomain(newCtxNode)
     // Set the camel version as a property on the context
-    camelService.setCamelVersion(newCtxNode)
+    await camelService.fetchCamelVersion(newCtxNode)
     newCtxNode.setIcons(getIcon(IconNames.CamelIcon))
 
     const endpointsFolderIcon = getIcon(IconNames.EndpointsFolderIcon)
