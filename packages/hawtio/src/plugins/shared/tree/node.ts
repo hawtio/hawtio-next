@@ -28,7 +28,7 @@ export interface OptimisedJmxMBean extends IJmxMBean {
 
 export type FilterFn = (node: MBeanNode) => boolean
 
-const MBEAN_NODE_ID_SEPARATOR = '-'
+export const MBEAN_NODE_ID_SEPARATOR = '-'
 
 export class MBeanNode implements TreeViewDataItem {
   /**
@@ -36,10 +36,8 @@ export class MBeanNode implements TreeViewDataItem {
    */
   id: string
 
-  name: string
   icon: React.ReactNode
   expandedIcon?: React.ReactNode
-  parent: MBeanNode | null
   children?: MBeanNode[]
   properties?: Record<string, string>
 
@@ -54,11 +52,12 @@ export class MBeanNode implements TreeViewDataItem {
    * @param {string} name - The name of the new node.
    * @param {boolean} folder - Whether this new node is a folder, ie. has children
    */
-  constructor(parent: MBeanNode | null, name: string, folder: boolean) {
-    this.name = name
-
+  constructor(
+    public parent: MBeanNode | null,
+    readonly name: string,
+    private readonly folder: boolean,
+  ) {
     if (this === parent) throw new Error('Node cannot be its own parent')
-    this.parent = parent
 
     if (folder) {
       this.icon = Icons.folder
@@ -151,8 +150,31 @@ export class MBeanNode implements TreeViewDataItem {
     this.addProperty('type', type)
   }
 
-  get(name: string): MBeanNode | null {
-    return this.children?.find(node => node.name === name) || null
+  /**
+   * Find children with the given name. There can be at most two nodes with the
+   * same name, one as an MBean and the other as a folder.
+   *
+   * Think about the following case:
+   * - MBean1: 'com.example:type=Example,name=App'
+   * - MBean2: 'com.example:type=Example,name=App,sub=Part1'
+   * - MBean3: 'com.example:type=Example,name=App,sub=Part2'
+   * In this case, there can be two nodes with the same name 'App', one is MBean1,
+   * and the other is the folder that contains MBean2 and MBean3.
+   */
+  findChildren(name: string): MBeanNode[] {
+    return this.children?.filter(node => node.name === name) ?? []
+  }
+
+  /**
+   * Return a child node with the given name or null. The 'folder' parameter is
+   * required to identify a single node, as there can be at most two nodes with
+   * the same name, one as an MBean and the other as a folder.
+   *
+   * See the JSDoc comment for the findChildren(name: string) method for more detail.
+   */
+  get(name: string, folder: boolean): MBeanNode | null {
+    const candidates = this.findChildren(name)
+    return candidates.find(node => node.folder === folder) ?? null
   }
 
   getIndex(index: number): MBeanNode | null {
@@ -214,7 +236,7 @@ export class MBeanNode implements TreeViewDataItem {
   }
 
   getOrCreate(name: string, folder: boolean): MBeanNode {
-    const node = this.get(name)
+    const node = this.get(name, folder)
     if (node) {
       return node
     }
@@ -547,7 +569,7 @@ export class PropertyList {
       switch (lowerKey) {
         case 'type':
           this.typeName = propValue
-          if (this.domain.get(propValue)) {
+          if (this.domain.findChildren(propValue).length > 0) {
             // if the type name value already exists in the root node
             // of the domain then let's move this property around too
             index = 0

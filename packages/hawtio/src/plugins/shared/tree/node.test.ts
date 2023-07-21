@@ -137,10 +137,10 @@ describe('MBeanNode', () => {
     const camel = tree.get('org.apache.camel') as MBeanNode
     expect(camel).not.toBeNull()
     expect(camel.parent).toBeNull()
-    const sc = camel.get('SampleCamel') as MBeanNode
+    const sc = camel.get('SampleCamel', true) as MBeanNode
     expect(sc).not.toBeNull()
     expect(sc.parent).toBe(camel)
-    const comp = sc.get('components') as MBeanNode
+    const comp = sc.get('components', true) as MBeanNode
     expect(comp).not.toBeNull()
     expect(comp.parent).toBe(sc)
   })
@@ -208,7 +208,7 @@ describe('MBeanNode', () => {
     expect(ctxNode.id).toBe('org.apache.camel-folder-SampleCamel-folder')
     expect(ctxNode.name).toBe('SampleCamel')
 
-    const compNode = ctxNode.get('components') as MBeanNode
+    const compNode = ctxNode.get('components', true) as MBeanNode
     expect(compNode).not.toBeNull()
     expect(compNode.id).toBe('org.apache.camel-folder-SampleCamel-folder-components-folder')
 
@@ -227,7 +227,7 @@ describe('MBeanNode', () => {
     expect(ctxNode.id).toBe('org.apache.camel-folder-SampleCamel-folder')
     expect(ctxNode.name).toBe('SampleCamel')
 
-    const compNode = ctxNode.get('components') as MBeanNode
+    const compNode = ctxNode.get('components', true) as MBeanNode
     expect(compNode).not.toBeNull()
     expect(compNode.id).toBe('org.apache.camel-folder-SampleCamel-folder-components-folder')
 
@@ -245,7 +245,7 @@ describe('MBeanNode', () => {
     expect(newCtx.parent).toBeNull()
 
     camelNode.adopt(newCtx)
-    expect(camelNode.get('TestNode')).toBe(newCtx)
+    expect(camelNode.get('TestNode', false)).toBe(newCtx)
     expect(newCtx.parent).toBe(camelNode)
   })
 })

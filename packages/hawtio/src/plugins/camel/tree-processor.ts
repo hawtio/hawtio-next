@@ -95,7 +95,7 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
   camelService.setDomain(groupCtxsNode)
 
   for (const context of oldContexts) {
-    const contextCategory = context.get(contextNodeType)
+    const contextCategory = context.get(contextNodeType, true)
     let newCtxNode: MBeanNode | null = null
     if (contextCategory && contextCategory.childCount() === 1) {
       newCtxNode = contextCategory.getIndex(0)
@@ -113,7 +113,7 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
     const endpointsIcon = getIcon(IconNames.EndpointsNodeIcon)
     const routeIcon = getIcon(IconNames.CamelRouteIcon)
 
-    const routesNode = context.get(routesType)
+    const routesNode = context.get(routesType, true)
     if (routesNode) {
       adoptChild(newCtxNode, routesNode, routesType, endpointsFolderIcon)
       setChildIcon(routesNode, routeIcon)
@@ -126,21 +126,21 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
       groupRoutes(routesNode)
     }
 
-    const endpointsNode = context.get(endpointsType)
+    const endpointsNode = context.get(endpointsType, true)
     if (endpointsNode) {
       adoptChild(newCtxNode, endpointsNode, endpointsType, endpointsFolderIcon)
       setChildIcon(endpointsNode, endpointsIcon)
       camelService.setChildProperties(endpointsNode, endpointNodeType)
     }
 
-    const componentsNode = context.get(componentsType)
+    const componentsNode = context.get(componentsType, true)
     if (componentsNode) {
       adoptChild(newCtxNode, componentsNode, componentsType, endpointsFolderIcon)
       setChildIcon(componentsNode, endpointsIcon)
       camelService.setChildProperties(componentsNode, componentNodeType)
     }
 
-    const dataFormatsNode = context.get(dataformatsType)
+    const dataFormatsNode = context.get(dataformatsType, true)
     if (dataFormatsNode) {
       adoptChild(newCtxNode, dataFormatsNode, dataformatsType, endpointsFolderIcon)
     }
