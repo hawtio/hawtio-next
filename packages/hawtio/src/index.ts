@@ -3,6 +3,7 @@ import { configManager } from './core'
 // Hawtio React component
 export * from './Hawtio'
 // Hawtio API
+export * from './auth'
 export * from './core'
 export * from './help'
 export * from './plugins'
