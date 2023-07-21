@@ -286,10 +286,20 @@ export class MBeanNode implements TreeViewDataItem {
     this.properties[key] = value
   }
 
+  static sorter(a: MBeanNode, b: MBeanNode): number {
+    const res = stringSorter(a.name, b.name)
+    if (res !== 0) {
+      return res
+    }
+
+    // folder precedes mbean node
+    return Number(b.folder) - Number(a.folder)
+  }
+
   sort(recursive: boolean) {
     if (!this.children) return
 
-    this.children?.sort((a, b) => stringSorter(a.name, b.name))
+    this.children?.sort(MBeanNode.sorter)
     if (recursive) {
       this.children?.forEach(child => child.sort(recursive))
     }
