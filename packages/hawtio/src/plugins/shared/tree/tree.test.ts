@@ -1,6 +1,6 @@
 import { escapeHtmlId } from '@hawtiosrc/util/htmls'
 import { workspace } from '../workspace'
-import { MBeanNode } from './node'
+import { MBEAN_NODE_ID_SEPARATOR, MBeanNode } from './node'
 import { treeProcessorRegistry } from './processor-registry'
 import { MBeanTree } from './tree'
 
@@ -15,12 +15,93 @@ describe('MBeanTree', () => {
     treeProcessorRegistry.reset()
   })
 
-  test('flatten empty tree', async () => {
+  test('createFromDomains should process empty domains', async () => {
+    const tree = await MBeanTree.createFromDomains('test', {})
+    expect(tree.getTree()).toEqual([])
+  })
+
+  test('createFromDomains should process domains', async () => {
+    // Test data taken from https://github.com/hawtio/hawtio-next/issues/377
+    const domains = {
+      'org.xnio': {
+        'type=Xnio,provider="nio"': { desc: '' },
+        'type=Xnio,provider="nio",worker="XNIO-1"': { desc: '' },
+        'type=Xnio,provider="nio",worker="XNIO-1",address="/0:0:0:0:0:0:0:0:10000"': { desc: '' },
+        'type=Xnio,provider="nio",worker="XNIO-2"': { desc: '' },
+        'type=Xnio,provider="nio",worker="XNIO-2",address="/0:0:0:0:0:0:0:0:10001"': { desc: '' },
+      },
+    }
+    const tree = (await MBeanTree.createFromDomains('test', domains)).getTree()
+
+    expect(tree.length).toEqual(1)
+
+    const rootFolder = tree[0] as MBeanNode
+    expect(rootFolder.id).toEqual('org.xnio-folder')
+    expect(rootFolder.name).toEqual('org.xnio')
+    expect(rootFolder.mbean).toBeUndefined()
+    expect(rootFolder.childCount()).toEqual(1)
+
+    const xnioFolder = rootFolder.getChildren()[0] as MBeanNode
+    expect(xnioFolder.id).toEqual('org.xnio-folder-Xnio-folder')
+    expect(xnioFolder.name).toEqual('Xnio')
+    expect(xnioFolder.mbean).toBeUndefined()
+    expect(xnioFolder.childCount()).toEqual(2) // 1 folder & 1 mbean
+
+    const nioMBean = xnioFolder.getChildren()[0] as MBeanNode
+    expect(nioMBean.id).toEqual('org.xnio-folder-Xnio-folder-nio')
+    expect(nioMBean.name).toEqual('nio')
+    expect(nioMBean.mbean).toBeDefined()
+    expect(nioMBean.childCount()).toEqual(0)
+
+    const nioFolder = xnioFolder.getChildren()[1] as MBeanNode
+    expect(nioFolder.id).toEqual('org.xnio-folder-Xnio-folder-nio-folder')
+    expect(nioFolder.name).toEqual('nio')
+    expect(nioFolder.mbean).toBeUndefined()
+    expect(nioFolder.childCount()).toEqual(4) // 2 folder & 2 mbean
+
+    const xnio1MBean = nioFolder.getChildren()[0] as MBeanNode
+    expect(xnio1MBean.id).toEqual('org.xnio-folder-Xnio-folder-nio-folder-XNIO-1')
+    expect(xnio1MBean.name).toEqual('XNIO-1')
+    expect(xnio1MBean.mbean).toBeDefined()
+    expect(xnio1MBean.childCount()).toEqual(0)
+
+    const xnio1Folder = nioFolder.getChildren()[1] as MBeanNode
+    expect(xnio1Folder.id).toEqual('org.xnio-folder-Xnio-folder-nio-folder-XNIO-1-folder')
+    expect(xnio1Folder.name).toEqual('XNIO-1')
+    expect(xnio1Folder.mbean).toBeUndefined()
+    expect(xnio1Folder.childCount()).toEqual(1)
+
+    const xnio1Addr = xnio1Folder.getChildren()[0] as MBeanNode
+    expect(xnio1Addr.id).toEqual('org.xnio-folder-Xnio-folder-nio-folder-XNIO-1-folder-/0:0:0:0:0:0:0:0:10000')
+    expect(xnio1Addr.name).toEqual('/0:0:0:0:0:0:0:0:10000')
+    expect(xnio1Addr.mbean).toBeDefined()
+    expect(xnio1Addr.childCount()).toEqual(0)
+
+    const xnio2MBean = nioFolder.getChildren()[2] as MBeanNode
+    expect(xnio2MBean.id).toEqual('org.xnio-folder-Xnio-folder-nio-folder-XNIO-2')
+    expect(xnio2MBean.name).toEqual('XNIO-2')
+    expect(xnio2MBean.mbean).toBeDefined()
+    expect(xnio2MBean.childCount()).toEqual(0)
+
+    const xnio2Folder = nioFolder.getChildren()[3] as MBeanNode
+    expect(xnio2Folder.id).toEqual('org.xnio-folder-Xnio-folder-nio-folder-XNIO-2-folder')
+    expect(xnio2Folder.name).toEqual('XNIO-2')
+    expect(xnio2Folder.mbean).toBeUndefined()
+    expect(xnio2Folder.childCount()).toEqual(1)
+
+    const xnio2Addr = xnio2Folder.getChildren()[0] as MBeanNode
+    expect(xnio2Addr.id).toEqual('org.xnio-folder-Xnio-folder-nio-folder-XNIO-2-folder-/0:0:0:0:0:0:0:0:10001')
+    expect(xnio2Addr.name).toEqual('/0:0:0:0:0:0:0:0:10001')
+    expect(xnio2Addr.mbean).toBeDefined()
+    expect(xnio2Addr.childCount()).toEqual(0)
+  })
+
+  test('flatten empty tree', () => {
     const tree = MBeanTree.createFromNodes('test', [])
     expect(tree.flatten()).toEqual({})
   })
 
-  test('flatten tree', async () => {
+  test('flatten tree', () => {
     const child1 = createNode('child1', 'test:type=folder1,name=child1')
     const child2 = createNode('child2', 'test:type=folder1,name=child2')
     const child3 = createNode('child3', 'test:type=folder1,name=child3')
@@ -71,13 +152,10 @@ describe('MBeanTree', () => {
       })
     }
     const getExpectedIdRecursivelyFromParentNode = (node: MBeanNode): string => {
-      //Can't access node.idSeparator as is private. And in any case, we should modify this whenever it changes
-      const idSeparator = '-'
+      const idSeparator = MBEAN_NODE_ID_SEPARATOR
       const folderDenomination = '-folder'
       const currentNodeExpectedPartOfId =
-        escapeHtmlId(node.name) +
-        // Guard for issue #377 (https://github.com/hawtio/hawtio-next/issues/377)
-        (node.getChildren().length !== 0 && !node.name.includes('XNIO-2') ? folderDenomination : '')
+        escapeHtmlId(node.name) + (node.getChildren().length !== 0 ? folderDenomination : '')
 
       if (!node.parent) return currentNodeExpectedPartOfId
       return getExpectedIdRecursivelyFromParentNode(node.parent) + idSeparator + currentNodeExpectedPartOfId
@@ -90,7 +168,7 @@ describe('MBeanTree', () => {
   })
 
   test('IDs should be concatenation of {parent}[-folder]-({element}[-folder]) on mock tree', () => {
-    //The object names are dummys because they are not used for the ids.
+    // The object names are dummies because they are not used for the ids.
     const treeNodes = [
       createFolder('mbean1', [
         createFolder('mbean1-1', [

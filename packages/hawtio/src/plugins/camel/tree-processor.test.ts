@@ -89,7 +89,7 @@ describe('tree-processor', () => {
 
     const types = [routesType, endpointsType, componentsType, mbeansType]
     for (const type of types) {
-      const node = contextNode.get(type) as MBeanNode
+      const node = contextNode.get(type, true) as MBeanNode
       expect(node).toBeDefined()
       expect(camelService.hasDomain(node)).toBeTruthy()
       expect(camelService.hasType(node, type)).toBeTruthy()
@@ -99,7 +99,7 @@ describe('tree-processor', () => {
       expect(node.childCount()).toBeGreaterThan(0)
     }
 
-    const routesNode = contextNode.get(routesType) as MBeanNode
+    const routesNode = contextNode.get(routesType, true) as MBeanNode
     for (const child of routesNode.getChildren()) {
       expect(child).toBeDefined()
       expect(camelService.hasDomain(child)).toBeTruthy()
@@ -124,16 +124,16 @@ describe('tree-processor', () => {
     expect(contextNode).toBeDefined()
     expect(contextNode.childCount()).toBe(4)
 
-    const routesNode = contextNode.get(routesType) as MBeanNode
+    const routesNode = contextNode.get(routesType, true) as MBeanNode
     expect(routesNode).toBeDefined()
     expect(routesNode.childCount()).toBe(2)
 
-    const group1Node = routesNode.get('group1') as MBeanNode
+    const group1Node = routesNode.get('group1', true) as MBeanNode
     expect(group1Node).toBeDefined()
     expect(group1Node.childCount()).toBe(1)
 
     // non-grouped route added under default route group
-    const defaultNode = routesNode.get('default') as MBeanNode
+    const defaultNode = routesNode.get('default', true) as MBeanNode
     expect(defaultNode).toBeDefined()
     expect(defaultNode.childCount()).toBe(1)
   })
@@ -155,15 +155,15 @@ describe('tree-processor', () => {
     expect(contextNode).toBeDefined()
     expect(contextNode.childCount()).toBe(4)
 
-    const routesNode = contextNode.get(routesType) as MBeanNode
+    const routesNode = contextNode.get(routesType, true) as MBeanNode
     expect(routesNode).toBeDefined()
     expect(routesNode.childCount()).toBe(2)
 
-    const group1Node = routesNode.get('group1') as MBeanNode
+    const group1Node = routesNode.get('group1', true) as MBeanNode
     expect(group1Node).toBeDefined()
     expect(group1Node.childCount()).toBe(1)
 
-    const group2Node = routesNode.get('group2') as MBeanNode
+    const group2Node = routesNode.get('group2', true) as MBeanNode
     expect(group2Node).toBeDefined()
     expect(group2Node.childCount()).toBe(1)
   })

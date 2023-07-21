@@ -41,11 +41,13 @@ export const ENDPOINT_OPERATIONS = {
 } as const
 
 export async function getEndpoints(node: MBeanNode): Promise<Endpoint[]> {
-  const endpoints: Endpoint[] = []
   const ctxNode = camelService.findContext(node)
-  if (!ctxNode || ctxNode.childCount() === 0) return endpoints
+  if (!ctxNode || ctxNode.childCount() === 0) return []
 
-  const endpointsNode = ctxNode.get(endpointsType) as MBeanNode
+  const endpointsNode = ctxNode.get(endpointsType, true)
+  if (!endpointsNode) return []
+
+  const endpoints: Endpoint[] = []
   for (const ep of endpointsNode.getChildren()) {
     if (!ep.objectName) continue
     const attributes = await jolokiaService.readAttributes(ep.objectName)
