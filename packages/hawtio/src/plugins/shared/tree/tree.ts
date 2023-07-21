@@ -1,5 +1,4 @@
 import { escapeTags } from '@hawtiosrc/util/htmls'
-import { stringSorter } from '@hawtiosrc/util/strings'
 import { log } from '../globals'
 import { FilterFn, MBeanNode, OptimisedJmxDomain, OptimisedJmxDomains } from './node'
 import { treeProcessorRegistry } from './processor-registry'
@@ -95,7 +94,7 @@ export class MBeanTree {
   }
 
   private sortTree() {
-    this.tree.sort((a, b) => stringSorter(a.name, b.name))
+    this.tree.sort(MBeanNode.sorter)
     this.tree.forEach(node => node.sort(true))
   }
 

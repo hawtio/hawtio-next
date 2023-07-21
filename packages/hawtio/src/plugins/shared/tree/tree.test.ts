@@ -47,47 +47,47 @@ describe('MBeanTree', () => {
     expect(xnioFolder.mbean).toBeUndefined()
     expect(xnioFolder.childCount()).toEqual(2) // 1 folder & 1 mbean
 
-    const nioMBean = xnioFolder.getChildren()[0] as MBeanNode
-    expect(nioMBean.id).toEqual('org.xnio-folder-Xnio-folder-nio')
-    expect(nioMBean.name).toEqual('nio')
-    expect(nioMBean.mbean).toBeDefined()
-    expect(nioMBean.childCount()).toEqual(0)
-
-    const nioFolder = xnioFolder.getChildren()[1] as MBeanNode
+    const nioFolder = xnioFolder.getChildren()[0] as MBeanNode
     expect(nioFolder.id).toEqual('org.xnio-folder-Xnio-folder-nio-folder')
     expect(nioFolder.name).toEqual('nio')
     expect(nioFolder.mbean).toBeUndefined()
     expect(nioFolder.childCount()).toEqual(4) // 2 folder & 2 mbean
 
-    const xnio1MBean = nioFolder.getChildren()[0] as MBeanNode
+    const nioMBean = xnioFolder.getChildren()[1] as MBeanNode
+    expect(nioMBean.id).toEqual('org.xnio-folder-Xnio-folder-nio')
+    expect(nioMBean.name).toEqual('nio')
+    expect(nioMBean.mbean).toBeDefined()
+    expect(nioMBean.childCount()).toEqual(0)
+
+    const xnio1Folder = nioFolder.getChildren()[0] as MBeanNode
+    expect(xnio1Folder.id).toEqual('org.xnio-folder-Xnio-folder-nio-folder-XNIO-1-folder')
+    expect(xnio1Folder.name).toEqual('XNIO-1')
+    expect(xnio1Folder.mbean).toBeUndefined()
+    expect(xnio1Folder.childCount()).toEqual(1)
+
+    const xnio1MBean = nioFolder.getChildren()[1] as MBeanNode
     expect(xnio1MBean.id).toEqual('org.xnio-folder-Xnio-folder-nio-folder-XNIO-1')
     expect(xnio1MBean.name).toEqual('XNIO-1')
     expect(xnio1MBean.mbean).toBeDefined()
     expect(xnio1MBean.childCount()).toEqual(0)
 
-    const xnio1Folder = nioFolder.getChildren()[1] as MBeanNode
-    expect(xnio1Folder.id).toEqual('org.xnio-folder-Xnio-folder-nio-folder-XNIO-1-folder')
-    expect(xnio1Folder.name).toEqual('XNIO-1')
-    expect(xnio1Folder.mbean).toBeUndefined()
-    expect(xnio1Folder.childCount()).toEqual(1)
+    const xnio2Folder = nioFolder.getChildren()[2] as MBeanNode
+    expect(xnio2Folder.id).toEqual('org.xnio-folder-Xnio-folder-nio-folder-XNIO-2-folder')
+    expect(xnio2Folder.name).toEqual('XNIO-2')
+    expect(xnio2Folder.mbean).toBeUndefined()
+    expect(xnio2Folder.childCount()).toEqual(1)
+
+    const xnio2MBean = nioFolder.getChildren()[3] as MBeanNode
+    expect(xnio2MBean.id).toEqual('org.xnio-folder-Xnio-folder-nio-folder-XNIO-2')
+    expect(xnio2MBean.name).toEqual('XNIO-2')
+    expect(xnio2MBean.mbean).toBeDefined()
+    expect(xnio2MBean.childCount()).toEqual(0)
 
     const xnio1Addr = xnio1Folder.getChildren()[0] as MBeanNode
     expect(xnio1Addr.id).toEqual('org.xnio-folder-Xnio-folder-nio-folder-XNIO-1-folder-/0:0:0:0:0:0:0:0:10000')
     expect(xnio1Addr.name).toEqual('/0:0:0:0:0:0:0:0:10000')
     expect(xnio1Addr.mbean).toBeDefined()
     expect(xnio1Addr.childCount()).toEqual(0)
-
-    const xnio2MBean = nioFolder.getChildren()[2] as MBeanNode
-    expect(xnio2MBean.id).toEqual('org.xnio-folder-Xnio-folder-nio-folder-XNIO-2')
-    expect(xnio2MBean.name).toEqual('XNIO-2')
-    expect(xnio2MBean.mbean).toBeDefined()
-    expect(xnio2MBean.childCount()).toEqual(0)
-
-    const xnio2Folder = nioFolder.getChildren()[3] as MBeanNode
-    expect(xnio2Folder.id).toEqual('org.xnio-folder-Xnio-folder-nio-folder-XNIO-2-folder')
-    expect(xnio2Folder.name).toEqual('XNIO-2')
-    expect(xnio2Folder.mbean).toBeUndefined()
-    expect(xnio2Folder.childCount()).toEqual(1)
 
     const xnio2Addr = xnio2Folder.getChildren()[0] as MBeanNode
     expect(xnio2Addr.id).toEqual('org.xnio-folder-Xnio-folder-nio-folder-XNIO-2-folder-/0:0:0:0:0:0:0:0:10001')
