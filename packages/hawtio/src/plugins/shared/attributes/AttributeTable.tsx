@@ -2,11 +2,12 @@ import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
 import { JmxContentMBeans } from '@hawtiosrc/plugins/shared/JmxContentMBeans'
 import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { humanizeLabels } from '@hawtiosrc/util/strings'
-import { Card, CardBody, Text } from '@patternfly/react-core'
-import { InfoCircleIcon } from '@patternfly/react-icons'
+import { Card } from '@patternfly/react-core'
 import { Table, TableBody, TableHeader, TableProps } from '@patternfly/react-table'
 import { IResponse } from 'jolokia.js'
 import { useContext, useEffect, useState } from 'react'
+import { HawtioEmptyCard } from '../HawtioEmptyCard'
+import { HawtioLoadingCard } from '../HawtioLoadingCard'
 import { MBeanNode } from '../tree'
 import './AttributeTable.css'
 import { attributeService } from './attribute-service'
@@ -89,25 +90,11 @@ export const AttributeTable: React.FunctionComponent = () => {
   }
 
   if (isReading) {
-    return (
-      <Card>
-        <CardBody>
-          <Text component='p'>Reading attributes...</Text>
-        </CardBody>
-      </Card>
-    )
+    return <HawtioLoadingCard />
   }
 
   if (attributesEntries.length === 0) {
-    return (
-      <Card>
-        <CardBody>
-          <Text component='p'>
-            <InfoCircleIcon /> This node has no MBeans.
-          </Text>
-        </CardBody>
-      </Card>
-    )
+    return <HawtioEmptyCard message='This node has no MBeans.' />
   }
 
   if (
