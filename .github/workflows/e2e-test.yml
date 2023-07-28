@@ -57,7 +57,7 @@ jobs:
         id: get-images
         run: |
           body='${{ github.event.pull_request.body }}'
-          if [[ $body =~ \`branch:[[:space:]]([[:alnum:]\/_.-]+)(:([[:alnum:]\/_.-]+))?\` ]]; then
+          if [[ "${body}" =~ \`branch:[[:space:]]([[:alnum:]\/_.-]+)(:([[:alnum:]\/_.-]+))?\` ]]; then
             if [ -z "${BASH_REMATCH[2]}" ]; then
               echo "repo=hawtio/hawtio" >> $GITHUB_OUTPUT
               echo "branch=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
@@ -104,7 +104,7 @@ jobs:
               APP_PORT=8080
                 echo "url-suffix=hawtio" >> $GITHUB_ENV
               ;;
-              
+
               springboot)
                 APP_PORT=10001
                 echo "url-suffix=actuator/hawtio" >> $GITHUB_ENV
@@ -127,7 +127,7 @@ jobs:
         if: always()
         run: |
           mkdir -p results/$REPORT_DIR/
-          cp $REPORT_DIR/cucumber-reports/* results/$REPORT_DIR/ 
+          cp $REPORT_DIR/cucumber-reports/* results/$REPORT_DIR/
           ls $REPORT_DIR/cucumber-reports/
       - name: Archive test artifacts
         uses: actions/upload-artifact@v3
