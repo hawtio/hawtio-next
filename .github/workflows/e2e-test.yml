@@ -2,15 +2,20 @@ name: E2E Test
 
 on:
   pull_request_target:
-    paths-ignore: '**.md'
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
     types:
       - opened
       - synchronize
       - reopened
       - edited
+  push:
     branches:
       - main
-      - e2e-check
+    paths-ignore:
+      - '**.md'
 
 jobs:
   test:
