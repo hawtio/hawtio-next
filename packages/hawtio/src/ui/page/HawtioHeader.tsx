@@ -32,27 +32,25 @@ export const HawtioHeader: React.FunctionComponent = () => {
   const onNavToggle = () => setNavOpen(!navOpen)
 
   return (
-    <React.Fragment>
-      <Masthead display={{ default: 'inline' }}>
-        <MastheadToggle>
-          <PageToggleButton
-            variant='plain'
-            aria-label='Global navigation'
-            isNavOpen={navOpen}
-            onNavToggle={onNavToggle}
-            id='vertical-nav-toggle'
-          >
-            <BarsIcon />
-          </PageToggleButton>
-        </MastheadToggle>
-        <MastheadMain>
-          <HawtioBrand />
-        </MastheadMain>
-        <MastheadContent>
-          <HawtioHeaderToolbar />
-        </MastheadContent>
-      </Masthead>
-    </React.Fragment>
+    <Masthead id='hawtio-header' display={{ default: 'inline' }}>
+      <MastheadToggle>
+        <PageToggleButton
+          variant='plain'
+          aria-label='Global navigation'
+          isNavOpen={navOpen}
+          onNavToggle={onNavToggle}
+          id='vertical-nav-toggle'
+        >
+          <BarsIcon />
+        </PageToggleButton>
+      </MastheadToggle>
+      <MastheadMain>
+        <HawtioBrand />
+      </MastheadMain>
+      <MastheadContent>
+        <HawtioHeaderToolbar />
+      </MastheadContent>
+    </Masthead>
   )
 }
 
@@ -67,7 +65,7 @@ const HawtioBrand: React.FunctionComponent = () => {
   const appName = hawtconfig.branding?.appName || DEFAULT_APP_NAME
 
   return (
-    <MastheadBrand component={props => <Link to='/' {...props} />}>
+    <MastheadBrand id='hawtio-header-brand' component={props => <Link to='/' {...props} />}>
       <Brand src={appLogo} alt={appName} />
     </MastheadBrand>
   )
