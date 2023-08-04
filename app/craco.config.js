@@ -135,9 +135,22 @@ module.exports = {
       }
 
       // Hawtio backend API mock
-      devServer.app.get('/hawtio/user', (_, res) => res.send(`"${username}"`))
-      devServer.app.post('/hawtio/auth/login', (_, res) => res.send(String(login)))
-      devServer.app.get('/hawtio/auth/logout', (_, res) => res.redirect('/hawtio/login'))
+      let authenticated = true
+      devServer.app.get('/hawtio/user', (_, res) => {
+        if (authenticated) {
+          res.send(`"${username}"`)
+        } else {
+          res.sendStatus(403)
+        }
+      })
+      devServer.app.post('/hawtio/auth/login', (_, res) => {
+        authenticated = true
+        res.send(String(login))
+      })
+      devServer.app.get('/hawtio/auth/logout', (_, res) => {
+        authenticated = false
+        res.redirect('/hawtio/login')
+      })
       devServer.app.get('/hawtio/proxy/enabled', (_, res) => res.send(String(proxyEnabled)))
       devServer.app.get('/hawtio/plugin', (_, res) => res.send(JSON.stringify(plugin)))
       devServer.app.get('/hawtio/keycloak/enabled', (_, res) => res.send(String(keycloakEnabled)))
