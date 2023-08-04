@@ -1,1 +1,10 @@
 /* You can add customised styles here. */
+
+.pf-c-login,
+.pf-c-about-modal-box__hero {
+  background-image: url(img/background.svg) !important;
+}
+
+#hawtio-header-brand .pf-c-brand {
+  height: 50px;
+}
