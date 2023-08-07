@@ -11,6 +11,11 @@ on:
       - synchronize
       - reopened
       - edited
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
 
 jobs:
   test:
@@ -29,8 +34,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        if: ${{ github.event_name == 'pull_request_target' }}
         with:
           ref: 'refs/pull/${{ github.event.number }}/merge'
+      - name: Checkout code
+        uses: actions/checkout@v3
+        if: ${{ github.event_name == 'push' }}
       - name: Docker Setup QEMU
         uses: docker/setup-qemu-action@v2.2.0
       - name: Set up Node
@@ -58,7 +67,7 @@ jobs:
       - name: Detect testsuite branch
         id: get-images
         env:
-          body: ${{ github.event.pull_request.body }}
+          body: ${{ github.event.pull_request.body || ''}}
         run: |
           if [[ "${body}" =~ \`branch:[[:space:]]([[:alnum:]\/_.-]+)(:([[:alnum:]\/_.-]+))?\` ]]; then
             if [ -z "${BASH_REMATCH[2]}" ]; then
