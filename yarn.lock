@@ -2435,7 +2435,7 @@ __metadata:
   dependencies:
     "@hawtio/camel-model-v3": "npm:@hawtio/camel-model@^3.21.0"
     "@hawtio/camel-model-v4": "npm:@hawtio/camel-model@^4.0.0-rc.1"
-    "@module-federation/utilities": ^2.0.4
+    "@module-federation/utilities": ^2.0.5
     "@patternfly/react-charts": ^7.0.0
     "@patternfly/react-code-editor": ^5.0.0
     "@patternfly/react-core": ^4.276.8
@@ -3195,9 +3195,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@module-federation/utilities@npm:^2.0.4":
-  version: 2.0.4
-  resolution: "@module-federation/utilities@npm:2.0.4"
+"@module-federation/utilities@npm:^2.0.5":
+  version: 2.0.5
+  resolution: "@module-federation/utilities@npm:2.0.5"
   dependencies:
     webpack-sources: 3.2.3
   peerDependencies:
@@ -3212,7 +3212,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 052b9ba0ff8dbf56a0cac791b20549fd5fa3f002b4ec47ff3a837d6970738c3e51b38d20ef9d0ee1ee7bfc62b81fbb05053b958c887b5023e089b18c23178de9
+  checksum: edc9e126eadd9a7989c7751ab79015ed3ac22c74210c2f627bd0cf7cea0035de640bf51e3b91b447425dc397a7cad6c249acb7cacd6bbc17f87520aa221dbaad
   languageName: node
   linkType: hard
 
