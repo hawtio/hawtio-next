@@ -27,7 +27,7 @@ jobs:
         java: ['11', '17']
         node: ['16', '18']
         runtime: ['springboot', 'quarkus']
-        browser: ['firefox', 'chrome']
+        browser: ['firefox'] # 'chrome' tests are unstable: https://github.com/hawtio/hawtio-next/issues/478
     env:
       REPORT_DIR: results-${{matrix.runtime}}-node(${{matrix.node}})-java(${{matrix.java}})-${{matrix.browser}}
     runs-on: ubuntu-latest
