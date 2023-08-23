@@ -2405,10 +2405,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hawtio/camel-model-v4@npm:@hawtio/camel-model@^4.0.0-rc.1":
-  version: 4.0.0-rc.1
-  resolution: "@hawtio/camel-model@npm:4.0.0-rc.1"
-  checksum: 8bda5090ef71fb114f0ac7ec079cf7b3b78e213444db0f6db74326052536d64d18de82bb200781c84bba700228a8ee0d5465a45ba866fb516ea11583f41902a3
+"@hawtio/camel-model-v4@npm:@hawtio/camel-model@^4.0.0":
+  version: 4.0.0
+  resolution: "@hawtio/camel-model@npm:4.0.0"
+  checksum: d02d19170ef9ff2ccdbceae6a2f9848dc88be80878e1b13de426ef0cf876b80c3c40570d9193585e74251d9bb45da9ad5bdaf0be7efa051189657e3a53d6491e
   languageName: node
   linkType: hard
 
@@ -2434,7 +2434,7 @@ __metadata:
   resolution: "@hawtio/react@workspace:packages/hawtio"
   dependencies:
     "@hawtio/camel-model-v3": "npm:@hawtio/camel-model@^3.21.0"
-    "@hawtio/camel-model-v4": "npm:@hawtio/camel-model@^4.0.0-rc.1"
+    "@hawtio/camel-model-v4": "npm:@hawtio/camel-model@^4.0.0"
     "@module-federation/utilities": ^2.0.7
     "@patternfly/react-charts": ^7.0.0
     "@patternfly/react-code-editor": ^5.0.0
