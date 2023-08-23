@@ -1,4 +1,4 @@
-import { jolokiaService } from '@hawtiosrc/plugins/shared'
+import { connectService } from '@hawtiosrc/plugins/shared/connect-service'
 import { log, PATH_PROXY_ENABLED } from './globals'
 
 export async function isActive(): Promise<boolean> {
@@ -7,7 +7,7 @@ export async function isActive(): Promise<boolean> {
     return false
   }
 
-  return (await jolokiaService.getJolokiaUrl()) === null
+  return connectService.getCurrentConnectionName() === null
 }
 
 async function isProxyEnabled(): Promise<boolean> {

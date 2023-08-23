@@ -1,8 +1,8 @@
-import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import fetchMock from 'jest-fetch-mock'
+import { connectService } from '@hawtiosrc/plugins/shared/connect-service'
 import { isActive } from './init'
 
-jest.mock('@hawtiosrc/plugins/shared/jolokia-service')
+jest.mock('@hawtiosrc/plugins/shared/connect-service')
 
 describe('isActive', () => {
   beforeEach(() => {
@@ -16,16 +16,16 @@ describe('isActive', () => {
     await expect(isActive()).resolves.toEqual(false)
   })
 
-  test('/proxy/enabled returns not false & jolokia url is null', async () => {
+  test('/proxy/enabled returns not false & connection name is not set', async () => {
     fetchMock.mockResponse('true')
-    jolokiaService.getJolokiaUrl = jest.fn(async () => null)
+    connectService.getCurrentConnectionName = jest.fn(() => null)
 
     await expect(isActive()).resolves.toEqual(true)
   })
 
-  test('/proxy/enabled returns not false & jolokia url is not null', async () => {
+  test('/proxy/enabled returns not false & connection name is set', async () => {
     fetchMock.mockResponse('')
-    jolokiaService.getJolokiaUrl = jest.fn(async () => 'test-url')
+    connectService.getCurrentConnectionName = jest.fn(() => 'test-connection')
 
     await expect(isActive()).resolves.toEqual(false)
   })
