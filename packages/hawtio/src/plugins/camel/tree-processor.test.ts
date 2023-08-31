@@ -74,14 +74,14 @@ describe('tree-processor', () => {
     const contextsNode = domainNode.getIndex(0) as MBeanNode
     expect(contextsNode).not.toBeNull()
     expect(camelService.hasDomain(contextsNode)).toBeTruthy()
-    expect(camelService.hasType(contextsNode, contextsType)).toBeTruthy()
+    expect(contextsNode.getType()).toBe(contextsType)
     expect(contextsNode.id).toBe('org.apache.camel-folder-CamelContexts-folder')
     expect(contextsNode.name).toBe(camelContexts)
     expect(contextsNode.childCount()).toBe(1)
 
     const contextNode = contextsNode.getIndex(0) as MBeanNode
     expect(camelService.hasDomain(contextNode)).toBeTruthy()
-    expect(camelService.hasType(contextNode, contextNodeType)).toBeTruthy()
+    expect(contextNode.getType()).toBe(contextNodeType)
     expect(contextNode.id).toBe('org.apache.camel-folder-CamelContexts-folder-SampleCamel-folder')
     expect(contextNode.name).toBe('SampleCamel')
     expect(camelService.getCamelVersion(contextNode)).toBe(CAMEL_MODEL_VERSION)
@@ -92,7 +92,7 @@ describe('tree-processor', () => {
       const node = contextNode.get(type, true) as MBeanNode
       expect(node).toBeDefined()
       expect(camelService.hasDomain(node)).toBeTruthy()
-      expect(camelService.hasType(node, type)).toBeTruthy()
+      expect(node.getType()).toBe(type)
       expect(node.id).toEqual(`org.apache.camel-folder-CamelContexts-folder-SampleCamel-folder-${type}-folder`)
       expect(node.name).toBe(type)
       expect(camelService.getCamelVersion(node)).toBe(CAMEL_MODEL_VERSION)
@@ -103,7 +103,7 @@ describe('tree-processor', () => {
     for (const child of routesNode.getChildren()) {
       expect(child).toBeDefined()
       expect(camelService.hasDomain(child)).toBeTruthy()
-      expect(camelService.hasType(child, routeNodeType)).toBeTruthy()
+      expect(child.getType()).toBe(routeNodeType)
     }
   })
 

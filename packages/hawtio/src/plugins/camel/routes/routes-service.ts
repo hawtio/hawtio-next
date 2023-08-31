@@ -1,6 +1,5 @@
 import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
-import * as camelService from '../camel-service'
 import { routeGroupsType, routeNodeType } from '../globals'
 import { CamelRoute } from './route'
 
@@ -31,11 +30,11 @@ class RoutesService implements IRoutesService {
      */
     const routes: CamelRoute[] = []
     for (const child of children) {
-      if (camelService.hasType(child, routeNodeType)) {
+      if (child.getType() === routeNodeType) {
         // read attributes of route
         const camelRoute = await this.readRouteAttributes(child)
         if (camelRoute) routes.push(camelRoute)
-      } else if (camelService.hasType(child, routeGroupsType)) {
+      } else if (child.getType() === routeGroupsType) {
         // recurse into route group
         const camelRoutes = await this.getRoutesAttributes(child)
         routes.push(...camelRoutes)

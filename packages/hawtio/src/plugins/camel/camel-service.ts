@@ -86,31 +86,27 @@ export function setDomain(node: MBeanNode) {
 }
 
 export function hasDomain(node: MBeanNode): boolean {
-  return node && jmxDomain === node.getMetadata('domain')
+  return jmxDomain === node.getMetadata('domain')
 }
 
 export function hasMBean(node: MBeanNode): boolean {
-  return node && node.objectName !== undefined && isObject(node.mbean)
-}
-
-export function hasType(node: MBeanNode, type: string): boolean {
-  return node && type === node.getType()
+  return node.objectName !== undefined && isObject(node.mbean)
 }
 
 export function isDomainNode(node: MBeanNode): boolean {
-  return node && hasType(node, domainNodeType)
+  return node.getType() === domainNodeType
 }
 
 export function isContextsFolder(node: MBeanNode): boolean {
-  return node && hasDomain(node) && hasType(node, contextsType)
+  return hasDomain(node) && node.getType() === contextsType
 }
 
 export function isContext(node: MBeanNode): boolean {
-  return node && hasDomain(node) && hasType(node, contextNodeType)
+  return hasDomain(node) && node.getType() === contextNodeType
 }
 
 export function findContext(node: MBeanNode): MBeanNode | null {
-  if (!node || !hasDomain(node)) return null
+  if (!hasDomain(node)) return null
 
   if (isDomainNode(node)) {
     // The camel domain node so traverse to context folder & recurse
@@ -133,31 +129,31 @@ export function findContext(node: MBeanNode): MBeanNode | null {
 }
 
 export function isRoutesFolder(node: MBeanNode): boolean {
-  return node && hasDomain(node) && !hasMBean(node) && hasType(node, routesType)
+  return hasDomain(node) && !hasMBean(node) && node.getType() === routesType
 }
 
 export function isRouteNode(node: MBeanNode): boolean {
-  return node && hasDomain(node) && hasType(node, routeNodeType)
+  return hasDomain(node) && node.getType() === routeNodeType
 }
 
 export function isRouteXmlNode(node: MBeanNode): boolean {
-  return node && hasDomain(node) && hasType(node, routeXmlNodeType)
+  return hasDomain(node) && node.getType() === routeXmlNodeType
 }
 
 export function isEndpointsFolder(node: MBeanNode): boolean {
-  return node && hasDomain(node) && !hasMBean(node) && hasType(node, endpointsType)
+  return hasDomain(node) && !hasMBean(node) && node.getType() === endpointsType
 }
 
 export function isEndpointNode(node: MBeanNode): boolean {
-  return node && hasDomain(node) && hasType(node, endpointNodeType)
+  return hasDomain(node) && node.getType() === endpointNodeType
 }
 
 export function isComponentsFolder(node: MBeanNode): boolean {
-  return node && hasDomain(node) && !hasMBean(node) && hasType(node, componentsType)
+  return hasDomain(node) && !hasMBean(node) && node.getType() === componentsType
 }
 
 export function isComponentNode(node: MBeanNode): boolean {
-  return node && hasDomain(node) && hasType(node, componentNodeType)
+  return hasDomain(node) && node.getType() === componentNodeType
 }
 
 function findMBean(node: MBeanNode, folder: string, id: string): MBeanNode | null {
@@ -222,7 +218,6 @@ export function getDefaultRuntimeEndpointRegistry(node: MBeanNode): MBeanNode | 
 
 export function hasExchange(node: MBeanNode): boolean {
   return (
-    node &&
     !isEndpointsFolder(node) &&
     !isEndpointNode(node) &&
     !isComponentsFolder(node) &&
@@ -243,7 +238,6 @@ export function canListTypeConverters(node: MBeanNode): boolean {
 
 export function hasTypeConverter(node: MBeanNode): boolean {
   return (
-    node &&
     !isRouteNode(node) &&
     !isRouteXmlNode(node) &&
     !isEndpointsFolder(node) &&
