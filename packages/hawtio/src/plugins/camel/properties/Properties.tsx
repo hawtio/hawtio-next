@@ -39,7 +39,7 @@ export const Properties: React.FunctionComponent = () => {
     setIsReading(true)
 
     const init = async () => {
-      const localName: string = selectedNode.getProperty(xmlNodeLocalName)
+      const localName = selectedNode.getMetadata(xmlNodeLocalName) ?? ''
       const schemaKey = localName ? localName : selectedNode.name
       const schema = schemaService.getSchema(selectedNode, schemaKey)
 

@@ -28,7 +28,7 @@ jest.mock('./camel-service', () => {
   return {
     ...jest.requireActual('./camel-service'),
     fetchCamelVersion: jest.fn((contextNode: MBeanNode | null) => {
-      if (contextNode) contextNode.addProperty('version', CAMEL_MODEL_VERSION)
+      if (contextNode) contextNode.addMetadata('version', CAMEL_MODEL_VERSION)
     }),
   }
 })

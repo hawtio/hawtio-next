@@ -39,7 +39,11 @@ export class MBeanNode implements TreeViewDataItem {
   icon: React.ReactNode
   expandedIcon?: React.ReactNode
   children?: MBeanNode[]
-  properties?: Record<string, string>
+
+  /**
+   * Various metadata that can be attached to the node for processing it in the MBean tree.
+   */
+  private metadata: Record<string, string> = {}
 
   // MBean info
   objectName?: string
@@ -142,12 +146,12 @@ export class MBeanNode implements TreeViewDataItem {
     }
   }
 
-  getType(): string {
-    return this.getProperty('type')
+  getType(): string | undefined {
+    return this.getMetadata('type')
   }
 
   setType(type: string) {
-    this.addProperty('type', type)
+    this.addMetadata('type', type)
   }
 
   /**
@@ -206,7 +210,7 @@ export class MBeanNode implements TreeViewDataItem {
           nodeValue = this.name
           break
         default:
-          nodeValue = this.getProperty(key)
+          nodeValue = this.getMetadata(key)
           if (!nodeValue) return false // this node lacks this property
           break
       }
@@ -274,16 +278,12 @@ export class MBeanNode implements TreeViewDataItem {
     return this.children ? this.children.length : 0
   }
 
-  getProperty(key: string): string {
-    return this.properties?.[key] ?? ''
+  getMetadata(key: string): string | undefined {
+    return this.metadata[key]
   }
 
-  addProperty(key: string, value: string) {
-    if (!this.properties) {
-      this.properties = {}
-    }
-
-    this.properties[key] = value
+  addMetadata(key: string, value: string) {
+    this.metadata[key] = value
   }
 
   static sorter(a: MBeanNode, b: MBeanNode): number {

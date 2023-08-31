@@ -124,9 +124,9 @@ class RoutesService {
    * inner steps of the XML.
    */
   private loadStepXml(stepNode: MBeanNode, stepXml: Element) {
-    stepNode.addProperty('xml', stepXml.outerHTML)
+    stepNode.addMetadata('xml', stepXml.outerHTML)
     // Preserve the xml local name for use by views
-    stepNode.addProperty(xmlNodeLocalName, stepXml.localName)
+    stepNode.addMetadata(xmlNodeLocalName, stepXml.localName)
 
     // Populate child nodes
     for (const childXml of stepXml.children) {
@@ -139,13 +139,13 @@ class RoutesService {
    * route steps of the XML.
    */
   loadRouteXml(routeNode: MBeanNode, routeXml: Element) {
-    routeNode.addProperty('xml', '    ' + routeXml.outerHTML) // Indent route XML for better readability
+    routeNode.addMetadata('xml', '    ' + routeXml.outerHTML) // Indent route XML for better readability
     // Preserve the xml local name for use by views
-    routeNode.addProperty(xmlNodeLocalName, routeXml.localName)
+    routeNode.addMetadata(xmlNodeLocalName, routeXml.localName)
 
     // If route is grouped with the 'group' attribute, add it to the node.
     const routeGroup = routeXml.getAttribute('group')
-    if (routeGroup) routeNode.addProperty('group', routeGroup)
+    if (routeGroup) routeNode.addMetadata('group', routeGroup)
 
     // Populate child nodes
     for (const stepXml of routeXml.children) {
@@ -192,7 +192,7 @@ class RoutesService {
 
     try {
       const xml = await this.fetchRoutesXml(contextNode)
-      routesNode.addProperty('xml', xml)
+      routesNode.addMetadata('xml', xml)
       routesNode.getChildren().forEach(routeNode => {
         try {
           const routeXml = this.processRouteXml(xml, routeNode)
@@ -211,7 +211,7 @@ class RoutesService {
     const routeNodeOperation = 'dumpRouteStatsAsXml'
     const routesFolderOperation = 'dumpRoutesStatsAsXml'
 
-    const mbeanName = routesNode.getProperty(contextNodeType)
+    const mbeanName = routesNode.getMetadata(contextNodeType)
     const operationForMBean = mbeanName ? routesFolderOperation : routeNodeOperation
     const mbeanToQuery = mbeanName ? mbeanName : routesNode.objectName ?? ''
 
@@ -236,7 +236,7 @@ class RoutesService {
     return routesStats
   }
 
-  createProcessorStats(routeid: string, pDoc: Element): ProcessorStats {
+  createProcessorStats(routeId: string, pDoc: Element): ProcessorStats {
     let res: ProcessorStats = {
       id: '',
       index: '',

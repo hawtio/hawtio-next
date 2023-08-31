@@ -5,11 +5,11 @@ import { Property } from './property'
 
 export function populateProperties(node: MBeanNode, schemaProperties: Record<string, Record<string, string>>) {
   // Extract the xml fragment from the node's property stash
-  const xml = node.getProperty('xml')
+  const xml = node.getMetadata('xml')
   if (!xml) return
 
   // Extract the xml tag name from the node's property stash
-  const localName = node.getProperty(xmlNodeLocalName)
+  const localName = node.getMetadata(xmlNodeLocalName)
   if (!localName) return
 
   // Parse the xml and find the root element using the localname

@@ -148,8 +148,8 @@ describe('MBeanNode', () => {
   test('matches', async () => {
     const domainNode = tree.get('org.apache.camel') as MBeanNode
     expect(domainNode).not.toBeNull()
-    domainNode.addProperty('type', domainNodeType)
-    domainNode.addProperty('domain', domainNode.name)
+    domainNode.addMetadata('type', domainNodeType)
+    domainNode.addMetadata('domain', domainNode.name)
 
     expect(domainNode.matches({})).toBeFalsy()
     expect(domainNode.matches({ name: '' })).toBeFalsy()

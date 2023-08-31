@@ -82,11 +82,11 @@ export function setChildProperties(parent: MBeanNode | null, childType: string) 
 }
 
 export function setDomain(node: MBeanNode) {
-  node.addProperty('domain', jmxDomain)
+  node.addMetadata('domain', jmxDomain)
 }
 
 export function hasDomain(node: MBeanNode): boolean {
-  return node && jmxDomain === node.getProperty('domain')
+  return node && jmxDomain === node.getMetadata('domain')
 }
 
 export function hasMBean(node: MBeanNode): boolean {
@@ -318,7 +318,7 @@ export function getCamelModel(node: MBeanNode): CamelModel {
  * elsewhere.
  */
 export async function fetchCamelVersion(contextNode: MBeanNode) {
-  const version = contextNode.getProperty('version')
+  const version = contextNode.getMetadata('version')
   if (!isBlank(version)) {
     // Already retrieved
     return
@@ -330,14 +330,14 @@ export async function fetchCamelVersion(contextNode: MBeanNode) {
   }
 
   const camelVersion = (await jolokiaService.readAttribute(contextNode.objectName, 'CamelVersion')) as string
-  contextNode.addProperty('version', camelVersion)
+  contextNode.addMetadata('version', camelVersion)
 }
 
 export function getCamelVersion(node: MBeanNode): string | null {
   const ctxNode = findContext(node)
   if (!ctxNode) return null
 
-  return ctxNode.getProperty('version')
+  return ctxNode.getMetadata('version') ?? null
 }
 
 export function compareVersions(version: string, major: number, minor: number): number {
