@@ -1,6 +1,6 @@
 import { jolokiaService } from '@hawtiosrc/plugins/shared'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
-import { findContext, hasType } from '../camel-service'
+import { findContext } from '../camel-service'
 import { mbeansType, routeNodeType } from '../globals'
 
 export type Exchange = {
@@ -32,7 +32,7 @@ export async function getExchanges(node: MBeanNode, serviceName: string): Promis
 
   const response = await jolokiaService.execute(service.objectName as string, 'browse()')
   let exchanges = Object.values(response as object) as Exchange[]
-  if (hasType(node, routeNodeType)) {
+  if (node.getType() === routeNodeType) {
     exchanges = exchanges.filter(ex => ex.routeId === node.name)
   }
 
