@@ -25,7 +25,7 @@ function adoptChild(parent: MBeanNode, child: MBeanNode, type: string, childIcon
   parent.adopt(child)
   child.setIcons(childIcon)
   if (camelService.isContext(parent)) {
-    child.addProperty(contextNodeType, parent.objectName ?? '')
+    child.addMetadata(contextNodeType, parent.objectName ?? '')
   }
   child.setType(type)
   camelService.setDomain(child)
@@ -40,7 +40,7 @@ function setChildIcon(node: MBeanNode, childIcon: ReactNode) {
 function groupRoutes(routesNode: MBeanNode) {
   let haveGroups = false
   for (const routeNode of routesNode.getChildren()) {
-    const groupId = routeNode.getProperty('group')
+    const groupId = routeNode.getMetadata('group')
     if (groupId) {
       haveGroups = true
       break
@@ -55,7 +55,7 @@ function groupRoutes(routesNode: MBeanNode) {
   for (const routeNode of routeNodes) {
     if (routeNode.getType() === routeGroupsType) continue
 
-    const groupId = routeNode.getProperty('group')
+    const groupId = routeNode.getMetadata('group')
     let groupNode: MBeanNode
     if (groupId) {
       groupNode = routesNode.getOrCreate(groupId, true)
@@ -88,9 +88,9 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
   // Create the initial contexts group node
   const groupCtxsNode = camelDomain.getOrCreate(camelContexts, true)
   groupCtxsNode.setIcons(getIcon(IconNames.CamelIcon))
-  groupCtxsNode.addProperty('class', 'org-apache-camel-context-folder')
-  groupCtxsNode.addProperty('key', camelContexts)
-  groupCtxsNode.addProperty('name', camelContexts)
+  groupCtxsNode.addMetadata('class', 'org-apache-camel-context-folder')
+  groupCtxsNode.addMetadata('key', camelContexts)
+  groupCtxsNode.addMetadata('name', camelContexts)
   groupCtxsNode.setType(contextsType)
   camelService.setDomain(groupCtxsNode)
 
@@ -118,7 +118,7 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
       adoptChild(newCtxNode, routesNode, routesType, endpointsFolderIcon)
       setChildIcon(routesNode, routeIcon)
       camelService.setChildProperties(routesNode, routeNodeType)
-      routesNode.addProperty(contextNodeType, newCtxNode.objectName ?? '')
+      routesNode.addMetadata(contextNodeType, newCtxNode.objectName ?? '')
 
       await routesService.loadRoutesXml(newCtxNode, routesNode)
 

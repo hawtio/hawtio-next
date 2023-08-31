@@ -8,7 +8,7 @@ export const Source: React.FunctionComponent = () => {
   const [xmlSource, setXmlSource] = useState('')
 
   useEffect(() => {
-    const xml = selectedNode?.getProperty('xml')
+    const xml = selectedNode?.getMetadata('xml')
     if (xml) {
       setXmlSource(xml)
     } else {

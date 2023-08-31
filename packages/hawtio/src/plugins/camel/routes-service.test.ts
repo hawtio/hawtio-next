@@ -39,7 +39,7 @@ describe('routes-service', () => {
     contextNode.objectName = 'org.apache.camel:context=SampleCamel,type=context,name="SampleCamel"'
 
     routesNode = new MBeanNode(null, 'routes-2', true)
-    routesNode.addProperty('type', 'routes')
+    routesNode.addMetadata('type', 'routes')
 
     simpleRouteNode = new MBeanNode(null, testRouteId, false)
 
@@ -76,7 +76,7 @@ describe('routes-service', () => {
 
   test('loadRouteXml', async () => {
     routesService.loadRouteXml(simpleRouteNode, simpleRouteXml)
-    expect(simpleRouteNode.getProperty('xml')).toBe('    ' + simpleRouteXml.outerHTML)
+    expect(simpleRouteNode.getMetadata('xml')).toBe('    ' + simpleRouteXml.outerHTML)
     expect(simpleRouteNode.childCount()).toBe(4)
 
     type MBeanAttr = {
@@ -103,7 +103,7 @@ describe('routes-service', () => {
       childNode = childNode as MBeanNode
       expect(childNode.id).toBe(expected[i]?.id)
       expect(childNode.name).toBe(expected[i]?.name)
-      expect(childNode.getProperty(xmlNodeLocalName)).toBe(expected[i]?.localName)
+      expect(childNode.getMetadata(xmlNodeLocalName)).toBe(expected[i]?.localName)
       expect(childNode.getChildren().length).toBe(0)
       expect(childNode.icon).not.toBeNull()
       render(childNode.icon as React.ReactElement)

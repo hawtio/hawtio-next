@@ -32,7 +32,7 @@ export const RouteDiagram: React.FunctionComponent = () => {
       return
     }
 
-    const xml = selectedNode.getProperty('xml')
+    const xml = selectedNode.getMetadata('xml')
     if (!xml) {
       return
     }

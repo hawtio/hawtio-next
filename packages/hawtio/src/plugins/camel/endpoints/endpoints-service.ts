@@ -178,7 +178,7 @@ export async function doSendMessage(
     }
   })
 
-  const context = mbean.parent?.getProperty(contextNodeType)
+  const context = mbean.parent?.getMetadata(contextNodeType)
   const uri = mbean.name
   if (context && uri) {
     let ok = true
@@ -218,7 +218,7 @@ export async function forwardMessagesToEndpoint(
   messages: MessageData[],
   notify: (type: NotificationType, message: string) => void,
 ) {
-  const context = mBean.parent?.getProperty(contextNodeType)
+  const context = mBean.parent?.getMetadata(contextNodeType)
 
   if (context && uri && messages && messages.length) {
     try {
@@ -253,7 +253,7 @@ export async function forwardMessagesToEndpoint(
 }
 export async function getMessagesFromTheEndpoint(mbean: MBeanNode, from: number, to: number): Promise<MessageData[]> {
   let messageData: MessageData[] = []
-  const context = mbean.parent?.getProperty(contextNodeType)
+  const context = mbean.parent?.getMetadata(contextNodeType)
   const browseAll = to === -1
   if (context) {
     let reply

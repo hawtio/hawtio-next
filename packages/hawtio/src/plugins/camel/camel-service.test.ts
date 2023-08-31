@@ -30,18 +30,18 @@ describe('camel-service', () => {
     camelService.setChildProperties(endpointsNode, endpointNodeType)
 
     expect(endpointsNode.getType()).toBe(endpointsType)
-    expect(endpointsNode.getProperty('domain')).toBe(jmxDomain)
+    expect(endpointsNode.getMetadata('domain')).toBe(jmxDomain)
     for (const child of endpointsNode.getChildren()) {
       expect(child.getType()).toBe(endpointNodeType)
-      expect(child.getProperty('domain')).toBe(jmxDomain)
+      expect(child.getMetadata('domain')).toBe(jmxDomain)
     }
   })
 
   test('getCamelModel', () => {
     const camel3Node = new MBeanNode(null, 'test-context-camel3', true)
-    camel3Node.addProperty('domain', jmxDomain)
+    camel3Node.addMetadata('domain', jmxDomain)
     camel3Node.setType(contextNodeType)
-    camel3Node.addProperty('version', '3.21.0')
+    camel3Node.addMetadata('version', '3.21.0')
     const camel3Model = camelService.getCamelModel(camel3Node)
     expect(camel3Model).toBeDefined()
     expect(camel3Model.apacheCamelModelVersion).toBe(camel3.apacheCamelModelVersion)
@@ -52,9 +52,9 @@ describe('camel-service', () => {
     expect(camel3Model.rests.rests).not.toBeUndefined()
 
     const camel4Node = new MBeanNode(null, 'test-context-camel4', true)
-    camel4Node.addProperty('domain', jmxDomain)
+    camel4Node.addMetadata('domain', jmxDomain)
     camel4Node.setType(contextNodeType)
-    camel4Node.addProperty('version', '4.0.0')
+    camel4Node.addMetadata('version', '4.0.0')
     const camel4Model = camelService.getCamelModel(camel4Node)
     expect(camel4Model).toBeDefined()
     expect(camel4Model.apacheCamelModelVersion).toBe(camel4.apacheCamelModelVersion)
@@ -109,7 +109,7 @@ describe('camel-service', () => {
       { v: '5.0.0', r: true },
     ]
     for (const version of versions) {
-      ctxNode.addProperty('version', version.v)
+      ctxNode.addMetadata('version', version.v)
       expect(camelService.isCamelVersionEQGT(ctxNode, 4, 0)).toBe(version.r)
     }
   })
