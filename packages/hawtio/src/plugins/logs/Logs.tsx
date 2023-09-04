@@ -2,10 +2,19 @@ import {
   Bullseye,
   Button,
   Card,
+  CardBody,
+  CardTitle,
+  CodeBlock,
+  CodeBlockCode,
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTerm,
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
   Label,
+  Modal,
   PageSection,
   Pagination,
   PaginationProps,
@@ -24,9 +33,9 @@ import {
 import { SearchIcon } from '@patternfly/react-icons'
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import React, { useEffect, useRef, useState } from 'react'
+import { log } from './globals'
 import { LogEntry } from './log-entry'
 import { LOGS_UPDATE_INTERVAL, LogFilter, logsService } from './logs-service'
-import { log } from './globals'
 
 export const Logs: React.FunctionComponent = () => {
   return (
@@ -55,6 +64,10 @@ const LogsTable: React.FunctionComponent = () => {
   const [page, setPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
   const [paginatedLogs, setPaginatedLogs] = useState(filteredLogs.slice(0, perPage))
+
+  // Modal
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selected, setSelected] = useState<LogEntry | null>(null)
 
   useEffect(() => {
     const loadLogs = async () => {
@@ -223,20 +236,13 @@ const LogsTable: React.FunctionComponent = () => {
     </Toolbar>
   )
 
-  const renderLabel = (level: string) => {
-    switch (level) {
-      case 'TRACE':
-      case 'DEBUG':
-        return <Label color='grey'>{level}</Label>
-      case 'INFO':
-        return <Label color='blue'>{level}</Label>
-      case 'WARN':
-        return <Label color='orange'>{level}</Label>
-      case 'ERROR':
-        return <Label color='red'>{level}</Label>
-      default:
-        return level
-    }
+  const selectLog = (log: LogEntry) => {
+    setSelected(log)
+    handleModalToggle()
+  }
+
+  const handleModalToggle = () => {
+    setIsModalOpen(!isModalOpen)
   }
 
   return (
@@ -253,9 +259,11 @@ const LogsTable: React.FunctionComponent = () => {
         </Thead>
         <Tbody>
           {paginatedLogs.map((log, index) => (
-            <Tr key={index}>
+            <Tr key={index} onRowClick={() => selectLog(log)}>
               <Td dataLabel='timestamp'>{log.getTimestamp()}</Td>
-              <Td dataLabel='level'>{renderLabel(log.event.level)}</Td>
+              <Td dataLabel='level'>
+                <LogLevel level={log.event.level} />
+              </Td>
               <Td dataLabel='logger'>{log.event.logger}</Td>
               <Td dataLabel='message'>{log.event.message}</Td>
             </Tr>
@@ -281,6 +289,157 @@ const LogsTable: React.FunctionComponent = () => {
         </Tbody>
       </TableComposable>
       {renderPagination('bottom', false)}
+      <LogModal isOpen={isModalOpen} onClose={handleModalToggle} log={selected} />
     </Card>
   )
+}
+
+const LogModal: React.FunctionComponent<{
+  isOpen: boolean
+  onClose: () => void
+  log: LogEntry | null
+}> = ({ isOpen, onClose, log }) => {
+  if (!log) {
+    return null
+  }
+
+  const { event } = log
+
+  const logDetails = (
+    <Card isCompact isPlain>
+      <CardBody>
+        <DescriptionList isCompact isHorizontal>
+          <DescriptionListGroup>
+            <DescriptionListTerm>Timestamp</DescriptionListTerm>
+            <DescriptionListDescription>{log.getTimestamp()}</DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
+            <DescriptionListTerm>Level</DescriptionListTerm>
+            <DescriptionListDescription>
+              <LogLevel level={event.level} />
+            </DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
+            <DescriptionListTerm>Logger</DescriptionListTerm>
+            <DescriptionListDescription>{event.logger}</DescriptionListDescription>
+          </DescriptionListGroup>
+          {log.hasLogSourceLineHref && (
+            <React.Fragment>
+              <DescriptionListGroup>
+                <DescriptionListTerm>Class</DescriptionListTerm>
+                <DescriptionListDescription>{event.className}</DescriptionListDescription>
+              </DescriptionListGroup>
+              <DescriptionListGroup>
+                <DescriptionListTerm>Method</DescriptionListTerm>
+                <DescriptionListDescription>{event.methodName}</DescriptionListDescription>
+              </DescriptionListGroup>
+              <DescriptionListGroup>
+                <DescriptionListTerm>File</DescriptionListTerm>
+                <DescriptionListDescription>
+                  {event.fileName}:{event.lineNumber}
+                </DescriptionListDescription>
+              </DescriptionListGroup>
+            </React.Fragment>
+          )}
+          {event.host && (
+            <DescriptionListGroup>
+              <DescriptionListTerm>Host</DescriptionListTerm>
+              <DescriptionListDescription>{event.host}</DescriptionListDescription>
+            </DescriptionListGroup>
+          )}
+          <DescriptionListGroup>
+            <DescriptionListTerm>Thread</DescriptionListTerm>
+            <DescriptionListDescription>{event.thread}</DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
+            <DescriptionListTerm>Message</DescriptionListTerm>
+            <DescriptionListDescription>
+              <CodeBlock>
+                <CodeBlockCode>{event.message}</CodeBlockCode>
+              </CodeBlock>
+            </DescriptionListDescription>
+          </DescriptionListGroup>
+          {event.exception && (
+            <DescriptionListGroup>
+              <DescriptionListTerm>Stack Trace</DescriptionListTerm>
+              <DescriptionListDescription>{event.exception}</DescriptionListDescription>
+            </DescriptionListGroup>
+          )}
+        </DescriptionList>
+      </CardBody>
+    </Card>
+  )
+
+  const osgiProperties = log.hasOSGiProperties && (
+    <Card isCompact isPlain>
+      <CardTitle>OSGi Properties</CardTitle>
+      <CardBody>
+        <DescriptionList isCompact isHorizontal>
+          {[
+            { key: 'bundle.name', name: 'Bundle Name' },
+            { key: 'bundle.id', name: 'Bundle ID' },
+            { key: 'bundle.version', name: 'Bundle Version' },
+          ]
+            .filter(({ key }) => event.properties[key] !== undefined)
+            .map(({ key, name }) => (
+              <DescriptionListGroup key={key}>
+                <DescriptionListTerm>${name}</DescriptionListTerm>
+                <DescriptionListDescription>{event.properties[key]}</DescriptionListDescription>
+              </DescriptionListGroup>
+            ))}
+        </DescriptionList>
+      </CardBody>
+    </Card>
+  )
+
+  const mdcProperties = log.hasMDCProperties && (
+    <Card isCompact isPlain>
+      <CardTitle>MDC Properties</CardTitle>
+      <CardBody>
+        <DescriptionList isCompact isHorizontal>
+          {Object.entries(log.mdcProperties).map(([key, value]) => (
+            <DescriptionListGroup key={key}>
+              <DescriptionListTerm>{key}</DescriptionListTerm>
+              <DescriptionListDescription>{value}</DescriptionListDescription>
+            </DescriptionListGroup>
+          ))}
+        </DescriptionList>
+      </CardBody>
+    </Card>
+  )
+
+  return (
+    <Modal
+      id='logs-log-modal'
+      variant='large'
+      title='Log'
+      isOpen={isOpen}
+      onClose={onClose}
+      actions={[
+        <Button key='close' onClick={onClose}>
+          Close
+        </Button>,
+      ]}
+    >
+      {logDetails}
+      {osgiProperties}
+      {mdcProperties}
+    </Modal>
+  )
+}
+
+const LogLevel: React.FunctionComponent<{ level: string }> = ({ level }) => {
+  switch (level) {
+    case 'TRACE':
+    case 'DEBUG':
+      return <Label color='grey'>{level}</Label>
+    case 'INFO':
+      return <Label color='blue'>{level}</Label>
+    case 'WARN':
+      return <Label color='orange'>{level}</Label>
+    case 'ERROR':
+      return <Label color='red'>{level}</Label>
+    default:
+      return <React.Fragment>{level}</React.Fragment>
+  }
 }

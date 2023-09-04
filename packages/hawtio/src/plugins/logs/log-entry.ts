@@ -1,3 +1,5 @@
+import { isEmpty } from '@hawtiosrc/util/objects'
+
 export type LogEvent = {
   seq: number
   timestamp: string
@@ -8,49 +10,34 @@ export type LogEvent = {
 
   properties: Record<string, string>
 
-  className?: string
-  containerName?: string
-  exception?: string
-  fileName?: string
-  host?: string
-  lineNumber?: number
-  methodName?: string
-  thread?: string
+  className: string | null
+  containerName: string | null
+  exception: string | null
+  fileName: string | null
+  host: string | null
+  lineNumber: number | null
+  methodName: string | null
+  thread: string | null
 }
 
 export class LogEntry {
-  hasOSGiProps: boolean
-  hasMDCProps: boolean
+  hasOSGiProperties: boolean
+  hasMDCProperties: boolean
   hasLogSourceHref: boolean
   hasLogSourceLineHref: boolean
-  levelClass: string
   logSourceUrl: string
   mdcProperties: Record<string, string>
 
   constructor(readonly event: LogEvent) {
-    this.hasOSGiProps = LogEntry.hasOSGiProps(event.properties)
+    this.hasOSGiProperties = LogEntry.hasOSGiProperties(event.properties)
     this.hasLogSourceHref = LogEntry.hasLogSourceHref(event.properties)
-    this.hasLogSourceLineHref = event.lineNumber !== undefined
-    this.levelClass = LogEntry.getLevelClass(event.level)
+    this.hasLogSourceLineHref = event.lineNumber !== null
     this.logSourceUrl = LogEntry.getLogSourceUrl(event)
     this.mdcProperties = LogEntry.mdcProperties(event.properties)
-    this.hasMDCProps = Object.keys(this.mdcProperties).length !== 0
+    this.hasMDCProperties = !isEmpty(this.mdcProperties)
   }
 
-  private static getLevelClass(level: string): string {
-    switch (level) {
-      case 'INFO':
-        return 'text-info'
-      case 'WARN':
-        return 'text-warning'
-      case 'ERROR':
-        return 'text-danger'
-      default:
-        return ''
-    }
-  }
-
-  private static hasOSGiProps(properties: Record<string, string>): boolean {
+  private static hasOSGiProperties(properties: Record<string, string>): boolean {
     return Object.keys(properties).some(key => key.indexOf('bundle') === 0)
   }
 
@@ -60,7 +47,7 @@ export class LogEntry {
 
   // TODO: need this?
   private static getLogSourceUrl(event: LogEvent): string {
-    const removeQuestion = (s?: string) => (s && s !== '?' ? s : null)
+    const removeQuestion = (s: string | null) => (s && s !== '?' ? s : null)
     const fileName = removeQuestion(event.fileName)
     const className = removeQuestion(event.className)
     const mavenCoords = event.properties['maven.coordinates']
