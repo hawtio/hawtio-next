@@ -3,12 +3,20 @@ import timezoneMock from 'timezone-mock'
 
 describe('LogEntry', () => {
   const dummyEvent: LogEvent = {
+    seq: 0,
+    timestamp: '',
     level: '',
     logger: '',
     message: '',
-    seq: 0,
-    timestamp: '',
     properties: {},
+    className: null,
+    containerName: null,
+    exception: null,
+    fileName: null,
+    host: null,
+    lineNumber: null,
+    methodName: null,
+    thread: null,
   }
 
   test('should read MDC properties from an event', () => {
@@ -38,9 +46,9 @@ describe('LogEntry', () => {
     const resultMDC = new LogEntry(eventMDC)
 
     // then
-    expect(resultNoMDC.hasMDCProps).toBe(false)
+    expect(resultNoMDC.hasMDCProperties).toBe(false)
     expect(resultNoMDC.mdcProperties).toEqual({})
-    expect(resultMDC.hasMDCProps).toBe(true)
+    expect(resultMDC.hasMDCProperties).toBe(true)
     expect(resultMDC.mdcProperties).toEqual({
       'custom.key1': 'custom.value1',
       'custom.key2': 'custom.value2',

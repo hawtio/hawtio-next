@@ -1,5 +1,3 @@
-import { isString } from './objects'
-
 /**
  * Escapes only tags ('<' and '>') as opposed to typical URL encodings.
  *

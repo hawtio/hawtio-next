@@ -1,4 +1,3 @@
-import { domainNodeType } from '@hawtiosrc/plugins/camel/globals'
 import { workspace } from '../workspace'
 import { Icons, MBeanNode, PropertyList } from './node'
 import { MBeanTree } from './tree'
