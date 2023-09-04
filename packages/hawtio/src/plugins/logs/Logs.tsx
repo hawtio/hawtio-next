@@ -56,9 +56,12 @@ const LogsTable: React.FunctionComponent = () => {
   const [loaded, setLoaded] = useState(false)
 
   // Filters
-  const [isSelectLevelOpen, setIsSelectLevelOpen] = useState(false)
-  const [filters, setFilters] = useState<LogFilter>({ level: [], logger: '', message: '', properties: '' })
+  const emptyFilters: LogFilter = { level: [], logger: '', message: '', properties: '' }
+  const [filters, setFilters] = useState(emptyFilters)
+  // Temporal filter values holder until applying it
+  const tempFilters = useRef<{ logger: string; message: string; properties: string }>(emptyFilters)
   const [filteredLogs, setFilteredLogs] = useState<LogEntry[]>([])
+  const [isSelectLevelOpen, setIsSelectLevelOpen] = useState(false)
 
   // Pagination
   const [page, setPage] = useState(1)
@@ -114,21 +117,30 @@ const LogsTable: React.FunctionComponent = () => {
     return <Skeleton data-testid='loading-logs' screenreaderText='Loading...' />
   }
 
-  const handleFiltersChange = (target: string, value: string | string[]) => {
-    setFilters(prev => ({ ...prev, [target]: value }))
+  const handleFiltersChange = (target: string, value: string | string[], apply = false) => {
+    if (apply || target === 'level') {
+      setFilters(prev => ({ ...prev, [target]: value }))
+    } else {
+      tempFilters.current = { ...tempFilters.current, [target]: value }
+    }
   }
 
   const onLevelSelect = (event: React.MouseEvent | React.ChangeEvent, value: string | SelectOptionObject) => {
     const checked = (event.target as HTMLInputElement).checked
     setFilters(prev => {
-      const prevLevels = prev['level']
+      const prevLevels = prev.level
       const newLevels = checked ? [...prevLevels, value as string] : prevLevels.filter(l => l !== value)
       return { ...prev, level: newLevels }
     })
   }
 
+  const applyFilters = () => {
+    setFilters(prev => ({ ...prev, ...tempFilters.current }))
+  }
+
   const clearAllFilters = () => {
-    setFilters({ level: [], logger: '', message: '', properties: '' })
+    setFilters(emptyFilters)
+    tempFilters.current = emptyFilters
   }
 
   const handleSetPage = (
@@ -182,7 +194,7 @@ const LogsTable: React.FunctionComponent = () => {
                 filters.level.filter(l => l !== chip),
               )
             }
-            deleteChipGroup={_ => handleFiltersChange('level', [])}
+            deleteChipGroup={() => handleFiltersChange('level', [])}
             categoryName='Level'
           >
             <Select
@@ -207,7 +219,8 @@ const LogsTable: React.FunctionComponent = () => {
               placeholder='Filter by logger'
               value={filters.logger}
               onChange={(_, value) => handleFiltersChange('logger', value)}
-              onClear={() => handleFiltersChange('logger', '')}
+              onSearch={() => applyFilters()}
+              onClear={() => handleFiltersChange('logger', '', true)}
             />
           </ToolbarItem>
           <ToolbarItem id='logs-table-toolbar-message'>
@@ -217,7 +230,8 @@ const LogsTable: React.FunctionComponent = () => {
               placeholder='Filter by message'
               value={filters.message}
               onChange={(_, value) => handleFiltersChange('message', value)}
-              onClear={() => handleFiltersChange('message', '')}
+              onSearch={() => applyFilters()}
+              onClear={() => handleFiltersChange('message', '', true)}
             />
           </ToolbarItem>
           <ToolbarItem id='logs-table-toolbar-properties'>
@@ -227,7 +241,8 @@ const LogsTable: React.FunctionComponent = () => {
               placeholder='Filter by properties'
               value={filters.properties}
               onChange={(_, value) => handleFiltersChange('properties', value)}
-              onClear={() => handleFiltersChange('properties', '')}
+              onSearch={() => applyFilters()}
+              onClear={() => handleFiltersChange('properties', '', true)}
             />
           </ToolbarItem>
         </ToolbarGroup>
