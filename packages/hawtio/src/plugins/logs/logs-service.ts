@@ -1,6 +1,6 @@
 import { MBeanNode, jolokiaService, workspace } from '@hawtiosrc/plugins/shared'
 import { log } from './globals'
-import { LogEntry, LogEvent } from './log-entry'
+import { LogEntry, LogEvent, LogFilter } from './log-entry'
 
 export const STORAGE_KEY_PREFERENCES = 'logs.preferences'
 
@@ -33,13 +33,6 @@ type LogQueryResponse = {
 export type LogQueryResult = {
   logs: LogEntry[]
   timestamp: number
-}
-
-export type LogFilter = {
-  level: string[]
-  logger: string
-  message: string
-  properties: string
 }
 
 export const LOG_QUERY_OPERATIONS = {
@@ -108,22 +101,7 @@ class LogsService implements ILogsService {
   }
 
   filter(logs: LogEntry[], filter: LogFilter): LogEntry[] {
-    let filteredLogs = [...logs]
-
-    const { level, logger, message, properties } = filter
-    if (level.length > 0) {
-      filteredLogs = filteredLogs.filter(log => level.some(lv => log.event.level === lv))
-    }
-    if (logger !== '') {
-      const regexp = new RegExp(logger, 'i')
-      filteredLogs = filteredLogs.filter(log => regexp.test(log.event.logger))
-    }
-    if (message !== '') {
-      filteredLogs = filteredLogs.filter(log => log.matchMessage(message))
-    }
-    if (properties !== '') {
-      filteredLogs = filteredLogs.filter(log => log.matchProperties(properties))
-    }
+    let filteredLogs = logs.filter(log => log.match(filter))
 
     const { sortAscending } = this.loadOptions()
     if (!sortAscending) {

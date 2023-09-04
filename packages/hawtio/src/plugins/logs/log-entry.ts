@@ -20,6 +20,13 @@ export type LogEvent = {
   thread: string | null
 }
 
+export type LogFilter = {
+  level: string[]
+  logger: string
+  message: string
+  properties: string
+}
+
 export class LogEntry {
   hasOSGiProperties: boolean
   hasMDCProperties: boolean
@@ -67,6 +74,28 @@ export class LogEntry {
     } else {
       return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
     }
+  }
+
+  match(filter: LogFilter): boolean {
+    const { level, logger, message, properties } = filter
+    if (level.length > 0 && !level.some(l => this.event.level === l)) {
+      return false
+    }
+    if (logger !== '' && !this.matchLogger(logger)) {
+      return false
+    }
+    if (message !== '' && !this.matchMessage(message)) {
+      return false
+    }
+    if (properties !== '' && !this.matchProperties(properties)) {
+      return false
+    }
+    return true
+  }
+
+  matchLogger(keyword: string): boolean {
+    const { logger } = this.event
+    return logger.toLowerCase().includes(keyword.toLowerCase())
   }
 
   matchMessage(keyword: string): boolean {
