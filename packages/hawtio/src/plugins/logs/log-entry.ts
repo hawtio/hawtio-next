@@ -23,43 +23,18 @@ export type LogEvent = {
 export class LogEntry {
   hasOSGiProperties: boolean
   hasMDCProperties: boolean
-  hasLogSourceHref: boolean
   hasLogSourceLineHref: boolean
-  logSourceUrl: string
   mdcProperties: Record<string, string>
 
   constructor(readonly event: LogEvent) {
     this.hasOSGiProperties = LogEntry.hasOSGiProperties(event.properties)
-    this.hasLogSourceHref = LogEntry.hasLogSourceHref(event.properties)
     this.hasLogSourceLineHref = event.lineNumber !== null
-    this.logSourceUrl = LogEntry.getLogSourceUrl(event)
     this.mdcProperties = LogEntry.mdcProperties(event.properties)
     this.hasMDCProperties = !isEmpty(this.mdcProperties)
   }
 
   private static hasOSGiProperties(properties: Record<string, string>): boolean {
     return Object.keys(properties).some(key => key.indexOf('bundle') === 0)
-  }
-
-  private static hasLogSourceHref(properties: Record<string, string>): boolean {
-    return properties['maven.coordinates'] !== undefined && properties['maven.coordinates'] !== ''
-  }
-
-  // TODO: need this?
-  private static getLogSourceUrl(event: LogEvent): string {
-    const removeQuestion = (s: string | null) => (s && s !== '?' ? s : null)
-    const fileName = removeQuestion(event.fileName)
-    const className = removeQuestion(event.className)
-    const mavenCoords = event.properties['maven.coordinates']
-    if (!fileName || !className || !mavenCoords) {
-      return ''
-    }
-
-    let link = `#/source/view/${mavenCoords}/class/${className}/${fileName}`
-    if (event.lineNumber) {
-      link += '?line=' + event.lineNumber
-    }
-    return link
   }
 
   private static mdcProperties(properties: Record<string, string>): Record<string, string> {
