@@ -119,7 +119,15 @@ describe('MBeanTree', () => {
     })
   })
 
-  test('navigate', async () => {
+  test('findMBeans', () => {
+    expect(wkspTree.findMBeans('no.such.domain', {})).toHaveLength(0)
+    expect(wkspTree.findMBeans('java.util.logging', {})).toHaveLength(1)
+    expect(wkspTree.findMBeans('org.apache.camel', { context: 'NoSuchContext' })).toHaveLength(0)
+    expect(wkspTree.findMBeans('org.apache.camel', { type: 'components' })).toHaveLength(4)
+    expect(wkspTree.findMBeans('org.apache.camel', { type: 'components', name: 'q*' })).toHaveLength(1)
+  })
+
+  test('navigate', () => {
     let path = ['org.apache.camel', 'SampleCamel', 'components', 'quartz']
     let qNode = wkspTree.navigate(...path) as MBeanNode
     expect(qNode).not.toBeNull()
@@ -131,7 +139,7 @@ describe('MBeanTree', () => {
     expect(qNode.id).toBe('org.apache.camel-folder-SampleCamel-folder-components-folder-quartz')
   })
 
-  test('forEach', async () => {
+  test('forEach', () => {
     let path = ['org.apache.camel', 'SampleCamel', 'components', 'quartz']
     let counter = 0
     wkspTree.forEach(path, _ => (counter = counter + 1))
@@ -143,7 +151,7 @@ describe('MBeanTree', () => {
     expect(counter).toEqual(path.length)
   })
 
-  test('IDs should be concatenation of {parent}[-folder]-({element}[-folder]) on domain tree', async () => {
+  test('IDs should be concatenation of {parent}[-folder]-({element}[-folder]) on domain tree', () => {
     const allNodes: MBeanNode[] = []
     const recursivelyGetAllNodesOnTree = (tree: MBeanNode[]) => {
       tree.forEach((node: MBeanNode) => {
@@ -252,6 +260,10 @@ describe('MBeanTree', () => {
     })
   })
 })
+
+/*
+ * Test helpers
+ */
 
 function createNode(name: string, objectName: string): MBeanNode {
   const node = new MBeanNode(null, name, false)

@@ -1,6 +1,6 @@
 import { escapeHtmlId, escapeTags } from '@hawtiosrc/util/htmls'
 import { isEmpty } from '@hawtiosrc/util/objects'
-import { stringSorter, trimQuotes } from '@hawtiosrc/util/strings'
+import { matchWithWildcard, stringSorter, trimQuotes } from '@hawtiosrc/util/strings'
 import { TreeViewDataItem } from '@patternfly/react-core'
 import { CubeIcon, FolderIcon, FolderOpenIcon, LockIcon } from '@patternfly/react-icons'
 import { IJmxMBean, IJmxOperation, IJmxOperations } from 'jolokia.js'
@@ -26,7 +26,7 @@ export interface OptimisedJmxMBean extends IJmxMBean {
   opByString?: { [name: string]: IJmxOperation }
 }
 
-export type FilterFn = (node: MBeanNode) => boolean
+export type MBeanNodeFilterFn = (node: MBeanNode) => boolean
 
 export const MBEAN_NODE_ID_SEPARATOR = '-'
 
@@ -48,6 +48,7 @@ export class MBeanNode implements TreeViewDataItem {
   // MBean info
   objectName?: string
   mbean?: OptimisedJmxMBean
+  propertyList?: PropertyList
 
   /**
    * A new node
@@ -130,6 +131,7 @@ export class MBeanNode implements TreeViewDataItem {
   private configureMBean(propList: PropertyList, mbean: OptimisedJmxMBean) {
     this.objectName = propList.objectName()
     this.mbean = mbean
+    this.propertyList = propList
 
     // Also update icon based on canInvoke here
     this.applyCanInvoke()
@@ -187,42 +189,6 @@ export class MBeanNode implements TreeViewDataItem {
 
   getChildren(): MBeanNode[] {
     return this.children ?? []
-  }
-
-  matches(properties: Record<string, string>): boolean {
-    const entries = properties ? Object.entries(properties) : []
-    if (entries.length === 0) return false
-
-    // Escape any regex special characters
-    const escapeRegex = (str: string) => str.replace(/([.*+?^=!:${}()|[\]/\\])/g, '\\$1')
-
-    let mCount = entries.length
-    for (const [key, value] of entries) {
-      /*
-       * The * is used as the wildcard to remove it, escape the rest and rejoin
-       * with the correct regex syntax
-       */
-      const rule = value.split('*').map(escapeRegex).join('.*')
-      const re = new RegExp(`^${rule}$`, 'i')
-      let nodeValue
-      switch (key) {
-        case 'name':
-          nodeValue = this.name
-          break
-        default:
-          nodeValue = this.getMetadata(key)
-          if (!nodeValue) return false // this node lacks this property
-          break
-      }
-
-      if (nodeValue.match(re)) {
-        mCount--
-      } else {
-        return false
-      }
-    }
-
-    return mCount === 0
   }
 
   create(name: string, folder: boolean): MBeanNode {
@@ -316,19 +282,13 @@ export class MBeanNode implements TreeViewDataItem {
     return path
   }
 
-  private getDescendantOrThis(pathEntry: string): MBeanNode | null {
-    if (pathEntry === this.name || this.matches({ name: pathEntry })) return this
-
-    return this.findDescendant(node => node.name === pathEntry || node.matches({ name: pathEntry }))
-  }
-
   navigate(...namePath: string[]): MBeanNode | null {
     if (namePath.length === 0) return this // path is empty so return this node
 
     const name = namePath[0]
     if (!name) return null
 
-    const child = this.getDescendantOrThis(name)
+    const child = this.findByNamePattern(name)
     return child?.navigate(...namePath.slice(1)) ?? null
   }
 
@@ -343,27 +303,44 @@ export class MBeanNode implements TreeViewDataItem {
     const name = namePath[0]
     if (!name) return
 
-    const child = this.getDescendantOrThis(name)
+    const child = this.findByNamePattern(name)
     if (!child) return
 
     eachFn(child)
     child.forEach(namePath.slice(1), eachFn)
   }
 
-  findDescendant(filter: FilterFn): MBeanNode | null {
+  /**
+   * Searches this node and all its descendants for the first node to match the filter.
+   */
+  find(filter: MBeanNodeFilterFn): MBeanNode | null {
     if (filter(this)) {
       return this
     }
 
-    let answer: MBeanNode | null = null
-    if (this.children) {
-      this.children.forEach(child => {
-        if (!answer) {
-          answer = child.findDescendant(filter)
-        }
-      })
-    }
-    return answer
+    return this.children?.map(child => child.find(filter)).find(node => node !== null) ?? null
+  }
+
+  private findByNamePattern(name: string): MBeanNode | null {
+    return this.find(node => matchWithWildcard(node.name, name))
+  }
+
+  /**
+   * Finds MBeans in this node and all its descendants based on the properties.
+   */
+  findMBeans(properties: Record<string, string>): MBeanNode[] {
+    const mbeans: MBeanNode[] = this.match(properties) ? [this] : []
+    this.children?.forEach(child => mbeans.push(...child.findMBeans(properties)))
+    return mbeans
+  }
+
+  /**
+   * Matches the node with the given MBean properties.
+   * Since only MBean node holds the properties, this method always returns false
+   * when invoked on a folder node.
+   */
+  match(properties: Record<string, string>): boolean {
+    return this.propertyList?.match(properties) ?? false
   }
 
   /**
@@ -389,7 +366,7 @@ export class MBeanNode implements TreeViewDataItem {
    * @for Node
    * @return {MBeanNode}
    */
-  findAncestor(filter: FilterFn): MBeanNode | null {
+  findAncestor(filter: MBeanNodeFilterFn): MBeanNode | null {
     let ancestor: MBeanNode | null = this.parent
     while (ancestor !== null) {
       if (filter(ancestor)) return ancestor
@@ -400,7 +377,7 @@ export class MBeanNode implements TreeViewDataItem {
     return null
   }
 
-  filterClone(filter: FilterFn): MBeanNode | null {
+  filterClone(filter: MBeanNodeFilterFn): MBeanNode | null {
     const copyChildren: MBeanNode[] = []
     if (this.children) {
       this.children.forEach(child => {
@@ -550,10 +527,11 @@ export class MBeanNode implements TreeViewDataItem {
 }
 
 export class PropertyList {
-  private domain: MBeanNode
-  private propList: string
+  private properties: Record<string, string> = {}
   private paths: { key: string; value: string }[] = []
+  // TODO: typeName needed?
   typeName?: string
+  // TODO: serviceName needed?
   serviceName?: string
 
   private readonly propRegex = new RegExp(
@@ -561,18 +539,18 @@ export class PropertyList {
     'g',
   )
 
-  constructor(domain: MBeanNode, propList: string) {
-    this.domain = domain
-    this.propList = propList
+  constructor(
+    private domain: MBeanNode,
+    private propList: string,
+  ) {
     this.parse(propList)
   }
 
   private parse(propList: string) {
-    const props: { [key: string]: string } = {}
     let match
     while ((match = this.propRegex.exec(propList))) {
       const [propKey, propValue] = this.parseProperty(match[0])
-      props[propKey] = propValue
+      this.properties[propKey] = propValue
       let index = -1
       const lowerKey = propKey.toLowerCase()
       const path = { key: lowerKey, value: propValue }
@@ -583,7 +561,7 @@ export class PropertyList {
             // if the type name value already exists in the root node
             // of the domain then let's move this property around too
             index = 0
-          } else if (props['name']) {
+          } else if (this.properties['name']) {
             // else if the name key already exists, insert the type key before it
             index = this.paths.findIndex(p => p.key === 'name')
           }
@@ -628,6 +606,13 @@ export class PropertyList {
         reorderObjects(this.paths, 'key', ['type', 'version', 'framework'])
         break
     }
+  }
+
+  match(properties: Record<string, string>): boolean {
+    return Object.entries(properties).every(([key, value]) => {
+      const thisValue = this.properties[key]
+      return thisValue && matchWithWildcard(thisValue, value)
+    })
   }
 
   getPaths(): string[] {

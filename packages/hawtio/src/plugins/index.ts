@@ -1,8 +1,9 @@
 import { HawtioPlugin } from '@hawtiosrc/core'
+import { keycloak } from './auth/keycloak'
 import { camel } from './camel'
 import { connect } from './connect'
 import { jmx } from './jmx'
-import { keycloak } from './auth/keycloak'
+import { logs } from './logs'
 import { rbac } from './rbac'
 
 export const registerPlugins: HawtioPlugin = () => {
@@ -13,6 +14,7 @@ export const registerPlugins: HawtioPlugin = () => {
   jmx()
   rbac()
   camel()
+  logs()
 }
 
 export * from './connect'

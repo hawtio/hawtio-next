@@ -42,7 +42,7 @@ export function obfuscate(str: string): string {
   }
   return str
     .split('')
-    .map(() => '*')
+    .map(_ => '*')
     .join('')
 }
 
@@ -116,4 +116,25 @@ export function humanizeLabels(str: string): string {
     .replace(/^./, str => str.toUpperCase())
     .replace(/ +/, ' ')
     .trim()
+}
+
+/**
+ * Matches the given string value with the pattern.
+ * A pattern can be the exact matching string or an expression that includes '*'
+ * as wildcard.
+ */
+export function matchWithWildcard(value: string, pattern: string): boolean {
+  if (!pattern.includes('*')) {
+    return value === pattern
+  }
+
+  // The '*' is used as the wildcard to remove it, escape the rest and rejoin with
+  // the correct regex syntax.
+  const rule = pattern
+    .split('*')
+    // Escape any regex special characters
+    .map(s => s.replace(/([.*+?^=!:${}()|[\]/\\])/g, '\\$1'))
+    .join('.*')
+  const regexp = new RegExp(`^${rule}$`, 'i')
+  return value.match(regexp) !== null
 }

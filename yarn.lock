@@ -2472,6 +2472,7 @@ __metadata:
     reactflow: ^11.8.3
     replace: ^1.2.2
     superstruct: ^1.0.3
+    timezone-mock: ^1.3.6
     ts-jest: ^29.1.1
     tsup: ^7.2.0
     typescript: ^4.9.5
@@ -17704,6 +17705,13 @@ __metadata:
   version: 1.1.0
   resolution: "thunky@npm:1.1.0"
   checksum: 993096c472b6b8f30e29dc777a8d17720e4cab448375041f20c0cb802a09a7fb2217f2a3e8cdc11851faa71c957e2db309357367fc9d7af3cb7a4d00f4b66034
+  languageName: node
+  linkType: hard
+
+"timezone-mock@npm:^1.3.6":
+  version: 1.3.6
+  resolution: "timezone-mock@npm:1.3.6"
+  checksum: 865d8bc67681d7967aeab1ffa4eca1d3217180a85c32d12b485f7d12f427e70f10804882faaa4c699a001247eefc1f6d55c6af9adb61a0c12a54256567d632e4
   languageName: node
   linkType: hard
 

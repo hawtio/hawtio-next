@@ -1,6 +1,7 @@
 import { escapeTags } from '@hawtiosrc/util/htmls'
+import { matchWithWildcard } from '@hawtiosrc/util/strings'
 import { log } from '../globals'
-import { FilterFn, MBeanNode, OptimisedJmxDomain, OptimisedJmxDomains } from './node'
+import { MBeanNode, MBeanNodeFilterFn, OptimisedJmxDomain, OptimisedJmxDomains } from './node'
 import { treeProcessorRegistry } from './processor-registry'
 
 /**
@@ -26,7 +27,7 @@ export class MBeanTree {
     return mBeanTree
   }
 
-  static filter(originalTree: MBeanNode[], filter: FilterFn): MBeanNode[] {
+  static filter(originalTree: MBeanNode[], filter: MBeanNodeFilterFn): MBeanNode[] {
     //Filter behaviour is the following:
     // 1) If there is a hit in a parent bean, bring everything under the parent
     // 2) If there is no hit in the parent, but there is in a sub bean
@@ -103,11 +104,7 @@ export class MBeanTree {
   }
 
   get(name: string): MBeanNode | null {
-    const node = this.tree.find(node => {
-      return node.name === name
-    })
-
-    return node ? node : null
+    return this.tree.find(node => node.name === name) ?? null
   }
 
   isEmpty(): boolean {
@@ -115,23 +112,21 @@ export class MBeanTree {
   }
 
   /**
-   * Searches this folder and all its descendants for the first folder to match the filter
+   * Searches the entire tree for the first MBean node to match the filter.
    */
-  findDescendant(filter: FilterFn): MBeanNode | null {
-    let answer: MBeanNode | null = null
-    this.tree.forEach(child => {
-      if (!answer) {
-        answer = child.findDescendant(filter)
-      }
-    })
-    return answer
+  find(filter: MBeanNodeFilterFn): MBeanNode | null {
+    return this.tree.map(domain => domain.find(filter)).find(node => node !== null) ?? null
+  }
+
+  /**
+   * Finds MBeans in the tree based on the domain name and properties.
+   */
+  findMBeans(domainName: string, properties: Record<string, string>): MBeanNode[] {
+    return this.get(domainName)?.findMBeans(properties) ?? []
   }
 
   private descendByPathEntry(pathEntry: string): MBeanNode | null {
-    return this.findDescendant(node => {
-      const match = node.name === pathEntry || node.matches({ name: pathEntry })
-      return match
-    })
+    return this.find(node => matchWithWildcard(node.name, pathEntry))
   }
 
   navigate(...namePath: string[]): MBeanNode | null {
@@ -141,7 +136,7 @@ export class MBeanTree {
     if (!name) return null
 
     const child = this.descendByPathEntry(name)
-    return !child ? null : child.navigate(...namePath.slice(1))
+    return child?.navigate(...namePath.slice(1)) ?? null
   }
 
   /**

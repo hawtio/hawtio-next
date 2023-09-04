@@ -162,7 +162,7 @@ const JolokiaForm: React.FunctionComponent = () => {
         label='Auto refresh'
         fieldId='jolokia-form-auto-refresh'
         labelIcon={
-          <TooltipHelpIcon tooltip='Wether the page should refresh whenever it detects an update on a plugin' />
+          <TooltipHelpIcon tooltip='Whether the page should refresh whenever it detects an update on a plugin' />
         }
       >
         <Checkbox id='jolokia-form-auto-refresh-input' isChecked={autoRefresh} onChange={onAutoRefreshChanged} />
