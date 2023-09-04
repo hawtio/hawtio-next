@@ -145,27 +145,33 @@ describe('MBeanNode', () => {
     expect(comp.parent).toBe(sc)
   })
 
-  test('matches', async () => {
-    const domainNode = tree.get('org.apache.camel') as MBeanNode
-    expect(domainNode).not.toBeNull()
-    domainNode.addMetadata('type', domainNodeType)
-    domainNode.addMetadata('domain', domainNode.name)
+  test('match', async () => {
+    // MBean: org.apache.camel:context=SampleCamel,type=context,name="SampleCamel"
+    const folder = tree.navigate('org.apache.camel', 'SampleCamel', 'context') as MBeanNode
+    expect(folder).not.toBeNull()
+    const mbean = folder.findChildren('SampleCamel')[0] as MBeanNode
+    expect(mbean).not.toBeUndefined()
 
-    expect(domainNode.matches({})).toBeFalsy()
-    expect(domainNode.matches({ name: '' })).toBeFalsy()
-    expect(domainNode.matches({ name: 'org2.*' })).toBeFalsy()
-    expect(domainNode.matches({ name: 'org.apache.camel' })).toBeTruthy()
-    expect(domainNode.matches({ name: 'org.apache.c*' })).toBeTruthy()
-    expect(domainNode.matches({ name: '*apache.camel' })).toBeTruthy()
-    expect(domainNode.matches({ name: '*apache.c*' })).toBeTruthy()
-    expect(domainNode.matches({ name: '*ap*e.c*' })).toBeTruthy()
+    // Folder shouldn't match anything
+    expect(folder.match({})).toBe(false)
 
-    expect(domainNode.matches({ name: 'org.apache.camel', type: domainNodeType })).toBeTruthy()
-    expect(domainNode.matches({ name: 'org.apache.camel', type: 'Camel*' })).toBeTruthy()
-    expect(domainNode.matches({ name: 'org.apache.camel', type: 'Camel*', domain: 'invalid' })).toBeFalsy()
-    expect(domainNode.matches({ name: 'org.apache.camel', type: 'Camel*', domain: domainNode.name })).toBeTruthy()
+    // Empty properties always match
+    expect(mbean.match({})).toBe(true)
 
-    expect(domainNode.matches({ name: 'org.apache.camel', invalid: 'Camel*' })).toBeFalsy()
+    expect(mbean.match({ context: 'SampleCamel' })).toBe(true)
+    expect(mbean.match({ context: 'SampleCamel', type: 'context' })).toBe(true)
+    expect(mbean.match({ context: 'SampleCamel', type: 'context', name: 'SampleCamel' })).toBe(true)
+    expect(mbean.match({ context: 'SampleCamel', type: 'context', name: 'SampleCamel', key1: 'value1' })).toBe(false)
+
+    expect(mbean.match({ context: 'Sample*', type: 'context', name: 'SampleCamel' })).toBe(true)
+    expect(mbean.match({ context: '*Camel', type: 'context', name: 'SampleCamel' })).toBe(true)
+    expect(mbean.match({ context: 'Sample*amel', type: 'context', name: 'SampleCamel' })).toBe(true)
+    expect(mbean.match({ context: 'Sample*amel2', type: 'context', name: 'SampleCamel' })).toBe(false)
+
+    expect(mbean.match({ context: 'SampleCamel', type: 'c*t', name: 'SampleCamel' })).toBe(true)
+    expect(mbean.match({ context: 'SampleCamel', type: 'c*t2', name: 'SampleCamel' })).toBe(false)
+    expect(mbean.match({ context: 'SampleCamel', type: 'context', name: 'Sample*' })).toBe(true)
+    expect(mbean.match({ context: 'SampleCamel', type: 'context', name: '*Camel2' })).toBe(false)
   })
 
   test('navigate', async () => {

@@ -46,7 +46,7 @@ describe('CamelTreeView', () => {
   beforeAll(async () => {
     const wkspTree = await workspace.getTree()
     camelTreeProcessor(wkspTree)
-    const rootNode = wkspTree.findDescendant(node => node.name === jmxDomain)
+    const rootNode = wkspTree.find(node => node.name === jmxDomain)
 
     if (rootNode) {
       const ctxNode = rootNode.getChildren()[0]

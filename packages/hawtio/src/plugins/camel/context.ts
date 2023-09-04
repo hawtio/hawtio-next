@@ -26,7 +26,7 @@ export function useCamelTree() {
 
   const populateTree = async () => {
     const wkspTree: MBeanTree = await workspace.getTree()
-    const rootNode = wkspTree.findDescendant(node => node.name === jmxDomain)
+    const rootNode = wkspTree.find(node => node.name === jmxDomain)
     if (rootNode && rootNode.children && rootNode.children.length > 0) {
       const contextsNode = rootNode.getChildren()[0]
       if (!contextsNode) {

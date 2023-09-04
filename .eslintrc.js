@@ -29,6 +29,7 @@ module.exports = {
     '@typescript-eslint/no-redeclare': 'off',
     'import/no-default-export': 'error',
     'react/prop-types': 'off',
+    'testing-library/await-async-query': 'off',
     'testing-library/no-debugging-utils': [
       'warn',
       {

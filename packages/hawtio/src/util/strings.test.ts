@@ -1,4 +1,4 @@
-import { humanizeLabels, parseBoolean, toString, trimQuotes } from './strings'
+import { humanizeLabels, matchWithWildcard, parseBoolean, toString, trimQuotes } from './strings'
 
 describe('strings', () => {
   test('toString', () => {
@@ -47,5 +47,16 @@ describe('strings', () => {
     expect(humanizeLabels('')).toEqual('')
     expect(humanizeLabels('            ')).toEqual('')
     expect(humanizeLabels('Object       Name')).toEqual('Object Name')
+  })
+
+  describe('matchWithWildcard', () => {
+    const value = 'org.apache.camel'
+    expect(matchWithWildcard(value, '')).toBe(false)
+    expect(matchWithWildcard(value, 'org2.*')).toBe(false)
+    expect(matchWithWildcard(value, 'org.apache.camel')).toBe(true)
+    expect(matchWithWildcard(value, 'org.apache.c*')).toBe(true)
+    expect(matchWithWildcard(value, '*apache.camel')).toBe(true)
+    expect(matchWithWildcard(value, '*apache.c*')).toBe(true)
+    expect(matchWithWildcard(value, '*ap*e.c*')).toBe(true)
   })
 })

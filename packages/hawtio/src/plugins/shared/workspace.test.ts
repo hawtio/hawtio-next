@@ -40,28 +40,30 @@ describe('workspace', () => {
     ).resolves.toBeFalsy()
   })
 
-  test('parseMBean', () => {
-    const testdata = [
-      { mbean: 'jolokia:type=Config', expected: { attributes: { type: 'Config' }, domain: 'jolokia' } },
+  test('findMBeans', async () => {
+    const tests = [
+      { domain: 'jolokia', properties: { type: 'Config' }, expected: 1 },
+      { domain: 'java.lang', properties: { type: 'Memory' }, expected: 1 },
+      { domain: 'org.apache.camel', properties: { context: 'SampleCamel', type: 'context' }, expected: 1 },
       {
-        mbean: 'jdk.management.jfr:type=FlightRecorder',
-        expected: { attributes: { type: 'FlightRecorder' }, domain: 'jdk.management.jfr' },
+        domain: 'org.apache.camel',
+        properties: { context: 'SampleCamel', type: 'components', name: 'q*' },
+        expected: 1,
       },
       {
-        mbean: 'jboss.threads:name="XNIO-1",type=thread-pool',
-        expected: { attributes: { name: '"XNIO-1"', type: 'thread-pool' }, domain: 'jboss.threads' },
+        domain: 'org.apache.camel',
+        properties: { context: 'SampleCamel', type: 'components', name: 'z*' },
+        expected: 0,
       },
       {
-        mbean: 'org.apache.camel:context=SampleCamelLog4J,type=context,name="SampleCamelLog4J"',
-        expected: {
-          attributes: { context: 'SampleCamelLog4J', name: '"SampleCamelLog4J"', type: 'context' },
-          domain: 'org.apache.camel',
-        },
+        domain: 'org.apache.camel',
+        properties: { context: 'SampleCamel', type: 'endpoints' },
+        expected: 4,
       },
     ]
 
-    for (const test of testdata) {
-      expect(workspace.parseMBean(test.mbean)).toEqual(test.expected)
+    for (const test of tests) {
+      await expect(workspace.findMBeans(test.domain, test.properties)).resolves.toHaveLength(test.expected)
     }
   })
 })

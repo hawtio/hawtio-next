@@ -19,7 +19,7 @@ import { preferencesRegistry } from './registry'
 
 helpRegistry.add('preferences', 'Preferences', help, 2)
 preferencesRegistry.add('home', 'Home', HomePreferences, 1)
-preferencesRegistry.add('logs', 'Logs', LogsPreferences, 2)
+preferencesRegistry.add('console-logs', 'Console Logs', LogsPreferences, 2)
 
 export const HawtioPreferences: React.FunctionComponent = () => {
   const location = useLocation()

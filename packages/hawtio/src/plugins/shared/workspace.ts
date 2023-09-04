@@ -13,7 +13,15 @@ const HAWTIO_TREE_WATCHER_MBEAN = 'hawtio:type=TreeWatcher'
 
 export type MBeanCache = { [propertyList: string]: string }
 
-class Workspace {
+export interface IWorkspace {
+  refreshTree(): Promise<void>
+  getTree(): Promise<MBeanTree>
+  hasMBeans(): Promise<boolean>
+  treeContainsDomainAndProperties(domainName: string, properties?: Record<string, unknown>): Promise<boolean>
+  findMBeans(domainName: string, properties: Record<string, unknown>): Promise<MBeanNode[]>
+}
+
+class Workspace implements IWorkspace {
   private tree: Promise<MBeanTree>
   private pluginRegisterHandle?: Promise<number>
   private pluginUpdateCounter?: number
@@ -175,7 +183,7 @@ class Workspace {
     eventService.refresh()
   }
 
-  async getTree(): Promise<MBeanTree> {
+  getTree(): Promise<MBeanTree> {
     return this.tree
   }
 
@@ -208,10 +216,6 @@ class Workspace {
 
   async treeContainsDomainAndProperties(domainName: string, properties?: Record<string, unknown>): Promise<boolean> {
     const tree = await this.tree
-    if (!tree) {
-      return false
-    }
-
     const domain = tree.get(domainName)
     if (!domain) {
       return false
@@ -237,24 +241,12 @@ class Workspace {
     return true
   }
 
-  parseMBean(mbean: string): { domain: string; attributes: Record<string, string> } {
-    let domain = ''
-    const attributes: Record<string, string> = {}
-    let parts = mbean.split(':')
-    if (parts.length > 1) {
-      domain = parts[0] ?? ''
-      parts = parts.filter(p => p !== domain)
-      const parts2 = parts.join(':')
-      const nameValues = parts2.split(',')
-      nameValues.forEach(nv => {
-        let nameValue = nv.split('=')
-        const name = nameValue[0]?.trim() ?? ''
-        nameValue = nameValue.filter(nv => nv !== name)
-        attributes[name] = nameValue.join('=').trim()
-      })
-    }
-    return { domain, attributes }
+  /**
+   * Finds MBeans in the workspace based on the domain name and properties.
+   */
+  async findMBeans(domainName: string, properties: Record<string, string>): Promise<MBeanNode[]> {
+    return (await this.tree).findMBeans(domainName, properties)
   }
 }
 
-export const workspace = new Workspace()
+export const workspace: IWorkspace = new Workspace()
