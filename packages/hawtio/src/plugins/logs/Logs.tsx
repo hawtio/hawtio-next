@@ -34,8 +34,8 @@ import { SearchIcon } from '@patternfly/react-icons'
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import React, { useEffect, useRef, useState } from 'react'
 import { log } from './globals'
-import { LogEntry } from './log-entry'
-import { LOGS_UPDATE_INTERVAL, LogFilter, logsService } from './logs-service'
+import { LogEntry, LogFilter } from './log-entry'
+import { LOGS_UPDATE_INTERVAL, logsService } from './logs-service'
 
 export const Logs: React.FunctionComponent = () => {
   return (
@@ -245,6 +245,17 @@ const LogsTable: React.FunctionComponent = () => {
     setIsModalOpen(!isModalOpen)
   }
 
+  const highlightSearch = (text: string, search: string) => {
+    if (search === '') {
+      return text
+    }
+    const lowerCaseSearch = search.toLowerCase()
+    const res = text
+      .split(new RegExp(`(${search})`, 'gi'))
+      .map((s, i) => (s.toLowerCase() === lowerCaseSearch ? <mark key={i}>{s}</mark> : s))
+    return res
+  }
+
   return (
     <Card>
       {tableToolbar}
@@ -264,8 +275,8 @@ const LogsTable: React.FunctionComponent = () => {
               <Td dataLabel='level'>
                 <LogLevel level={log.event.level} />
               </Td>
-              <Td dataLabel='logger'>{log.event.logger}</Td>
-              <Td dataLabel='message'>{log.event.message}</Td>
+              <Td dataLabel='logger'>{highlightSearch(log.event.logger, filters.logger)}</Td>
+              <Td dataLabel='message'>{highlightSearch(log.event.message, filters.message)}</Td>
             </Tr>
           ))}
           {filteredLogs.length === 0 && (
