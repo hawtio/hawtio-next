@@ -2438,7 +2438,7 @@ __metadata:
     "@module-federation/utilities": ^2.0.7
     "@patternfly/react-charts": ^7.0.0
     "@patternfly/react-code-editor": ^5.0.0
-    "@patternfly/react-core": ^4.276.8
+    "@patternfly/react-core": ^5.0.1
     "@patternfly/react-table": ^4.113.0
     "@simbathesailor/use-what-changed": ^2.0.0
     "@testing-library/jest-dom": ^6.1.2
@@ -2478,7 +2478,7 @@ __metadata:
     typescript: ^4.9.5
     xml-formatter: ^3.5.0
   peerDependencies:
-    "@patternfly/react-core": ^4.276.8
+    "@patternfly/react-core": ^5.0.1
     keycloak-js: ^21
     react: ^16.8 || ^17 || ^18
     react-dom: ^16.8 || ^17 || ^18
@@ -3348,7 +3348,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-core@npm:^5.1.0":
+"@patternfly/react-core@npm:^5.0.1, @patternfly/react-core@npm:^5.1.0":
   version: 5.1.0
   resolution: "@patternfly/react-core@npm:5.1.0"
   dependencies:
