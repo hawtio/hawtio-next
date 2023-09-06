@@ -13,6 +13,9 @@ export interface Plugin {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component: React.ComponentType<any>
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  headerItems?: React.ComponentType<any>[]
+
   /**
    * Returns if this plugin should be activated.
    * This method needs to return a promise as the process of resolving if a plugin
