@@ -1,5 +1,5 @@
 import { PUBLIC_USER, userService } from '@hawtiosrc/auth'
-import { DEFAULT_APP_NAME, useHawtconfig } from '@hawtiosrc/core'
+import { DEFAULT_APP_NAME, useHawtconfig, Plugin } from '@hawtiosrc/core'
 import { hawtioLogo, userAvatar } from '@hawtiosrc/img'
 import { preferencesService } from '@hawtiosrc/preferences/preferences-service'
 import { HawtioAbout } from '@hawtiosrc/ui/about'
@@ -22,7 +22,7 @@ import {
 } from '@patternfly/react-core'
 import { BarsIcon, HelpIcon } from '@patternfly/react-icons'
 import React, { useContext, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import './HawtioHeader.css'
 import { PageContext } from './context'
 
@@ -72,7 +72,8 @@ const HawtioBrand: React.FunctionComponent = () => {
 }
 
 const HawtioHeaderToolbar: React.FunctionComponent = () => {
-  const { username } = useContext(PageContext)
+  const { username, plugins } = useContext(PageContext)
+  const location = useLocation()
 
   const isPublic = username === PUBLIC_USER
 
@@ -104,9 +105,25 @@ const HawtioHeaderToolbar: React.FunctionComponent = () => {
     userItems.pop()
   }
 
+  /*
+   * Determine which plugin is currently displaying
+   * based on the path of the current location
+   */
+  const pluginFromLocation = (): Plugin | null => {
+    const path = location.pathname
+    return plugins.find(plugin => path.startsWith(plugin.path)) ?? null
+  }
+
+  const plugin = pluginFromLocation()
+
   return (
     <Toolbar id='hawtio-header-toolbar'>
       <ToolbarContent>
+        <ToolbarGroup>
+          {plugin?.headerItems?.map((comp, index) => (
+            <ToolbarItem key={`hawtio-header-toolbar-plugin-item-${index}`}>{React.createElement(comp)}</ToolbarItem>
+          ))}
+        </ToolbarGroup>
         <ToolbarGroup>
           <ToolbarItem>
             <Dropdown
