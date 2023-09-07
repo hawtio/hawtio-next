@@ -50,6 +50,9 @@ export class MBeanNode implements TreeViewDataItem {
   mbean?: OptimisedJmxMBean
   propertyList?: PropertyList
 
+  // TreeViewDataItem properties
+  defaultExpanded?: boolean
+
   /**
    * A new node
    * @constructor
@@ -77,8 +80,8 @@ export class MBeanNode implements TreeViewDataItem {
 
   private generateId(folder: boolean): string {
     const idPrefix = this.parent ? this.parent.id + MBEAN_NODE_ID_SEPARATOR : ''
-    const idPostFix = folder ? '-folder' : ''
-    let id = idPrefix + escapeHtmlId(this.name) + idPostFix
+    const idPostfix = folder ? '-folder' : ''
+    let id = idPrefix + escapeHtmlId(this.name) + idPostfix
 
     // Check id is unique against current siblings
     if (this.parent) {
@@ -148,12 +151,20 @@ export class MBeanNode implements TreeViewDataItem {
     }
   }
 
-  getType(): string | undefined {
-    return this.getMetadata('type')
-  }
-
-  setType(type: string) {
-    this.addMetadata('type', type)
+  /**
+   * Copy the node to a new node with the given name, transferring the icons, children,
+   * metadata, and MBean info.
+   */
+  copyTo(name: string): MBeanNode {
+    const copy = new MBeanNode(null, name, this.folder)
+    copy.icon = this.icon
+    copy.expandedIcon = this.expandedIcon
+    copy.children = this.children
+    copy.metadata = this.metadata
+    copy.objectName = this.objectName
+    copy.mbean = this.mbean
+    copy.propertyList = this.propertyList
+    return copy
   }
 
   /**
@@ -244,12 +255,24 @@ export class MBeanNode implements TreeViewDataItem {
     return this.children ? this.children.length : 0
   }
 
+  getType(): string | undefined {
+    return this.getMetadata('type')
+  }
+
+  setType(type: string) {
+    this.addMetadata('type', type)
+  }
+
   getMetadata(key: string): string | undefined {
     return this.metadata[key]
   }
 
   addMetadata(key: string, value: string) {
     this.metadata[key] = value
+  }
+
+  getProperty(key: string): string | undefined {
+    return this.propertyList?.get(key)
   }
 
   static sorter(a: MBeanNode, b: MBeanNode): number {
@@ -606,6 +629,10 @@ export class PropertyList {
         reorderObjects(this.paths, 'key', ['type', 'version', 'framework'])
         break
     }
+  }
+
+  get(key: string): string | undefined {
+    return this.properties[key]
   }
 
   match(properties: Record<string, string>): boolean {

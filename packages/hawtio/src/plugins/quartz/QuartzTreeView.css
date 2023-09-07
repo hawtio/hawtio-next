@@ -1,0 +1,34 @@
+#quartz-tree-view .pf-c-tree-view__list {
+  height: 100%;
+}
+
+#quartz-tree-view .pf-c-tree-view__node {
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
+
+#quartz-tree-view .pf-c-tree-view__node.pf-m-current {
+  padding-left: 10px;
+}
+
+#quartz-tree-view .pf-c-tree-view__node-toggle {
+  padding-top: 0px;
+  padding-bottom: 0px;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+#quartz-tree-view .pf-c-tree-view__node-text {
+  padding-top: 2px;
+  font-size: smaller;
+}
+
+#quartz-tree-view .pf-c-tree-view__node-icon {
+  flex-shrink: 0;
+}
+
+#quartz-tree-view .pf-c-tree-view__node-text {
+  overflow-x: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

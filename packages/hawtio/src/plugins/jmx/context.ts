@@ -32,9 +32,8 @@ export function useMBeanTree() {
     const path = [...refSelectedNode.current.path()]
 
     // Expand the nodes to redisplay the path
-    wkspTree.forEach(path, (node: MBeanNode) => {
-      const tvd = node as TreeViewDataItem
-      tvd.defaultExpanded = true
+    wkspTree.forEach(path, node => {
+      node.defaultExpanded = true
     })
 
     // Ensure the new version of the selected node is selected
