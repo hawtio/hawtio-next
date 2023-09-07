@@ -4,6 +4,7 @@ import { camel } from './camel'
 import { connect } from './connect'
 import { jmx } from './jmx'
 import { logs } from './logs'
+import { quartz } from './quartz'
 import { rbac } from './rbac'
 
 export const registerPlugins: HawtioPlugin = () => {
@@ -15,6 +16,7 @@ export const registerPlugins: HawtioPlugin = () => {
   rbac()
   camel()
   logs()
+  quartz()
 }
 
 export * from './connect'
