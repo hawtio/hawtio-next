@@ -6,6 +6,7 @@ import { jmx } from './jmx'
 import { logs } from './logs'
 import { quartz } from './quartz'
 import { rbac } from './rbac'
+import { runtime } from './runtime'
 
 export const registerPlugins: HawtioPlugin = () => {
   // Auth plugins should be loaded before other plugins
@@ -15,6 +16,7 @@ export const registerPlugins: HawtioPlugin = () => {
   jmx()
   rbac()
   camel()
+  runtime()
   logs()
   quartz()
 }
