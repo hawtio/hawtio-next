@@ -40,7 +40,7 @@ export const Runtime: React.FunctionComponent = () => {
           <Nav aria-label='Nav' variant='tertiary'>
             <NavList>
               {navItems.map(navItem => (
-                <NavItem key={navItem.id} isActive={location.pathname === `/help/${navItem.id}`}>
+                <NavItem key={navItem.id} isActive={location.pathname === `/runtime/${navItem.id}`}>
                   <NavLink to={navItem.id}>{navItem.title}</NavLink>
                 </NavItem>
               ))}
@@ -54,7 +54,7 @@ export const Runtime: React.FunctionComponent = () => {
             {navItems.map(navItem => (
               <Route key={navItem.id} path={navItem.id} element={navItem.component} />
             ))}
-            <Route path='/' element={<Navigate to='home' />} />
+            <Route path='/' element={<Navigate to='sysprops' />} />
           </Routes>
         </Card>
       </PageSection>
