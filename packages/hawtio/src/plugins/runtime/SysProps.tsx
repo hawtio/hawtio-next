@@ -32,8 +32,8 @@ export const SysProps: React.FunctionComponent = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [filters, setFilters] = useState<string[]>([])
   const [attributeMenuItem, setAttributeMenuItem] = useState('name')
-  const [sortByValue, setSortByValue] = React.useState<boolean>(false)
-  const [activeSortDirection, setActiveSortDirection] = React.useState<'asc' | 'desc'>('asc')
+  const [sortIndex, setSortIndex] = React.useState<number>(-1)
+  const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('asc')
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   useEffect(() => {
@@ -124,25 +124,27 @@ export const SysProps: React.FunctionComponent = () => {
     </DropdownItem>
   ))
 
-  const getSortParams = (sortByValue: boolean): ThProps['sort'] => ({
+  const getSortParams = (sortColumn: number): ThProps['sort'] => ({
     sortBy: {
-      index: sortByValue ? 1 : 0,
-      direction: activeSortDirection,
+      index: sortIndex,
+      direction: sortDirection,
       defaultDirection: 'asc', // starting sort direction when first sorting a column. Defaults to 'asc'
     },
     onSort: (_event, index, direction) => {
-      setSortByValue(sortByValue)
-      setActiveSortDirection(direction)
+      setSortIndex(index)
+      setSortDirection(direction)
     },
-    columnIndex: sortByValue ? 1 : 0,
+    columnIndex: sortColumn,
   })
   const sortProperties = (): SystemProperty[] => {
     let sortedProps = filteredProperties
-    sortedProps = filteredProperties.sort((a, b) => {
-      const aValue = sortByValue ? a.value : a.key
-      const bValue = sortByValue ? b.value : b.key
-      return objectSorter(aValue, bValue, activeSortDirection === 'desc')
-    })
+    if (sortIndex >= 0) {
+      sortedProps = filteredProperties.sort((a, b) => {
+        const aValue = sortIndex === 1 ? a.value : a.key
+        const bValue = sortIndex === 1 ? b.value : b.key
+        return objectSorter(aValue, bValue, sortDirection === 'desc')
+      })
+    }
 
     return sortedProps
   }
@@ -197,14 +199,18 @@ export const SysProps: React.FunctionComponent = () => {
             <TableComposable aria-label='Message Table' variant='compact' height='80vh'>
               <Thead>
                 <Tr>
-                  <Th sort={getSortParams(false)}>Property Name</Th>
-                  <Th sort={getSortParams(true)}>Property Value</Th>
+                  <Th data-testid={'name-header'} sort={getSortParams(0)}>
+                    Property Name
+                  </Th>
+                  <Th data-testid={'value-header'} sort={getSortParams(1)}>
+                    Property Value
+                  </Th>
                 </Tr>
               </Thead>
               <Tbody>
                 {getPageProperties().map((prop, index) => {
                   return (
-                    <Tr key={index}>
+                    <Tr key={'row' + index} data-testid={'row' + index}>
                       <Td style={{ width: '20%' }}>{prop.key}</Td>
                       <Td style={{ flex: 3 }}>{prop.value}</Td>
                     </Tr>
