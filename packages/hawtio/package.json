@@ -38,7 +38,7 @@
     "@patternfly/react-charts": "^7.0.0",
     "@patternfly/react-code-editor": "^5.0.0",
     "@patternfly/react-core": "^4.276.12",
-    "@patternfly/react-table": "^4.113.0",
+    "@patternfly/react-table": "^4.113.4",
     "@testing-library/jest-dom": "^6.1.2",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
