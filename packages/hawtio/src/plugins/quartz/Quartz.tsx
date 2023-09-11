@@ -19,7 +19,7 @@ export const Quartz: React.FunctionComponent = () => {
 
   return (
     <QuartzContext.Provider value={{ tree, selectedNode, setSelectedNode }}>
-      <Split className='quartz-split' sizes={[30, 70]} minSize={200} gutterSize={5}>
+      <Split className='quartz-split' sizes={[20, 80]} minSize={100} gutterSize={5}>
         <div>
           <QuartzTreeView />
         </div>

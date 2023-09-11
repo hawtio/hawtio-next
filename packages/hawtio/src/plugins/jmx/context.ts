@@ -1,10 +1,9 @@
-import { createContext, useEffect, useState, useContext, useRef } from 'react'
+import { EVENT_REFRESH, eventService } from '@hawtiosrc/core'
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
-import { workspace, MBeanNode, MBeanTree } from '@hawtiosrc/plugins/shared'
-import { pluginName, pluginPath } from './globals'
-import { eventService, EVENT_REFRESH } from '@hawtiosrc/core'
-import { TreeViewDataItem } from '@patternfly/react-core'
+import { MBeanNode, MBeanTree, workspace } from '@hawtiosrc/plugins/shared'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { pluginName, pluginPath } from './globals'
 
 /**
  * Custom React hook for using JMX MBean tree.
