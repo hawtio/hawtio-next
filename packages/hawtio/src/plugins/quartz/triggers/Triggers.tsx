@@ -22,11 +22,13 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import { QuartzContext } from '../context'
 import { Trigger, TriggerFilter, quartzService } from '../quartz-service'
 import { TriggersTableRow } from './TriggersTableRow'
+import { log } from '../globals'
 
 export const Triggers: React.FunctionComponent = () => {
   const { selectedNode } = useContext(QuartzContext)
   const [triggers, setTriggers] = useState<Trigger[]>([])
   const [isReading, setIsReading] = useState(true)
+  const [reload, setReload] = useState(false)
 
   // Filters
   const emptyFilters: TriggerFilter = { state: '', group: '', name: '', type: '' }
@@ -37,7 +39,7 @@ export const Triggers: React.FunctionComponent = () => {
   const [isSelectStateOpen, setIsSelectStateOpen] = useState(false)
 
   useEffect(() => {
-    if (!selectedNode || !selectedNode.mbean || !selectedNode.objectName) {
+    if (!selectedNode || !selectedNode.objectName) {
       return
     }
 
@@ -58,12 +60,30 @@ export const Triggers: React.FunctionComponent = () => {
     return () => quartzService.unregisterAll()
   }, [selectedNode])
 
+  // When forcing reload
+  useEffect(() => {
+    if (!selectedNode || !selectedNode.objectName || !reload) {
+      return
+    }
+
+    log.debug('Reload triggers')
+
+    const { objectName } = selectedNode
+    const loadTriggers = async () => {
+      const triggers = await quartzService.loadTriggers(objectName)
+      setTriggers(triggers)
+    }
+    loadTriggers()
+
+    setReload(false)
+  }, [selectedNode, reload])
+
   useEffect(() => {
     const filteredTriggers = quartzService.filterTriggers(triggers, filters)
     setFilteredTriggers(filteredTriggers)
   }, [triggers, filters])
 
-  if (!selectedNode || !selectedNode.mbean || !selectedNode.objectName) {
+  if (!selectedNode || !selectedNode.objectName) {
     return null
   }
 
@@ -179,7 +199,7 @@ export const Triggers: React.FunctionComponent = () => {
         </Thead>
         <Tbody>
           {filteredTriggers.map((trigger, index) => (
-            <TriggersTableRow key={index} mbean={objectName} trigger={trigger} />
+            <TriggersTableRow key={index} mbean={objectName} trigger={trigger} reload={() => setReload(true)} />
           ))}
           {filteredTriggers.length === 0 && (
             <Tr>
