@@ -1,23 +1,29 @@
 import { Button, Form, FormGroup, FormSelect, FormSelectOption, Modal, TextInput } from '@patternfly/react-core'
-import React, { useState } from 'react'
-import { Trigger, misfireInstructions, quartzService } from '../quartz-service'
+import React, { useContext, useState } from 'react'
+import { QuartzContext } from '../context'
 import { log } from '../globals'
+import { Trigger, misfireInstructions, quartzService } from '../quartz-service'
 
 export const TriggersUpdateModal: React.FunctionComponent<{
   isOpen: boolean
   onClose: () => void
-  mbean: string
   input: Trigger
   reload: () => void
-}> = ({ isOpen, onClose, mbean, input, reload }) => {
+}> = ({ isOpen, onClose, input, reload }) => {
+  const { selectedNode } = useContext(QuartzContext)
   const [trigger, setTrigger] = useState(input)
 
+  if (!selectedNode || !selectedNode.objectName) {
+    return null
+  }
+
+  const { objectName } = selectedNode
   const isCron = input.type === 'cron'
   const isSimple = input.type === 'simple'
 
   const updateTrigger = async () => {
-    log.info('Update trigger:', mbean, trigger)
-    await quartzService.updateTrigger(mbean, trigger)
+    log.info('Update trigger:', objectName, trigger)
+    await quartzService.updateTrigger(objectName, trigger)
     reload()
     onClose()
   }
