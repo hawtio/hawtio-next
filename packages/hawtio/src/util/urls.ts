@@ -26,3 +26,19 @@ export function joinPaths(...paths: string[]): string {
   })
   return tmp.join('/')
 }
+
+/**
+ * Gets a query value from the given URL.
+ *
+ * @param url URL
+ * @param parameterName the URI parameter value to get
+ * @returns the URI-decoded parameter value
+ */
+export function getQueryParameterValue(url: string, parameterName: string): string | null {
+  const query = url.split('?')[1] ?? ''
+  const params = query.split('&') ?? []
+  const value = params
+    .map(param => param.split('='))
+    .find(([key, _]) => key && decodeURIComponent(key) === parameterName)?.[1]
+  return value ? decodeURIComponent(value) : null
+}
