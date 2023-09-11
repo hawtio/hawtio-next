@@ -20,9 +20,9 @@ import { SearchIcon } from '@patternfly/react-icons'
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { QuartzContext } from '../context'
+import { log } from '../globals'
 import { Trigger, TriggerFilter, quartzService } from '../quartz-service'
 import { TriggersTableRow } from './TriggersTableRow'
-import { log } from '../globals'
 
 export const Triggers: React.FunctionComponent = () => {
   const { selectedNode } = useContext(QuartzContext)
@@ -86,8 +86,6 @@ export const Triggers: React.FunctionComponent = () => {
   if (!selectedNode || !selectedNode.objectName) {
     return null
   }
-
-  const { objectName } = selectedNode
 
   if (isReading) {
     return <HawtioLoadingCard />
@@ -199,7 +197,7 @@ export const Triggers: React.FunctionComponent = () => {
         </Thead>
         <Tbody>
           {filteredTriggers.map((trigger, index) => (
-            <TriggersTableRow key={index} mbean={objectName} trigger={trigger} reload={() => setReload(true)} />
+            <TriggersTableRow key={index} trigger={trigger} reload={() => setReload(true)} />
           ))}
           {filteredTriggers.length === 0 && (
             <Tr>

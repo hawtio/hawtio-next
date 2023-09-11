@@ -19,7 +19,7 @@ import { CheckCircleIcon, PauseCircleIcon } from '@patternfly/react-icons'
 import React, { useContext, useEffect, useState } from 'react'
 import { QuartzContext } from '../context'
 import { log } from '../globals'
-import { quartzService } from '../quartz-service'
+import { QUARTZ_OPERATIONS, quartzService } from '../quartz-service'
 import './Scheduler.css'
 
 export const Scheduler: React.FunctionComponent = () => {
@@ -78,9 +78,18 @@ export const Scheduler: React.FunctionComponent = () => {
 
   const { name, objectName } = selectedNode
 
+  const canStartPauseScheduler = () => {
+    return selectedNode.hasInvokeRights(QUARTZ_OPERATIONS.start, QUARTZ_OPERATIONS.standby)
+  }
+
   const handleSchedulerSwitchChange = async (start: boolean) => {
     await (start ? quartzService.start(name, objectName) : quartzService.pause(name, objectName))
     setReload(true)
+  }
+
+  const canUpdateSampleStatisticsEnabled = () => {
+    // TODO: currently using the same criteria as start/pause scheduler, as it requires writing to an attribute
+    return selectedNode.hasInvokeRights(QUARTZ_OPERATIONS.start, QUARTZ_OPERATIONS.standby)
   }
 
   const handleSampledStatisticsSwitchChange = async (value: boolean) => {
@@ -126,6 +135,7 @@ export const Scheduler: React.FunctionComponent = () => {
               label='Started'
               labelOff='Paused'
               isChecked={scheduler.started}
+              isDisabled={!canStartPauseScheduler()}
               onChange={handleSchedulerSwitchChange}
               isReversed
             />
@@ -180,6 +190,7 @@ export const Scheduler: React.FunctionComponent = () => {
               label='Enabled'
               labelOff='Disabled'
               isChecked={scheduler.sampledStatisticsEnabled}
+              isDisabled={!canUpdateSampleStatisticsEnabled()}
               onChange={handleSampledStatisticsSwitchChange}
               isReversed
             />

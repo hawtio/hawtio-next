@@ -1,21 +1,27 @@
 import { Button, Form, FormGroup, Modal, TextArea } from '@patternfly/react-core'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
+import { QuartzContext } from '../context'
 import { log } from '../globals'
 import { Trigger, quartzService } from '../quartz-service'
 
 export const TriggersManualModal: React.FunctionComponent<{
   isOpen: boolean
   onClose: () => void
-  mbean: string
   input: Trigger
-}> = ({ isOpen, onClose, mbean, input }) => {
+}> = ({ isOpen, onClose, input }) => {
+  const { selectedNode } = useContext(QuartzContext)
   const [parameters, setParameters] = useState('{}')
 
+  if (!selectedNode || !selectedNode.objectName) {
+    return null
+  }
+
+  const { objectName } = selectedNode
   const { name, group } = input
 
   const fireTrigger = () => {
-    log.info('Manually fire trigger:', mbean, input, parameters)
-    quartzService.triggerJob(mbean, name, group, parameters)
+    log.info('Manually fire trigger:', objectName, input, parameters)
+    quartzService.triggerJob(objectName, name, group, parameters)
     clear()
   }
 
