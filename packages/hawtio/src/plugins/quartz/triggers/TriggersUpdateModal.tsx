@@ -8,15 +8,17 @@ export const TriggersUpdateModal: React.FunctionComponent<{
   onClose: () => void
   mbean: string
   input: Trigger
-}> = ({ isOpen, onClose, mbean, input }) => {
+  reload: () => void
+}> = ({ isOpen, onClose, mbean, input, reload }) => {
   const [trigger, setTrigger] = useState(input)
 
   const isCron = input.type === 'cron'
   const isSimple = input.type === 'simple'
 
-  const updateTrigger = () => {
+  const updateTrigger = async () => {
     log.info('Update trigger:', mbean, trigger)
-    quartzService.updateTrigger(mbean, trigger)
+    await quartzService.updateTrigger(mbean, trigger)
+    reload()
     onClose()
   }
 

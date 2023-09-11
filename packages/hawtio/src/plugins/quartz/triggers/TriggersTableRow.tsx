@@ -9,7 +9,8 @@ import { TriggersManualModal } from './TriggersManualModal'
 export const TriggersTableRow: React.FunctionComponent<{
   mbean: string
   trigger: Trigger
-}> = ({ mbean, trigger }) => {
+  reload: () => void
+}> = ({ mbean, trigger, reload }) => {
   const [isUpdateOpen, setIsUpdateOpen] = useState(false)
   const [isManualOpen, setIsManualOpen] = useState(false)
 
@@ -21,12 +22,14 @@ export const TriggersTableRow: React.FunctionComponent<{
     setIsManualOpen(!isManualOpen)
   }
 
-  const pauseTrigger = () => {
-    quartzService.pauseTrigger(mbean, trigger.name, trigger.group)
+  const pauseTrigger = async () => {
+    await quartzService.pauseTrigger(mbean, trigger.name, trigger.group)
+    reload()
   }
 
-  const resumeTrigger = () => {
-    quartzService.resumeTrigger(mbean, trigger.name, trigger.group)
+  const resumeTrigger = async () => {
+    await quartzService.resumeTrigger(mbean, trigger.name, trigger.group)
+    reload()
   }
 
   const toMisfireText = (misfireInstruction: number): string => {
@@ -83,7 +86,13 @@ export const TriggersTableRow: React.FunctionComponent<{
           />
         </Td>
       </Tr>
-      <TriggersUpdateModal isOpen={isUpdateOpen} onClose={handleUpdateToggle} mbean={mbean} input={trigger} />
+      <TriggersUpdateModal
+        isOpen={isUpdateOpen}
+        onClose={handleUpdateToggle}
+        mbean={mbean}
+        input={trigger}
+        reload={reload}
+      />
       <TriggersManualModal isOpen={isManualOpen} onClose={handleManualToggle} mbean={mbean} input={trigger} />
     </React.Fragment>
   )

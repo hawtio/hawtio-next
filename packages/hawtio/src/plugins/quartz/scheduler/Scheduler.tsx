@@ -26,9 +26,10 @@ export const Scheduler: React.FunctionComponent = () => {
   const { selectedNode } = useContext(QuartzContext)
   const [attributes, setAttributes] = useState<AttributeValues>({})
   const [isReading, setIsReading] = useState(true)
+  const [reload, setReload] = useState(false)
 
   useEffect(() => {
-    if (!selectedNode || !selectedNode.mbean || !selectedNode.objectName) {
+    if (!selectedNode || !selectedNode.objectName) {
       return
     }
 
@@ -49,7 +50,25 @@ export const Scheduler: React.FunctionComponent = () => {
     return () => attributeService.unregisterAll()
   }, [selectedNode])
 
-  if (!selectedNode || !selectedNode.mbean || !selectedNode.objectName) {
+  // When forcing reload
+  useEffect(() => {
+    if (!selectedNode || !selectedNode.objectName || !reload) {
+      return
+    }
+
+    log.debug('Reload scheduler attributes')
+
+    const { objectName } = selectedNode
+    const readAttributes = async () => {
+      const attrs = await attributeService.read(objectName)
+      setAttributes(attrs)
+    }
+    readAttributes()
+
+    setReload(false)
+  }, [selectedNode, reload])
+
+  if (!selectedNode || !selectedNode.objectName) {
     return null
   }
 
@@ -59,12 +78,14 @@ export const Scheduler: React.FunctionComponent = () => {
 
   const { name, objectName } = selectedNode
 
-  const handleSchedulerSwitchChange = (start: boolean) => {
-    start ? quartzService.start(name, objectName) : quartzService.pause(name, objectName)
+  const handleSchedulerSwitchChange = async (start: boolean) => {
+    await (start ? quartzService.start(name, objectName) : quartzService.pause(name, objectName))
+    setReload(true)
   }
 
-  const handleSampledStatisticsSwitchChange = (value: boolean) => {
-    quartzService.updateSampleStatisticsEnabled(name, objectName, value)
+  const handleSampledStatisticsSwitchChange = async (value: boolean) => {
+    await quartzService.updateSampleStatisticsEnabled(name, objectName, value)
+    setReload(true)
   }
 
   const scheduler = {
