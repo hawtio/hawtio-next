@@ -1,5 +1,7 @@
+import { isObject } from '@hawtiosrc/util/objects'
 import { stringSorter, trimEnd } from '@hawtiosrc/util/strings'
 import { IJmxOperation, IJmxOperations } from 'jolokia.js'
+import { log } from '../globals'
 
 /**
  * Factory function for Operation objects.
@@ -23,13 +25,21 @@ function addOperation(
   name: string,
   op: IJmxOperation,
 ): void {
-  const operation = new Operation(
-    name,
-    op.args.map(arg => new OperationArgument(arg.name, arg.type, arg.desc)),
-    op.desc,
-    op.ret,
-    op.canInvoke,
-  )
+  const args: OperationArgument[] = []
+  for (const arg of op.args) {
+    let argObj = arg
+    if (!isObject(arg)) {
+      try {
+        argObj = JSON.parse(arg as string)
+      } catch (error) {
+        log.error(`Cannot parse argument ${arg} in operation ${op.desc}`, error)
+        continue
+      }
+    }
+    args.push(new OperationArgument(argObj.name, argObj.type, argObj.desc))
+  }
+
+  const operation = new Operation(name, args, op.desc, op.ret, op.canInvoke)
   operations.push(operation)
   operationMap[operation.name] = operation
 }
