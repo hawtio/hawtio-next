@@ -1,3 +1,4 @@
+import { Attributes, Operations } from '@hawtiosrc/plugins/shared'
 import {
   EmptyState,
   EmptyStateBody,
@@ -61,6 +62,8 @@ export const QuartzContent: React.FunctionComponent = () => {
     { id: 'scheduler', title: 'Scheduler', component: Scheduler },
     { id: 'triggers', title: 'Triggers', component: Triggers },
     { id: 'jobs', title: 'Jobs', component: Jobs },
+    { id: 'attributes', title: 'Attributes', component: Attributes },
+    { id: 'operations', title: 'Operations', component: Operations },
   ]
 
   const nav = (
