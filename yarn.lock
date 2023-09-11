@@ -2435,7 +2435,7 @@ __metadata:
   dependencies:
     "@hawtio/camel-model-v3": "npm:@hawtio/camel-model@^3.21.0"
     "@hawtio/camel-model-v4": "npm:@hawtio/camel-model@^4.0.0"
-    "@module-federation/utilities": ^2.0.7
+    "@module-federation/utilities": ^3.0.0
     "@patternfly/react-charts": ^7.0.0
     "@patternfly/react-code-editor": ^5.0.0
     "@patternfly/react-core": ^4.276.12
@@ -3196,11 +3196,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@module-federation/utilities@npm:^2.0.7":
-  version: 2.0.7
-  resolution: "@module-federation/utilities@npm:2.0.7"
-  dependencies:
-    webpack-sources: 3.2.3
+"@module-federation/utilities@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@module-federation/utilities@npm:3.0.0"
   peerDependencies:
     next: ^12 || ^13
     react: ^16 || ^17 || ^18
@@ -3213,7 +3211,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: aa5e09c6b7374d90d9fd8f6b65bb5b7120ff4e53dd29bb48bd196806e83b0218e0f731dfcfd13913157c81e9125583dbe538191ca3806d56e6930ec629b17fcd
+  checksum: d575c8bb11d8fe2735bfb425852c156f9a3d38e196b01183db9eb8c0eff32f9fe46906df90e096c87f631c498ddb36526bfcfebfb0cde2c2a920de04f220e920
   languageName: node
   linkType: hard
 
@@ -19013,13 +19011,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack-sources@npm:3.2.3, webpack-sources@npm:^3.2.3":
-  version: 3.2.3
-  resolution: "webpack-sources@npm:3.2.3"
-  checksum: 989e401b9fe3536529e2a99dac8c1bdc50e3a0a2c8669cbafad31271eadd994bc9405f88a3039cd2e29db5e6d9d0926ceb7a1a4e7409ece021fe79c37d9c4607
-  languageName: node
-  linkType: hard
-
 "webpack-sources@npm:^1.4.3":
   version: 1.4.3
   resolution: "webpack-sources@npm:1.4.3"
@@ -19037,6 +19028,13 @@ __metadata:
     source-list-map: ^2.0.1
     source-map: ^0.6.1
   checksum: 6fd67f2274a84c5f51ad89767112ec8b47727134bf0f2ba0cff458c970f18966939a24128bdbddba621cd66eeb2bef0552642a9333cd8e54514f7b2a71776346
+  languageName: node
+  linkType: hard
+
+"webpack-sources@npm:^3.2.3":
+  version: 3.2.3
+  resolution: "webpack-sources@npm:3.2.3"
+  checksum: 989e401b9fe3536529e2a99dac8c1bdc50e3a0a2c8669cbafad31271eadd994bc9405f88a3039cd2e29db5e6d9d0926ceb7a1a4e7409ece021fe79c37d9c4607
   languageName: node
   linkType: hard
 
