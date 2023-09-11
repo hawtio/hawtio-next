@@ -37,19 +37,27 @@ export type TriggerFilter = {
   type: string
 }
 
-export type JobDetails = Record<string, JobByGroup>
+export type JobDetails = Record<string, JobsByGroup>
 
-export type JobByGroup = Record<string, Job>
+export type JobsByGroup = Record<string, Job>
 
 export type Job = {
-  id: string
   group: string
   name: string
   durability: boolean
   shouldRecover: boolean
   jobClass: string
-  description: string
+  description?: string
   jobDataMap: Record<string, string>
+}
+
+export type JobFilter = {
+  group: string
+  name: string
+  durability: 'true' | 'false' | ''
+  shouldRecover: 'true' | 'false' | ''
+  jobClass: string
+  description: string
 }
 
 export const QUARTZ_OPERATIONS = {
@@ -110,6 +118,12 @@ class QuartzService {
     return triggers
   }
 
+  async loadJobs(schedulerMBean: string): Promise<Job[]> {
+    const attrs = await attributeService.read(schedulerMBean)
+    const jobDetails = attrs['AllJobDetails'] as JobDetails
+    return Object.values(jobDetails).flatMap(jobsByGroup => Object.values(jobsByGroup))
+  }
+
   registerTriggersLoad(schedulerMBean: string, callback: (triggers: Trigger[]) => void) {
     attributeService.register({ type: 'read', mbean: schedulerMBean }, async response => {
       const attrs = response.value as AttributeValues
@@ -119,6 +133,17 @@ class QuartzService {
       await quartzService.loadTriggerStates(schedulerMBean, triggers, jobDetails)
       log.debug('Scheduler - Triggers:', triggers)
       callback(triggers)
+    })
+  }
+
+  registerJobsLoad(schedulerMBean: string, callback: (jobs: Job[]) => void) {
+    attributeService.register({ type: 'read', mbean: schedulerMBean }, async response => {
+      const attrs = response.value as AttributeValues
+      log.debug('Scheduler - Attributes:', attrs)
+      const jobDetails = attrs['AllJobDetails'] as JobDetails
+      const jobs = Object.values(jobDetails).flatMap(jobsByGroup => Object.values(jobsByGroup))
+      log.debug('Scheduler - Jobs:', jobs)
+      callback(jobs)
     })
   }
 
@@ -208,25 +233,51 @@ class QuartzService {
 
   filterTriggers(triggers: Trigger[], filter: TriggerFilter): Trigger[] {
     const { state, group, name, type } = filter
-    const match = (value: string, pattern: string) => {
-      const regexp = new RegExp(pattern, 'i')
-      return value.match(regexp) !== null
-    }
     return triggers.filter(trigger => {
       if (state !== '' && trigger.state !== state) {
         return false
       }
-      if (group !== '' && !match(trigger.group, group)) {
+      if (group !== '' && !this.match(trigger.group, group)) {
         return false
       }
-      if (name !== '' && !match(trigger.name, name)) {
+      if (name !== '' && !this.match(trigger.name, name)) {
         return false
       }
-      if (type !== '' && !match(trigger.type ?? '', type)) {
+      if (type !== '' && !this.match(trigger.type ?? '', type)) {
         return false
       }
       return true
     })
+  }
+
+  filterJobs(jobs: Job[], filter: JobFilter): Job[] {
+    const { group, name, durability, shouldRecover, jobClass, description } = filter
+    return jobs.filter(job => {
+      if (group !== '' && !this.match(job.group, group)) {
+        return false
+      }
+      if (name !== '' && !this.match(job.name, name)) {
+        return false
+      }
+      if (durability !== '' && String(job.durability) !== durability) {
+        return false
+      }
+      if (shouldRecover !== '' && String(job.shouldRecover) !== shouldRecover) {
+        return false
+      }
+      if (jobClass !== '' && !this.match(job.jobClass, jobClass)) {
+        return false
+      }
+      if (description !== '' && !this.match(job.description ?? '', description)) {
+        return false
+      }
+      return true
+    })
+  }
+
+  private match(value: string, pattern: string): boolean {
+    const regexp = new RegExp(pattern, 'i')
+    return value.match(regexp) !== null
   }
 
   async pauseTrigger(schedulerMBean: string, name: string, group: string) {
