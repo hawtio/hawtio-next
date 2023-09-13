@@ -1,5 +1,5 @@
 import { PUBLIC_USER, userService } from '@hawtiosrc/auth'
-import { DEFAULT_APP_NAME, useHawtconfig, Plugin } from '@hawtiosrc/core'
+import { DEFAULT_APP_NAME, useHawtconfig, UniversalHeaderItem, isUniversalHeaderItem } from '@hawtiosrc/core'
 import { hawtioLogo, userAvatar } from '@hawtiosrc/img'
 import { preferencesService } from '@hawtiosrc/preferences/preferences-service'
 import { HawtioAbout } from '@hawtiosrc/ui/about'
@@ -105,23 +105,50 @@ const HawtioHeaderToolbar: React.FunctionComponent = () => {
     userItems.pop()
   }
 
-  /*
-   * Determine which plugin is currently displaying
-   * based on the path of the current location
-   */
-  const pluginFromLocation = (): Plugin | null => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const collectHeaderItems = (): React.ComponentType<any>[] => {
     const path = location.pathname
-    return plugins.find(plugin => path.startsWith(plugin.path)) ?? null
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const components: React.ComponentType<any>[] = []
+
+    // Iterate through the plugins ...
+    plugins.forEach(plugin => {
+      if (!plugin.headerItems || plugin.headerItems.length === 0) return // no header items in plugin
+
+      // if plugin is currently visible in UI
+      if (path.startsWith(plugin.path)) {
+        components.push(
+          ...plugin.headerItems.map(headerItem =>
+            isUniversalHeaderItem(headerItem) ? headerItem.component : headerItem,
+          ),
+        )
+        return
+      }
+
+      components.push(
+        ...plugin.headerItems
+          .filter(
+            headerItem => isUniversalHeaderItem(headerItem) && (headerItem as UniversalHeaderItem).universal === true,
+          )
+          .map(headerItem => (headerItem as UniversalHeaderItem).component),
+      )
+    })
+
+    return components
   }
 
-  const plugin = pluginFromLocation()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const headerComponents: React.ComponentType<any>[] = collectHeaderItems()
 
   return (
     <Toolbar id='hawtio-header-toolbar'>
       <ToolbarContent>
         <ToolbarGroup>
-          {plugin?.headerItems?.map((comp, index) => (
-            <ToolbarItem key={`hawtio-header-toolbar-plugin-item-${index}`}>{React.createElement(comp)}</ToolbarItem>
+          {headerComponents.map((component, index) => (
+            <ToolbarItem key={`hawtio-header-toolbar-plugin-item-${index}`}>
+              {React.createElement(component)}
+            </ToolbarItem>
           ))}
         </ToolbarGroup>
         <ToolbarGroup>

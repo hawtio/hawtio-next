@@ -8,7 +8,7 @@ export const registerExample3: HawtioPlugin = () => {
     title: 'Example 3',
     path: '/example3',
     component: Example3,
-    headerItems: [ToolbarItemComp1, ToolbarItemComp2],
+    headerItems: [ToolbarItemComp1, { component: ToolbarItemComp2, universal: true }],
     isActive: async () => true,
   })
 }

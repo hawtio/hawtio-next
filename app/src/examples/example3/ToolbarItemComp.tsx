@@ -27,7 +27,7 @@ export const ToolbarItemComp1: React.FunctionComponent = () => {
           </Button>,
         ]}
       >
-        Hello World!
+        Hello World! I am part of the Example3 plugin
       </Modal>
     </React.Fragment>
   )
@@ -81,7 +81,7 @@ export const ToolbarItemComp2: React.FunctionComponent = () => {
       onSelect={onSelect}
       toggle={
         <DropdownToggle id='toggle-basic' onToggle={onToggle}>
-          Dropdown
+          Plugin Example 3 Dropdown
         </DropdownToggle>
       }
       isOpen={isOpen}
