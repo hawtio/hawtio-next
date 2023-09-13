@@ -26,7 +26,12 @@ import {
 
 import { TableComposable, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
 import { SearchIcon } from '@patternfly/react-icons'
-import { getThreads, dumpThreads } from '@hawtiosrc/plugins/runtime/runtime-service'
+import {
+  getThreads,
+  dumpThreads,
+  enableThreadContentionMonitoring,
+  isThreadContentionMonitoringEnabled,
+} from '@hawtiosrc/plugins/runtime/runtime-service'
 import { objectSorter } from '@hawtiosrc/util/objects'
 import { Thread } from '@hawtiosrc/plugins/runtime/types'
 import { ThreadInfoModal } from './ThreadInfoModal'
@@ -77,11 +82,15 @@ export const Threads: React.FunctionComponent = () => {
   const [isThreadsDumpModalOpen, setIsThreadsDumpModalOpen] = useState(false)
   const [isThreadDetailsOpen, setIsThreadDetailsOpen] = useState(false)
   const [currentThread, setCurrentThread] = useState<Thread>()
+  const [threadConnectionMonitoring, setThreadConnectionMonitoring] = useState(false)
 
   useEffect(() => {
     getThreads().then((props: Thread[]) => {
       setThreads(props)
       setFilteredThreads(props)
+    })
+    isThreadContentionMonitoringEnabled().then(enabled => {
+      setThreadConnectionMonitoring(enabled)
     })
   }, [])
 
@@ -215,6 +224,10 @@ export const Threads: React.FunctionComponent = () => {
     setIsThreadsDumpModalOpen(true)
   }
 
+  async function handleConnectionThreadMonitoring() {
+    enableThreadContentionMonitoring(!threadConnectionMonitoring)
+    setThreadConnectionMonitoring(!threadConnectionMonitoring)
+  }
   return (
     <Card isFullHeight>
       <CardBody>
@@ -257,6 +270,9 @@ export const Threads: React.FunctionComponent = () => {
               </ToolbarFilter>
               <Button variant='secondary' onClick={addToFilters}>
                 Add Filter
+              </Button>
+              <Button variant='secondary' onClick={handleConnectionThreadMonitoring}>
+                {threadConnectionMonitoring ? 'Disable' : 'Enable'} Connection Thread Monitoring
               </Button>
               <Button variant='secondary' onClick={onThreadDumpClick}>
                 Thread Dump

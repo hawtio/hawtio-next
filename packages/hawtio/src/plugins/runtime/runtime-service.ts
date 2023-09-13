@@ -18,27 +18,13 @@ export function getThreads(): Promise<Thread[]> {
   ]) as Promise<Thread[]>
 }
 
-export function isThreadContentionMonitoringEnabled(): Promise<boolean> {
-  return jolokiaService.readAttribute(
-    'java.lang:type=Threading',
-    'ThreadContentionMonitoringEnabled',
-  ) as Promise<boolean>
+export async function isThreadContentionMonitoringEnabled(): Promise<boolean> {
+  const res = await jolokiaService.readAttribute('java.lang:type=Threading', 'ThreadContentionMonitoringEnabled')
+  return res as boolean
 }
 
-export function enableThreadContentionMonitoring(): Promise<void> {
-  return jolokiaService.writeAttribute(
-    'java.lang:type=Threading',
-    'ThreadContentionMonitoringEnabled',
-    true,
-  ) as Promise<void>
-}
-
-export function disableThreadContentionMonitoring(): Promise<void> {
-  return jolokiaService.writeAttribute(
-    'java.lang:type=Threading',
-    'ThreadContentionMonitoringEnabled',
-    false,
-  ) as Promise<void>
+export async function enableThreadContentionMonitoring(enabled: boolean) {
+  return await jolokiaService.writeAttribute('java.lang:type=Threading', 'ThreadContentionMonitoringEnabled', enabled)
 }
 
 export async function dumpThreads(): Promise<string> {
