@@ -3,6 +3,36 @@ import $ from 'jquery'
 import { eventService } from './event-service'
 import { log } from './globals'
 
+/*
+ * Components to be added to the header navbar
+ * Can define either a single component type or
+ * a component with a universal property.
+ *
+ * By default, components will only be displayed
+ * if the plugin UI is also visible. However, setting
+ * universal to 'true' will ensure the component
+ * remains displayed regardless of which plugin is
+ * given focus.
+ */
+export interface UniversalHeaderItem {
+  // The components that should be populated as
+  // dropdown items on the header bar
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  component: React.ComponentType<any>
+
+  // Should components remain visible on header even when
+  // the plugin is not being displayed.
+  universal: boolean
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type HeaderItem = React.ComponentType<any> | UniversalHeaderItem
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isUniversalHeaderItem(obj: any): obj is UniversalHeaderItem {
+  return typeof obj.universal === 'boolean'
+}
+
 /**
  * Internal representation of a Hawtio plugin.
  */
@@ -13,8 +43,7 @@ export interface Plugin {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component: React.ComponentType<any>
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  headerItems?: React.ComponentType<any>[]
+  headerItems?: HeaderItem[]
 
   /**
    * Returns if this plugin should be activated.
