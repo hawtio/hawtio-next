@@ -1,4 +1,12 @@
 export type SystemProperty = { key: string; value: string }
+export type Metric = {
+  type: 'JVM' | 'System'
+  name: string
+  value: string | number
+  unit?: string
+  available?: string | number
+  chart?: boolean
+}
 export type Thread = {
   blockedCount: number
   daemon: boolean
