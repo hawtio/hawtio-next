@@ -1,6 +1,6 @@
 import { render, screen, waitFor, within } from '@testing-library/react'
 import { SysProps } from '@hawtiosrc/plugins/runtime/SysProps'
-import { SystemProperty } from '@hawtiosrc/plugins/runtime/runtime-service'
+import { SystemProperty } from './types'
 import userEvent from '@testing-library/user-event'
 
 function getMockedProperties(): SystemProperty[] {

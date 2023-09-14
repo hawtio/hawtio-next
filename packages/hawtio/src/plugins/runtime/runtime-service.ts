@@ -1,6 +1,7 @@
 import { jolokiaService } from '@hawtiosrc/plugins/shared'
 import { Metric, SystemProperty, Thread } from './types'
 
+export const REFRESH_INTERVAL = 5000
 function convertMsToDaysHours(ms: number): string {
   const seconds = Math.floor(ms / 1000)
   const minutes = Math.floor(seconds / 60)

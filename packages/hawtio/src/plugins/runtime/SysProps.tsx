@@ -21,8 +21,9 @@ import {
 } from '@patternfly/react-core'
 import { TableComposable, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
 import { SearchIcon } from '@patternfly/react-icons'
-import { getSystemProperties, SystemProperty } from '@hawtiosrc/plugins/runtime/runtime-service'
+import { getSystemProperties } from './runtime-service'
 import { objectSorter } from '@hawtiosrc/util/objects'
+import { SystemProperty } from './types'
 
 export const SysProps: React.FunctionComponent = () => {
   const [properties, setProperties] = useState<{ key: string; value: string }[]>([])
