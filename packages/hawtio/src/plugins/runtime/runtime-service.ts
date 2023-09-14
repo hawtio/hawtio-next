@@ -1,5 +1,14 @@
 import { jolokiaService } from '@hawtiosrc/plugins/shared'
-import { SystemProperty, Thread } from './types'
+import { Metric, SystemProperty, Thread } from './types'
+
+function convertMsToDaysHours(ms: number): string {
+  const seconds = Math.floor(ms / 1000)
+  const minutes = Math.floor(seconds / 60)
+  const hours = Math.floor(minutes / 60)
+  const days = Math.floor(hours / 24)
+
+  return `${days} days, ${hours % 24} hours`
+}
 
 export function getSystemProperties(): Promise<SystemProperty[]> {
   const systemProperties: SystemProperty[] = []
@@ -46,6 +55,68 @@ export async function dumpThreads(): Promise<string> {
     dumpedThreads += (dumpedThreads === '' ? '' : '\n\n') + threadInfo
   })
   return dumpedThreads
+}
+
+export async function getMetrics(): Promise<Metric[]> {
+  const metrics: Metric[] = []
+  const threadCount = (await jolokiaService.readAttribute('java.lang:type=Threading', 'ThreadCount')) as number
+  metrics.push({ type: 'JVM', name: 'Thread Count', value: threadCount })
+
+  //jolokiaService.readAttributes('java.lang:type=Threading').then(console.log)
+  const mb = (await jolokiaService.readAttribute('java.lang:type=Memory', 'HeapMemoryUsage')) as { used: number }
+  const heapUsed = formatBytes(mb.used)
+  metrics.push({
+    type: 'JVM',
+    name: 'Heap Used',
+    value: heapUsed[0] ?? '',
+    unit: heapUsed[1] as string,
+  })
+  const loadedClassCount = (await jolokiaService.readAttribute(
+    'java.lang:type=ClassLoading',
+    'LoadedClassCount',
+  )) as number
+  metrics.push({ type: 'JVM', name: 'Classes Loaded', value: loadedClassCount })
+
+  const runtimeMetrics = (await jolokiaService.readAttributes('java.lang:type=Runtime')) as {
+    StartTime: number
+    Uptime: number
+  }
+  metrics.push({ type: 'JVM', name: 'Start time', value: new Date(runtimeMetrics.StartTime).toLocaleString() })
+  metrics.push({ type: 'JVM', name: 'Uptime', value: convertMsToDaysHours(runtimeMetrics.Uptime) })
+  const osMetrics = (await jolokiaService.readAttributes('java.lang:type=OperatingSystem')) as {
+    SystemCpuLoad: number
+    SystemLoadAverage: number
+    FreePhysicalMemorySize: number
+    TotalPhysicalMemorySize: number
+    AvailableProcessors: number
+    OpenFileDescriptorCount: number
+    MaxFileDescriptorCount: number
+  }
+  const cpuLoad = osMetrics.SystemCpuLoad * 100
+  const loadAverage = osMetrics.SystemLoadAverage
+  const memFree = formatBytes(osMetrics.FreePhysicalMemorySize)
+  const memTotal = formatBytes(osMetrics.TotalPhysicalMemorySize)
+  metrics.push({ type: 'System', name: 'Available Processors', value: String(osMetrics.AvailableProcessors) })
+  metrics.push({ type: 'System', name: 'CPU Load', value: String(cpuLoad), unit: '%', available: 100, chart: true })
+  metrics.push({ type: 'System', name: 'Load Average', value: String(loadAverage) })
+  metrics.push({
+    type: 'System',
+    name: 'Memory Used',
+    value: memFree[0] as number,
+    unit: memFree[1] as string,
+    available: memTotal[0] as string,
+    chart: true,
+  })
+
+  metrics.push({
+    type: 'System',
+    name: 'File Descriptors Used',
+    value: osMetrics.OpenFileDescriptorCount as number,
+    available: osMetrics.MaxFileDescriptorCount as number,
+  })
+  console.log(metrics)
+
+  return metrics
 }
 
 export function formatBytes(bytes: number): (number | string)[] {
