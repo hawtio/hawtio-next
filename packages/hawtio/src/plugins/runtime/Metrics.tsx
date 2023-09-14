@@ -1,6 +1,6 @@
 import { Card, CardBody, CardHeader, Grid, GridItem, Title } from '@patternfly/react-core'
 import React, { useEffect, useState } from 'react'
-import { getMetrics } from '@hawtiosrc/plugins/runtime/runtime-service'
+import { getMetrics, REFRESH_INTERVAL } from '@hawtiosrc/plugins/runtime/runtime-service'
 import { Metric } from '@hawtiosrc/plugins/runtime/types'
 import { ChartBullet } from '@patternfly/react-charts'
 
@@ -8,10 +8,16 @@ export const Metrics: React.FunctionComponent = () => {
   const [metrics, setMetrics] = useState<Metric[]>([])
 
   useEffect(() => {
-    getMetrics().then(m => {
-      console.log('received metrics:', m)
-      setMetrics(m)
-    })
+    let timeoutHandle: NodeJS.Timeout
+    const readMetrics = async () => {
+      const metrics = await getMetrics()
+      setMetrics(metrics)
+
+      timeoutHandle = setTimeout(readMetrics, REFRESH_INTERVAL)
+    }
+
+    readMetrics()
+    return () => timeoutHandle && clearTimeout(timeoutHandle)
   }, [])
 
   return (

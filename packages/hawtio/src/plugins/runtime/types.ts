@@ -1,4 +1,8 @@
-export type SystemProperty = { key: string; value: string }
+export type SystemProperty = {
+  key: string
+  value: string
+}
+
 export type Metric = {
   type: 'JVM' | 'System'
   name: string

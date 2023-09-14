@@ -31,6 +31,7 @@ import {
   dumpThreads,
   enableThreadContentionMonitoring,
   isThreadContentionMonitoringEnabled,
+  REFRESH_INTERVAL,
 } from '@hawtiosrc/plugins/runtime/runtime-service'
 import { objectSorter } from '@hawtiosrc/util/objects'
 import { Thread } from '@hawtiosrc/plugins/runtime/types'
@@ -85,13 +86,16 @@ export const Threads: React.FunctionComponent = () => {
   const [threadConnectionMonitoring, setThreadConnectionMonitoring] = useState(false)
 
   useEffect(() => {
-    getThreads().then((props: Thread[]) => {
-      setThreads(props)
-      setFilteredThreads(props)
-    })
-    isThreadContentionMonitoringEnabled().then(enabled => {
-      setThreadConnectionMonitoring(enabled)
-    })
+    let timeoutHandle: NodeJS.Timeout
+    const readThreads = async () => {
+      const threads = await getThreads()
+      setThreads(threads)
+      setFilteredThreads(threads)
+      setThreadConnectionMonitoring(await isThreadContentionMonitoringEnabled())
+      timeoutHandle = setTimeout(readThreads, REFRESH_INTERVAL)
+    }
+    readThreads()
+    return () => timeoutHandle && clearTimeout(timeoutHandle)
   }, [])
 
   const onDeleteFilter = (filter: string) => {
