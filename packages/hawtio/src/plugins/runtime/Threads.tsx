@@ -26,13 +26,7 @@ import {
 
 import { TableComposable, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
 import { SearchIcon } from '@patternfly/react-icons'
-import {
-  loadThreads,
-  dumpThreads,
-  enableThreadContentionMonitoring,
-  isThreadContentionMonitoringEnabled,
-  REFRESH_INTERVAL,
-} from '@hawtiosrc/plugins/runtime/runtime-service'
+import { runtimeService } from './runtime-service'
 import { objectSorter } from '@hawtiosrc/util/objects'
 import { Thread } from '@hawtiosrc/plugins/runtime/types'
 import { ThreadInfoModal } from './ThreadInfoModal'
@@ -44,7 +38,7 @@ const ThreadsDumpModal: React.FunctionComponent<{
   const [threadsDump, setThreadsDump] = useState<string>('')
   useEffect(() => {
     const readThreadDump = async () => {
-      const threadsDump = await dumpThreads()
+      const threadsDump = await runtimeService.dumpThreads()
       setThreadsDump(threadsDump)
     }
     if (isOpen) {
@@ -86,16 +80,18 @@ export const Threads: React.FunctionComponent = () => {
   const [threadConnectionMonitoring, setThreadConnectionMonitoring] = useState(false)
 
   useEffect(() => {
-    let timeoutHandle: NodeJS.Timeout
     const readThreads = async () => {
-      const threads = await loadThreads()
+      const threads = await runtimeService.loadThreads()
       setThreads(threads)
       setFilteredThreads(threads)
-      setThreadConnectionMonitoring(await isThreadContentionMonitoringEnabled())
-      timeoutHandle = setTimeout(readThreads, REFRESH_INTERVAL)
+      setThreadConnectionMonitoring(await runtimeService.isThreadContentionMonitoringEnabled())
+      await runtimeService.registerLoadThreadsRequest(threads => {
+        setThreads(threads)
+        setFilteredThreads(threads)
+      })
     }
     readThreads()
-    return () => timeoutHandle && clearTimeout(timeoutHandle)
+    return () => runtimeService.unregisterAll()
   }, [])
 
   const onDeleteFilter = (filter: string) => {
@@ -229,9 +225,10 @@ export const Threads: React.FunctionComponent = () => {
   }
 
   async function handleConnectionThreadMonitoring() {
-    enableThreadContentionMonitoring(!threadConnectionMonitoring)
+    runtimeService.enableThreadContentionMonitoring(!threadConnectionMonitoring)
     setThreadConnectionMonitoring(!threadConnectionMonitoring)
   }
+
   return (
     <Card isFullHeight>
       <CardBody>

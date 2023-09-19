@@ -21,7 +21,7 @@ import {
 } from '@patternfly/react-core'
 import { TableComposable, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
 import { SearchIcon } from '@patternfly/react-icons'
-import { loadSystemProperties } from './runtime-service'
+import { runtimeService } from './runtime-service'
 import { objectSorter } from '@hawtiosrc/util/objects'
 import { SystemProperty } from './types'
 
@@ -38,7 +38,7 @@ export const SysProps: React.FunctionComponent = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   useEffect(() => {
-    loadSystemProperties().then(props => {
+    runtimeService.loadSystemProperties().then(props => {
       setProperties(props)
       setFilteredProperties(props)
     })
