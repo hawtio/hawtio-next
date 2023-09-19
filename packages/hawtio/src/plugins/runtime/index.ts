@@ -13,5 +13,5 @@ export const runtime: HawtioPlugin = () => {
     component: Runtime,
     isActive: async () => workspace.hasMBeans(),
   })
-  helpRegistry.add(pluginId, 'Runtime', help, 15)
+  helpRegistry.add(pluginId, 'Runtime', help, 16)
 }

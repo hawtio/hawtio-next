@@ -21,7 +21,7 @@ import {
 } from '@patternfly/react-core'
 import { TableComposable, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
 import { SearchIcon } from '@patternfly/react-icons'
-import { getSystemProperties } from './runtime-service'
+import { loadSystemProperties } from './runtime-service'
 import { objectSorter } from '@hawtiosrc/util/objects'
 import { SystemProperty } from './types'
 
@@ -38,7 +38,7 @@ export const SysProps: React.FunctionComponent = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   useEffect(() => {
-    getSystemProperties().then(props => {
+    loadSystemProperties().then(props => {
       setProperties(props)
       setFilteredProperties(props)
     })
@@ -151,7 +151,6 @@ export const SysProps: React.FunctionComponent = () => {
   }
   return (
     <Card isFullHeight>
-      {/*<CardTitle>Browse Messages</CardTitle>*/}
       <CardBody>
         <Toolbar>
           <ToolbarContent>
@@ -197,7 +196,7 @@ export const SysProps: React.FunctionComponent = () => {
 
         {sortProperties().length > 0 && (
           <FormGroup>
-            <TableComposable aria-label='Message Table' variant='compact' height='80vh'>
+            <TableComposable aria-label='Message Table' variant='compact' height='80vh' isStriped>
               <Thead>
                 <Tr>
                   <Th data-testid={'name-header'} sort={getSortParams(0)}>
