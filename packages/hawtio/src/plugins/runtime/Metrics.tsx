@@ -1,23 +1,31 @@
 import { Card, CardBody, CardHeader, Grid, GridItem, Title } from '@patternfly/react-core'
 import React, { useEffect, useState } from 'react'
-import { loadMetrics, REFRESH_INTERVAL } from '@hawtiosrc/plugins/runtime/runtime-service'
-import { Metric } from '@hawtiosrc/plugins/runtime/types'
+import { runtimeService } from './runtime-service'
+import { Metric } from './types'
 import { ChartBullet } from '@patternfly/react-charts'
 
 export const Metrics: React.FunctionComponent = () => {
-  const [metrics, setMetrics] = useState<Metric[]>([])
+  const [metrics, setMetrics] = useState<Record<string, Metric>>({})
 
   useEffect(() => {
-    let timeoutHandle: NodeJS.Timeout
-    const readMetrics = async () => {
-      const metrics = await loadMetrics()
-      setMetrics(metrics)
+    const registerMetricsRequests = () => {
+      let metricsRecord: Record<string, Metric> = {}
+      runtimeService.registerMetrics(metric => {
+        metricsRecord = { ...metricsRecord, [metric.name]: metric }
+        setMetrics(metricsRecord)
+      })
+    }
 
-      timeoutHandle = setTimeout(readMetrics, REFRESH_INTERVAL)
+    const readMetrics = async () => {
+      const metricsList = await runtimeService.loadMetrics()
+      let metricsRecord: Record<string, Metric> = {}
+      metricsList.forEach(metric => (metricsRecord = { ...metricsRecord, [metric.name]: metric }))
+      setMetrics(metricsRecord)
     }
 
     readMetrics()
-    return () => timeoutHandle && clearTimeout(timeoutHandle)
+    registerMetricsRequests()
+    return () => runtimeService.unregisterAll()
   }, [])
 
   return (
@@ -28,7 +36,7 @@ export const Metrics: React.FunctionComponent = () => {
             <Title headingLevel='h2'>System</Title>
           </CardHeader>
           <CardBody>
-            {metrics
+            {Object.values(metrics)
               .filter(m => m.type === 'System')
               .map((metric, index) => {
                 return (
@@ -63,15 +71,15 @@ export const Metrics: React.FunctionComponent = () => {
           </CardHeader>
 
           <CardBody>
-            {metrics
+            {Object.values(metrics)
               .filter(m => m.type === 'JVM')
               .map((metric, index) => {
                 return (
                   <div key={index}>
-                    {metric.name} :{' '}
+                    {metric.name} :
                     <span>
-                      {metric.value} {metric.unit ?? ''}{' '}
-                      {metric.available && 'of' + metric.available + ' ' + metric.unit}
+                      {metric.value} {metric.unit ?? ''}
+                      {metric.available && 'of' + metric.available + ' ' + (metric.unit ?? '')}
                     </span>
                   </div>
                 )

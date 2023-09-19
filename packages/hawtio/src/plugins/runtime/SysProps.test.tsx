@@ -1,6 +1,7 @@
 import { render, screen, waitFor, within } from '@testing-library/react'
 import { SysProps } from './SysProps'
 import { SystemProperty } from './types'
+import { runtimeService } from './runtime-service'
 import userEvent from '@testing-library/user-event'
 
 function getMockedProperties(): SystemProperty[] {
@@ -11,11 +12,8 @@ function getMockedProperties(): SystemProperty[] {
   ]
 }
 
-jest.mock('./runtime-service', () => ({
-  loadSystemProperties: jest.fn().mockResolvedValue(getMockedProperties()),
-}))
-
 describe('SysProps.tsx', () => {
+  jest.spyOn(runtimeService, 'loadSystemProperties').mockResolvedValue(getMockedProperties())
   const renderSysProps = () => {
     return render(<SysProps />)
   }
