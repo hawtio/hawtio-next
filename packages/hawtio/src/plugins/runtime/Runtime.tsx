@@ -11,7 +11,7 @@ import {
 } from '@patternfly/react-core'
 import React from 'react'
 
-import { SysProps } from '@hawtiosrc/plugins/runtime/SysProps'
+import { SysProps } from './SysProps'
 import { Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import { Metrics } from './Metrics'
 import { Threads } from './Threads'
@@ -37,7 +37,7 @@ export const Runtime: React.FunctionComponent = () => {
       </PageSection>
       <PageGroup>
         <PageNavigation>
-          <Nav aria-label='Nav' variant='tertiary'>
+          <Nav aria-label='Runtime Nav' variant='tertiary'>
             <NavList>
               {navItems.map(navItem => (
                 <NavItem key={navItem.id} isActive={location.pathname === `/runtime/${navItem.id}`}>

@@ -11,7 +11,7 @@ function convertMsToDaysHours(ms: number): string {
   return `${days} days, ${hours % 24} hours`
 }
 
-export function getSystemProperties(): Promise<SystemProperty[]> {
+export function loadSystemProperties(): Promise<SystemProperty[]> {
   const systemProperties: SystemProperty[] = []
   return jolokiaService.readAttribute('java.lang:type=Runtime', 'SystemProperties').then(attr => {
     for (const [k, v] of Object.entries(attr as object)) {
@@ -21,7 +21,7 @@ export function getSystemProperties(): Promise<SystemProperty[]> {
   })
 }
 
-export function getThreads(): Promise<Thread[]> {
+export function loadThreads(): Promise<Thread[]> {
   return jolokiaService.execute('java.lang:type=Threading', 'dumpAllThreads(boolean,boolean)', [
     false,
     false,
@@ -58,7 +58,7 @@ export async function dumpThreads(): Promise<string> {
   return dumpedThreads
 }
 
-export async function getMetrics(): Promise<Metric[]> {
+export async function loadMetrics(): Promise<Metric[]> {
   const metrics: Metric[] = []
   const threadCount = (await jolokiaService.readAttribute('java.lang:type=Threading', 'ThreadCount')) as number
   metrics.push({ type: 'JVM', name: 'Thread Count', value: threadCount })

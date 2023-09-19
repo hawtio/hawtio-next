@@ -27,7 +27,7 @@ import {
 import { TableComposable, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
 import { SearchIcon } from '@patternfly/react-icons'
 import {
-  getThreads,
+  loadThreads,
   dumpThreads,
   enableThreadContentionMonitoring,
   isThreadContentionMonitoringEnabled,
@@ -88,7 +88,7 @@ export const Threads: React.FunctionComponent = () => {
   useEffect(() => {
     let timeoutHandle: NodeJS.Timeout
     const readThreads = async () => {
-      const threads = await getThreads()
+      const threads = await loadThreads()
       setThreads(threads)
       setFilteredThreads(threads)
       setThreadConnectionMonitoring(await isThreadContentionMonitoringEnabled())
@@ -290,7 +290,7 @@ export const Threads: React.FunctionComponent = () => {
         </Toolbar>
         {sortThreads().length > 0 && (
           <FormGroup>
-            <TableComposable aria-label='Message Table' variant='compact' height='80vh'>
+            <TableComposable aria-label='Message Table' variant='compact' height='80vh' isStriped>
               <Thead>
                 <Tr>
                   {tableColumns.map((att, index) => (
