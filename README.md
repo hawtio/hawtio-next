@@ -1,6 +1,7 @@
 # Hawtio.next
 
 [![Test](https://github.com/hawtio/hawtio-next/actions/workflows/test.yml/badge.svg)](https://github.com/hawtio/hawtio-next/actions/workflows/test.yml)
+[![E2E Test](https://github.com/hawtio/hawtio-next/actions/workflows/e2e-test.yml/badge.svg)](https://github.com/hawtio/hawtio-next/actions/workflows/e2e-test.yml)
 [![Lint](https://github.com/hawtio/hawtio-next/actions/workflows/lint.yml/badge.svg)](https://github.com/hawtio/hawtio-next/actions/workflows/lint.yml)
 
 A Hawtio reimplementation based on TypeScript + React.
