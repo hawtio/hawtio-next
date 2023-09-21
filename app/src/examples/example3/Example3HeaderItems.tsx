@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button, Dropdown, DropdownItem, DropdownSeparator, DropdownToggle, Modal } from '@patternfly/react-core'
 
-export const ToolbarItemComp1: React.FunctionComponent = () => {
+export const Example3HeaderItem1: React.FunctionComponent = () => {
   const [isModalOpen, setIsModalOpen] = React.useState(false)
 
   const handleModalToggle = () => {
@@ -10,11 +10,12 @@ export const ToolbarItemComp1: React.FunctionComponent = () => {
 
   return (
     <React.Fragment>
-      <Button variant='primary' onClick={handleModalToggle}>
+      <Button id='example3-header-item1-button' variant='primary' isSmall onClick={handleModalToggle}>
         Click Me!
       </Button>
 
       <Modal
+        id='example3-header-item1-modal'
         title='Basic modal'
         isOpen={isModalOpen}
         onClose={handleModalToggle}
@@ -33,7 +34,7 @@ export const ToolbarItemComp1: React.FunctionComponent = () => {
   )
 }
 
-export const ToolbarItemComp2: React.FunctionComponent = () => {
+export const Example3HeaderItem2: React.FunctionComponent = () => {
   const [isOpen, setIsOpen] = React.useState(false)
 
   const onToggle = (isOpen: boolean) => {
@@ -78,14 +79,16 @@ export const ToolbarItemComp2: React.FunctionComponent = () => {
 
   return (
     <Dropdown
+      id='example3-header-item2-dropdown'
       onSelect={onSelect}
       toggle={
-        <DropdownToggle id='toggle-basic' onToggle={onToggle}>
-          Plugin Example 3 Dropdown
+        <DropdownToggle id='example3-header-item2-dropdown-toggle' onToggle={onToggle}>
+          Example 3 Dropdown
         </DropdownToggle>
       }
       isOpen={isOpen}
       dropdownItems={dropdownItems}
+      isPlain
     />
   )
 }
