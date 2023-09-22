@@ -18,6 +18,18 @@ yarn build:all
 yarn test:all
 ```
 
+## Determining the target version to release
+
+We follow [Semantic Versioning](https://semver.org/). That means the target version to increase to should be decided automatically based on the commit history since the last release.
+
+The criteria for determining the target version is as follows:
+
+- If the unreleased commit history has at least one commit with `feat:`, raise the minor version, e.g. `0.5.0` -> `0.6.0`
+- If the unreleased commit history has no commits with `feat:`, raise the patch version, e.g. `0.5.0` -> `0.5.1`
+
+> [!NOTE]
+> Hawtio is a web UI console, so we normally think new features to the console are backward compatible. Thus, we raise the major version only when the project reaches an important milestone, requires major upgrades of some key components such as React and PatternFly in a backward compatible way, or needs to pivot the basic conditions of the project.
+
 ## Releasing @hawtio/react
 
 To release the `@hawtio/react` package, follow these steps:
@@ -66,6 +78,12 @@ To release the `@hawtio/react` package, follow these steps:
    yarn release:hawtio
    ```
 
+5. Push the commit and tag to the repository. The previous step doesn't automatically push changes to the repository, so don't forget to do this step.
+
+   ```console
+   git push <repo> main --tags
+   ```
+
 ## Releasing other @hawtio/\<package-name\> packages
 
 To release a `@hawtio/<package-name>` package, follow these steps:
@@ -108,4 +126,10 @@ To release a `@hawtio/<package-name>` package, follow these steps:
 
    ```console
    yarn release:<package-name>
+   ```
+
+5. Push the commit and tag to the repository. The previous step doesn't automatically push changes to the repository, so don't forget to do this step.
+
+   ```console
+   git push <repo> main --tags
    ```
