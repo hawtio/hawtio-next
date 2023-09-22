@@ -2445,7 +2445,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.5.1
     "@types/dagre": ^0.7.49
-    "@types/dagre-layout": ^0.8.2
+    "@types/dagre-layout": ^0.8.3
     "@types/jest": ^29.5.5
     "@types/node": ^18.17.18
     "@types/react": ^18.2.21
@@ -4347,10 +4347,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/dagre-layout@npm:^0.8.2":
-  version: 0.8.2
-  resolution: "@types/dagre-layout@npm:0.8.2"
-  checksum: 41e06038b0bdd7b1a9917b06764e6f2bf3e73df076d58c48d5da308f73f91a736c4e5698a39d57bb30a050235bc994724ebd1155a0e40fce72c0d2fb3c5a9e3a
+"@types/dagre-layout@npm:^0.8.3":
+  version: 0.8.3
+  resolution: "@types/dagre-layout@npm:0.8.3"
+  checksum: 92576b96a6ffb427be41ef311ff1fe6d60dc5fa911dcdd1a2b85c5c9184a1156402cd311c3f0df66510dc366f063643ed9c1617bbe115d665c7dc7189d01041d
   languageName: node
   linkType: hard
 
