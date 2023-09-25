@@ -14,7 +14,7 @@ import {
   Text,
 } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
-import { IResponse } from 'jolokia.js'
+import { Response } from 'jolokia.js'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { HawtioEmptyCard } from '../HawtioEmptyCard'
 import { HawtioLoadingCard } from '../HawtioLoadingCard'
@@ -97,7 +97,7 @@ export const Chart: React.FunctionComponent = () => {
   ): Promise<void> {
     if (!node || !node?.objectName) return
 
-    attributeService.register({ type: 'read', mbean: node.objectName }, (response: IResponse) => {
+    attributeService.register({ type: 'read', mbean: node.objectName }, (response: Response) => {
       updateCallback(node.name, {
         name: node.name,
         time: response.timestamp,

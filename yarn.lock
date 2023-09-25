@@ -2447,6 +2447,7 @@ __metadata:
     "@types/dagre": ^0.7.50
     "@types/dagre-layout": ^0.8.3
     "@types/jest": ^29.5.5
+    "@types/jquery": ^3.5.19
     "@types/node": ^18.18.0
     "@types/react": ^18.2.21
     "@types/react-dom": ^18.2.7
@@ -2458,7 +2459,7 @@ __metadata:
     jest-environment-jsdom: ^29.7.0
     jest-fetch-mock: ^3.0.3
     jest-watch-typeahead: ^2.2.2
-    jolokia.js: ^1.7.3-2
+    jolokia.js: ^2.0.0-dev.9
     jquery: ^3.7.1
     js-logger: ^1.6.1
     keycloak-js: ^22.0.3
@@ -4517,12 +4518,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jquery@npm:^3.5.14":
-  version: 3.5.14
-  resolution: "@types/jquery@npm:3.5.14"
+"@types/jquery@npm:^3.5.19":
+  version: 3.5.19
+  resolution: "@types/jquery@npm:3.5.19"
   dependencies:
     "@types/sizzle": "*"
-  checksum: 159d6f804ed1a204b3f79f2d591a271d82e866bd45bd49fb6ef40561a25dbe0f47ec7815681b44cc2db5598425f72811e7e80ab0e983d980470998ac56feb375
+  checksum: 0298e53a353089e2abae4be2f660b5f2bfb4797464623701c5c2f2c911317b554f1887c2c3d587d0f724d70a3fb5e31907bf7fa5d96df33af07e2842660ef52a
   languageName: node
   linkType: hard
 
@@ -12405,12 +12406,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jolokia.js@npm:^1.7.3-2":
-  version: 1.7.3-2
-  resolution: "jolokia.js@npm:1.7.3-2"
+"jolokia.js@npm:^2.0.0-dev.9":
+  version: 2.0.0-dev.9
+  resolution: "jolokia.js@npm:2.0.0-dev.9"
   dependencies:
-    "@types/jquery": ^3.5.14
-  checksum: e5f69db02ede1ef1e775f6b22a0bf071bd98f9f0485cf2c1d81e5bd15f68cbf915db71c44493219440f62f65aae941a11235af106a02a7c678b129fa6bdaf255
+    jquery: ^3.7.1
+  peerDependencies:
+    cubism: ^1.6.0
+    jsdom: ^22.1.0
+  peerDependenciesMeta:
+    cubism:
+      optional: true
+    jsdom:
+      optional: true
+  checksum: e1c9344228c7d38eeb17524e17e4e855c1fce509839ccca81945c176af22943422ad258f95de1b80b3732517b6c02b03ebcb45e132efe10b95b7f0e7dee7dedc
   languageName: node
   linkType: hard
 

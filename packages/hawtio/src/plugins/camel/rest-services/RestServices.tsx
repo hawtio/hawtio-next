@@ -17,7 +17,7 @@ import {
   ToolbarItem,
 } from '@patternfly/react-core'
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
-import { IResponse } from 'jolokia.js'
+import { Response } from 'jolokia.js'
 import React, { ChangeEvent, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { CamelContext } from '../context'
 import { log } from '../globals'
@@ -75,7 +75,7 @@ export const RestServices: React.FunctionComponent = () => {
         mbean: selectedNode.objectName as string,
         operation: 'listRestServices()',
       },
-      (response: IResponse) => {
+      (response: Response) => {
         log.debug('Scheduler - Debug:', response.value)
         fetchRest()
       },

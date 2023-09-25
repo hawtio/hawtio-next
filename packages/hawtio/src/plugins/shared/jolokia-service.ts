@@ -4,32 +4,30 @@ import { basicAuthHeaderValue, getCookie } from '@hawtiosrc/util/https'
 import {
   escapeMBeanPath,
   onBulkSuccessAndError,
+  onExecuteSuccessAndError,
   onListSuccessAndError,
-  onSimpleSuccessAndError,
+  onSearchSuccessAndError,
   onSuccessAndError,
+  onVersionSuccessAndError,
 } from '@hawtiosrc/util/jolokia'
 import { isObject } from '@hawtiosrc/util/objects'
 import { parseBoolean } from '@hawtiosrc/util/strings'
 import Jolokia, {
-  IAjaxErrorFn,
-  IErrorResponse,
-  IErrorResponseFn,
-  IJmxDomain,
-  IJmxDomains,
-  IJmxMBean,
-  IJolokia,
-  IListOptions,
-  IListResponseFn,
-  IOptions,
-  IRequest,
-  IResponse,
-  IResponseFn,
-  ISearchOptions,
-  ISimpleOptions,
-  IVersion,
-  IVersionOptions,
+  AttributeRequestOptions,
+  BaseRequestOptions,
+  ErrorResponse,
+  ListRequestOptions,
+  ListResponse,
+  NotificationMode,
+  NotificationOptions,
+  Request,
+  RequestOptions,
+  Response,
+  SearchRequestOptions,
+  VersionRequestOptions,
+  VersionResponse,
 } from 'jolokia.js'
-import 'jolokia.js/jolokia-simple'
+import 'jolokia.js/simple'
 import $ from 'jquery'
 import { func, is, object } from 'superstruct'
 import { PARAM_KEY_CONNECTION, connectService } from '../shared/connect-service'
@@ -37,13 +35,12 @@ import { log } from './globals'
 
 export const DEFAULT_MAX_DEPTH = 7
 export const DEFAULT_MAX_COLLECTION_SIZE = 50000
-const DEFAULT_JOLOKIA_OPTIONS: IOptions = {
-  method: 'POST',
+const DEFAULT_JOLOKIA_OPTIONS: RequestOptions = {
+  method: 'post',
   mimeType: 'application/json',
   maxCollectionSize: DEFAULT_MAX_COLLECTION_SIZE,
   maxDepth: DEFAULT_MAX_DEPTH,
   canonicalNaming: false,
-  canonicalProperties: false,
   ignoreErrors: true,
 } as const
 
@@ -86,13 +83,13 @@ export const STORAGE_KEY_AUTO_REFRESH = 'connect.jolokia.autoRefresh'
 export interface IJolokiaService {
   getJolokiaUrl(): Promise<string | null>
   getListMethod(): Promise<JolokiaListMethod>
-  list(options: ISimpleOptions): Promise<unknown>
+  list(options: ListRequestOptions): Promise<unknown>
   readAttributes(mbean: string): Promise<AttributeValues>
   readAttribute(mbean: string, attribute: string): Promise<unknown>
   execute(mbean: string, operation: string, args?: unknown[]): Promise<unknown>
   search(mbeanPattern: string): Promise<string[]>
-  bulkRequest(requests: IRequest[]): Promise<IResponse[]>
-  register(request: IRequest, callback: IResponseFn): Promise<number>
+  bulkRequest(requests: Request[]): Promise<Response[]>
+  register(request: Request, callback: (response: Response | ErrorResponse) => void): Promise<number>
   unregister(handle: number): void
   loadUpdateRate(): number
   saveUpdateRate(value: number): void
@@ -104,7 +101,7 @@ export interface IJolokiaService {
 
 class JolokiaService implements IJolokiaService {
   private jolokiaUrl: Promise<string | null>
-  private jolokia: Promise<IJolokia>
+  private jolokia: Promise<Jolokia>
   private config: JolokiaConfig = {
     method: JolokiaListMethod.DEFAULT,
     mbean: OPTIMISED_JOLOKIA_LIST_MBEAN,
@@ -116,6 +113,15 @@ class JolokiaService implements IJolokiaService {
 
     // Start Jolokia
     this.jolokia.then(jolokia => {
+      // Checking versions first
+      jolokia.version(
+        onVersionSuccessAndError(
+          version => {
+            log.info('Jolokia version:', { client: jolokia.CLIENT_VERSION, agent: version.agent })
+          },
+          error => log.error('Failed to fetch Jolokia version:', error),
+        ),
+      )
       const updateRate = this.loadUpdateRate()
       jolokia.start(updateRate)
       log.info('Jolokia started with update rate =', updateRate)
@@ -181,7 +187,7 @@ class JolokiaService implements IJolokiaService {
     })
   }
 
-  private async createJolokia(): Promise<IJolokia> {
+  private async createJolokia(): Promise<Jolokia> {
     const jolokiaUrl = await this.jolokiaUrl
     if (!jolokiaUrl) {
       log.debug('Use dummy Jolokia')
@@ -242,7 +248,7 @@ class JolokiaService implements IJolokiaService {
     }
   }
 
-  private ajaxError(): IAjaxErrorFn {
+  private ajaxError(): JQueryAjaxError {
     const errorThreshold = 2
     let errorCount = 0
     return (xhr: JQueryXHR) => {
@@ -293,10 +299,10 @@ class JolokiaService implements IJolokiaService {
    *
    * @param jolokia Jolokia instance to use
    */
-  protected async checkListOptimisation(jolokia: IJolokia): Promise<void> {
+  protected async checkListOptimisation(jolokia: Jolokia): Promise<void> {
     log.debug('Check if we can call optimised jolokia.list() operation')
     return new Promise<void>(resolve => {
-      const successFn: IListResponseFn = (value: IJmxDomains | IJmxDomain | IJmxMBean) => {
+      const successFn: NonNullable<ListRequestOptions['success']> = (value: ListResponse) => {
         // check if the MBean exists by testing whether the returned value has
         // the 'op' property
         if (isObject(value?.op)) {
@@ -310,7 +316,7 @@ class JolokiaService implements IJolokiaService {
         resolve()
       }
 
-      const errorFn: IErrorResponseFn = (response: IErrorResponse) => {
+      const errorFn: NonNullable<ListRequestOptions['error']> = (response: ErrorResponse) => {
         log.debug('Operation "list" failed due to:', response.error)
         log.debug('Optimisation on jolokia.list() not available')
         resolve() // optimisation not happening
@@ -320,7 +326,7 @@ class JolokiaService implements IJolokiaService {
     })
   }
 
-  private async loadJolokiaOptions(): Promise<IOptions> {
+  private async loadJolokiaOptions(): Promise<BaseRequestOptions> {
     const opts = { ...DEFAULT_JOLOKIA_OPTIONS, ...this.loadJolokiaStoredOptions() }
 
     const jolokiaUrl = await this.jolokiaUrl
@@ -338,7 +344,7 @@ class JolokiaService implements IJolokiaService {
     return this.config.method
   }
 
-  async list(options: ISimpleOptions): Promise<unknown> {
+  async list(options: ListRequestOptions): Promise<unknown> {
     const jolokia = await this.jolokia
     const { method, mbean } = this.config
 
@@ -351,7 +357,7 @@ class JolokiaService implements IJolokiaService {
           jolokia.execute(
             mbean,
             'list()',
-            onSimpleSuccessAndError(
+            onListSuccessAndError(
               value => resolve(value),
               error => reject(error),
               options,
@@ -363,7 +369,6 @@ class JolokiaService implements IJolokiaService {
         default:
           log.debug('Invoke Jolokia list MBean in default mode')
           jolokia.list(
-            null,
             onListSuccessAndError(
               value => resolve(value),
               error => reject(error),
@@ -429,7 +434,7 @@ class JolokiaService implements IJolokiaService {
         mbean,
         operation,
         ...args,
-        onSimpleSuccessAndError(
+        onExecuteSuccessAndError(
           response => resolve(response),
           error => reject(error.stacktrace || error.error),
         ),
@@ -442,7 +447,7 @@ class JolokiaService implements IJolokiaService {
     return new Promise(resolve => {
       jolokia.search(
         mbeanPattern,
-        onSimpleSuccessAndError(
+        onSearchSuccessAndError(
           response => resolve(response as string[]),
           error => {
             log.error('Error during search:', error)
@@ -453,10 +458,10 @@ class JolokiaService implements IJolokiaService {
     })
   }
 
-  async bulkRequest(requests: IRequest[]): Promise<IResponse[]> {
+  async bulkRequest(requests: Request[]): Promise<Response[]> {
     const jolokia = await this.jolokia
     return new Promise(resolve => {
-      const bulkResponse: IResponse[] = []
+      const bulkResponse: Response[] = []
       jolokia.request(
         requests,
         onBulkSuccessAndError(
@@ -476,7 +481,7 @@ class JolokiaService implements IJolokiaService {
     })
   }
 
-  async register(request: IRequest, callback: IResponseFn): Promise<number> {
+  async register(request: Request, callback: (response: Response) => void): Promise<number> {
     const jolokia = await this.jolokia
     return jolokia.register(callback, request)
   }
@@ -518,14 +523,16 @@ class JolokiaService implements IJolokiaService {
 }
 
 type JQueryBeforeSend = (this: unknown, jqXHR: JQueryXHR, settings: unknown) => false | void
+type JQueryAjaxError = (xhr: JQueryXHR, text: string, error: string) => void
 
-export type AttributeValues = { [name: string]: unknown }
+export type AttributeValues = Record<string, unknown>
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Dummy Jolokia implementation that does nothing.
  */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-class DummyJolokia implements IJolokia {
+class DummyJolokia implements Jolokia {
+  CLIENT_VERSION = 'DUMMY'
   isDummy = true
   private running = false
 
@@ -533,7 +540,15 @@ class DummyJolokia implements IJolokia {
     return null
   }
 
-  getAttribute(mbean: string, attribute: string, path?: string | ISimpleOptions, opts?: ISimpleOptions) {
+  getAttribute(
+    mbean: string,
+    attribute: string,
+    path?: string | AttributeRequestOptions,
+    opts?: AttributeRequestOptions,
+  ) {
+    if (typeof path !== 'string') {
+      path?.success?.({})
+    }
     opts?.success?.({})
     return null
   }
@@ -541,9 +556,12 @@ class DummyJolokia implements IJolokia {
     mbean: string,
     attribute: string,
     value: unknown,
-    path?: string | ISimpleOptions,
-    opts?: ISimpleOptions,
+    path?: string | AttributeRequestOptions,
+    opts?: AttributeRequestOptions,
   ) {
+    if (typeof path !== 'string') {
+      path?.success?.({})
+    }
     opts?.success?.({})
   }
 
@@ -551,24 +569,27 @@ class DummyJolokia implements IJolokia {
     args?.forEach(arg => is(arg, object({ success: func() })) && arg.success?.(null))
     return null
   }
-  search(mBeanPattern: string, opts?: ISearchOptions) {
+  search(mbeanPattern: string, opts?: SearchRequestOptions) {
     opts?.success?.([])
     return null
   }
-  list(path: string, opts?: IListOptions) {
+  list(path?: string | string[] | ListRequestOptions, opts?: ListRequestOptions) {
+    if (typeof path !== 'string' && !Array.isArray(path)) {
+      path?.success?.({})
+    }
     opts?.success?.({})
     return null
   }
-  version(opts?: IVersionOptions) {
-    opts?.success?.({} as IVersion)
-    return {} as IVersion
+  version(opts?: VersionRequestOptions) {
+    opts?.success?.({} as VersionResponse)
+    return {} as VersionResponse
   }
 
   register(params: unknown, ...request: unknown[]) {
     return 0
   }
   unregister(handle: number) {
-    /* no-op */
+    // no-op
   }
   jobs() {
     return []
@@ -581,6 +602,16 @@ class DummyJolokia implements IJolokia {
   }
   isRunning() {
     return this.running
+  }
+
+  addNotificationListener(opts: NotificationOptions) {
+    // no-op
+  }
+  removeNotificationListener(handle: { id: string; mode: NotificationMode }) {
+    // no-op
+  }
+  unregisterNotificationClient() {
+    // no-op
   }
 }
 /* eslint-enable @typescript-eslint/no-unused-vars */

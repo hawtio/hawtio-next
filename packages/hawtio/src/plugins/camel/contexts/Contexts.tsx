@@ -1,11 +1,11 @@
 import { eventService } from '@hawtiosrc/core'
 import { CamelContext } from '@hawtiosrc/plugins/camel/context'
-import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
+import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { Card, CardBody, Text } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
 import { Table, TableBody, TableHeader, TableProps, wrappable } from '@patternfly/react-table'
-import { IResponse } from 'jolokia.js'
+import { Response } from 'jolokia.js'
 import React, { useContext, useEffect, useState } from 'react'
 import { log } from '../globals'
 import { ContextToolbar } from './ContextToolbar'
@@ -56,12 +56,12 @@ export const Contexts: React.FunctionComponent = () => {
 
     // TODO: we should not invoke setContexts separately from multiple scheduler.
     // It should cause a bug of overwriting the other updates when we have multiple contexts.
-    for (const [idx, ctx] of contexts.entries()) {
+    contexts.forEach((ctx, idx) => {
       const { objectName } = ctx.node
       if (!objectName) {
-        continue
+        return
       }
-      contextsService.register({ type: 'read', mbean: objectName }, (response: IResponse) => {
+      contextsService.register({ type: 'read', mbean: objectName }, (response: Response) => {
         log.debug('Scheduler - Contexts:', response.value)
 
         // Replace the context in the existing set with the new one
@@ -73,7 +73,7 @@ export const Contexts: React.FunctionComponent = () => {
         newContexts.splice(idx, 1, newCtx)
         setContexts(newContexts)
       })
-    }
+    })
 
     return () => contextsService.unregisterAll()
   }, [selectedNode, contexts])

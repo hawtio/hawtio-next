@@ -1,7 +1,7 @@
 import { MBeanNode, jolokiaService } from '@hawtiosrc/plugins/shared'
 import { isBlank } from '@hawtiosrc/util/strings'
 import { childText, xmlText } from '@hawtiosrc/util/xml'
-import { IRequest, IResponseFn } from 'jolokia.js'
+import { Request, Response } from 'jolokia.js'
 import { camelPreferencesService } from '../camel-preferences-service'
 import * as camelService from '../camel-service'
 import { log } from '../globals'
@@ -27,7 +27,7 @@ export interface MessageData {
 class DebugService {
   private handles: number[] = []
 
-  async register(request: IRequest, callback: IResponseFn) {
+  async register(request: Request, callback: (response: Response) => void) {
     const handle = await jolokiaService.register(request, callback)
     log.debug('Register handle:', handle)
     this.handles.push(handle)

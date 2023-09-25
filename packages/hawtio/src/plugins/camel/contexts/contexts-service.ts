@@ -1,6 +1,6 @@
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import { AttributeValues, jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
-import { IRequest, IResponseFn } from 'jolokia.js'
+import { Request, Response } from 'jolokia.js'
 import { log } from '../globals'
 
 export const CONTEXT_STATE_STARTED = 'Started'
@@ -49,7 +49,7 @@ class ContextsService {
     return ctxAttributes
   }
 
-  async register(request: IRequest, callback: IResponseFn) {
+  async register(request: Request, callback: (response: Response) => void) {
     const handle = await jolokiaService.register(request, callback)
     log.debug('Register handle:', handle)
     this.handles.push(handle)

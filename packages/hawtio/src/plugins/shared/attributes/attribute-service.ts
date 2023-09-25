@@ -1,6 +1,6 @@
 import { AttributeValues, jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { escapeMBean } from '@hawtiosrc/util/jolokia'
-import { IRequest, IResponseFn } from 'jolokia.js'
+import { Request, Response } from 'jolokia.js'
 import { log } from '../globals'
 
 class AttributeService {
@@ -10,7 +10,7 @@ class AttributeService {
     return await jolokiaService.readAttributes(mbean)
   }
 
-  async register(request: IRequest, callback: IResponseFn) {
+  async register(request: Request, callback: (response: Response) => void) {
     const handle = await jolokiaService.register(request, callback)
     log.debug('Register handle:', handle)
     this.handles.push(handle)

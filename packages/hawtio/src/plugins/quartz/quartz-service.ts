@@ -1,9 +1,9 @@
-import { AttributeValues, MBeanNode, jolokiaService, workspace } from '@hawtiosrc/plugins/shared'
-import { jmxDomain, log } from './globals'
 import { eventService } from '@hawtiosrc/core'
-import { IRequest } from 'jolokia.js'
+import { AttributeValues, MBeanNode, jolokiaService, workspace } from '@hawtiosrc/plugins/shared'
 import { getQueryParameterValue } from '@hawtiosrc/util/urls'
+import { Request } from 'jolokia.js'
 import { attributeService } from '../shared/attributes/attribute-service'
+import { jmxDomain, log } from './globals'
 
 export type Trigger = {
   group: string
@@ -159,7 +159,7 @@ class QuartzService {
       return
     }
 
-    const requests: IRequest[] = triggers.map(trigger => ({
+    const requests: Request[] = triggers.map(trigger => ({
       type: 'exec',
       mbean: schedulerMBean,
       operation: QUARTZ_OPERATIONS.getTriggerState,

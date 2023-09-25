@@ -16,7 +16,7 @@ import {
 } from '@patternfly/react-core'
 import { BanIcon, PlayIcon } from '@patternfly/react-icons'
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
-import { IResponse } from 'jolokia.js'
+import { Response } from 'jolokia.js'
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import * as camelService from '../camel-service'
 import { CamelContext } from '../context'
@@ -123,7 +123,7 @@ export const Trace: React.FunctionComponent = () => {
             mbean: tracingNode.objectName as string,
             operation: 'dumpAllTracedMessagesAsXml()',
           },
-          (response: IResponse) => {
+          (response: Response) => {
             log.debug('Scheduler - Debug:', response.value)
             populateRouteMessages(response?.value as string, selectedNode)
           },

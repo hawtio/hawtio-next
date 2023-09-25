@@ -1,95 +1,85 @@
 import { Logger } from '@hawtiosrc/core'
 import {
-  IBulkOptions,
-  IErrorResponse,
-  IErrorResponseFn,
-  IJmxOperationArgument,
-  IListOptions,
-  IListResponseFn,
-  IOptions,
-  IOptionsBase,
-  IResponseFn,
-  ISearchOptions,
-  ISearchResponseFn,
-  ISimpleOptions,
-  ISimpleResponseFn,
-  IVersionOptions,
-  IVersionResponseFn,
+  AttributeRequestOptions,
+  BaseRequestOptions,
+  BulkRequestOptions,
+  ErrorResponse,
+  ExecuteRequestOptions,
+  ListRequestOptions,
+  MBeanOperationArgument,
+  RequestOptions,
+  SearchRequestOptions,
+  VersionRequestOptions,
 } from 'jolokia.js'
 
 const log = Logger.get('hawtio-util')
 
-export function onSuccess(successFn: IResponseFn, options: IOptions = {}): IOptions {
-  return onGenericSuccess(successFn, options)
-}
-
-export function onSuccessAndError(successFn: IResponseFn, errorFn: IErrorResponseFn, options: IOptions = {}): IOptions {
+export function onSuccessAndError(
+  successFn: NonNullable<RequestOptions['success']>,
+  errorFn: NonNullable<RequestOptions['error']>,
+  options: BaseRequestOptions = {},
+): RequestOptions {
   return onGenericSuccessAndError(successFn, errorFn, options)
 }
 
-export function onSimpleSuccess(successFn: ISimpleResponseFn, options: ISimpleOptions = {}): ISimpleOptions {
-  return onGenericSuccess(successFn, options)
-}
-
-export function onSimpleSuccessAndError(
-  successFn: ISimpleResponseFn,
-  errorFn: IErrorResponseFn,
-  options: ISimpleOptions = {},
-): ISimpleOptions {
+export function onAttributeSuccessAndError(
+  successFn: NonNullable<AttributeRequestOptions['success']>,
+  errorFn: NonNullable<AttributeRequestOptions['error']>,
+  options: AttributeRequestOptions = {},
+): AttributeRequestOptions {
   return onGenericSuccessAndError(successFn, errorFn, options)
 }
 
-export function onSearchSuccess(successFn: ISearchResponseFn, options: ISearchOptions = {}): ISearchOptions {
-  return onGenericSuccess(successFn, options)
+export function onExecuteSuccessAndError(
+  successFn: NonNullable<ExecuteRequestOptions['success']>,
+  errorFn: NonNullable<ExecuteRequestOptions['error']>,
+  options: ExecuteRequestOptions = {},
+): ExecuteRequestOptions {
+  return onGenericSuccessAndError(successFn, errorFn, options)
+}
+
+export function onSearchSuccessAndError(
+  successFn: NonNullable<SearchRequestOptions['success']>,
+  errorFn: NonNullable<SearchRequestOptions['error']>,
+  options: SearchRequestOptions = {},
+): SearchRequestOptions {
+  return onGenericSuccessAndError(successFn, errorFn, options)
 }
 
 export function onListSuccessAndError(
-  successFn: IListResponseFn,
-  errorFn: IErrorResponseFn,
-  options: IListOptions = {},
-): IListOptions {
+  successFn: NonNullable<ListRequestOptions['success']>,
+  errorFn: NonNullable<ListRequestOptions['error']>,
+  options: ListRequestOptions = {},
+): ListRequestOptions {
   return onGenericSuccessAndError(successFn, errorFn, options)
-}
-
-export function onVersionSuccess(successFn: IVersionResponseFn, options: IVersionOptions = {}): IVersionOptions {
-  return onGenericSuccess(successFn, options)
 }
 
 export function onVersionSuccessAndError(
-  successFn: IVersionResponseFn,
-  errorFn: IErrorResponseFn,
-  options: IVersionOptions = {},
-): IVersionOptions {
+  successFn: NonNullable<VersionRequestOptions['success']>,
+  errorFn: NonNullable<VersionRequestOptions['error']>,
+  options: VersionRequestOptions = {},
+): VersionRequestOptions {
   return onGenericSuccessAndError(successFn, errorFn, options)
-}
-
-export function onBulkSuccess(successFn: IResponseFn | IResponseFn[], options: IBulkOptions = {}): IBulkOptions {
-  return onGenericSuccess(successFn, options)
 }
 
 export function onBulkSuccessAndError(
-  successFn: IResponseFn | IResponseFn[],
-  errorFn: IErrorResponseFn,
-  options: IBulkOptions = {},
-): IBulkOptions {
+  successFn: NonNullable<BulkRequestOptions['success']>,
+  errorFn: NonNullable<BulkRequestOptions['error']>,
+  options: BulkRequestOptions = {},
+): BulkRequestOptions {
   return onGenericSuccessAndError(successFn, errorFn, options)
 }
 
-export function onGenericSuccess<R, O extends IOptionsBase>(successFn: R, options?: O): O {
-  return onGenericSuccessAndError(successFn, defaultErrorHandler(options), options)
+export function onGenericSuccess<S, O extends BaseRequestOptions>(successFn: S, options?: O): O {
+  return onGenericSuccessAndError(successFn, defaultErrorHandler(), options)
 }
 
-export function onGenericSuccessAndError<R, O extends IOptionsBase>(
-  successFn: R,
-  errorFn: IErrorResponseFn,
-  options?: O,
-): O {
-  const defaultOptions: IOptionsBase = {
-    method: 'POST',
+export function onGenericSuccessAndError<S, E, O extends BaseRequestOptions>(successFn: S, errorFn: E, options?: O): O {
+  const defaultOptions: BaseRequestOptions = {
+    method: 'post',
     mimeType: 'application/json',
     // the default (unsorted) order is important for Karaf runtime
     canonicalNaming: false,
-    canonicalProperties: false,
   }
   return Object.assign({}, defaultOptions, options, {
     success: successFn,
@@ -101,17 +91,15 @@ export function onGenericSuccessAndError<R, O extends IOptionsBase>(
  * The default error handler which logs errors either using debug or log level logging
  * based on the silent setting.
  */
-function defaultErrorHandler(options?: IOptionsBase): IErrorResponseFn {
-  return (response: IErrorResponse) => {
+function defaultErrorHandler(): NonNullable<RequestOptions['error']> {
+  return (response: ErrorResponse) => {
     if (!response.error) {
       return
     }
 
     const req = response.request
     const operation = req?.type === 'exec' ? req.operation : 'unknown'
-    // 'silent' is a custom option only defined in Hawtio
-    const silent = options?.silent
-    if (silent || isIgnorableException(response)) {
+    if (isIgnorableException(response)) {
       log.debug('Operation', operation, 'failed due to:', response.error)
     } else {
       log.warn('Operation', operation, 'failed due to:', response.error)
@@ -125,7 +113,7 @@ function defaultErrorHandler(options?: IOptionsBase): IErrorResponseFn {
  *
  * @param response the error response from a Jolokia request
  */
-function isIgnorableException(response: IErrorResponse): boolean {
+function isIgnorableException(response: ErrorResponse): boolean {
   const ignorables = [
     'InstanceNotFoundException',
     'AttributeNotFoundException',
@@ -164,7 +152,7 @@ function applyJolokiaEscapeRules(mbean: string): string {
   return mbean.replace(/!/g, '!!').replace(/\//g, '!/').replace(/"/g, '!"')
 }
 
-export function operationToString(operation: string, args: IJmxOperationArgument[]): string {
+export function operationToString(operation: string, args: MBeanOperationArgument[]): string {
   const argsStr = args.map(arg => arg.type).join(',')
   return `${operation}(${argsStr})`
 }

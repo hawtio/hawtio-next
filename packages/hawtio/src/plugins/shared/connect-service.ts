@@ -1,7 +1,7 @@
 import { hawtio } from '@hawtiosrc/core'
 import { toString } from '@hawtiosrc/util/strings'
 import { joinPaths } from '@hawtiosrc/util/urls'
-import Jolokia, { IJolokia } from 'jolokia.js'
+import Jolokia from 'jolokia.js'
 import { log } from './globals'
 
 export type Connections = {
@@ -152,7 +152,7 @@ class ConnectService implements IConnectService {
   /**
    * Create a Jolokia instance with the given connection.
    */
-  private createJolokia(connection: Connection, checkCredentials = false): IJolokia {
+  private createJolokia(connection: Connection, checkCredentials = false): Jolokia {
     if (checkCredentials) {
       return new Jolokia({
         url: this.getJolokiaUrl(connection),
