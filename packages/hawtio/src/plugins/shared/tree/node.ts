@@ -3,7 +3,7 @@ import { isEmpty } from '@hawtiosrc/util/objects'
 import { matchWithWildcard, stringSorter, trimQuotes } from '@hawtiosrc/util/strings'
 import { TreeViewDataItem } from '@patternfly/react-core'
 import { CubeIcon, FolderIcon, FolderOpenIcon, LockIcon } from '@patternfly/react-icons'
-import { IJmxMBean, IJmxOperation, IJmxOperations } from 'jolokia.js'
+import { MBeanAttribute, MBeanInfo, MBeanOperation } from 'jolokia.js'
 import React from 'react'
 import { log } from './globals'
 
@@ -14,16 +14,25 @@ export const Icons = {
   locked: React.createElement(LockIcon),
 } as const
 
-export type OptimisedJmxDomains = {
-  [domainName: string]: OptimisedJmxDomain
+export type OptimisedJmxDomains = Record<string, OptimisedJmxDomain>
+
+export type OptimisedJmxDomain = Record<string, OptimisedMBeanInfo>
+
+export interface OptimisedMBeanInfo extends Omit<MBeanInfo, 'attr' | 'op'> {
+  attr?: Record<string, OptimisedMBeanAttribute>
+  op?: OptimisedMBeanOperations
+  opByString?: Record<string, OptimisedMBeanOperation>
+  canInvoke?: boolean
 }
 
-export type OptimisedJmxDomain = {
-  [propertyList: string]: OptimisedJmxMBean
+export interface OptimisedMBeanAttribute extends MBeanAttribute {
+  canInvoke?: boolean
 }
 
-export interface OptimisedJmxMBean extends IJmxMBean {
-  opByString?: { [name: string]: IJmxOperation }
+export type OptimisedMBeanOperations = Record<string, OptimisedMBeanOperation | OptimisedMBeanOperation[]>
+
+export interface OptimisedMBeanOperation extends MBeanOperation {
+  canInvoke?: boolean
 }
 
 export type MBeanNodeFilterFn = (node: MBeanNode) => boolean
@@ -47,7 +56,7 @@ export class MBeanNode implements TreeViewDataItem {
 
   // MBean info
   objectName?: string
-  mbean?: OptimisedJmxMBean
+  mbean?: OptimisedMBeanInfo
   propertyList?: PropertyList
 
   // TreeViewDataItem properties
@@ -104,13 +113,13 @@ export class MBeanNode implements TreeViewDataItem {
     }
   }
 
-  populateMBean(propList: string, mbean: OptimisedJmxMBean) {
+  populateMBean(propList: string, mbean: OptimisedMBeanInfo) {
     log.debug('  JMX tree mbean:', propList)
     const props = new PropertyList(this, propList)
     this.createMBeanNode(props.getPaths(), props, mbean)
   }
 
-  private createMBeanNode(paths: string[], props: PropertyList, mbean: OptimisedJmxMBean) {
+  private createMBeanNode(paths: string[], props: PropertyList, mbean: OptimisedMBeanInfo) {
     log.debug('    JMX tree property:', paths[0])
     if (paths.length === 1) {
       // final mbean node
@@ -131,7 +140,7 @@ export class MBeanNode implements TreeViewDataItem {
     child.createMBeanNode(paths, props, mbean)
   }
 
-  private configureMBean(propList: PropertyList, mbean: OptimisedJmxMBean) {
+  private configureMBean(propList: PropertyList, mbean: OptimisedMBeanInfo) {
     this.objectName = propList.objectName()
     this.mbean = mbean
     this.propertyList = propList
@@ -512,8 +521,8 @@ export class MBeanNode implements TreeViewDataItem {
    * Returns true only if all relevant operations can be invoked.
    */
   private resolveCanInvokeInOps(
-    ops: IJmxOperations,
-    opsByString: Record<string, IJmxOperation>,
+    ops: OptimisedMBeanOperations,
+    opsByString: Record<string, OptimisedMBeanOperation>,
     methods: string[],
   ): boolean {
     let canInvoke = true
@@ -536,7 +545,7 @@ export class MBeanNode implements TreeViewDataItem {
     return canInvoke
   }
 
-  private resolveCanInvoke(op: IJmxOperation | IJmxOperation[]): boolean {
+  private resolveCanInvoke(op: OptimisedMBeanOperation | OptimisedMBeanOperation[]): boolean {
     // for single method
     if (!Array.isArray(op)) {
       return op.canInvoke ?? true

@@ -1,8 +1,15 @@
-import { JolokiaListMethod, MBeanNode, MBeanTree, TreeProcessor, jolokiaService } from '@hawtiosrc/plugins/shared'
+import {
+  JolokiaListMethod,
+  MBeanNode,
+  MBeanTree,
+  OptimisedMBeanOperation,
+  TreeProcessor,
+  jolokiaService,
+} from '@hawtiosrc/plugins/shared'
 import { operationToString } from '@hawtiosrc/util/jolokia'
 import { isString } from '@hawtiosrc/util/objects'
 import { isBlank } from '@hawtiosrc/util/strings'
-import { IJmxOperation, IRequest, IResponse } from 'jolokia.js'
+import { Request, Response } from 'jolokia.js'
 import { log } from './globals'
 import { rbacService } from './rbac-service'
 
@@ -67,7 +74,7 @@ export const rbacTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
 type BulkRequest = { [name: string]: string[] }
 
 async function processRBAC(aclMBean: string, mbeans: Record<string, MBeanNode>) {
-  const requests: IRequest[] = []
+  const requests: Request[] = []
   const bulkRequest: BulkRequest = {}
   // register canInvoke requests for each MBean and accumulate bulkRequest for all ops
   Object.entries(mbeans).forEach(([mbeanName, node]) => {
@@ -91,7 +98,7 @@ function addCanInvokeRequests(
   aclMBean: string,
   mbeanName: string,
   node: MBeanNode,
-  requests: IRequest[],
+  requests: Request[],
   bulkRequest: BulkRequest,
 ) {
   // request for MBean
@@ -119,7 +126,7 @@ function addCanInvokeRequests(
   }
 }
 
-function addOperation(node: MBeanNode, opList: string[], opName: string, op: IJmxOperation) {
+function addOperation(node: MBeanNode, opList: string[], opName: string, op: OptimisedMBeanOperation) {
   if (!node.mbean) {
     return
   }
@@ -139,7 +146,7 @@ type BulkResponse = { [name: string]: Operations }
 type Operations = { [name: string]: Operation }
 type Operation = { ObjectName: string; Method: string; CanInvoke: boolean }
 
-function applyCanInvoke(mbeans: Record<string, MBeanNode>, response: IResponse) {
+function applyCanInvoke(mbeans: Record<string, MBeanNode>, response: Response) {
   if (response.request.type !== 'exec') {
     return
   }

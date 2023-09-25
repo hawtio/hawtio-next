@@ -1,10 +1,10 @@
 import { stringSorter, trimEnd } from '@hawtiosrc/util/strings'
-import { IJmxOperation, IJmxOperations } from 'jolokia.js'
+import { OptimisedMBeanOperation, OptimisedMBeanOperations } from '../tree'
 
 /**
  * Factory function for Operation objects.
  */
-export function createOperations(objectName: string, jmxOperations: IJmxOperations): Operation[] {
+export function createOperations(objectName: string, jmxOperations: OptimisedMBeanOperations): Operation[] {
   const operations: Operation[] = []
   const operationMap: Record<string, Operation> = {}
   Object.entries(jmxOperations).forEach(([name, op]) => {
@@ -21,7 +21,7 @@ function addOperation(
   operations: Operation[],
   operationMap: Record<string, Operation>,
   name: string,
-  op: IJmxOperation,
+  op: OptimisedMBeanOperation,
 ): void {
   const operation = new Operation(
     name,

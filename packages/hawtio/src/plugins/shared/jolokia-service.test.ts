@@ -1,11 +1,11 @@
+import Jolokia, { ErrorResponse, ListRequestOptions } from 'jolokia.js'
 import {
   DEFAULT_MAX_COLLECTION_SIZE,
   DEFAULT_MAX_DEPTH,
   JolokiaListMethod,
-  jolokiaService,
   __testing_jolokia_service__,
+  jolokiaService,
 } from './jolokia-service'
-import { IJolokia, IListOptions, IErrorResponse } from 'jolokia.js'
 
 const { JolokiaService, DummyJolokia } = __testing_jolokia_service__
 
@@ -17,7 +17,8 @@ class ListJolokiaTest extends DummyJolokia {
     this.fireSuccess = fireSuccess
   }
 
-  list(path: string, opts?: IListOptions) {
+  list(path?: string | string[] | ListRequestOptions, opts?: ListRequestOptions) {
+    if (typeof path !== 'string') throw new Error('String is expected for path')
     if (!opts) throw new Error('No options set')
 
     if (this.fireSuccess) {
@@ -33,7 +34,7 @@ class ListJolokiaTest extends DummyJolokia {
     } else {
       if (!opts.error) throw new Error('No error option set')
 
-      const response: IErrorResponse = {
+      const response: ErrorResponse = {
         status: -1,
         timestamp: 123456789,
         request: { type: 'list', path: path },
@@ -51,7 +52,7 @@ class ListJolokiaTest extends DummyJolokia {
 }
 
 class JolokiaServiceTest extends JolokiaService {
-  checkListOptimisationTest(jolokia: IJolokia): Promise<void> {
+  checkListOptimisationTest(jolokia: Jolokia): Promise<void> {
     return this.checkListOptimisation(jolokia)
   }
 }

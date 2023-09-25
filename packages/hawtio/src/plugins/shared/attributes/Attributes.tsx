@@ -3,7 +3,7 @@ import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { isObject } from '@hawtiosrc/util/objects'
 import { Card } from '@patternfly/react-core'
 import { OnRowClick, Table, TableBody, TableHeader, TableProps } from '@patternfly/react-table'
-import { IResponse } from 'jolokia.js'
+import { Response } from 'jolokia.js'
 import { useContext, useEffect, useState } from 'react'
 import { HawtioEmptyCard } from '../HawtioEmptyCard'
 import { HawtioLoadingCard } from '../HawtioLoadingCard'
@@ -39,7 +39,7 @@ export const Attributes: React.FunctionComponent = () => {
     }
 
     const mbean = selectedNode.objectName
-    attributeService.register({ type: 'read', mbean }, (response: IResponse) => {
+    attributeService.register({ type: 'read', mbean }, (response: Response) => {
       log.debug('Scheduler - Attributes:', response.value)
       setAttributes(response.value as AttributeValues)
     })

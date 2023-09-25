@@ -1,10 +1,10 @@
 import { eventService, Logger } from '@hawtiosrc/core'
 import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { isString } from '@hawtiosrc/util/objects'
-import { IErrorResponse, IResponse, ISimpleOptions } from 'jolokia.js'
+import { ErrorResponse, ListRequestOptions, Response } from 'jolokia.js'
 import { is, object } from 'superstruct'
 import { pluginName } from './globals'
-import { MBeanNode, MBeanTree, OptimisedJmxDomain, OptimisedJmxDomains, OptimisedJmxMBean } from './tree'
+import { MBeanNode, MBeanTree, OptimisedJmxDomain, OptimisedJmxDomains, OptimisedMBeanInfo } from './tree'
 
 const log = Logger.get(`${pluginName}-workspace`)
 
@@ -34,9 +34,9 @@ class Workspace implements IWorkspace {
 
   private async loadTree(): Promise<MBeanTree> {
     log.debug('Load JMX MBean tree')
-    const options: ISimpleOptions = {
+    const options: ListRequestOptions = {
       ignoreErrors: true,
-      error: (response: IErrorResponse) => {
+      error: (response: ErrorResponse) => {
         log.debug('Error fetching JMX tree:', response)
       },
       ajaxError: (xhr: JQueryXHR) => {
@@ -75,7 +75,7 @@ class Workspace implements IWorkspace {
         for (const mbeanName in domain) {
           const mbeanOrCache = domain[mbeanName]
           if (isString(mbeanOrCache)) {
-            domain[mbeanName] = value.cache[mbeanOrCache] as OptimisedJmxMBean
+            domain[mbeanName] = value.cache[mbeanOrCache] as OptimisedMBeanInfo
           }
         }
       }
@@ -99,7 +99,7 @@ class Workspace implements IWorkspace {
             mbean: HAWTIO_REGISTRY_MBEAN,
             attribute: 'UpdateCounter',
           },
-          (response: IResponse) => this.maybeUpdatePlugins(response),
+          (response: Response) => this.maybeUpdatePlugins(response),
         )
       }
     } else {
@@ -128,7 +128,7 @@ class Workspace implements IWorkspace {
             mbean: HAWTIO_TREE_WATCHER_MBEAN,
             attribute: 'Counter',
           },
-          (response: IResponse) => this.maybeReloadTree(response),
+          (response: Response) => this.maybeReloadTree(response),
         )
       }
     } else {
@@ -141,7 +141,7 @@ class Workspace implements IWorkspace {
     }
   }
 
-  private maybeUpdatePlugins(response: IResponse) {
+  private maybeUpdatePlugins(response: Response) {
     const counter = response.value as number
     if (!this.pluginUpdateCounter) {
       // Initial counter setting
@@ -160,7 +160,7 @@ class Workspace implements IWorkspace {
     }
   }
 
-  private maybeReloadTree(response: IResponse) {
+  private maybeReloadTree(response: Response) {
     const counter = response.value as number
     if (!this.treeWatcherCounter) {
       // Initial counter setting

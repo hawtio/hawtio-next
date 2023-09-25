@@ -1,6 +1,6 @@
 import { MBeanNode, jolokiaService } from '@hawtiosrc/plugins/shared'
 import { isObject } from '@hawtiosrc/util/objects'
-import { IRequest, IResponseFn } from 'jolokia.js'
+import { Request, Response } from 'jolokia.js'
 import * as camelService from '../camel-service'
 import { log } from '../globals'
 
@@ -15,7 +15,7 @@ export interface RestService {
 class RestServicesService {
   private handles: number[] = []
 
-  async register(request: IRequest, callback: IResponseFn) {
+  async register(request: Request, callback: (response: Response) => void) {
     const handle = await jolokiaService.register(request, callback)
     log.debug('Register handle:', handle)
     this.handles.push(handle)

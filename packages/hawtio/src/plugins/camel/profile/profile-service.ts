@@ -1,5 +1,5 @@
 import { MBeanNode, jolokiaService } from '@hawtiosrc/plugins/shared'
-import { IRequest, IResponseFn } from 'jolokia.js'
+import { Request, Response } from 'jolokia.js'
 import { log } from '../globals'
 import { routesService } from '../routes-service'
 
@@ -18,7 +18,7 @@ export type ProfileData = {
 class ProfileService {
   private handles: number[] = []
 
-  async register(request: IRequest, callback: IResponseFn) {
+  async register(request: Request, callback: (response: Response) => void) {
     const handle = await jolokiaService.register(request, callback)
     log.debug('Register handle:', handle)
     this.handles.push(handle)

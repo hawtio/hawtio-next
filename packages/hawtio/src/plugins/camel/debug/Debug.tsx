@@ -25,7 +25,7 @@ import {
   TimesCircleIcon,
 } from '@patternfly/react-icons'
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
-import { IResponse } from 'jolokia.js'
+import { Response } from 'jolokia.js'
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import * as camelService from '../camel-service'
 import { CamelContext } from '../context'
@@ -230,7 +230,7 @@ export const Debug: React.FunctionComponent = () => {
             mbean: debugNode.objectName,
             operation: 'getDebugCounter',
           },
-          (response: IResponse) => {
+          (response: Response) => {
             log.debug('Scheduler - Debug:', response.value)
             applyBreakpointCounter(response?.value as number, contextNode)
           },

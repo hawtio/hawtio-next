@@ -1,6 +1,6 @@
 import { jolokiaService } from '@hawtiosrc/plugins/shared'
+import { Request, Response } from 'jolokia.js'
 import { Metric, SystemProperty, Thread } from './types'
-import { IRequest, IResponse } from 'jolokia.js'
 
 class RuntimeService {
   handlers: number[] = []
@@ -76,15 +76,15 @@ class RuntimeService {
     return dumpedThreads
   }
 
-  getRegisterRequest(mbean: string, attribute?: string, args?: string[]): IRequest {
-    const request: IRequest = { type: 'read', mbean: mbean }
+  getRegisterRequest(mbean: string, attribute?: string, args?: string[]): Request {
+    const request: Request = { type: 'read', mbean: mbean }
     if (attribute) {
       request.attribute = attribute
     }
     return request
   }
 
-  responseCallback(response: IResponse, callback: (metric: Metric) => void) {
+  responseCallback(response: Response, callback: (metric: Metric) => void) {
     const req = response.request as { type: 'read'; mbean: string; attribute?: string | string[]; path?: string }
     switch (req.mbean) {
       case 'java.lang:type=Threading': {
@@ -154,8 +154,8 @@ class RuntimeService {
     }
   }
 
-  getJolokiaRequests(): IRequest[] {
-    const requests: IRequest[] = []
+  getJolokiaRequests(): Request[] {
+    const requests: Request[] = []
     requests.push(this.getRegisterRequest('java.lang:type=Threading', 'ThreadCount'))
     requests.push(this.getRegisterRequest('java.lang:type=Memory', 'HeapMemoryUsage'))
     requests.push(this.getRegisterRequest('java.lang:type=Runtime'))
@@ -188,11 +188,11 @@ class RuntimeService {
     if (bytes === 0) {
       return [0, 'Bytes']
     }
-    const killobyte = 1024
+    const kilobytes = 1024
     const decimalPlaces = 2
     const units = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-    const i = Math.floor(Math.log(bytes) / Math.log(killobyte))
-    const value = parseFloat((bytes / Math.pow(killobyte, i)).toFixed(decimalPlaces))
+    const i = Math.floor(Math.log(bytes) / Math.log(kilobytes))
+    const value = parseFloat((bytes / Math.pow(kilobytes, i)).toFixed(decimalPlaces))
     const unit = units[i]
     return [value, unit ?? '']
   }

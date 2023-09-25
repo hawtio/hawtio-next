@@ -1,5 +1,5 @@
-import { IRequest, IResponse, IResponseFn, ISimpleOptions } from 'jolokia.js'
-import { AttributeValues, IJolokiaService, JolokiaStoredOptions, JolokiaListMethod } from '../jolokia-service'
+import { ListRequestOptions, Request, Response } from 'jolokia.js'
+import { AttributeValues, IJolokiaService, JolokiaListMethod, JolokiaStoredOptions } from '../jolokia-service'
 import jmxCamelResponse from './jmx-camel-tree.json'
 
 class MockJolokiaService implements IJolokiaService {
@@ -15,7 +15,7 @@ class MockJolokiaService implements IJolokiaService {
     return 0
   }
 
-  async list(options: ISimpleOptions): Promise<unknown> {
+  async list(options: ListRequestOptions): Promise<unknown> {
     return jmxCamelResponse
   }
 
@@ -35,11 +35,11 @@ class MockJolokiaService implements IJolokiaService {
     return []
   }
 
-  async bulkRequest(requests: IRequest[]): Promise<IResponse[]> {
+  async bulkRequest(requests: Request[]): Promise<Response[]> {
     return []
   }
 
-  async register(request: IRequest, callback: IResponseFn): Promise<number> {
+  async register(request: Request, callback: (response: Response) => void): Promise<number> {
     return 0
   }
 
