@@ -1,8 +1,8 @@
+import { ChartBullet } from '@patternfly/react-charts'
 import { Card, CardBody, CardHeader, Grid, GridItem, Title } from '@patternfly/react-core'
 import React, { useEffect, useState } from 'react'
 import { runtimeService } from './runtime-service'
 import { Metric } from './types'
-import { ChartBullet } from '@patternfly/react-charts'
 
 export const Metrics: React.FunctionComponent = () => {
   const [metrics, setMetrics] = useState<Record<string, Metric>>({})

@@ -1,19 +1,9 @@
-import {
-  PageSection,
-  PageSectionVariants,
-  NavItem,
-  Title,
-  PageGroup,
-  PageNavigation,
-  Nav,
-  NavList,
-  Card,
-} from '@patternfly/react-core'
+import { Nav, NavItem, NavList, PageGroup, PageNavigation, PageSection, Title } from '@patternfly/react-core'
 import React from 'react'
 
-import { SysProps } from './SysProps'
 import { Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import { Metrics } from './Metrics'
+import { SysProps } from './SysProps'
 import { Threads } from './Threads'
 
 type NavItem = {
@@ -32,7 +22,7 @@ export const Runtime: React.FunctionComponent = () => {
 
   return (
     <React.Fragment>
-      <PageSection variant={PageSectionVariants.light}>
+      <PageSection variant='light'>
         <Title headingLevel='h1'>Runtime</Title>
       </PageSection>
       <PageGroup>
@@ -49,14 +39,12 @@ export const Runtime: React.FunctionComponent = () => {
         </PageNavigation>
       </PageGroup>
       <PageSection>
-        <Card isFullHeight>
-          <Routes>
-            {navItems.map(navItem => (
-              <Route key={navItem.id} path={navItem.id} element={navItem.component} />
-            ))}
-            <Route path='/' element={<Navigate to='sysprops' />} />
-          </Routes>
-        </Card>
+        <Routes>
+          {navItems.map(navItem => (
+            <Route key={navItem.id} path={navItem.id} element={navItem.component} />
+          ))}
+          <Route path='/' element={<Navigate to='sysprops' />} />
+        </Routes>
       </PageSection>
     </React.Fragment>
   )

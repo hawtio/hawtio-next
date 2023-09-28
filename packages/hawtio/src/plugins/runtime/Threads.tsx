@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react'
 import {
   Bullseye,
   Button,
   Card,
-  CardBody,
   CodeBlock,
   CodeBlockCode,
   Dropdown,
@@ -14,7 +12,6 @@ import {
   EmptyStateIcon,
   FormGroup,
   Modal,
-  ModalVariant,
   Pagination,
   SearchInput,
   Toolbar,
@@ -23,19 +20,21 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core'
+import React, { useEffect, useState } from 'react'
 
-import { TableComposable, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
-import { SearchIcon } from '@patternfly/react-icons'
-import { runtimeService } from './runtime-service'
-import { objectSorter } from '@hawtiosrc/util/objects'
 import { Thread } from '@hawtiosrc/plugins/runtime/types'
+import { objectSorter } from '@hawtiosrc/util/objects'
+import { SearchIcon } from '@patternfly/react-icons'
+import { TableComposable, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
+import { runtimeService } from './runtime-service'
 import { ThreadInfoModal } from './ThreadInfoModal'
 
 const ThreadsDumpModal: React.FunctionComponent<{
   isOpen: boolean
   setIsOpen: (opened: boolean) => void
 }> = ({ isOpen, setIsOpen }) => {
-  const [threadsDump, setThreadsDump] = useState<string>('')
+  const [threadsDump, setThreadsDump] = useState('')
+
   useEffect(() => {
     const readThreadDump = async () => {
       const threadsDump = await runtimeService.dumpThreads()
@@ -51,7 +50,7 @@ const ThreadsDumpModal: React.FunctionComponent<{
       bodyAriaLabel='Thread Dump'
       tabIndex={0}
       isOpen={isOpen}
-      variant={ModalVariant.large}
+      variant='large'
       title='Thread Dump'
       onClose={() => setIsOpen(false)}
     >
@@ -85,7 +84,7 @@ export const Threads: React.FunctionComponent = () => {
       setThreads(threads)
       setFilteredThreads(threads)
       setThreadConnectionMonitoring(await runtimeService.isThreadContentionMonitoringEnabled())
-      await runtimeService.registerLoadThreadsRequest(threads => {
+      runtimeService.registerLoadThreadsRequest(threads => {
         setThreads(threads)
         setFilteredThreads(threads)
       })
@@ -104,6 +103,7 @@ export const Threads: React.FunctionComponent = () => {
     setFilters([...filters, `${attributeMenuItem}:${searchTerm}`])
     setSearchTerm('')
   }
+
   const clearFilters = () => {
     setFilters([])
     setSearchTerm('')
@@ -131,6 +131,7 @@ export const Threads: React.FunctionComponent = () => {
     const end = start + perPage
     return filteredThreads.slice(start, end)
   }
+
   const handleSearch = (value: string, key: string, filters: string[]) => {
     setSearchTerm(value)
     //filter with findTerm
@@ -192,10 +193,12 @@ export const Threads: React.FunctionComponent = () => {
       State
     </DropdownItem>,
   ]
+
   const getIndexedThread = (thread: Thread): (string | number)[] => {
     const { suspended, blockedTime, inNative, threadId, threadName, threadState, waitedTime } = thread
     return [threadId, threadState, threadName, waitedTime, blockedTime, String(inNative), String(suspended)]
   }
+
   const getSortParams = (sortColumn: number): ThProps['sort'] => ({
     sortBy: {
       index: sortIndex,
@@ -208,6 +211,7 @@ export const Threads: React.FunctionComponent = () => {
     },
     columnIndex: sortColumn,
   })
+
   const sortThreads = (): Thread[] => {
     let sortedThreads = filteredThreads
     if (sortIndex >= 0) {
@@ -220,117 +224,125 @@ export const Threads: React.FunctionComponent = () => {
     return sortedThreads
   }
 
-  function onThreadDumpClick() {
+  const onThreadDumpClick = () => {
     setIsThreadsDumpModalOpen(true)
   }
 
-  async function handleConnectionThreadMonitoring() {
-    runtimeService.enableThreadContentionMonitoring(!threadConnectionMonitoring)
+  const handleConnectionThreadMonitoring = async () => {
+    await runtimeService.enableThreadContentionMonitoring(!threadConnectionMonitoring)
     setThreadConnectionMonitoring(!threadConnectionMonitoring)
   }
 
+  const tableToolbar = (
+    <Toolbar>
+      <ToolbarContent>
+        <ToolbarGroup>
+          <Dropdown
+            data-testid='attribute-select'
+            onSelect={() => setIsDropdownOpen(false)}
+            defaultValue='Name'
+            toggle={
+              <DropdownToggle data-testid='attribute-select-toggle' id='toggle-basic' onToggle={setIsDropdownOpen}>
+                {tableColumns.find(att => att.value === attributeMenuItem)?.value}
+              </DropdownToggle>
+            }
+            isOpen={isDropdownOpen}
+            dropdownItems={dropdownItems}
+          />
+          <ToolbarFilter
+            chips={filters}
+            deleteChip={(_e, filter) => onDeleteFilter(filter as string)}
+            deleteChipGroup={clearFilters}
+            categoryName='Filters'
+          >
+            <SearchInput
+              type='text'
+              data-testid='filter-input'
+              id='search-input'
+              placeholder='Search...'
+              value={searchTerm}
+              onChange={(_event, value) => handleSearch(value, attributeMenuItem, filters)}
+              aria-label='Search input'
+            />
+          </ToolbarFilter>
+          <ToolbarItem>
+            <Button variant='secondary' onClick={addToFilters} isSmall>
+              Add Filter
+            </Button>
+          </ToolbarItem>
+        </ToolbarGroup>
+
+        <ToolbarGroup>
+          <ToolbarItem>
+            <Button variant='secondary' onClick={handleConnectionThreadMonitoring} isSmall>
+              {threadConnectionMonitoring ? 'Disable' : 'Enable'} Connection Thread Monitoring
+            </Button>
+          </ToolbarItem>
+          <ToolbarItem>
+            <Button variant='secondary' onClick={onThreadDumpClick} isSmall>
+              Thread Dump
+            </Button>
+          </ToolbarItem>
+        </ToolbarGroup>
+
+        <ToolbarItem variant='pagination'>
+          <PropsPagination />
+        </ToolbarItem>
+      </ToolbarContent>
+    </Toolbar>
+  )
+
   return (
     <Card isFullHeight>
-      <CardBody>
-        {isThreadsDumpModalOpen && (
-          <ThreadsDumpModal isOpen={isThreadsDumpModalOpen} setIsOpen={setIsThreadsDumpModalOpen} />
-        )}
-        {isThreadDetailsOpen && currentThread && (
-          <ThreadInfoModal isOpen={isThreadDetailsOpen} thread={currentThread} setIsOpen={setIsThreadDetailsOpen} />
-        )}
-        <Toolbar>
-          <ToolbarContent>
-            <ToolbarGroup>
-              <Dropdown
-                data-testid='attribute-select'
-                onSelect={() => setIsDropdownOpen(false)}
-                defaultValue='Name'
-                toggle={
-                  <DropdownToggle data-testid='attribute-select-toggle' id='toggle-basic' onToggle={setIsDropdownOpen}>
-                    {tableColumns.find(att => att.value === attributeMenuItem)?.value}
-                  </DropdownToggle>
-                }
-                isOpen={isDropdownOpen}
-                dropdownItems={dropdownItems}
-              />
-              <ToolbarFilter
-                chips={filters}
-                deleteChip={(_e, filter) => onDeleteFilter(filter as string)}
-                deleteChipGroup={clearFilters}
-                categoryName='Filters'
-              >
-                <SearchInput
-                  type='text'
-                  data-testid='filter-input'
-                  id='search-input'
-                  placeholder='Search...'
-                  value={searchTerm}
-                  onChange={(_event, value) => handleSearch(value, attributeMenuItem, filters)}
-                  aria-label='Search input'
-                />
-              </ToolbarFilter>
-              <Button variant='secondary' onClick={addToFilters}>
-                Add Filter
-              </Button>
-              <Button variant='secondary' onClick={handleConnectionThreadMonitoring}>
-                {threadConnectionMonitoring ? 'Disable' : 'Enable'} Connection Thread Monitoring
-              </Button>
-              <Button variant='secondary' onClick={onThreadDumpClick}>
-                Thread Dump
-              </Button>
-            </ToolbarGroup>
-
-            <ToolbarItem variant='pagination'>
-              <PropsPagination />
-            </ToolbarItem>
-          </ToolbarContent>
-        </Toolbar>
-        {sortThreads().length > 0 && (
-          <FormGroup>
-            <TableComposable aria-label='Message Table' variant='compact' height='80vh' isStriped>
-              <Thead>
-                <Tr>
-                  {tableColumns.map((att, index) => (
-                    <Th key={'th-key' + index} data-testid={'id-' + att.key} sort={getSortParams(index)}>
-                      {att.value}
-                    </Th>
-                  ))}
-                  <Th> Actions</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {getThreadsPage().map((thread, index) => {
-                  return (
-                    <Tr key={'row' + index} data-testid={'row' + index}>
-                      {tableColumns.map((att, column) => (
-                        <Td key={'col' + index + '-' + column}>{getIndexedThread(thread)[column]}</Td>
-                      ))}
-                      <Td>
-                        <Button
-                          onClick={_event => {
-                            setIsThreadDetailsOpen(true)
-                            setCurrentThread(thread)
-                          }}
-                        >
-                          More
-                        </Button>
-                      </Td>
-                    </Tr>
-                  )
-                })}
-              </Tbody>
-            </TableComposable>
-          </FormGroup>
-        )}
-        {filteredThreads.length === 0 && (
-          <Bullseye>
-            <EmptyState>
-              <EmptyStateIcon icon={SearchIcon} />
-              <EmptyStateBody>No results found.</EmptyStateBody>
-            </EmptyState>
-          </Bullseye>
-        )}
-      </CardBody>
+      <ThreadsDumpModal isOpen={isThreadsDumpModalOpen} setIsOpen={setIsThreadsDumpModalOpen} />
+      <ThreadInfoModal isOpen={isThreadDetailsOpen} thread={currentThread} setIsOpen={setIsThreadDetailsOpen} />
+      {tableToolbar}
+      {sortThreads().length > 0 && (
+        <FormGroup>
+          <TableComposable aria-label='Message Table' variant='compact' height='80vh' isStriped isStickyHeader>
+            <Thead>
+              <Tr>
+                {tableColumns.map((att, index) => (
+                  <Th key={'th-key' + index} data-testid={'id-' + att.key} sort={getSortParams(index)}>
+                    {att.value}
+                  </Th>
+                ))}
+                <Th> Actions</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {getThreadsPage().map((thread, index) => {
+                return (
+                  <Tr key={'row' + index} data-testid={'row' + index}>
+                    {tableColumns.map((att, column) => (
+                      <Td key={'col' + index + '-' + column}>{getIndexedThread(thread)[column]}</Td>
+                    ))}
+                    <Td>
+                      <Button
+                        onClick={_event => {
+                          setIsThreadDetailsOpen(true)
+                          setCurrentThread(thread)
+                        }}
+                        isSmall
+                      >
+                        More
+                      </Button>
+                    </Td>
+                  </Tr>
+                )
+              })}
+            </Tbody>
+          </TableComposable>
+        </FormGroup>
+      )}
+      {filteredThreads.length === 0 && (
+        <Bullseye>
+          <EmptyState>
+            <EmptyStateIcon icon={SearchIcon} />
+            <EmptyStateBody>No results found.</EmptyStateBody>
+          </EmptyState>
+        </Bullseye>
+      )}
     </Card>
   )
 }

@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import { objectSorter } from '@hawtiosrc/util/objects'
 import {
   Bullseye,
   Button,
   Card,
-  CardBody,
   Dropdown,
   DropdownItem,
   DropdownToggle,
@@ -19,10 +18,10 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core'
-import { TableComposable, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
 import { SearchIcon } from '@patternfly/react-icons'
+import { TableComposable, Tbody, Td, Th, ThProps, Thead, Tr } from '@patternfly/react-table'
+import React, { useEffect, useState } from 'react'
 import { runtimeService } from './runtime-service'
-import { objectSorter } from '@hawtiosrc/util/objects'
 import { SystemProperty } from './types'
 
 export const SysProps: React.FunctionComponent = () => {
@@ -137,6 +136,7 @@ export const SysProps: React.FunctionComponent = () => {
     },
     columnIndex: sortColumn,
   })
+
   const sortProperties = (): SystemProperty[] => {
     let sortedProps = filteredProperties
     if (sortIndex >= 0) {
@@ -149,86 +149,88 @@ export const SysProps: React.FunctionComponent = () => {
 
     return sortedProps
   }
+
+  const tableToolbar = (
+    <Toolbar>
+      <ToolbarContent>
+        <ToolbarGroup>
+          <Dropdown
+            data-testid='attribute-select'
+            onSelect={() => setIsDropdownOpen(false)}
+            defaultValue='name'
+            toggle={
+              <DropdownToggle data-testid='attribute-select-toggle' id='toggle-basic' onToggle={setIsDropdownOpen}>
+                {attributes.find(att => att.key === attributeMenuItem)?.value}
+              </DropdownToggle>
+            }
+            isOpen={isDropdownOpen}
+            dropdownItems={dropdownItems}
+          />
+          <ToolbarFilter
+            chips={filters}
+            deleteChip={(_e, filter) => onDeleteFilter(filter as string)}
+            deleteChipGroup={clearFilters}
+            categoryName='Filters'
+          >
+            <SearchInput
+              type='text'
+              data-testid='filter-input'
+              id='search-input'
+              placeholder='Search...'
+              value={searchTerm}
+              onChange={(_event, value) => handleSearch(value, attributeMenuItem, filters)}
+              aria-label='Search input'
+            />
+          </ToolbarFilter>
+          <Button variant='secondary' onClick={addToFilters} isSmall>
+            Add Filter
+          </Button>
+        </ToolbarGroup>
+
+        <ToolbarItem variant='pagination'>
+          <PropsPagination />
+        </ToolbarItem>
+      </ToolbarContent>
+    </Toolbar>
+  )
+
   return (
     <Card isFullHeight>
-      <CardBody>
-        <Toolbar>
-          <ToolbarContent>
-            <ToolbarGroup>
-              <Dropdown
-                data-testid='attribute-select'
-                onSelect={() => setIsDropdownOpen(false)}
-                defaultValue='name'
-                toggle={
-                  <DropdownToggle data-testid='attribute-select-toggle' id='toggle-basic' onToggle={setIsDropdownOpen}>
-                    {attributes.find(att => att.key === attributeMenuItem)?.value}
-                  </DropdownToggle>
-                }
-                isOpen={isDropdownOpen}
-                dropdownItems={dropdownItems}
-              />
-              <ToolbarFilter
-                chips={filters}
-                deleteChip={(_e, filter) => onDeleteFilter(filter as string)}
-                deleteChipGroup={clearFilters}
-                categoryName='Filters'
-              >
-                <SearchInput
-                  type='text'
-                  data-testid='filter-input'
-                  id='search-input'
-                  placeholder='Search...'
-                  value={searchTerm}
-                  onChange={(_event, value) => handleSearch(value, attributeMenuItem, filters)}
-                  aria-label='Search input'
-                />
-              </ToolbarFilter>
-              <Button variant='secondary' onClick={addToFilters}>
-                Add Filter
-              </Button>
-            </ToolbarGroup>
-
-            <ToolbarItem variant='pagination'>
-              <PropsPagination />
-            </ToolbarItem>
-          </ToolbarContent>
-        </Toolbar>
-
-        {sortProperties().length > 0 && (
-          <FormGroup>
-            <TableComposable aria-label='Message Table' variant='compact' height='80vh' isStriped>
-              <Thead>
-                <Tr>
-                  <Th data-testid={'name-header'} sort={getSortParams(0)}>
-                    Property Name
-                  </Th>
-                  <Th data-testid={'value-header'} sort={getSortParams(1)}>
-                    Property Value
-                  </Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {getPageProperties().map((prop, index) => {
-                  return (
-                    <Tr key={'row' + index} data-testid={'row' + index}>
-                      <Td style={{ width: '20%' }}>{prop.key}</Td>
-                      <Td style={{ flex: 3 }}>{prop.value}</Td>
-                    </Tr>
-                  )
-                })}
-              </Tbody>
-            </TableComposable>
-          </FormGroup>
-        )}
-        {filteredProperties.length === 0 && (
-          <Bullseye>
-            <EmptyState>
-              <EmptyStateIcon icon={SearchIcon} />
-              <EmptyStateBody>No results found.</EmptyStateBody>
-            </EmptyState>
-          </Bullseye>
-        )}
-      </CardBody>
+      {tableToolbar}
+      {sortProperties().length > 0 && (
+        <FormGroup>
+          <TableComposable aria-label='Message Table' variant='compact' height='80vh' isStriped isStickyHeader>
+            <Thead>
+              <Tr>
+                <Th data-testid={'name-header'} sort={getSortParams(0)}>
+                  Property Name
+                </Th>
+                <Th data-testid={'value-header'} sort={getSortParams(1)}>
+                  Property Value
+                </Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {getPageProperties().map((prop, index) => {
+                return (
+                  <Tr key={'row' + index} data-testid={'row' + index}>
+                    <Td style={{ width: '20%' }}>{prop.key}</Td>
+                    <Td style={{ flex: 3 }}>{prop.value}</Td>
+                  </Tr>
+                )
+              })}
+            </Tbody>
+          </TableComposable>
+        </FormGroup>
+      )}
+      {filteredProperties.length === 0 && (
+        <Bullseye>
+          <EmptyState>
+            <EmptyStateIcon icon={SearchIcon} />
+            <EmptyStateBody>No results found.</EmptyStateBody>
+          </EmptyState>
+        </Bullseye>
+      )}
     </Card>
   )
 }
