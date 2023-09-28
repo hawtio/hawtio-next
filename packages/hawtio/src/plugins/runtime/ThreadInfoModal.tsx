@@ -3,27 +3,14 @@ import { Thread } from '@hawtiosrc/plugins/runtime/types'
 import { Grid, GridItem, Modal, ModalVariant } from '@patternfly/react-core'
 
 export const ThreadInfoModal: React.FunctionComponent<{
-  thread: Thread
+  thread?: Thread
   isOpen: boolean
   setIsOpen: (open: boolean) => void
 }> = ({ thread, isOpen, setIsOpen }) => {
-  const CustomItem: React.FunctionComponent<{ itemName: string; itemValue: string | number | null | undefined }> = ({
-    itemName,
-    itemValue,
-  }) => {
-    if (itemValue) {
-      if ((typeof itemValue === 'number' && itemValue > -1) || (typeof itemValue === 'string' && itemValue !== ''))
-        return (
-          <>
-            <GridItem span={3}>
-              <i>{itemName}</i>
-            </GridItem>
-            <GridItem span={9}>{itemValue}</GridItem>
-          </>
-        )
-    }
-    return <></>
+  if (!thread) {
+    return null
   }
+
   return (
     <Modal
       bodyAriaLabel='Thread Details'
@@ -121,5 +108,31 @@ export const ThreadInfoModal: React.FunctionComponent<{
         )}
       </Grid>
     </Modal>
+  )
+}
+
+const CustomItem: React.FunctionComponent<{
+  itemName: string
+  itemValue: string | number | null
+}> = ({ itemName, itemValue }) => {
+  if (!itemValue) {
+    return null
+  }
+
+  if (typeof itemValue === 'number' && itemValue < 0) {
+    return null
+  }
+
+  if (typeof itemValue === 'string' && itemValue === '') {
+    return null
+  }
+
+  return (
+    <>
+      <GridItem span={3}>
+        <i>{itemName}</i>
+      </GridItem>
+      <GridItem span={9}>{itemValue}</GridItem>
+    </>
   )
 }
