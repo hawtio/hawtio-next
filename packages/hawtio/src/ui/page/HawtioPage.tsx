@@ -83,6 +83,7 @@ export const HawtioPage: React.FunctionComponent = () => {
             <Route key='help' path='help/*' element={<HawtioHelp />} />
             <Route key='preferences' path='preferences/*' element={<HawtioPreferences />} />
 
+            <Route key='index' path='index.html' element={<Navigate to='/' />} />
             <Route key='root' index element={defaultPage} />
           </Routes>
         </PluginNodeSelectionContext.Provider>
