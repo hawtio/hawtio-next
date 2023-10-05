@@ -164,7 +164,7 @@ export const CamelRoutes: React.FunctionComponent = () => {
         aria-label='Camel routes table'
         variant='compact'
       >
-        <Thead>
+        <Thead noWrap>
           <Tr>
             <Th
               select={{
