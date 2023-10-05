@@ -257,11 +257,19 @@ export function findDebugBean(node: MBeanNode): MBeanNode | null {
   return findMBean(node, 'tracer', 'BacklogDebugger')
 }
 
+/**
+ * Returns the name of operation for getting all the breakpoints on the BacklogDebugger
+ * MBean. The operation name differs between Camel v3 and v4.
+ */
+export function getBreakpointsOperation(node: MBeanNode): string {
+  return isCamelVersionEQGT(node, 4, 0) ? 'breakpoints' : 'getBreakpoints'
+}
+
 export function canGetBreakpoints(node: MBeanNode): boolean {
   if (!isRouteNode(node)) return false
 
   const db = findDebugBean(node)
-  return db?.hasInvokeRights('getBreakpoints') ?? false
+  return db?.hasInvokeRights(getBreakpointsOperation(node)) ?? false
 }
 
 export function canTrace(node: MBeanNode): boolean {
@@ -357,7 +365,7 @@ export function compareVersions(version: string, major: number, minor: number): 
  * @param major   major version as number
  * @param minor   minor version as number
  */
-export function isCamelVersionEQGT(node: MBeanNode, major: number, minor: number) {
+export function isCamelVersionEQGT(node: MBeanNode, major: number, minor: number): boolean {
   const camelVersion = getCamelVersion(node)
   if (!camelVersion) {
     return false
