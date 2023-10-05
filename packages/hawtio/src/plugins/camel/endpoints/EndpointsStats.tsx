@@ -173,7 +173,7 @@ export const EndpointStats: React.FunctionComponent = () => {
       {sortStatistics().length > 0 ? (
         <FormGroup>
           <TableComposable aria-label='Endpoints Table' variant='compact' height='80vh'>
-            <Thead>
+            <Thead noWrap>
               <Tr>
                 <Th data-testid={'url-header'} sort={getSortParams(0)}>
                   URL
