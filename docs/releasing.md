@@ -34,28 +34,27 @@ The criteria for determining the target version is as follows:
 
 To release the `@hawtio/react` package, follow these steps:
 
-1. Manually increase the `version` in [packages/hawtio/package.json](../packages/hawtio/package.json). (Currently, we don't use any automation tool for increasing versions yet.)
-
-   ```diff
-    {
-      "name": "@hawtio/react",
-   -  "version": "0.1.0",
-   +  "version": "0.2.0",
-      "description": "A Hawtio reimplementation based on TypeScript + React.",
-   ```
-
-2. Commit the change and tag the version. Note we prefix `v` to a version in commit messages and tags.
+1. Run the following script to increase the `version` in [packages/hawtio/package.json](../packages/hawtio/package.json). It uses [standard-version](https://github.com/conventional-changelog/standard-version), which automatically increase the version based on the commit history, creates a commit and a tag, and creates/updates the changelog:
 
    ```console
-   git commit -m v0.2.0
-   git tag v0.2.0
+   yarn release:hawtio
    ```
+
+2. Check that the commit and tag are made as expected:
+
+   ```console
+   git log -1
+   git tag
+   ```
+
+   If not, revert the changes, fix the issue, and try the first step again.
 
 3. Check the contents to be packaged before the actual release is made with `yarn pack` command.
 
    ```console
    $ yarn workspace @hawtio/react pack
    $ tar -tf packages/hawtio/package.tgz
+   package/CHANGELOG.md
    package/LICENSE
    package/README.md
    package/dist/index.css
@@ -72,10 +71,10 @@ To release the `@hawtio/react` package, follow these steps:
    git clean -f
    ```
 
-4. Perform the release.
+4. Publish the release.
 
    ```console
-   yarn release:hawtio
+   yarn publish:hawtio
    ```
 
 5. Push the commit and tag to the repository. The previous step doesn't automatically push changes to the repository, so don't forget to do this step.
@@ -122,10 +121,10 @@ To release a `@hawtio/<package-name>` package, follow these steps:
    git clean -f
    ```
 
-4. Perform the release.
+4. Publish the release.
 
    ```console
-   yarn release:<package-name>
+   yarn workspace <package-name> npm publish --tolerate-republish
    ```
 
 5. Push the commit and tag to the repository. The previous step doesn't automatically push changes to the repository, so don't forget to do this step.
