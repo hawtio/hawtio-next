@@ -1,27 +1,20 @@
 import { useUser } from '@hawtiosrc/auth/hooks'
-import { DEFAULT_APP_NAME, useHawtconfig } from '@hawtiosrc/core'
+import { DEFAULT_APP_NAME, useHawtconfig, usePlugins } from '@hawtiosrc/core'
 import { backgroundImages, hawtioLogo } from '@hawtiosrc/img'
-import { ListItem, ListVariant, LoginFooterItem, LoginForm, LoginPage } from '@patternfly/react-core'
-import { ExclamationCircleIcon } from '@patternfly/react-icons'
-import React, { useEffect, useState } from 'react'
+import { ListItem, ListVariant, LoginFooterItem, LoginPage } from '@patternfly/react-core'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { HawtioNotification } from '../notification'
 import { HawtioLoadingPage } from '../page/HawtioLoadingPage'
 import { log } from './globals'
-import { loginService } from './login-service'
+import { HawtioLoginForm } from './HawtioLoginForm'
 
 export const HawtioLogin: React.FunctionComponent = () => {
   const navigate = useNavigate()
 
   const { isLogin, userLoaded } = useUser()
   const { hawtconfig, hawtconfigLoaded } = useHawtconfig()
-
-  const [username, setUsername] = useState(loginService.getUser())
-  const [isValidUsername, setIsValidUsername] = useState(true)
-  const [password, setPassword] = useState('')
-  const [isValidPassword, setIsValidPassword] = useState(true)
-  const [rememberMe, setRememberMe] = useState(username !== '')
-  const [loginFailed, setLoginFailed] = useState(false)
+  const { plugins, pluginsLoaded } = usePlugins()
 
   useEffect(() => {
     if (isLogin) {
@@ -29,59 +22,34 @@ export const HawtioLogin: React.FunctionComponent = () => {
     }
   }, [isLogin, navigate])
 
-  if (!userLoaded || !hawtconfigLoaded) {
-    log.debug('Loading:', 'user =', userLoaded, ', hawtconfig =', hawtconfigLoaded)
+  if (!userLoaded || !hawtconfigLoaded || !pluginsLoaded) {
+    log.debug('Loading:', 'user =', userLoaded, ', hawtconfig =', hawtconfigLoaded, ', pluginsLoaded = ', pluginsLoaded)
     return <HawtioLoadingPage />
   }
 
-  log.debug(`Login state: username = ${username}, isLogin = ${isLogin}`)
+  let loginForm = null
+  const loginPlugins = plugins.filter(plugin => plugin.isLogin)
+  log.debug('Discovered Login Plugins: ', loginPlugins.length)
+
+  if (loginPlugins.length > 0) {
+    log.debug('Found Login Plugins ... Customising the Login Page')
+
+    const loginPlugin = loginPlugins[0]
+    const component = loginPlugin?.component
+    if (component) {
+      log.debug('Building with customised login form component')
+      loginForm = React.createElement(component)
+    }
+  }
+
+  // Default to the built-in login form
+  if (!loginForm) loginForm = <HawtioLoginForm />
 
   const appLogo = hawtconfig.branding?.appLogoUrl || hawtioLogo
   const appName = hawtconfig.branding?.appName || DEFAULT_APP_NAME
   const description = hawtconfig.login?.description || ''
   const links = hawtconfig.login?.links || []
-
-  const title = 'Log in to your account'
-  const rememberMeLabel = 'Remember username'
-  const loginFailedMessage = 'Invalid login credentials'
-
-  const reset = () => {
-    setIsValidUsername(true)
-    setIsValidPassword(true)
-    setLoginFailed(false)
-  }
-
-  const doLogin = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    event.preventDefault()
-    reset()
-    let invalid = false
-    if (username.trim() === '') {
-      setIsValidUsername(false)
-      setLoginFailed(true)
-      invalid = true
-    }
-    if (password === '') {
-      setIsValidPassword(false)
-      setLoginFailed(true)
-      invalid = true
-    }
-    if (invalid) {
-      return
-    }
-
-    loginService.login(username, password, rememberMe).then(result => {
-      if (result) {
-        navigate('/')
-        // Reload page to force initialising Jolokia service
-        navigate(0)
-        return
-      }
-      // Login failed
-      setLoginFailed(true)
-      setIsValidUsername(false)
-      setIsValidPassword(false)
-    })
-  }
+  const title = hawtconfig.login?.title || 'Log in to your account'
 
   const footerLinks = (
     <React.Fragment>
@@ -91,27 +59,6 @@ export const HawtioLogin: React.FunctionComponent = () => {
         </ListItem>
       ))}
     </React.Fragment>
-  )
-
-  const loginForm = (
-    <LoginForm
-      showHelperText={loginFailed}
-      helperText={loginFailedMessage}
-      helperTextIcon={<ExclamationCircleIcon />}
-      usernameLabel='Username'
-      usernameValue={username}
-      onChangeUsername={setUsername}
-      isValidUsername={isValidUsername}
-      passwordLabel='Password'
-      passwordValue={password}
-      onChangePassword={setPassword}
-      isValidPassword={isValidPassword}
-      rememberMeLabel={rememberMeLabel}
-      isRememberMeChecked={rememberMe}
-      onChangeRememberMe={() => setRememberMe(!rememberMe)}
-      onLoginButtonClick={doLogin}
-      loginButtonLabel='Log in'
-    />
   )
 
   return (
