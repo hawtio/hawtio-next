@@ -52,22 +52,14 @@ export const Example3HeaderItem2: React.FunctionComponent = () => {
   }
 
   const dropdownItems = [
-    <DropdownItem key='link' tooltip='Tooltip for enabled link'>
-      Link
-    </DropdownItem>,
-    <DropdownItem key='action' component='button' tooltip='Tooltip for enabled button'>
+    <DropdownItem key='link'>Link</DropdownItem>,
+    <DropdownItem key='action' component='button'>
       Action
     </DropdownItem>,
     <DropdownItem key='disabled link' isDisabled href='www.google.com'>
       Disabled link
     </DropdownItem>,
-    <DropdownItem
-      key='disabled action'
-      isAriaDisabled
-      component='button'
-      tooltip='Tooltip for disabled item'
-      tooltipProps={{ position: 'top' }}
-    >
+    <DropdownItem key='disabled action' isAriaDisabled component='button' tooltipProps={{ position: 'top' }}>
       Disabled action
     </DropdownItem>,
     <DropdownSeparator key='separator' />,
