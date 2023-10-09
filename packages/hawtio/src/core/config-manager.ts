@@ -22,6 +22,7 @@ export type Branding = {
 }
 
 export type Login = {
+  title?: string
   description?: string
   links?: LoginLink[]
 }

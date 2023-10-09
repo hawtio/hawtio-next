@@ -40,6 +40,12 @@ export interface Plugin {
   id: string
   title: string
   path: string
+
+  /**
+   * If this plugin provides a login form component
+   */
+  isLogin?: boolean
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component: React.ComponentType<any>
 
