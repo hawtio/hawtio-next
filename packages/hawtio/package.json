@@ -36,7 +36,7 @@
     "@hawtio/camel-model-v3": "npm:@hawtio/camel-model@^3.21.0",
     "@hawtio/camel-model-v4": "npm:@hawtio/camel-model@^4.0.0",
     "@module-federation/utilities": "^3.0.0",
-    "@patternfly/react-charts": "^7.0.0",
+    "@patternfly/react-charts": "^7.1.1",
     "@patternfly/react-code-editor": "^5.0.0",
     "@patternfly/react-core": "^4.278.0",
     "@patternfly/react-table": "^4.113.6",
