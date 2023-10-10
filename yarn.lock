@@ -2436,7 +2436,7 @@ __metadata:
     "@hawtio/camel-model-v3": "npm:@hawtio/camel-model@^3.21.0"
     "@hawtio/camel-model-v4": "npm:@hawtio/camel-model@^4.0.0"
     "@module-federation/utilities": ^3.0.0
-    "@patternfly/react-charts": ^7.0.0
+    "@patternfly/react-charts": ^7.1.1
     "@patternfly/react-code-editor": ^5.0.0
     "@patternfly/react-core": ^4.278.0
     "@patternfly/react-table": ^4.113.6
@@ -3287,12 +3287,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-charts@npm:^7.0.0":
-  version: 7.1.0
-  resolution: "@patternfly/react-charts@npm:7.1.0"
+"@patternfly/react-charts@npm:^7.1.1":
+  version: 7.1.1
+  resolution: "@patternfly/react-charts@npm:7.1.1"
   dependencies:
-    "@patternfly/react-styles": ^5.1.0
-    "@patternfly/react-tokens": ^5.1.0
+    "@patternfly/react-styles": ^5.1.1
+    "@patternfly/react-tokens": ^5.1.1
     hoist-non-react-statics: ^3.3.0
     lodash: ^4.17.19
     tslib: ^2.5.0
@@ -3316,7 +3316,7 @@ __metadata:
   peerDependencies:
     react: ^17 || ^18
     react-dom: ^17 || ^18
-  checksum: 499c80a296f1c9f615f5576426b2b52534da2492d1436ef6b778b93716221ef0725348a8276de549f3af6e242bfe936f24a8a136afd3f8e43b378049485e57b0
+  checksum: e227cb89c6bdb5e07c52b5129bbb6c2e0ed29fd331ae35bd9905fef973d9e8fe598f89212b468fc30fbebe239699bca08dd369f9024cc7c68b55ab4ae762376b
   languageName: node
   linkType: hard
 
@@ -3411,6 +3411,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@patternfly/react-styles@npm:^5.1.1":
+  version: 5.1.1
+  resolution: "@patternfly/react-styles@npm:5.1.1"
+  checksum: c01d65b5a5e707d49f1eec7f5c89cc68af57c1d37f4dfe635e843359af62e170fd067f4bb11dc875b086c9ef444ea3d22d118b2fac579683a8a5384d0f6cbb32
+  languageName: node
+  linkType: hard
+
 "@patternfly/react-table@npm:^4.113.6":
   version: 4.113.6
   resolution: "@patternfly/react-table@npm:4.113.6"
@@ -3441,6 +3448,13 @@ __metadata:
   dependencies:
     "@patternfly/patternfly": 5.0.2
   checksum: fb240efd00f211667feb92984af439a2aae65172225c16fcca4fe0cf7a286a5095ca91430b747f88e3affa342dda8f42c21fd1543c034de025b1b7f1d3a5c0a2
+  languageName: node
+  linkType: hard
+
+"@patternfly/react-tokens@npm:^5.1.1":
+  version: 5.1.1
+  resolution: "@patternfly/react-tokens@npm:5.1.1"
+  checksum: 6e87e7cc411d6b4ec1f52b813d2361e8401d604718a31cd4325143fdd2771554d65927b85eedcc4c3a99caa2cb1756286679f4194af4e950064b9f85a3ca33f1
   languageName: node
   linkType: hard
 
