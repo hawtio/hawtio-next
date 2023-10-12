@@ -130,7 +130,11 @@ class JolokiaService implements IJolokiaService {
 
   private async initJolokiaUrl(): Promise<string | null> {
     // Wait for resolving user as it may attach credentials to http request headers
-    await userService.isLogin()
+    const loggedIn = await userService.isLogin()
+    if (!loggedIn) {
+      log.debug("Not logged in so no jolokia url should be possible")
+      return null
+    }
 
     // Check remote connection
     const conn = connectService.getCurrentConnectionName()
