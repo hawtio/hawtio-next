@@ -1,3 +1,4 @@
+import { userService } from '@hawtiosrc/auth'
 import { jolokiaService } from '@hawtiosrc/plugins/shared'
 import { isBlank } from '@hawtiosrc/util/strings'
 import { log } from './globals'
@@ -9,10 +10,21 @@ interface IRBACService {
 }
 
 class RBACService implements IRBACService {
-  private aclMBean: Promise<string>
+  private aclMBean: Promise<string> | null = null
 
-  constructor() {
-    this.aclMBean = this.fetchACLMBean()
+  private async init(): Promise<string> {
+    // Wait for resolving user as it may attach credentials to http request headers
+    const loggedIn = await userService.isLogin()
+    if (!loggedIn) {
+      throw new Error('Workspace not available as user is not logged-in')
+    }
+
+    if (!this.aclMBean) {
+      this.aclMBean = this.fetchACLMBean()
+      await this.aclMBean
+    }
+
+    return this.aclMBean
   }
 
   private async fetchACLMBean(): Promise<string> {
@@ -41,7 +53,7 @@ class RBACService implements IRBACService {
   }
 
   getACLMBean(): Promise<string> {
-    return this.aclMBean
+    return this.init()
   }
 }
 
