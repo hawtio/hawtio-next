@@ -1,4 +1,4 @@
-import { Logger } from '@hawtiosrc/core'
+import { Logger } from '@hawtiosrc/core/logging'
 
 export const pluginId = 'quartz'
 export const pluginName = 'hawtio-quartz'
