@@ -1,4 +1,4 @@
-import { Logger } from '@hawtiosrc/core'
+import { Logger } from '@hawtiosrc/core/logging'
 
 export const moduleName = 'hawtio-auth'
 export const log = Logger.get(moduleName)

@@ -1,4 +1,4 @@
-import { Logger } from '@hawtiosrc/core'
+import { Logger } from '@hawtiosrc/core/logging'
 import {
   AttributeRequestOptions,
   BaseRequestOptions,
