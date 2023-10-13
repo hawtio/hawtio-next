@@ -1,3 +1,4 @@
+import { userService } from '@hawtiosrc/auth'
 import { eventService, Logger } from '@hawtiosrc/core'
 import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { isString } from '@hawtiosrc/util/objects'
@@ -22,14 +23,25 @@ export interface IWorkspace {
 }
 
 class Workspace implements IWorkspace {
-  private tree: Promise<MBeanTree>
+  private tree: Promise<MBeanTree> | null = null
   private pluginRegisterHandle?: Promise<number>
   private pluginUpdateCounter?: number
   private treeWatchRegisterHandle?: Promise<number>
   private treeWatcherCounter?: number
 
-  constructor() {
-    this.tree = this.loadTree()
+  private async init(): Promise<MBeanTree> {
+    // Wait for resolving user as it may attach credentials to http request headers
+    const loggedIn = await userService.isLogin()
+    if (!loggedIn) {
+      throw new Error('Workspace not available as user is not logged-in')
+    }
+
+    if (!this.tree) {
+      this.tree = this.loadTree()
+      await this.tree
+    }
+
+    return this.tree
   }
 
   private async loadTree(): Promise<MBeanTree> {
@@ -178,20 +190,20 @@ class Workspace implements IWorkspace {
   }
 
   async refreshTree() {
-    this.tree = this.loadTree()
-    await this.tree
+    this.tree = null
+    await this.init()
     eventService.refresh()
   }
 
   getTree(): Promise<MBeanTree> {
-    return this.tree
+    return this.init()
   }
 
   /**
    * Returns true if this workspace has any MBeans at all.
    */
   async hasMBeans(): Promise<boolean> {
-    return !(await this.tree).isEmpty()
+    return !(await this.init()).isEmpty()
   }
 
   private matchesProperties(node: MBeanNode, properties: Record<string, unknown>): boolean {
@@ -215,7 +227,7 @@ class Workspace implements IWorkspace {
   }
 
   async treeContainsDomainAndProperties(domainName: string, properties?: Record<string, unknown>): Promise<boolean> {
-    const tree = await this.tree
+    const tree = await this.init()
     const domain = tree.get(domainName)
     if (!domain) {
       return false
@@ -245,7 +257,7 @@ class Workspace implements IWorkspace {
    * Finds MBeans in the workspace based on the domain name and properties.
    */
   async findMBeans(domainName: string, properties: Record<string, string>): Promise<MBeanNode[]> {
-    return (await this.tree).findMBeans(domainName, properties)
+    return (await this.init()).findMBeans(domainName, properties)
   }
 }
 

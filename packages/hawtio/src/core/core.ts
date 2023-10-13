@@ -2,6 +2,7 @@ import { importRemote, ImportRemoteOptions } from '@module-federation/utilities'
 import $ from 'jquery'
 import { eventService } from './event-service'
 import { log } from './globals'
+import { userService } from '@hawtiosrc/auth'
 
 /*
  * Components to be added to the header navbar
@@ -226,8 +227,20 @@ class HawtioCore {
    */
   async resolvePlugins(): Promise<Plugin[]> {
     // load plugins sequentially to maintain the order
+    const userLoggedIn = await userService.isLogin()
+
     const resolved: Plugin[] = []
     for (const plugin of this.getPlugins()) {
+      if (plugin.isLogin && (await plugin.isActive())) {
+        // resolve all login-related plugins
+        resolved.push(plugin)
+      }
+      // Only if user is logged in should
+      // other plugins be activated
+      if (!userLoggedIn) {
+        continue
+      }
+      // User logged-in so resolve plugin if active
       if (await plugin.isActive()) {
         resolved.push(plugin)
       }
