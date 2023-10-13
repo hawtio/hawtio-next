@@ -1,9 +1,14 @@
+import { userService } from '@hawtiosrc/auth'
 import { MBeanTree } from '@hawtiosrc/plugins/shared/tree'
 import { workspace } from './workspace'
 
 jest.mock('@hawtiosrc/plugins/shared/jolokia-service')
 
 describe('workspace', () => {
+  beforeAll(async () => {
+    await userService.fetchUser()
+  })
+
   test('getting the tree', async () => {
     const tree: MBeanTree = await workspace.getTree()
     expect(tree.isEmpty()).toBeFalsy()

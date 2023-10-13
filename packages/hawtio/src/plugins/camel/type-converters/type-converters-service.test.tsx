@@ -1,3 +1,4 @@
+import { userService } from '@hawtiosrc/auth'
 import { camelTreeProcessor } from '@hawtiosrc/plugins/camel/tree-processor'
 import { AttributeValues, MBeanNode, MBeanTree, jolokiaService, workspace } from '@hawtiosrc/plugins/shared'
 import fs from 'fs'
@@ -64,6 +65,10 @@ jolokiaService.writeAttribute = jest.fn(async (mbean: string, attr: string, valu
 
 describe('type-converters-service', () => {
   let tree: MBeanTree
+
+  beforeAll(async () => {
+    await userService.fetchUser()
+  })
 
   beforeAll(async () => {
     tree = await workspace.getTree()

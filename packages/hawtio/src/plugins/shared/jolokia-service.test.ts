@@ -52,27 +52,36 @@ class ListJolokiaTest extends DummyJolokia {
 }
 
 class JolokiaServiceTest extends JolokiaService {
-  checkListOptimisationTest(jolokia: Jolokia): Promise<void> {
-    return this.checkListOptimisation(jolokia)
+  private delegate: Jolokia
+
+  constructor(delegate: Jolokia) {
+    super()
+    this.delegate = delegate
+  }
+
+  protected async init(): Promise<Jolokia> {
+    return this.delegate
+  }
+
+  checkListOptimisationTest(): Promise<void> {
+    return this.checkListOptimisation(this.delegate)
   }
 }
 
 describe('JolokiaService class', () => {
   test('checkListOptimizationSuccess', async () => {
     const delegate: ListJolokiaTest = new ListJolokiaTest(true)
-    const service: JolokiaServiceTest = new JolokiaServiceTest()
+    const service: JolokiaServiceTest = new JolokiaServiceTest(delegate)
 
-    console.log(service.getListMethod())
-
-    await expect(service.checkListOptimisationTest(delegate)).resolves.not.toThrow()
+    await expect(service.checkListOptimisationTest()).resolves.not.toThrow()
     expect(await service.getListMethod()).toEqual(JolokiaListMethod.OPTIMISED)
   })
 
   test('checkListOptimizationError', async () => {
     const delegate: ListJolokiaTest = new ListJolokiaTest(false)
-    const service: JolokiaServiceTest = new JolokiaServiceTest()
+    const service: JolokiaServiceTest = new JolokiaServiceTest(delegate)
 
-    await expect(service.checkListOptimisationTest(delegate)).resolves.not.toThrow()
+    await expect(service.checkListOptimisationTest()).resolves.not.toThrow()
     expect(await service.getListMethod()).toEqual(JolokiaListMethod.DEFAULT)
   })
 })

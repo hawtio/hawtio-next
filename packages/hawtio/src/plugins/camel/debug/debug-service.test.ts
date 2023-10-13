@@ -1,3 +1,4 @@
+import { userService } from '@hawtiosrc/auth'
 import { camelTreeProcessor } from '@hawtiosrc/plugins/camel/tree-processor'
 import { AttributeValues, MBeanNode, MBeanTree, jolokiaService, workspace } from '@hawtiosrc/plugins/shared'
 import fs from 'fs'
@@ -51,6 +52,7 @@ describe('debug-service', () => {
   let tree: MBeanTree
 
   beforeAll(async () => {
+    await userService.fetchUser()
     tree = await workspace.getTree()
     camelTreeProcessor(tree)
   })

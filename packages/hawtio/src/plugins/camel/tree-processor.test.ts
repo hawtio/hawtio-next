@@ -15,6 +15,7 @@ import {
   routesType,
 } from './globals'
 import { camelTreeProcessor } from './tree-processor'
+import { userService } from '@hawtiosrc/auth'
 
 jest.mock('@hawtiosrc/plugins/shared/jolokia-service')
 
@@ -54,6 +55,10 @@ describe('tree-processor', () => {
     }
 
     return ''
+  })
+
+  beforeAll(async () => {
+    await userService.fetchUser()
   })
 
   beforeEach(async () => {
