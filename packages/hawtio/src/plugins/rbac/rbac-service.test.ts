@@ -1,9 +1,14 @@
+import { userService } from '@hawtiosrc/auth'
 import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { __testing__ } from './rbac-service'
 
 jest.mock('@hawtiosrc/plugins/shared/jolokia-service')
 
 describe('RBACService', () => {
+  beforeAll(async () => {
+    await userService.fetchUser()
+  })
+
   beforeEach(() => {
     jest.resetModules()
   })

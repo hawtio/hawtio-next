@@ -7,6 +7,7 @@ import { CamelContext } from '../context'
 import { jmxDomain } from '../globals'
 import { InflightExchanges } from './InflightExchanges'
 import { Exchange } from './exchanges-service'
+import { userService } from '@hawtiosrc/auth'
 
 const routesXmlPath = path.resolve(__dirname, '..', 'testdata', 'camel-sample-app-routes.xml')
 const sampleRoutesXml = fs.readFileSync(routesXmlPath, { encoding: 'utf8', flag: 'r' })
@@ -49,6 +50,7 @@ describe('InflightExchanges', () => {
   let tree: MBeanTree
 
   beforeAll(async () => {
+    await userService.fetchUser()
     tree = await workspace.getTree()
     camelTreeProcessor(tree)
   })

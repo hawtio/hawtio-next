@@ -1,3 +1,4 @@
+import { userService } from '@hawtiosrc/auth'
 import { camelTreeProcessor } from '@hawtiosrc/plugins/camel/tree-processor'
 import { MBeanNode, MBeanTree, jolokiaService, workspace } from '@hawtiosrc/plugins/shared'
 import { fireEvent, render, screen, waitForElementToBeRemoved } from '@testing-library/react'
@@ -48,6 +49,7 @@ describe('BlockedExchanges', () => {
   let tree: MBeanTree
 
   beforeAll(async () => {
+    await userService.fetchUser()
     tree = await workspace.getTree()
     camelTreeProcessor(tree)
   })
