@@ -15,6 +15,7 @@ import {
   MastheadMain,
   MastheadToggle,
   PageToggleButton,
+  Title,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
@@ -61,12 +62,18 @@ const HawtioBrand: React.FunctionComponent = () => {
     return null
   }
 
-  const appLogo = hawtconfig.branding?.appLogoUrl || hawtioLogo
-  const appName = hawtconfig.branding?.appName || DEFAULT_APP_NAME
+  const appLogo = hawtconfig.branding?.appLogoUrl ?? hawtioLogo
+  const appName = hawtconfig.branding?.appName ?? DEFAULT_APP_NAME
+  const showAppName = hawtconfig.branding?.showAppName ?? false
 
   return (
     <MastheadBrand id='hawtio-header-brand' component={props => <Link to='/' {...props} />}>
       <Brand src={appLogo} alt={appName} />
+      {showAppName && (
+        <Title headingLevel='h1' size='xl'>
+          {appName}
+        </Title>
+      )}
     </MastheadBrand>
   )
 }
