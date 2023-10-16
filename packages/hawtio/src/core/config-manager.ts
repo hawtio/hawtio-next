@@ -16,6 +16,7 @@ export type Hawtconfig = {
 
 export type Branding = {
   appName?: string
+  showAppName?: boolean
   appLogoUrl?: string
   css?: string
   favicon?: string
