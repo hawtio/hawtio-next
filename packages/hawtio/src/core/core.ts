@@ -1,10 +1,10 @@
+import { userService } from '@hawtiosrc/auth'
 import { importRemote, ImportRemoteOptions } from '@module-federation/utilities'
 import $ from 'jquery'
 import { eventService } from './event-service'
 import { log } from './globals'
-import { userService } from '@hawtiosrc/auth'
 
-/*
+/**
  * Components to be added to the header navbar
  * Can define either a single component type or
  * a component with a universal property.
@@ -16,22 +16,25 @@ import { userService } from '@hawtiosrc/auth'
  * given focus.
  */
 export interface UniversalHeaderItem {
-  // The components that should be populated as
-  // dropdown items on the header bar
+  /**
+   * The component that should be populated as
+   * a dropdown item on the header bar.
+   */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component: React.ComponentType<any>
 
-  // Should components remain visible on header even when
-  // the plugin is not being displayed.
+  /**
+   * Should components remain visible on header even when
+   * the plugin is not being displayed.
+   */
   universal: boolean
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type HeaderItem = React.ComponentType<any> | UniversalHeaderItem
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function isUniversalHeaderItem(obj: any): obj is UniversalHeaderItem {
-  return typeof obj.universal === 'boolean'
+export function isUniversalHeaderItem(item: HeaderItem): item is UniversalHeaderItem {
+  return 'component' in item && 'universal' in item && typeof item.universal === 'boolean'
 }
 
 /**
