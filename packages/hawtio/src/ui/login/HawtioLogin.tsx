@@ -1,13 +1,13 @@
 import { useUser } from '@hawtiosrc/auth/hooks'
-import { DEFAULT_APP_NAME, useHawtconfig, usePlugins } from '@hawtiosrc/core'
+import { DEFAULT_APP_NAME, DEFAULT_LOGIN_TITLE, useHawtconfig, usePlugins } from '@hawtiosrc/core'
 import { backgroundImages, hawtioLogo } from '@hawtiosrc/img'
 import { ListItem, ListVariant, LoginFooterItem, LoginPage } from '@patternfly/react-core'
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { HawtioNotification } from '../notification'
 import { HawtioLoadingPage } from '../page/HawtioLoadingPage'
-import { log } from './globals'
 import { HawtioLoginForm } from './HawtioLoginForm'
+import { log } from './globals'
 
 export const HawtioLogin: React.FunctionComponent = () => {
   const navigate = useNavigate()
@@ -23,13 +23,13 @@ export const HawtioLogin: React.FunctionComponent = () => {
   }, [isLogin, navigate])
 
   if (!userLoaded || !hawtconfigLoaded || !pluginsLoaded) {
-    log.debug('Loading:', 'user =', userLoaded, ', hawtconfig =', hawtconfigLoaded, ', pluginsLoaded = ', pluginsLoaded)
+    log.debug('Loading:', 'user =', userLoaded, ', hawtconfig =', hawtconfigLoaded, ', pluginsLoaded =', pluginsLoaded)
     return <HawtioLoadingPage />
   }
 
-  let loginForm = null
+  let loginForm = <HawtioLoginForm />
   const loginPlugins = plugins.filter(plugin => plugin.isLogin)
-  log.debug('Discovered Login Plugins: ', loginPlugins.length)
+  log.debug('Discovered Login Plugins:', loginPlugins.length)
 
   if (loginPlugins.length > 0) {
     log.debug('Found Login Plugins ... Customising the Login Page')
@@ -42,14 +42,11 @@ export const HawtioLogin: React.FunctionComponent = () => {
     }
   }
 
-  // Default to the built-in login form
-  if (!loginForm) loginForm = <HawtioLoginForm />
-
-  const appLogo = hawtconfig.branding?.appLogoUrl || hawtioLogo
-  const appName = hawtconfig.branding?.appName || DEFAULT_APP_NAME
-  const description = hawtconfig.login?.description || ''
-  const links = hawtconfig.login?.links || []
-  const title = hawtconfig.login?.title || 'Log in to your account'
+  const appLogo = hawtconfig.branding?.appLogoUrl ?? hawtioLogo
+  const appName = hawtconfig.branding?.appName ?? DEFAULT_APP_NAME
+  const description = hawtconfig.login?.description ?? ''
+  const links = hawtconfig.login?.links ?? []
+  const title = hawtconfig.login?.title ?? DEFAULT_LOGIN_TITLE
 
   const footerLinks = (
     <React.Fragment>

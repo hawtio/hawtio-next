@@ -227,23 +227,24 @@ class HawtioCore {
 
   /**
    * Resolves which of registered plugins are active with the current environment.
+   *
+   * There are two types of plugin: normal plugin and login plugin.
+   * If it's normal, it's only resolved when the user is already logged in.
+   * If it's login, it's only resolved when the user is not logged in yet, and thus
+   * can only affects the login page.
+   *
+   * Therefore, this method depends on the login status provided by the `userService`.
    */
   async resolvePlugins(): Promise<Plugin[]> {
-    // load plugins sequentially to maintain the order
     const userLoggedIn = await userService.isLogin()
 
     const resolved: Plugin[] = []
+    // load plugins sequentially to maintain the order
     for (const plugin of this.getPlugins()) {
-      if (plugin.isLogin && (await plugin.isActive())) {
-        // resolve all login-related plugins
-        resolved.push(plugin)
-      }
-      // Only if user is logged in should
-      // other plugins be activated
-      if (!userLoggedIn) {
+      if ((userLoggedIn && plugin.isLogin) || (!userLoggedIn && !plugin.isLogin)) {
         continue
       }
-      // User logged-in so resolve plugin if active
+
       if (await plugin.isActive()) {
         resolved.push(plugin)
       }

@@ -1,10 +1,18 @@
-import { ListRequestOptions, Request, Response } from 'jolokia.js'
+import Jolokia, { ListRequestOptions, Request, Response } from 'jolokia.js'
 import { AttributeValues, IJolokiaService, JolokiaListMethod, JolokiaStoredOptions } from '../jolokia-service'
 import jmxCamelResponse from './jmx-camel-tree.json'
 
 class MockJolokiaService implements IJolokiaService {
   constructor() {
     console.log('Using mock jolokia service')
+  }
+
+  reset() {
+    // no-op
+  }
+
+  getJolokia(): Promise<Jolokia> {
+    return Promise.reject('Method not implemented.')
   }
 
   async getJolokiaUrl(): Promise<string | null> {

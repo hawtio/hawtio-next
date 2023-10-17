@@ -5,6 +5,7 @@ import { Logger } from './logging'
 const log = Logger.get('hawtio-core-config')
 
 export const DEFAULT_APP_NAME = 'Hawtio Management Console'
+export const DEFAULT_LOGIN_TITLE = 'Log in to your account'
 
 export type Hawtconfig = {
   branding?: Branding

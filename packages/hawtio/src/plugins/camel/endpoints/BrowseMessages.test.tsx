@@ -1,8 +1,8 @@
-import { render, screen, waitFor, within } from '@testing-library/react'
-import { BrowseMessages } from '@hawtiosrc/plugins/camel/endpoints/BrowseMessages'
-import { CamelContext } from '@hawtiosrc/plugins/camel/context'
 import { MBeanNode, MBeanTree } from '@hawtiosrc/plugins'
+import { CamelContext } from '@hawtiosrc/plugins/camel/context'
+import { BrowseMessages } from '@hawtiosrc/plugins/camel/endpoints/BrowseMessages'
 import { MessageData } from '@hawtiosrc/plugins/camel/endpoints/endpoints-service'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 function getMockedMessages(): MessageData[] {
