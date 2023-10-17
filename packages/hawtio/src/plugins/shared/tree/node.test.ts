@@ -9,6 +9,10 @@ describe('MBeanNode', () => {
   let tree: MBeanTree
 
   beforeAll(async () => {
+    userService.addFetchUserHook('test', async resolve => {
+      resolve({ username: 'test', isLogin: true })
+      return true
+    })
     await userService.fetchUser()
   })
 

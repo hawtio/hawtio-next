@@ -1,27 +1,30 @@
-import Jolokia, { ErrorResponse, ListRequestOptions } from 'jolokia.js'
-import {
-  DEFAULT_MAX_COLLECTION_SIZE,
-  DEFAULT_MAX_DEPTH,
-  JolokiaListMethod,
-  __testing_jolokia_service__,
-  jolokiaService,
-} from './jolokia-service'
+import { userService } from '@hawtiosrc/auth'
+import Jolokia, { ListRequestOptions } from 'jolokia.js'
+import { DEFAULT_MAX_COLLECTION_SIZE, DEFAULT_MAX_DEPTH, JolokiaListMethod, jolokiaService } from './jolokia-service'
 
-const { JolokiaService, DummyJolokia } = __testing_jolokia_service__
+describe('JolokiaService', () => {
+  beforeEach(() => {
+    jest.resetModules()
+    localStorage.clear()
+    jolokiaService.reset()
 
-class ListJolokiaTest extends DummyJolokia {
-  private fireSuccess = true
+    userService.isLogin = jest.fn(async () => true)
+  })
 
-  constructor(fireSuccess: boolean) {
-    super()
-    this.fireSuccess = fireSuccess
-  }
+  test('getJolokiaUrl - not logged in', async () => {
+    userService.isLogin = jest.fn(async () => false)
+    await expect(jolokiaService.getJolokiaUrl()).rejects.toThrow()
+  })
 
-  list(path?: string | string[] | ListRequestOptions, opts?: ListRequestOptions) {
-    if (typeof path !== 'string') throw new Error('String is expected for path')
-    if (!opts) throw new Error('No options set')
+  test('getJolokiaUrl - null', async () => {
+    await expect(jolokiaService.getJolokiaUrl()).resolves.toBeNull()
+  })
 
-    if (this.fireSuccess) {
+  test('getJolokia - optimised', async () => {
+    jolokiaService.getJolokiaUrl = jest.fn(async () => '/test')
+    Jolokia.prototype.list = jest.fn((path?: string | string[] | ListRequestOptions, opts?: ListRequestOptions) => {
+      if (typeof path !== 'string') throw new Error('String is expected for path')
+      if (!opts) throw new Error('No options set')
       if (!opts.success) throw new Error('No success option set')
 
       opts.success({
@@ -31,10 +34,21 @@ class ListJolokiaTest extends DummyJolokia {
           value: { desc: 'exec', args: [], ret: '' },
         },
       })
-    } else {
+      return null
+    })
+
+    await expect(jolokiaService.getJolokia()).resolves.not.toThrow()
+    await expect(jolokiaService.getListMethod()).resolves.toEqual(JolokiaListMethod.OPTIMISED)
+  })
+
+  test('getJolokia - default', async () => {
+    jolokiaService.getJolokiaUrl = jest.fn(async () => '/test')
+    Jolokia.prototype.list = jest.fn((path?: string | string[] | ListRequestOptions, opts?: ListRequestOptions) => {
+      if (typeof path !== 'string') throw new Error('String is expected for path')
+      if (!opts) throw new Error('No options set')
       if (!opts.error) throw new Error('No error option set')
 
-      const response: ErrorResponse = {
+      opts.error({
         status: -1,
         timestamp: 123456789,
         request: { type: 'list', path: path },
@@ -42,53 +56,12 @@ class ListJolokiaTest extends DummyJolokia {
         error_type: 'non-exist',
         error: 'ERROR HAS OCCURRED',
         stacktrace: 'not available',
-      }
+      })
+      return null
+    })
 
-      opts.error(response)
-    }
-
-    return null
-  }
-}
-
-class JolokiaServiceTest extends JolokiaService {
-  private delegate: Jolokia
-
-  constructor(delegate: Jolokia) {
-    super()
-    this.delegate = delegate
-  }
-
-  protected async init(): Promise<Jolokia> {
-    return this.delegate
-  }
-
-  checkListOptimisationTest(): Promise<void> {
-    return this.checkListOptimisation(this.delegate)
-  }
-}
-
-describe('JolokiaService class', () => {
-  test('checkListOptimizationSuccess', async () => {
-    const delegate: ListJolokiaTest = new ListJolokiaTest(true)
-    const service: JolokiaServiceTest = new JolokiaServiceTest(delegate)
-
-    await expect(service.checkListOptimisationTest()).resolves.not.toThrow()
-    expect(await service.getListMethod()).toEqual(JolokiaListMethod.OPTIMISED)
-  })
-
-  test('checkListOptimizationError', async () => {
-    const delegate: ListJolokiaTest = new ListJolokiaTest(false)
-    const service: JolokiaServiceTest = new JolokiaServiceTest(delegate)
-
-    await expect(service.checkListOptimisationTest()).resolves.not.toThrow()
-    expect(await service.getListMethod()).toEqual(JolokiaListMethod.DEFAULT)
-  })
-})
-
-describe('jolokiaService singleton', () => {
-  beforeEach(() => {
-    localStorage.clear()
+    await expect(jolokiaService.getJolokia()).resolves.not.toThrow()
+    await expect(jolokiaService.getListMethod()).resolves.toEqual(JolokiaListMethod.DEFAULT)
   })
 
   test('load and save Jolokia options', () => {

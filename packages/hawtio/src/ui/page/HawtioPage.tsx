@@ -54,10 +54,7 @@ export const HawtioPage: React.FunctionComponent = () => {
     </PageSection>
   )
 
-  /* Filter out login plugins */
-  const filteredPlugins = plugins.filter(plugin => !plugin.isLogin)
-
-  const defaultPlugin = filteredPlugins[0] ?? null
+  const defaultPlugin = plugins[0] ?? null
   let defaultPage
   if (defaultPlugin) {
     defaultPage = <Navigate to={{ pathname: defaultPlugin.path, search }} />
@@ -68,7 +65,7 @@ export const HawtioPage: React.FunctionComponent = () => {
   const showVerticalNavByDefault = preferencesService.isShowVerticalNavByDefault()
 
   return (
-    <PageContext.Provider value={{ username, plugins: filteredPlugins }}>
+    <PageContext.Provider value={{ username, plugins }}>
       <BackgroundImage src={backgroundImages} />
       <Page
         header={<HawtioHeader />}
@@ -80,7 +77,7 @@ export const HawtioPage: React.FunctionComponent = () => {
         <PluginNodeSelectionContext.Provider value={{ selectedNode, setSelectedNode }}>
           <Routes>
             {/* plugins */}
-            {filteredPlugins.map(plugin => (
+            {plugins.map(plugin => (
               <Route key={plugin.id} path={`${plugin.path}/*`} element={React.createElement(plugin.component)} />
             ))}
             <Route key='help' path='help/*' element={<HawtioHelp />} />

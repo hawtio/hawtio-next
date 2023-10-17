@@ -7,27 +7,31 @@ const ACL_MBEAN_PATTERN = '*:type=security,area=jmx,*'
 
 interface IRBACService {
   getACLMBean(): Promise<string>
+  reset(): void
 }
 
 class RBACService implements IRBACService {
-  private aclMBean: Promise<string> | null = null
+  private aclMBean?: Promise<string>
 
-  private async init(): Promise<string> {
-    // Wait for resolving user as it may attach credentials to http request headers
-    const loggedIn = await userService.isLogin()
-    if (!loggedIn) {
-      throw new Error('Workspace not available as user is not logged-in')
+  reset() {
+    this.aclMBean = undefined
+  }
+
+  async getACLMBean(): Promise<string> {
+    if (this.aclMBean) {
+      return this.aclMBean
     }
 
-    if (!this.aclMBean) {
-      this.aclMBean = this.fetchACLMBean()
-      await this.aclMBean
-    }
-
+    // Initialise ACL MBean
+    this.aclMBean = this.fetchACLMBean()
     return this.aclMBean
   }
 
   private async fetchACLMBean(): Promise<string> {
+    if (!(await userService.isLogin())) {
+      throw new Error('User needs to have logged in to run RBAC plugin')
+    }
+
     const mbeans = await jolokiaService.search(ACL_MBEAN_PATTERN)
     log.debug('Fetching ACL MBeans:', mbeans)
 
@@ -51,15 +55,6 @@ class RBACService implements IRBACService {
     log.info('Use MBean', chosen, 'for client-side RBAC')
     return chosen
   }
-
-  getACLMBean(): Promise<string> {
-    return this.init()
-  }
 }
 
 export const rbacService = new RBACService()
-
-// Export non-exported definitions for testing
-export const __testing__ = {
-  RBACService,
-}

@@ -81,7 +81,9 @@ export const STORAGE_KEY_UPDATE_RATE = 'connect.jolokia.updateRate'
 export const STORAGE_KEY_AUTO_REFRESH = 'connect.jolokia.autoRefresh'
 
 export interface IJolokiaService {
+  reset(): void
   getJolokiaUrl(): Promise<string | null>
+  getJolokia(): Promise<Jolokia>
   getListMethod(): Promise<JolokiaListMethod>
   list(options: ListRequestOptions): Promise<unknown>
   readAttributes(mbean: string): Promise<AttributeValues>
@@ -100,49 +102,61 @@ export interface IJolokiaService {
 }
 
 class JolokiaService implements IJolokiaService {
-  private jolokiaUrl: Promise<string | null> | null = null
-  private jolokia: Promise<Jolokia> | null = null
+  private jolokiaUrl?: Promise<string | null>
+  private jolokia?: Promise<Jolokia>
   private config: JolokiaConfig = {
     method: JolokiaListMethod.DEFAULT,
     mbean: OPTIMISED_JOLOKIA_LIST_MBEAN,
   }
 
-  protected async init(): Promise<Jolokia> {
-    // Wait for resolving user as it may attach credentials to http request headers
-    const loggedIn = await userService.isLogin()
-    if (!loggedIn) {
-      throw new Error('Jolokia service not available as user is not logged-in')
+  reset() {
+    this.jolokiaUrl = undefined
+    this.jolokia = undefined
+    this.config = {
+      method: JolokiaListMethod.DEFAULT,
+      mbean: OPTIMISED_JOLOKIA_LIST_MBEAN,
+    }
+  }
+
+  getJolokiaUrl(): Promise<string | null> {
+    if (this.jolokiaUrl) {
+      return this.jolokiaUrl
     }
 
-    if (!this.jolokiaUrl) {
-      this.jolokiaUrl = this.initJolokiaUrl()
-      await this.jolokiaUrl
+    this.jolokiaUrl = this.initJolokiaUrl()
+    return this.jolokiaUrl
+  }
+
+  async getJolokia(): Promise<Jolokia> {
+    if (this.jolokia) {
+      return this.jolokia
     }
 
-    if (!this.jolokia) {
-      const jolokia = await this.createJolokia()
+    // Initialising Jolokia instance
 
-      // Start Jolokia
-
-      // Checking versions first
-      jolokia.version(
-        onVersionSuccessAndError(
-          version => {
-            log.info('Jolokia version:', { client: jolokia.CLIENT_VERSION, agent: version.agent })
-          },
-          error => log.error('Failed to fetch Jolokia version:', error),
-        ),
-      )
-      const updateRate = this.loadUpdateRate()
-      jolokia.start(updateRate)
-      log.info('Jolokia started with update rate =', updateRate)
-      return jolokia
-    }
-
-    return this.jolokia
+    const jolokia = await this.createJolokia()
+    // Checking versions
+    jolokia.version(
+      onVersionSuccessAndError(
+        version => {
+          log.info('Jolokia version:', { client: jolokia.CLIENT_VERSION, agent: version.agent })
+        },
+        error => log.error('Failed to fetch Jolokia version:', error),
+      ),
+    )
+    // Start Jolokia
+    const updateRate = this.loadUpdateRate()
+    jolokia.start(updateRate)
+    log.info('Jolokia started with update rate =', updateRate)
+    return jolokia
   }
 
   private async initJolokiaUrl(): Promise<string | null> {
+    // Wait for resolving user as it may attach credentials to http request headers
+    if (!(await userService.isLogin())) {
+      throw new Error('User needs to have logged in to use Jolokia service')
+    }
+
     // Check remote connection
     const conn = connectService.getCurrentConnectionName()
     if (conn) {
@@ -199,7 +213,7 @@ class JolokiaService implements IJolokiaService {
   }
 
   private async createJolokia(): Promise<Jolokia> {
-    const jolokiaUrl = await this.jolokiaUrl
+    const jolokiaUrl = await this.getJolokiaUrl()
     if (!jolokiaUrl) {
       log.debug('Use dummy Jolokia')
       return new DummyJolokia()
@@ -270,8 +284,8 @@ class JolokiaService implements IJolokiaService {
           // If window was opened to connect to remote Jolokia endpoint
           if (url.searchParams.has(PARAM_KEY_CONNECTION)) {
             // ... and not showing the login modal
-            if (url.pathname !== '/connect/login' && this.jolokia) {
-              this.jolokia.then(jolokia => jolokia.stop())
+            if (url.pathname !== '/connect/login') {
+              this.jolokia?.then(jolokia => jolokia.stop())
               const redirectUrl = window.location.href
               url.pathname = '/connect/login'
               url.searchParams.append('redirect', redirectUrl)
@@ -311,11 +325,9 @@ class JolokiaService implements IJolokiaService {
    * @param jolokia Jolokia instance to use
    */
   protected async checkListOptimisation(jolokia: Jolokia): Promise<void> {
-    console.log('Check if we can call optimised jolokia.list() operation')
+    log.debug('Check if we can call optimised jolokia.list() operation')
     return new Promise<void>(resolve => {
-      console.log('Promise inside checkListOptimisation')
       const successFn: NonNullable<ListRequestOptions['success']> = (value: ListResponse) => {
-        console.log('success?')
         // check if the MBean exists by testing whether the returned value has
         // the 'op' property
         if (isObject(value?.op)) {
@@ -325,13 +337,13 @@ class JolokiaService implements IJolokiaService {
           // which equals LIST=GENERAL in practice
           this.config.method = JolokiaListMethod.UNDETERMINED
         }
-        console.log('Jolokia list method:', JolokiaListMethod[this.config.method])
+        log.debug('Jolokia list method:', JolokiaListMethod[this.config.method])
         resolve()
       }
 
       const errorFn: NonNullable<ListRequestOptions['error']> = (response: ErrorResponse) => {
-        console.log('Operation "list" failed due to:', response.error)
-        console.log('Optimisation on jolokia.list() not available')
+        log.debug('Operation "list" failed due to:', response.error)
+        log.debug('Optimisation on jolokia.list() not available')
         resolve() // optimisation not happening
       }
 
@@ -342,25 +354,21 @@ class JolokiaService implements IJolokiaService {
   private async loadJolokiaOptions(): Promise<BaseRequestOptions> {
     const opts = { ...DEFAULT_JOLOKIA_OPTIONS, ...this.loadJolokiaStoredOptions() }
 
-    const jolokiaUrl = await this.jolokiaUrl
+    const jolokiaUrl = await this.getJolokiaUrl()
     if (jolokiaUrl) {
       opts.url = jolokiaUrl
     }
     return opts
   }
 
-  async getJolokiaUrl(): Promise<string | null> {
-    await this.init()
-    return this.jolokiaUrl
-  }
-
   async getListMethod(): Promise<JolokiaListMethod> {
-    await this.init()
+    // Need to wait for Jolokia instance as it might update the list method
+    await this.getJolokia()
     return this.config.method
   }
 
   async list(options: ListRequestOptions): Promise<unknown> {
-    const jolokia = await this.init()
+    const jolokia = await this.getJolokia()
     const { method, mbean } = this.config
 
     return new Promise((resolve, reject) => {
@@ -395,7 +403,7 @@ class JolokiaService implements IJolokiaService {
   }
 
   async readAttributes(mbean: string): Promise<AttributeValues> {
-    const jolokia = await this.init()
+    const jolokia = await this.getJolokia()
     return new Promise(resolve => {
       jolokia.request(
         { type: 'read', mbean },
@@ -411,7 +419,7 @@ class JolokiaService implements IJolokiaService {
   }
 
   async readAttribute(mbean: string, attribute: string): Promise<unknown> {
-    const jolokia = await this.init()
+    const jolokia = await this.getJolokia()
     return new Promise(resolve => {
       jolokia.request(
         { type: 'read', mbean, attribute },
@@ -427,7 +435,7 @@ class JolokiaService implements IJolokiaService {
   }
 
   async writeAttribute(mbean: string, attribute: string, value: unknown): Promise<unknown> {
-    const jolokia = await this.init()
+    const jolokia = await this.getJolokia()
     return new Promise(resolve => {
       jolokia.request(
         { type: 'write', mbean, attribute, value },
@@ -443,7 +451,7 @@ class JolokiaService implements IJolokiaService {
   }
 
   async execute(mbean: string, operation: string, args: unknown[] = []): Promise<unknown> {
-    const jolokia = await this.init()
+    const jolokia = await this.getJolokia()
     return new Promise((resolve, reject) => {
       jolokia.execute(
         mbean,
@@ -458,7 +466,7 @@ class JolokiaService implements IJolokiaService {
   }
 
   async search(mbeanPattern: string): Promise<string[]> {
-    const jolokia = await this.init()
+    const jolokia = await this.getJolokia()
     return new Promise(resolve => {
       jolokia.search(
         mbeanPattern,
@@ -474,7 +482,7 @@ class JolokiaService implements IJolokiaService {
   }
 
   async bulkRequest(requests: Request[]): Promise<Response[]> {
-    const jolokia = await this.init()
+    const jolokia = await this.getJolokia()
     return new Promise(resolve => {
       const bulkResponse: Response[] = []
       jolokia.request(
@@ -497,12 +505,12 @@ class JolokiaService implements IJolokiaService {
   }
 
   async register(request: Request, callback: (response: Response) => void): Promise<number> {
-    const jolokia = await this.init()
+    const jolokia = await this.getJolokia()
     return jolokia.register(callback, request)
   }
 
   async unregister(handle: number) {
-    const jolokia = await this.init()
+    const jolokia = await this.getJolokia()
     jolokia.unregister(handle)
   }
 
@@ -632,8 +640,3 @@ class DummyJolokia implements Jolokia {
 /* eslint-enable @typescript-eslint/no-unused-vars */
 
 export const jolokiaService = new JolokiaService()
-
-export const __testing_jolokia_service__ = {
-  JolokiaService,
-  DummyJolokia,
-}

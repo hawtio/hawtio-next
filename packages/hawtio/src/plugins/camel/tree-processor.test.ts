@@ -1,5 +1,6 @@
-import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
+import { userService } from '@hawtiosrc/auth'
 import { MBeanNode, MBeanTree, workspace } from '@hawtiosrc/plugins/shared'
+import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import fs from 'fs'
 import path from 'path'
 import * as camelService from './camel-service'
@@ -15,7 +16,6 @@ import {
   routesType,
 } from './globals'
 import { camelTreeProcessor } from './tree-processor'
-import { userService } from '@hawtiosrc/auth'
 
 jest.mock('@hawtiosrc/plugins/shared/jolokia-service')
 
@@ -58,6 +58,10 @@ describe('tree-processor', () => {
   })
 
   beforeAll(async () => {
+    userService.addFetchUserHook('test', async resolve => {
+      resolve({ username: 'test', isLogin: true })
+      return true
+    })
     await userService.fetchUser()
   })
 

@@ -23,28 +23,33 @@ export interface IWorkspace {
 }
 
 class Workspace implements IWorkspace {
-  private tree: Promise<MBeanTree> | null = null
+  private tree?: Promise<MBeanTree>
+
   private pluginRegisterHandle?: Promise<number>
   private pluginUpdateCounter?: number
   private treeWatchRegisterHandle?: Promise<number>
   private treeWatcherCounter?: number
 
-  private async init(): Promise<MBeanTree> {
-    // Wait for resolving user as it may attach credentials to http request headers
-    const loggedIn = await userService.isLogin()
-    if (!loggedIn) {
-      throw new Error('Workspace not available as user is not logged-in')
+  async refreshTree() {
+    this.tree = undefined
+    await this.getTree()
+    eventService.refresh()
+  }
+
+  async getTree(): Promise<MBeanTree> {
+    if (this.tree) {
+      return this.tree
     }
 
-    if (!this.tree) {
-      this.tree = this.loadTree()
-      await this.tree
-    }
-
+    this.tree = this.loadTree()
     return this.tree
   }
 
   private async loadTree(): Promise<MBeanTree> {
+    if (!(await userService.isLogin())) {
+      throw new Error('User needs to have logged in to use workspace')
+    }
+
     log.debug('Load JMX MBean tree')
     const options: ListRequestOptions = {
       ignoreErrors: true,
@@ -189,21 +194,12 @@ class Workspace implements IWorkspace {
     this.refreshTree()
   }
 
-  async refreshTree() {
-    this.tree = null
-    await this.init()
-    eventService.refresh()
-  }
-
-  getTree(): Promise<MBeanTree> {
-    return this.init()
-  }
-
   /**
    * Returns true if this workspace has any MBeans at all.
    */
   async hasMBeans(): Promise<boolean> {
-    return !(await this.init()).isEmpty()
+    const tree = await this.getTree()
+    return !tree.isEmpty()
   }
 
   private matchesProperties(node: MBeanNode, properties: Record<string, unknown>): boolean {
@@ -227,7 +223,7 @@ class Workspace implements IWorkspace {
   }
 
   async treeContainsDomainAndProperties(domainName: string, properties?: Record<string, unknown>): Promise<boolean> {
-    const tree = await this.init()
+    const tree = await this.getTree()
     const domain = tree.get(domainName)
     if (!domain) {
       return false
@@ -257,7 +253,8 @@ class Workspace implements IWorkspace {
    * Finds MBeans in the workspace based on the domain name and properties.
    */
   async findMBeans(domainName: string, properties: Record<string, string>): Promise<MBeanNode[]> {
-    return (await this.init()).findMBeans(domainName, properties)
+    const tree = await this.getTree()
+    return tree.findMBeans(domainName, properties)
   }
 }
 
