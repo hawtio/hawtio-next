@@ -24,8 +24,8 @@ We follow [Semantic Versioning](https://semver.org/). That means the target vers
 
 The criteria for determining the target version is as follows:
 
-- If the unreleased commit history has at least one commit with `feat:`, raise the minor version, e.g. `0.5.0` -> `0.6.0`
-- If the unreleased commit history has no commits with `feat:`, raise the patch version, e.g. `0.5.0` -> `0.5.1`
+- If the unreleased commit history has at least one commit with `feat:`, raise the **minor** version, e.g. `0.5.0` -> `0.6.0`
+- If the unreleased commit history has no commits with `feat:`, raise the **patch** version, e.g. `0.5.0` -> `0.5.1`
 
 > [!NOTE]
 > Hawtio is a web UI console, so we normally think new features to the console are backward compatible. Thus, we raise the major version only when the project reaches an important milestone, requires major upgrades of some key components such as React and PatternFly in a backward compatible way, or needs to pivot the basic conditions of the project.
@@ -34,10 +34,18 @@ The criteria for determining the target version is as follows:
 
 To release the `@hawtio/react` package, follow these steps:
 
-1. Run the following script to increase the `version` in [packages/hawtio/package.json](../packages/hawtio/package.json). It uses [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version), which automatically increase the version based on the commit history, creates a commit and a tag, and creates/updates the changelog:
+1. Run the following script to increase the `version` in [packages/hawtio/package.json](../packages/hawtio/package.json). It uses [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) internally to increase the version, creates a commit and a tag, and creates/updates the changelog.
+
+   **Bump minor version:**
 
    ```console
-   yarn release:hawtio
+   yarn release:hawtio --release-as minor
+   ```
+
+   **Bump patch version:**
+
+   ```console
+   yarn release:hawtio --release-as patch
    ```
 
 2. Check that the commit and tag are made as expected:
