@@ -75,7 +75,7 @@ export const Example3HeaderItem2: React.FunctionComponent = () => {
       onSelect={onSelect}
       toggle={
         <DropdownToggle id='example3-header-item2-dropdown-toggle' onToggle={onToggle}>
-          Example 3 Dropdown
+          Example 3
         </DropdownToggle>
       }
       isOpen={isOpen}
