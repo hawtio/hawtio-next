@@ -127,28 +127,28 @@ class JolokiaService implements IJolokiaService {
     return this.jolokiaUrl
   }
 
-  async getJolokia(): Promise<Jolokia> {
+  getJolokia(): Promise<Jolokia> {
     if (this.jolokia) {
       return this.jolokia
     }
 
     // Initialising Jolokia instance
-
-    const jolokia = await this.createJolokia()
-    // Checking versions
-    jolokia.version(
-      onVersionSuccessAndError(
-        version => {
-          log.info('Jolokia version:', { client: jolokia.CLIENT_VERSION, agent: version.agent })
-        },
-        error => log.error('Failed to fetch Jolokia version:', error),
-      ),
-    )
-    // Start Jolokia
-    const updateRate = this.loadUpdateRate()
-    jolokia.start(updateRate)
-    log.info('Jolokia started with update rate =', updateRate)
-    return jolokia
+    this.jolokia = this.createJolokia(jolokia => {
+      // Checking versions
+      jolokia.version(
+        onVersionSuccessAndError(
+          version => {
+            log.info('Jolokia version:', { client: jolokia.CLIENT_VERSION, agent: version.agent })
+          },
+          error => log.error('Failed to fetch Jolokia version:', error),
+        ),
+      )
+      // Start Jolokia
+      const updateRate = this.loadUpdateRate()
+      jolokia.start(updateRate)
+      log.info('Jolokia started with update rate =', updateRate)
+    })
+    return this.jolokia
   }
 
   private async initJolokiaUrl(): Promise<string | null> {
@@ -212,7 +212,7 @@ class JolokiaService implements IJolokiaService {
     })
   }
 
-  private async createJolokia(): Promise<Jolokia> {
+  private async createJolokia(postCreate?: (jolokia: Jolokia) => void): Promise<Jolokia> {
     const jolokiaUrl = await this.getJolokiaUrl()
     if (!jolokiaUrl) {
       log.debug('Use dummy Jolokia')
@@ -236,6 +236,10 @@ class JolokiaService implements IJolokiaService {
 
     // let's check if we can call faster jolokia.list()
     await this.checkListOptimisation(jolokia)
+
+    // Run any post-create processing that should be done before the resolved
+    // Jolokia is returned
+    postCreate?.(jolokia)
 
     return jolokia
   }

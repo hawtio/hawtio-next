@@ -36,7 +36,7 @@ class Workspace implements IWorkspace {
     eventService.refresh()
   }
 
-  async getTree(): Promise<MBeanTree> {
+  getTree(): Promise<MBeanTree> {
     if (this.tree) {
       return this.tree
     }

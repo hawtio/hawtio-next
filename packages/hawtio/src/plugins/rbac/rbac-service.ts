@@ -17,7 +17,7 @@ class RBACService implements IRBACService {
     this.aclMBean = undefined
   }
 
-  async getACLMBean(): Promise<string> {
+  getACLMBean(): Promise<string> {
     if (this.aclMBean) {
       return this.aclMBean
     }
