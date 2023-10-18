@@ -34,7 +34,7 @@ The criteria for determining the target version is as follows:
 
 To release the `@hawtio/react` package, follow these steps:
 
-1. Run the following script to increase the `version` in [packages/hawtio/package.json](../packages/hawtio/package.json). It uses [standard-version](https://github.com/conventional-changelog/standard-version), which automatically increase the version based on the commit history, creates a commit and a tag, and creates/updates the changelog:
+1. Run the following script to increase the `version` in [packages/hawtio/package.json](../packages/hawtio/package.json). It uses [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version), which automatically increase the version based on the commit history, creates a commit and a tag, and creates/updates the changelog:
 
    ```console
    yarn release:hawtio
