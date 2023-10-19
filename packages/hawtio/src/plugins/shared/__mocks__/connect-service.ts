@@ -2,6 +2,7 @@ import { Connection, ConnectionTestResult, Connections, IConnectService } from '
 
 class MockConnectService implements IConnectService {
   constructor() {
+    // eslint-disable-next-line no-console
     console.log('Using mock connect service')
   }
 

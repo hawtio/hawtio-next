@@ -37,7 +37,6 @@ let canDisplayInflightExchanges = false
 jest.mock('./exchanges-service', () => {
   return {
     getInflightExchanges: jest.fn(async () => {
-      console.log('using mocked getInflightExchanges()')
       return Promise.resolve(xchgs)
     }),
     canBrowseInflightExchanges: jest.fn(async (node: MBeanNode): Promise<boolean> => {

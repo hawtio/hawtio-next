@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { stringSorter } from '@hawtiosrc/util/strings'
 import jsLogger, { GlobalLogger, ILogger, ILogLevel } from 'js-logger'
 import { is, object, type } from 'superstruct'

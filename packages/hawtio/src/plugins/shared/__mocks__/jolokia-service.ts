@@ -4,6 +4,7 @@ import jmxCamelResponse from './jmx-camel-tree.json'
 
 class MockJolokiaService implements IJolokiaService {
   constructor() {
+    // eslint-disable-next-line no-console
     console.log('Using mock jolokia service')
   }
 
