@@ -60,11 +60,9 @@ describe('exchange-service', () => {
   let tree: MBeanTree
 
   beforeAll(async () => {
-    userService.addFetchUserHook('test', async resolve => {
-      resolve({ username: 'test', isLogin: true })
-      return true
-    })
+    // Set up the test to be under login state
     await userService.fetchUser()
+
     tree = await workspace.getTree()
     camelTreeProcessor(tree)
   })
