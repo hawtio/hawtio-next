@@ -13,6 +13,7 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint', 'import'],
   rules: {
+    'no-console': 'error',
     semi: ['error', 'never'],
     '@typescript-eslint/explicit-member-accessibility': [
       'warn',

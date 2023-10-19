@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable no-console */
 /* jshint node: true */
 const fs = require('fs')
 const path = require('path')

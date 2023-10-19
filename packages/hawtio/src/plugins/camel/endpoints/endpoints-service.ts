@@ -128,9 +128,9 @@ export function createEndpointFromData(
   endPointPath: string,
   parameters: Record<string, string>,
 ) {
-  if (!componentName) console.error('createEndpointFromData: component name must be defined')
+  if (!componentName) log.error('createEndpointFromData: component name must be defined')
 
-  if (!endPointPath) console.error('createEndpointFromData: endpoint path must be defined')
+  if (!endPointPath) log.error('createEndpointFromData: endpoint path must be defined')
 
   log.debug('Have endpoint data ' + JSON.stringify(parameters))
 

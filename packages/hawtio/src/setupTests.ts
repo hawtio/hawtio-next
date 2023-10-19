@@ -10,6 +10,7 @@ fetchMock.enableMocks()
 
 // Default mock response for every usage of fetch
 fetchMock.mockResponse(req => {
+  // eslint-disable-next-line no-console
   console.log('Mock fetch:', req.url)
   let res = '{}'
   switch (req.url) {
