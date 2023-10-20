@@ -11,21 +11,21 @@ describe('schema-service', () => {
     const schemaText = fs.readFileSync(schemaPath, { encoding: 'utf8', flag: 'r' })
     const schema = JSON.parse(schemaText)
 
-    let defn: Record<string, unknown> | null = schemaService.lookupDefinition('base', schema)
+    let defn: Record<string, unknown> | null = schemaService.lookupDefinition('base', schema.definitions)
     expect(defn).not.toBeNull()
     let def: Record<string, unknown> = defn as Record<string, unknown>
     expect(def.type).toBe('object')
     expect(isObject(def['properties'])).toBeTruthy()
     expect(Object.entries(def['properties'] as object).length).toBe(2)
 
-    defn = schemaService.lookupDefinition('typed', schema)
+    defn = schemaService.lookupDefinition('typed', schema.definitions)
     expect(defn).not.toBeNull()
     def = defn as Record<string, unknown>
     expect(def.type).toBe('base')
     expect(isObject(def['properties'])).toBeTruthy()
     expect(Object.entries(def['properties'] as object).length).toBe(3)
 
-    defn = schemaService.lookupDefinition('extended', schema)
+    defn = schemaService.lookupDefinition('extended', schema.definitions)
     expect(defn).not.toBeNull()
     def = defn as Record<string, unknown>
     expect(def.type).toBe('object')
