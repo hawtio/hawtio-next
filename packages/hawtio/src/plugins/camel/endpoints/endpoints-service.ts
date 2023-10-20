@@ -161,7 +161,7 @@ export function loadEndpointSchema(node: MBeanNode, componentName: string): came
   if (isBlank(componentName)) return null
 
   const camelModel = camelService.getCamelModel(ctxNode)
-  return camelModel.components.components[componentName] ?? null
+  return camelModel.components[componentName] ?? null
 }
 
 export async function doSendMessage(

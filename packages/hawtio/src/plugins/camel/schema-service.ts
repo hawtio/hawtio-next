@@ -7,17 +7,14 @@ class SchemaService {
    * Looks up the given type name in the schemas definitions
    * @method lookupDefinition
    * @param {String} name
-   * @param {any} schema
+   * @param {Record<string, unknown>} definitions
    */
-  lookupDefinition(name: string, schema: Record<string, unknown>): Record<string, unknown> | null {
-    if (!schema) return null
+  lookupDefinition(name: string, definitions: Record<string, unknown>): Record<string, unknown> | null {
+    if (!definitions) return null
 
-    if (!isObject(schema.definitions)) return null
+    if (!isObject(definitions[name])) return null
 
-    const defs: Record<string, unknown> = schema.definitions as Record<string, unknown>
-    if (!isObject(defs[name])) return null
-
-    const answer = defs[name] as Record<string, unknown>
+    const answer = definitions[name] as Record<string, unknown>
     if (isObject(answer['fullSchema'])) {
       return answer['fullSchema'] as Record<string, unknown>
     }
@@ -35,7 +32,7 @@ class SchemaService {
     const fullSchema = cloneObject(answer)
     fullSchema.properties = fullSchema.properties || {}
     for (const extendType of extendsTypes) {
-      const extendDef = this.lookupDefinition(fullSchema[extendType] as string, schema)
+      const extendDef = this.lookupDefinition(fullSchema[extendType] as string, definitions)
       const properties = extendDef?.properties
       if (isObject(properties)) {
         for (const [key, property] of Object.entries(properties)) {

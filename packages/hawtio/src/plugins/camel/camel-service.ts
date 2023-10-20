@@ -24,14 +24,13 @@ import {
 import { ROUTE_OPERATIONS } from './routes-service'
 
 // TODO: Should be provided by @hawtio/camel-model package
-// TODO: Why are the properties redundant? (e.g. components.components, dataformats.dataformats)
 export type CamelModel = {
   apacheCamelModelVersion: string
-  components: { components: { [name: string]: CamelModelSchema } }
-  dataformats: { dataformats: { [name: string]: CamelModelSchema } }
-  definitions: { definitions: { [name: string]: CamelModelSchema } }
-  languages: { languages: { [name: string]: CamelModelSchema } }
-  rests: { rests: { [name: string]: CamelModelSchema } }
+  components: { [name: string]: CamelModelSchema }
+  dataformats: { [name: string]: CamelModelSchema }
+  definitions: { [name: string]: CamelModelSchema }
+  languages: { [name: string]: CamelModelSchema }
+  rests: { [name: string]: CamelModelSchema }
 }
 
 export type CamelModelSchema = {
