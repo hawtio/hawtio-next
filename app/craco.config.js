@@ -157,7 +157,9 @@ module.exports = {
       devServer.app.get('/hawtio/keycloak/client-config', (_, res) => res.send(JSON.stringify(keycloakClientConfig)))
       devServer.app.get('/hawtio/keycloak/validate-subject-matches', (_, res) => res.send('true'))
 
-      middlewares.push({
+      // Hawtio backend middleware should be run before other middlewares (thus 'unshift')
+      // in order to handle GET requests to the proxied Jolokia endpoint.
+      middlewares.unshift({
         name: 'hawtio-backend',
         path: '/hawtio/proxy',
         middleware: hawtioBackend({
