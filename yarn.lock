@@ -2547,7 +2547,7 @@ __metadata:
     ts-jest: ^29.1.1
     tsup: ^7.2.0
     typescript: ^4.9.5
-    xml-formatter: ^3.5.0
+    xml-formatter: ^3.6.0
   peerDependencies:
     "@patternfly/react-core": ^4.278.0
     keycloak-js: ^21
@@ -20605,12 +20605,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"xml-formatter@npm:^3.5.0":
-  version: 3.5.0
-  resolution: "xml-formatter@npm:3.5.0"
+"xml-formatter@npm:^3.6.0":
+  version: 3.6.0
+  resolution: "xml-formatter@npm:3.6.0"
   dependencies:
     xml-parser-xo: ^4.1.0
-  checksum: 25a4ef21f5d7c1002f9441641260f755880c923902ec1b22afc32b1c1cea3e3bb66f7c390a124b14da5f6ae2141e36cffe2048518f0fbb774bd12f736fdc25f7
+  checksum: 36b7fca38eeef6b0a1f27960b43c43723263de26d5b27996199de3284c43d8cb52f30035307594f9b0971cf139b4650ec29581ef0293f122a8232f579f0dc16d
   languageName: node
   linkType: hard
 
