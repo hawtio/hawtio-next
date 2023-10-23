@@ -43,7 +43,7 @@ jobs:
       - name: Docker Setup QEMU
         uses: docker/setup-qemu-action@v3.0.0
       - name: Set up Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
       - name: Get yarn cache directory path
