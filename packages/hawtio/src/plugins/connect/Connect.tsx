@@ -47,7 +47,7 @@ export const Connect: React.FunctionComponent = () => {
       <Text component='p'>
         This page allows you to connect to remote processes which{' '}
         <strong>
-          already have a
+          already have a{' '}
           <a href='https://jolokia.org/agent.html' target='_blank' rel='noreferrer'>
             Jolokia agent
           </a>{' '}
@@ -56,7 +56,7 @@ export const Connect: React.FunctionComponent = () => {
         . You will need to know the host name, port and path of the Jolokia agent to be able to connect.
       </Text>
       <Text component='p'>
-        If the process you wish to connect to does not have a Jolokia agent inside, please refer to the
+        If the process you wish to connect to does not have a Jolokia agent inside, please refer to the{' '}
         <a href='http://jolokia.org/agent.html' target='_blank' rel='noreferrer'>
           Jolokia documentation
         </a>{' '}
@@ -65,7 +65,7 @@ export const Connect: React.FunctionComponent = () => {
       <Text component='p'>
         If you are using{' '}
         <a href='https://developers.redhat.com/products/fuse/overview/' target='_blank' rel='noreferrer'>
-          Red Hat Fuse
+          Red Hat Fuse{' '}
         </a>
         or{' '}
         <a href='http://activemq.apache.org/' target='_blank' rel='noreferrer'>
