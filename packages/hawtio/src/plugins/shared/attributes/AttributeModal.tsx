@@ -1,68 +1,103 @@
-import {
-  Button,
-  ClipboardCopy,
-  Form,
-  FormGroup,
-  Modal,
-  ModalVariant,
-  TextArea,
-  TextInput,
-} from '@patternfly/react-core'
-import React, { useEffect, useState, useContext } from 'react'
-import { attributeService } from './attribute-service'
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
+import { Button, ClipboardCopy, Form, FormGroup, Modal, TextArea, TextInput } from '@patternfly/react-core'
+import React, { useContext, useEffect, useState } from 'react'
+import { attributeService } from './attribute-service'
+import { log } from '../globals'
+import { eventService } from '@hawtiosrc/core'
 
-export interface AttributeModalProps {
+export const AttributeModal: React.FunctionComponent<{
   isOpen: boolean
   onClose: () => void
+  onUpdate: () => void
   input: { name: string; value: string }
-}
-
-export const AttributeModal: React.FunctionComponent<AttributeModalProps> = props => {
+}> = ({ isOpen, onClose, onUpdate, input }) => {
   const { selectedNode } = useContext(PluginNodeSelectionContext)
-  const { isOpen, onClose, input } = props
-  const { name, value } = input
+  const attributeName = input.name
+  const [attributeValue, setAttributeValue] = useState('')
   const [jolokiaUrl, setJolokiaUrl] = useState('Loading...')
+  const [isWritable, setIsWritable] = useState(false)
 
   useEffect(() => {
-    if (!selectedNode || !selectedNode.objectName) {
+    if (!selectedNode || !selectedNode.objectName || !selectedNode.mbean) {
       return
     }
 
-    const mbean = selectedNode.objectName
+    const { mbean, objectName } = selectedNode
+
+    const attribute = mbean.attr?.[attributeName]
+    if (!attribute) {
+      return
+    }
+
+    setAttributeValue(input.value)
+
+    // Update Jolokia URL
     const buildUrl = async () => {
-      const url = await attributeService.buildUrl(mbean, name)
+      const url = await attributeService.buildUrl(objectName, attributeName)
       setJolokiaUrl(url)
     }
     buildUrl()
-  }, [selectedNode, name])
 
-  if (!selectedNode || !selectedNode.mbean || !selectedNode.objectName) {
+    // Check RBAC on the selected attribute
+    if (attribute.rw) {
+      // For writable attribute, we need to check RBAC
+      const canInvoke = async () => {
+        const canInvoke = await attributeService.canInvoke(objectName, attributeName, attribute.type)
+        log.debug('Attribute', attributeName, 'canInvoke:', canInvoke)
+        setIsWritable(canInvoke)
+      }
+      canInvoke()
+    } else {
+      setIsWritable(false)
+    }
+  }, [selectedNode, attributeName, input])
+
+  if (!selectedNode || !selectedNode.objectName || !selectedNode.mbean) {
     return null
   }
 
-  const attribute = selectedNode.mbean.attr?.[name]
+  const { mbean, objectName } = selectedNode
+
+  const attribute = mbean.attr?.[attributeName]
   if (!attribute) {
     return null
   }
 
-  const modalTitle = `Attribute: ${input.name}`
+  const updateAttribute = async () => {
+    if (attributeValue === input.value) {
+      eventService.notify({ type: 'info', message: 'The attribute value has not changed' })
+    } else {
+      await attributeService.update(objectName, attributeName, attributeValue)
+      onUpdate()
+    }
+    onClose()
+  }
+
+  const modalTitle = `Attribute: ${attributeName}`
+
+  const modalActions = [
+    <Button key='close' variant='primary' onClick={onClose}>
+      Close
+    </Button>,
+  ]
+  if (isWritable) {
+    modalActions.push(
+      <Button key='update' variant='danger' onClick={updateAttribute}>
+        Update
+      </Button>,
+    )
+  }
 
   return (
-    <Modal
-      variant={ModalVariant.medium}
-      title={modalTitle}
-      isOpen={isOpen}
-      onClose={onClose}
-      actions={[
-        <Button key='close' onClick={onClose}>
-          Close
-        </Button>,
-      ]}
-    >
+    <Modal variant='medium' title={modalTitle} isOpen={isOpen} onClose={onClose} actions={modalActions}>
       <Form id='attribute-form' isHorizontal>
         <FormGroup label='Name' fieldId='attribute-form-name'>
-          <TextInput id='attribute-form-name' name='attribute-form-name' value={name} readOnlyVariant='default' />
+          <TextInput
+            id='attribute-form-name'
+            name='attribute-form-name'
+            value={attributeName}
+            readOnlyVariant='default'
+          />
         </FormGroup>
         <FormGroup label='Description' fieldId='attribute-form-description'>
           <TextArea
@@ -86,7 +121,13 @@ export const AttributeModal: React.FunctionComponent<AttributeModalProps> = prop
           </ClipboardCopy>
         </FormGroup>
         <FormGroup label='Value' fieldId='attribute-form-value'>
-          <TextInput id='attribute-form-value' name='attribute-form-value' value={value} readOnlyVariant='default' />
+          <TextInput
+            id='attribute-form-value'
+            name='attribute-form-value'
+            value={attributeValue}
+            onChange={value => setAttributeValue(value)}
+            readOnlyVariant={isWritable ? undefined : 'default'}
+          />
         </FormGroup>
       </Form>
     </Modal>

@@ -2,6 +2,8 @@ import { AttributeValues, jolokiaService } from '@hawtiosrc/plugins/shared/jolok
 import { escapeMBean } from '@hawtiosrc/util/jolokia'
 import { Request, Response } from 'jolokia.js'
 import { log } from '../globals'
+import { rbacService } from '@hawtiosrc/plugins/rbac/rbac-service'
+import { eventService } from '@hawtiosrc/core'
 
 class AttributeService {
   private handles: number[] = []
@@ -25,6 +27,23 @@ class AttributeService {
   async buildUrl(mbean: string, attribute: string): Promise<string> {
     const jolokiaUrl = await jolokiaService.getFullJolokiaUrl()
     return `${jolokiaUrl}/read/${escapeMBean(mbean)}/${attribute}`
+  }
+
+  async canInvoke(mbean: string, attribute: string, type: string): Promise<boolean> {
+    const aclMBean = await rbacService.getACLMBean()
+    if (!aclMBean) {
+      // Always allow invocation when client-side RBAC is not available
+      return true
+    }
+
+    const operation = 'canInvoke(java.lang.String,java.lang.String,[Ljava.lang.String;)'
+    const args = [mbean, `set${attribute}`, [type]]
+    return jolokiaService.execute(aclMBean, operation, args) as Promise<boolean>
+  }
+
+  async update(mbeanName: string, attribute: string, value: unknown) {
+    await jolokiaService.writeAttribute(mbeanName, attribute, value)
+    eventService.notify({ type: 'success', message: `Updated attribute: ${attribute}` })
   }
 }
 

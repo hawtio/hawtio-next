@@ -8,7 +8,6 @@ import {
 } from '@hawtiosrc/plugins/shared'
 import { operationToString } from '@hawtiosrc/util/jolokia'
 import { isString } from '@hawtiosrc/util/objects'
-import { isBlank } from '@hawtiosrc/util/strings'
 import { Request, Response } from 'jolokia.js'
 import { log } from './globals'
 import { rbacService } from './rbac-service'
@@ -36,7 +35,7 @@ export const rbacTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
   log.debug('Processing tree:', tree)
   const aclMBean = await rbacService.getACLMBean()
 
-  if (isBlank(aclMBean)) {
+  if (!aclMBean) {
     /*
      * Some implementations of jolokia provision, eg. running with java -javaagent
      * do not provide an acl mbean or implement server-side RBAC so need to skip

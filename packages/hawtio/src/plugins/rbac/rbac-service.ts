@@ -6,18 +6,18 @@ import { log } from './globals'
 const ACL_MBEAN_PATTERN = '*:type=security,area=jmx,*'
 
 interface IRBACService {
-  getACLMBean(): Promise<string>
   reset(): void
+  getACLMBean(): Promise<string | null>
 }
 
 class RBACService implements IRBACService {
-  private aclMBean?: Promise<string>
+  private aclMBean?: Promise<string | null>
 
   reset() {
     this.aclMBean = undefined
   }
 
-  getACLMBean(): Promise<string> {
+  getACLMBean(): Promise<string | null> {
     if (this.aclMBean) {
       return this.aclMBean
     }
@@ -27,7 +27,7 @@ class RBACService implements IRBACService {
     return this.aclMBean
   }
 
-  private async fetchACLMBean(): Promise<string> {
+  private async fetchACLMBean(): Promise<string | null> {
     if (!(await userService.isLogin())) {
       throw new Error('User needs to have logged in to run RBAC plugin')
     }
@@ -37,7 +37,7 @@ class RBACService implements IRBACService {
 
     if (mbeans.length === 0) {
       log.info("Didn't discover any ACL MBeans; client-side RBAC is disabled")
-      return ''
+      return null
     }
 
     const mbean = mbeans[0]
@@ -50,7 +50,7 @@ class RBACService implements IRBACService {
     const chosen = mbeans.find(mbean => !mbean.includes('HawtioDummy'))
     if (!chosen || isBlank(chosen)) {
       log.info("Didn't discover any effective ACL MBeans; client-side RBAC is disabled")
-      return ''
+      return null
     }
     log.info('Use MBean', chosen, 'for client-side RBAC')
     return chosen

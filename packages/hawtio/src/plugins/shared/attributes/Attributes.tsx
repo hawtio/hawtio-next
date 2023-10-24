@@ -17,9 +17,10 @@ export const Attributes: React.FunctionComponent = () => {
   const [isReading, setIsReading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selected, setSelected] = useState({ name: '', value: '' })
+  const [reload, setReload] = useState(true)
 
   useEffect(() => {
-    if (!selectedNode || !selectedNode.mbean || !selectedNode.objectName) {
+    if (!selectedNode || !selectedNode.mbean || !selectedNode.objectName || !reload) {
       return
     }
 
@@ -31,7 +32,9 @@ export const Attributes: React.FunctionComponent = () => {
       setIsReading(false)
     }
     readAttributes()
-  }, [selectedNode])
+
+    setReload(false)
+  }, [selectedNode, reload])
 
   useEffect(() => {
     if (!selectedNode || !selectedNode.mbean || !selectedNode.objectName) {
@@ -82,7 +85,12 @@ export const Attributes: React.FunctionComponent = () => {
         <TableHeader />
         <TableBody onRowClick={selectAttribute} />
       </Table>
-      <AttributeModal isOpen={isModalOpen} onClose={handleModalToggle} input={selected} />
+      <AttributeModal
+        isOpen={isModalOpen}
+        onClose={handleModalToggle}
+        onUpdate={() => setReload(true)}
+        input={selected}
+      />
     </Card>
   )
 }
