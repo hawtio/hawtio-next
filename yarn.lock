@@ -2455,15 +2455,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hawtio/backend-middleware@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "@hawtio/backend-middleware@npm:1.0.3"
+"@hawtio/backend-middleware@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "@hawtio/backend-middleware@npm:1.0.4"
   dependencies:
     "@bitauth/libauth": ^1.17.1
     axios: ^1.0.0
     express: ^4.18.1
     js-logger: ^1.6.1
-  checksum: 2042a7c6055e192d14adf0909a2d87e93c865b28f580f39fb1050f45bc40cb13fe7c430d7e2e3055dfa8b175ff278d86d740b4f5d91df84364b2c189ebc4911d
+  checksum: 2c22d1a98bc03ad558bc174da8f20b968998d477f0dafdb7b984a59910d363d4907663949c0a7f63b1f22e9c6e3527bdaa27307fb0f6e878d81439131894f72a
   languageName: node
   linkType: hard
 
@@ -5606,7 +5606,7 @@ __metadata:
   resolution: "app@workspace:app"
   dependencies:
     "@craco/craco": ^7.1.0
-    "@hawtio/backend-middleware": ^1.0.3
+    "@hawtio/backend-middleware": ^1.0.4
     "@hawtio/react": "workspace:*"
     craco-esbuild: ^0.5.2
     monaco-editor-webpack-plugin: ^7.1.0
