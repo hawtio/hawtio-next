@@ -14,7 +14,7 @@ describe('RBACService', () => {
     userService.isLogin = jest.fn(async () => true)
     jolokiaService.search = jest.fn(async () => [])
 
-    await expect(rbacService.getACLMBean()).resolves.toBe('')
+    await expect(rbacService.getACLMBean()).resolves.toBeNull()
   })
 
   test('there is one ACLMBean', async () => {
