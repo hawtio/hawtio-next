@@ -23,7 +23,7 @@ class AttributeService {
   }
 
   async buildUrl(mbean: string, attribute: string): Promise<string> {
-    const jolokiaUrl = await jolokiaService.getJolokiaUrl()
+    const jolokiaUrl = await jolokiaService.getFullJolokiaUrl()
     return `${jolokiaUrl}/read/${escapeMBean(mbean)}/${attribute}`
   }
 }

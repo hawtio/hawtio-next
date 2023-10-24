@@ -1,5 +1,5 @@
 import { userService } from '@hawtiosrc/auth'
-import { eventService } from '@hawtiosrc/core'
+import { eventService, hawtio } from '@hawtiosrc/core'
 import { basicAuthHeaderValue, getCookie } from '@hawtiosrc/util/https'
 import {
   escapeMBeanPath,
@@ -85,6 +85,7 @@ export interface IJolokiaService {
   getJolokiaUrl(): Promise<string | null>
   getJolokia(): Promise<Jolokia>
   getListMethod(): Promise<JolokiaListMethod>
+  getFullJolokiaUrl(): Promise<string>
   list(options: ListRequestOptions): Promise<unknown>
   readAttributes(mbean: string): Promise<AttributeValues>
   readAttribute(mbean: string, attribute: string): Promise<unknown>
@@ -118,6 +119,15 @@ class JolokiaService implements IJolokiaService {
     }
   }
 
+  /**
+   * Get the Jolokia URL that the service is connected to.
+   *
+   * The URL may not be a full URL including origin (`http(s)://host:port`).
+   * It can be a path relative to the root (`/hawtio/jolokia`) or to the current
+   * path (`jolokia`).
+   *
+   * @see Use {@link getFullJolokiaUrl} for getting the full URL.
+   */
   getJolokiaUrl(): Promise<string | null> {
     if (this.jolokiaUrl) {
       return this.jolokiaUrl
@@ -363,6 +373,31 @@ class JolokiaService implements IJolokiaService {
       opts.url = jolokiaUrl
     }
     return opts
+  }
+
+  /**
+   * Get the full Jolokia URL that the service is connected to.
+   *
+   * The origin part (`http(s)://host:port`) is resolved based on `window.location`.
+   *
+   * @see {@link getJolokiaUrl}
+   */
+  async getFullJolokiaUrl(): Promise<string> {
+    const jolokiaUrl = (await this.getJolokiaUrl()) ?? ''
+    if (jolokiaUrl.match(/^https?:\/\//)) {
+      return jolokiaUrl
+    }
+
+    const { origin } = window.location
+    if (jolokiaUrl.startsWith('/')) {
+      return `${origin}${jolokiaUrl}`
+    }
+
+    let basePath = hawtio.getBasePath() ?? ''
+    if (!basePath.endsWith('/')) {
+      basePath += '/'
+    }
+    return `${origin}${basePath + jolokiaUrl}`
   }
 
   async getListMethod(): Promise<JolokiaListMethod> {

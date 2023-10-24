@@ -1,6 +1,7 @@
 import { userService } from '@hawtiosrc/auth'
 import Jolokia, { ListRequestOptions } from 'jolokia.js'
 import { DEFAULT_MAX_COLLECTION_SIZE, DEFAULT_MAX_DEPTH, JolokiaListMethod, jolokiaService } from './jolokia-service'
+import { hawtio } from '@hawtiosrc/core'
 
 describe('JolokiaService', () => {
   beforeEach(() => {
@@ -62,6 +63,25 @@ describe('JolokiaService', () => {
 
     await expect(jolokiaService.getJolokia()).resolves.not.toThrow()
     await expect(jolokiaService.getListMethod()).resolves.toEqual(JolokiaListMethod.DEFAULT)
+  })
+
+  test('getFullJolokiaUrl', async () => {
+    hawtio.getBasePath = jest.fn(() => '/hawtio')
+
+    jolokiaService.getJolokiaUrl = jest.fn(async () => '/hawtio/jolokia')
+    await expect(jolokiaService.getFullJolokiaUrl()).resolves.toEqual('http://localhost/hawtio/jolokia')
+
+    jolokiaService.getJolokiaUrl = jest.fn(async () => 'jolokia')
+    await expect(jolokiaService.getFullJolokiaUrl()).resolves.toEqual('http://localhost/hawtio/jolokia')
+
+    jolokiaService.getJolokiaUrl = jest.fn(async () => 'http://test:12345/test/jolokia')
+    await expect(jolokiaService.getFullJolokiaUrl()).resolves.toEqual('http://test:12345/test/jolokia')
+
+    jolokiaService.getJolokiaUrl = jest.fn(async () => 'https://test:12345/test/jolokia')
+    await expect(jolokiaService.getFullJolokiaUrl()).resolves.toEqual('https://test:12345/test/jolokia')
+
+    jolokiaService.getJolokiaUrl = jest.fn(async () => 'http/jolokia')
+    await expect(jolokiaService.getFullJolokiaUrl()).resolves.toEqual('http://localhost/hawtio/http/jolokia')
   })
 
   test('load and save Jolokia options', () => {

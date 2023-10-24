@@ -23,6 +23,10 @@ class MockJolokiaService implements IJolokiaService {
     return 0
   }
 
+  async getFullJolokiaUrl(): Promise<string> {
+    return ''
+  }
+
   async list(options: ListRequestOptions): Promise<unknown> {
     return jmxCamelResponse
   }
