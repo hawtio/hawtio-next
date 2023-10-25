@@ -298,10 +298,12 @@ class JolokiaService implements IJolokiaService {
           // If window was opened to connect to remote Jolokia endpoint
           if (url.searchParams.has(PARAM_KEY_CONNECTION)) {
             // ... and not showing the login modal
-            if (url.pathname !== '/connect/login') {
+            const basePath = hawtio.getBasePath()
+            const loginPath = `${basePath}/connect/login`
+            if (url.pathname !== loginPath) {
               this.jolokia?.then(jolokia => jolokia.stop())
               const redirectUrl = window.location.href
-              url.pathname = '/connect/login'
+              url.pathname = loginPath
               url.searchParams.append('redirect', redirectUrl)
               window.location.href = url.href
             }
@@ -393,11 +395,8 @@ class JolokiaService implements IJolokiaService {
       return `${origin}${jolokiaUrl}`
     }
 
-    let basePath = hawtio.getBasePath() ?? ''
-    if (!basePath.endsWith('/')) {
-      basePath += '/'
-    }
-    return `${origin}${basePath + jolokiaUrl}`
+    const basePath = hawtio.getBasePath() ?? ''
+    return `${origin}${basePath}/${jolokiaUrl}`
   }
 
   async getListMethod(): Promise<JolokiaListMethod> {
