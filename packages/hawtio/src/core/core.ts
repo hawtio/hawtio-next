@@ -105,13 +105,31 @@ class HawtioCore {
    */
   private plugins: Plugins = {}
 
+  /**
+   * Sets the base path of the Hawtio console.
+   * If the given path includes trailing '/', it will be trimmed.
+   */
   setBasePath(path: string) {
-    this.basePath = path
+    if (path.length > 1 && path.endsWith('/')) {
+      // Remove trailing '/'
+      this.basePath = path.slice(0, -1)
+    } else {
+      this.basePath = path
+    }
   }
 
+  /**
+   * Returns the base path of the Hawtio console without trailing '/'.
+   */
   getBasePath(): string | undefined {
     if (!this.basePath) {
-      this.basePath = this.documentBase()
+      const basePath = this.documentBase()
+      if (basePath && basePath.length > 1 && basePath.endsWith('/')) {
+        // Remove trailing '/'
+        this.basePath = basePath.slice(0, -1)
+      } else {
+        this.basePath = basePath
+      }
     }
     return this.basePath
   }

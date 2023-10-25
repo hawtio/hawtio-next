@@ -30,8 +30,20 @@ describe('HawtioCore', () => {
     expect(hawtio.getBasePath()).toEqual('/test')
   })
 
+  test('base path with base href ending with slash in document head', () => {
+    document.head.innerHTML = `
+      <base href='/test/'/>
+    `
+    expect(hawtio.getBasePath()).toEqual('/test')
+  })
+
   test('custom base path', () => {
     hawtio.setBasePath('/custom')
+    expect(hawtio.getBasePath()).toEqual('/custom')
+  })
+
+  test('custom base path with trailing slash', () => {
+    hawtio.setBasePath('/custom/')
     expect(hawtio.getBasePath()).toEqual('/custom')
   })
 
