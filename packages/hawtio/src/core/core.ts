@@ -256,9 +256,13 @@ class HawtioCore {
   async resolvePlugins(): Promise<Plugin[]> {
     const userLoggedIn = await userService.isLogin()
 
+    log.debug('Resolve plugins: login =', userLoggedIn)
+
     const resolved: Plugin[] = []
     // load plugins sequentially to maintain the order
     for (const plugin of this.getPlugins()) {
+      log.debug('Resolve plugin:', plugin.id)
+
       if ((userLoggedIn && plugin.isLogin) || (!userLoggedIn && !plugin.isLogin)) {
         continue
       }
