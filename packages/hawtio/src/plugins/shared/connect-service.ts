@@ -27,7 +27,7 @@ export type ConnectionTestResult = {
   message: string
 }
 
-type ConnectionCredentials = {
+export type ConnectionCredentials = {
   username: string
   password: string
 }
@@ -44,6 +44,7 @@ const LOGIN_PATH = '/connect/login'
 export interface IConnectService {
   getCurrentConnectionName(): string | null
   getCurrentConnection(): Connection | null
+  getCurrentCredentials(): ConnectionCredentials | null
   loadConnections(): Connections
   saveConnections(connections: Connections): void
   getConnection(name: string): Connection | null
@@ -93,11 +94,10 @@ class ConnectService implements IConnectService {
     }
 
     // Apply credentials if it exists
-    const item = sessionStorage.getItem(SESSION_KEY_CREDENTIALS)
-    if (!item) {
+    const credentials = this.getCurrentCredentials()
+    if (!credentials) {
       return conn
     }
-    const credentials = JSON.parse(item) as ConnectionCredentials
     conn.username = credentials.username
     conn.password = credentials.password
     this.clearCredentialsOnLogout()
@@ -107,6 +107,11 @@ class ConnectService implements IConnectService {
 
   private clearCredentialsOnLogout() {
     eventService.onLogout(() => sessionStorage.removeItem(SESSION_KEY_CREDENTIALS))
+  }
+
+  getCurrentCredentials(): ConnectionCredentials | null {
+    const item = sessionStorage.getItem(SESSION_KEY_CREDENTIALS)
+    return item ? JSON.parse(item) : null
   }
 
   loadConnections(): Connections {

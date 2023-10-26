@@ -1,5 +1,6 @@
+import { userService } from '@hawtiosrc/auth/user-service'
 import { connectService } from '@hawtiosrc/plugins/shared/connect-service'
-import { log, PATH_PROXY_ENABLED } from './globals'
+import { PATH_PROXY_ENABLED, log } from './globals'
 
 export async function isActive(): Promise<boolean> {
   const proxyEnabled = await isProxyEnabled()
@@ -36,4 +37,26 @@ async function isProxyEnabled(): Promise<boolean> {
 function isConnectLogin(): boolean {
   const url = new URL(window.location.href)
   return url.pathname === connectService.getLoginPath()
+}
+
+/**
+ * Register user hooks to userService if it's connecting to an authenticated
+ * remote Jolokia endpoint with credentials in session storage, so that the user
+ * can reflect the remote credentials.
+ */
+export function registerUserHooks() {
+  const credentials = connectService.getCurrentCredentials()
+  if (!credentials) {
+    return
+  }
+
+  userService.addFetchUserHook('connect', async resolve => {
+    resolve({ username: credentials.username, isLogin: true })
+    return true
+  })
+  userService.addLogoutHook('connect', async () => {
+    // Logout from remote connection should close the window
+    window.close()
+    return true
+  })
 }

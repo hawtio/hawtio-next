@@ -4,9 +4,10 @@ import { preferencesRegistry } from '@hawtiosrc/preferences/registry'
 import { Connect } from './Connect'
 import { ConnectPreferences } from './ConnectPreferences'
 import help from './help.md'
-import { isActive } from './init'
+import { isActive, registerUserHooks } from './init'
 
 export const connect: HawtioPlugin = () => {
+  registerUserHooks()
   hawtio.addPlugin({
     id: 'connect',
     title: 'Connect',

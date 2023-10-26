@@ -1,4 +1,10 @@
-import { Connection, ConnectionTestResult, Connections, IConnectService } from '../connect-service'
+import {
+  Connection,
+  ConnectionCredentials,
+  ConnectionTestResult,
+  Connections,
+  IConnectService,
+} from '../connect-service'
 
 class MockConnectService implements IConnectService {
   constructor() {
@@ -11,6 +17,10 @@ class MockConnectService implements IConnectService {
   }
 
   getCurrentConnection(): Connection | null {
+    return null
+  }
+
+  getCurrentCredentials(): ConnectionCredentials | null {
     return null
   }
 
