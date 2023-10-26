@@ -54,10 +54,10 @@ class Workspace implements IWorkspace {
     const options: ListRequestOptions = {
       ignoreErrors: true,
       error: (response: ErrorResponse) => {
-        log.debug('Error fetching JMX tree:', response)
+        log.debug('Error - fetching JMX tree:', response)
       },
-      ajaxError: (xhr: JQueryXHR) => {
-        log.debug('Error fetching JMX tree:', xhr)
+      ajaxError: (xhr: JQueryXHR, text: string, error: string) => {
+        log.debug('Ajax error - fetching JMX tree:', text, '-', error)
       },
     }
     try {

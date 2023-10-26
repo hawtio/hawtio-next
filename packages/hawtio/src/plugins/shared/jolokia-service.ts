@@ -80,6 +80,8 @@ export const STORAGE_KEY_JOLOKIA_OPTIONS = 'connect.jolokia.options'
 export const STORAGE_KEY_UPDATE_RATE = 'connect.jolokia.updateRate'
 export const STORAGE_KEY_AUTO_REFRESH = 'connect.jolokia.autoRefresh'
 
+type AjaxErrorResolver = () => void
+
 export interface IJolokiaService {
   reset(): void
   getJolokiaUrl(): Promise<string | null>
@@ -170,7 +172,7 @@ class JolokiaService implements IJolokiaService {
     // Check remote connection
     const conn = connectService.getCurrentConnectionName()
     if (conn) {
-      log.debug('Connection name', conn, 'provided, not discovering Jolokia')
+      log.debug('Connection provided, not discovering Jolokia: con =', conn)
       return connectService.getJolokiaUrlFromName(conn)
     }
 
@@ -184,6 +186,7 @@ class JolokiaService implements IJolokiaService {
       }
     }
 
+    log.debug('No available Jolokia path found')
     return null
   }
 
@@ -238,6 +241,7 @@ class JolokiaService implements IJolokiaService {
 
     const options = await this.loadJolokiaOptions()
     if (!options.ajaxError) {
+      // Default ajax error handler
       options.ajaxError = this.ajaxError()
     }
 
@@ -287,7 +291,7 @@ class JolokiaService implements IJolokiaService {
     }
   }
 
-  private ajaxError(): JQueryAjaxError {
+  private ajaxError(resolve?: AjaxErrorResolver): JQueryAjaxError {
     const errorThreshold = 2
     let errorCount = 0
     return (xhr: JQueryXHR) => {
@@ -297,10 +301,10 @@ class JolokiaService implements IJolokiaService {
           const url = new URL(window.location.href)
           // If window was opened to connect to remote Jolokia endpoint
           if (url.searchParams.has(PARAM_KEY_CONNECTION)) {
-            // ... and not showing the login modal
             const basePath = hawtio.getBasePath()
             const loginPath = `${basePath}/connect/login`
             if (url.pathname !== loginPath) {
+              // ... and not showing the login modal
               this.jolokia?.then(jolokia => jolokia.stop())
               const redirectUrl = window.location.href
               url.pathname = loginPath
@@ -331,6 +335,9 @@ class JolokiaService implements IJolokiaService {
           }
         }
       }
+
+      // Resolve any waiting promise that might be blocked by the error
+      resolve?.()
     }
   }
 
@@ -363,7 +370,10 @@ class JolokiaService implements IJolokiaService {
         resolve() // optimisation not happening
       }
 
-      jolokia.list(escapeMBeanPath(this.config.mbean), onListSuccessAndError(successFn, errorFn))
+      jolokia.list(
+        escapeMBeanPath(this.config.mbean),
+        onListSuccessAndError(successFn, errorFn, { ajaxError: this.ajaxError(resolve) }),
+      )
     })
   }
 
@@ -409,7 +419,13 @@ class JolokiaService implements IJolokiaService {
     const jolokia = await this.getJolokia()
     const { method, mbean } = this.config
 
+    const { success, error: errorFn, ajaxError } = options
+
     return new Promise((resolve, reject) => {
+      options.ajaxError = (xhr: JQueryXHR, text: string, error: string) => {
+        ajaxError?.(xhr, text, error)
+        reject(error)
+      }
       switch (method) {
         case JolokiaListMethod.OPTIMISED:
           log.debug('Invoke Jolokia list MBean in optimised mode')
@@ -418,9 +434,17 @@ class JolokiaService implements IJolokiaService {
           jolokia.execute(
             mbean,
             'list()',
+            // This is execute operation but ListRequestOptions is compatible with
+            // ExecuteRequestOptions for list(), so this is intentional.
             onListSuccessAndError(
-              value => resolve(value),
-              error => reject(error),
+              value => {
+                success?.(value)
+                resolve(value)
+              },
+              error => {
+                errorFn?.(error)
+                reject(error)
+              },
               options,
             ),
           )
@@ -431,8 +455,14 @@ class JolokiaService implements IJolokiaService {
           log.debug('Invoke Jolokia list MBean in default mode')
           jolokia.list(
             onListSuccessAndError(
-              value => resolve(value),
-              error => reject(error),
+              value => {
+                success?.(value)
+                resolve(value)
+              },
+              error => {
+                errorFn?.(error)
+                reject(error)
+              },
               options,
             ),
           )
