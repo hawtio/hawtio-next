@@ -7,7 +7,9 @@ export async function isActive(): Promise<boolean> {
     return false
   }
 
-  return connectService.getCurrentConnectionName() === null
+  // The connect login path is exceptionally allowlisted to provide login form for
+  // remote Jolokia endpoints requiring authentication.
+  return connectService.getCurrentConnectionName() === null || isConnectLogin()
 }
 
 async function isProxyEnabled(): Promise<boolean> {
@@ -29,4 +31,9 @@ async function isProxyEnabled(): Promise<boolean> {
     log.debug('Failed to fetch', PATH_PROXY_ENABLED, ':', err)
     return true
   }
+}
+
+function isConnectLogin(): boolean {
+  const url = new URL(window.location.href)
+  return url.pathname === connectService.getLoginPath()
 }

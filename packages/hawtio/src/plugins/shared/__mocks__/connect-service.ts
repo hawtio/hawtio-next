@@ -42,12 +42,24 @@ class MockConnectService implements IConnectService {
     // no-op
   }
 
+  async login(username: string, password: string): Promise<boolean> {
+    return false
+  }
+
+  redirect() {
+    // no-op
+  }
+
   getJolokiaUrl(connection: Connection): string {
     return ''
   }
 
   getJolokiaUrlFromName(name: string): string | null {
     return null
+  }
+
+  getLoginPath(): string {
+    return ''
   }
 
   export(connections: Connections) {
