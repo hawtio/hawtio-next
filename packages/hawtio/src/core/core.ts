@@ -271,6 +271,9 @@ class HawtioCore {
         resolved.push(plugin)
       }
     }
+
+    log.debug('Resolved plugins:', resolved)
+
     return resolved
   }
 }

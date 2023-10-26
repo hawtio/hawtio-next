@@ -1,4 +1,4 @@
-import { hawtio } from '@hawtiosrc/core'
+import { eventService, hawtio } from '@hawtiosrc/core'
 import { toString } from '@hawtiosrc/util/strings'
 import { joinPaths } from '@hawtiosrc/util/urls'
 import Jolokia from 'jolokia.js'
@@ -27,10 +27,19 @@ export type ConnectionTestResult = {
   message: string
 }
 
+type ConnectionCredentials = {
+  username: string
+  password: string
+}
+
 const STORAGE_KEY_CONNECTIONS = 'connect.connections'
 const SESSION_KEY_CURRENT_CONNECTION = 'connect.currentConnection'
+const SESSION_KEY_CREDENTIALS = 'connect.credentials'
 
 export const PARAM_KEY_CONNECTION = 'con'
+export const PARAM_KEY_REDIRECT = 'redirect'
+
+const LOGIN_PATH = '/connect/login'
 
 export interface IConnectService {
   getCurrentConnectionName(): string | null
@@ -42,8 +51,11 @@ export interface IConnectService {
   checkReachable(connection: Connection): Promise<boolean>
   testConnection(connection: Connection): Promise<ConnectionTestResult>
   connect(connection: Connection): void
+  login(username: string, password: string): Promise<boolean>
+  redirect(): void
   getJolokiaUrl(connection: Connection): string
   getJolokiaUrlFromName(name: string): string | null
+  getLoginPath(): string
   export(connections: Connections): void
 }
 
@@ -75,7 +87,26 @@ class ConnectService implements IConnectService {
   }
 
   getCurrentConnection(): Connection | null {
-    return this.currentConnection ? this.getConnection(this.currentConnection) : null
+    const conn = this.currentConnection ? this.getConnection(this.currentConnection) : null
+    if (!conn) {
+      return null
+    }
+
+    // Apply credentials if it exists
+    const item = sessionStorage.getItem(SESSION_KEY_CREDENTIALS)
+    if (!item) {
+      return conn
+    }
+    const credentials = JSON.parse(item) as ConnectionCredentials
+    conn.username = credentials.username
+    conn.password = credentials.password
+    this.clearCredentialsOnLogout()
+
+    return conn
+  }
+
+  private clearCredentialsOnLogout() {
+    eventService.onLogout(() => sessionStorage.removeItem(SESSION_KEY_CREDENTIALS))
   }
 
   loadConnections(): Connections {
@@ -141,12 +172,65 @@ class ConnectService implements IConnectService {
     })
   }
 
+  private forbiddenReasonMatches(response: JQueryXHR, reason: string): boolean {
+    // Preserve compatibility with versions of Hawtio 2.x that return JSON on 403 responses
+    if (response.responseJSON && response.responseJSON['reason']) {
+      return response.responseJSON['reason'] === reason
+    }
+    // Otherwise expect a response header containing a forbidden reason
+    return response.getResponseHeader('Hawtio-Forbidden-Reason') === reason
+  }
+
   connect(connection: Connection) {
     log.debug('Connecting with options:', toString(connection))
-    const basepath = hawtio.getBasePath() ?? '/'
-    const url = `${basepath}?${PARAM_KEY_CONNECTION}=${connection.name}`
+    const basepath = hawtio.getBasePath() ?? ''
+    const url = `${basepath}/?${PARAM_KEY_CONNECTION}=${connection.name}`
     log.debug('Opening URL:', url)
     window.open(url)
+  }
+
+  /**
+   * Log in to the current connection.
+   */
+  async login(username: string, password: string): Promise<boolean> {
+    const connection = this.getCurrentConnection()
+    if (!connection) {
+      return false
+    }
+
+    // Check credentials
+    const ok = await new Promise<boolean>(resolve => {
+      connection.username = username
+      connection.password = password
+      this.createJolokia(connection, true).request(
+        { type: 'version' },
+        {
+          success: () => resolve(true),
+          error: () => resolve(false),
+          ajaxError: () => resolve(false),
+        },
+      )
+    })
+    if (!ok) {
+      return false
+    }
+
+    // Persist credentials to session storage
+    const credentials: ConnectionCredentials = { username, password }
+    sessionStorage.setItem(SESSION_KEY_CREDENTIALS, JSON.stringify(credentials))
+    this.clearCredentialsOnLogout()
+
+    return true
+  }
+
+  /**
+   * Redirect to the URL specified in the query parameter {@link PARAM_KEY_REDIRECT}.
+   */
+  redirect() {
+    const url = new URL(window.location.href)
+    const redirect = url.searchParams.get(PARAM_KEY_REDIRECT) ?? hawtio.getBasePath() ?? '/'
+    log.debug('Redirect to:', redirect)
+    window.location.href = redirect
   }
 
   /**
@@ -200,13 +284,9 @@ class ConnectService implements IConnectService {
     return connection ? this.getJolokiaUrl(connection) : null
   }
 
-  private forbiddenReasonMatches(response: JQueryXHR, reason: string): boolean {
-    // Preserve compatibility with versions of Hawtio 2.x that return JSON on 403 responses
-    if (response.responseJSON && response.responseJSON['reason']) {
-      return response.responseJSON['reason'] === reason
-    }
-    // Otherwise expect a response header containing a forbidden reason
-    return response.getResponseHeader('Hawtio-Forbidden-Reason') === reason
+  getLoginPath(): string {
+    const basePath = hawtio.getBasePath()
+    return `${basePath}${LOGIN_PATH}`
   }
 
   export(connections: Connections) {

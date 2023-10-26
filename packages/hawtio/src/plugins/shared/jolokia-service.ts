@@ -30,7 +30,7 @@ import Jolokia, {
 import 'jolokia.js/simple'
 import $ from 'jquery'
 import { func, is, object } from 'superstruct'
-import { PARAM_KEY_CONNECTION, connectService } from '../shared/connect-service'
+import { PARAM_KEY_CONNECTION, PARAM_KEY_REDIRECT, connectService } from '../shared/connect-service'
 import { log } from './globals'
 
 export const DEFAULT_MAX_DEPTH = 7
@@ -301,14 +301,13 @@ class JolokiaService implements IJolokiaService {
           const url = new URL(window.location.href)
           // If window was opened to connect to remote Jolokia endpoint
           if (url.searchParams.has(PARAM_KEY_CONNECTION)) {
-            const basePath = hawtio.getBasePath()
-            const loginPath = `${basePath}/connect/login`
+            const loginPath = connectService.getLoginPath()
             if (url.pathname !== loginPath) {
               // ... and not showing the login modal
               this.jolokia?.then(jolokia => jolokia.stop())
               const redirectUrl = window.location.href
               url.pathname = loginPath
-              url.searchParams.append('redirect', redirectUrl)
+              url.searchParams.append(PARAM_KEY_REDIRECT, redirectUrl)
               window.location.href = url.href
             }
           } else {
