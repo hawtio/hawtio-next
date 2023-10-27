@@ -9,8 +9,8 @@ updates:
       - tadayosi
       - phantomjinx
       - mmelko
-      - joshiraez
       - jsolovjo
+      - mmuzikar
   - package-ecosystem: github-actions
     directory: '/'
     schedule:
@@ -20,5 +20,5 @@ updates:
       - tadayosi
       - phantomjinx
       - mmelko
-      - joshiraez
       - jsolovjo
+      - mmuzikar
