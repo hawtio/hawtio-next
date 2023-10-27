@@ -73,20 +73,16 @@ const ConnectHint: React.FunctionComponent = () => {
         <a href='http://jolokia.org/agent.html' target='_blank' rel='noreferrer'>
           Jolokia documentation
         </a>{' '}
-        for how to add a JVM, servlet or OSGi based agent inside it.
+        for how to add a JVM, servlet, or OSGi based agent inside it.
       </Text>
       <Text component='p'>
-        If you are using{' '}
-        <a href='https://developers.redhat.com/products/fuse/overview/' target='_blank' rel='noreferrer'>
-          Red Hat Fuse{' '}
-        </a>
-        or{' '}
-        <a href='http://activemq.apache.org/' target='_blank' rel='noreferrer'>
-          Apache ActiveMQ
-        </a>
-        , then a Jolokia agent is included by default (use context path of Jolokia agent, usually
-        <code>jolokia</code>). Or you can always just deploy hawtio inside the process (which includes the Jolokia
-        agent, use Jolokia servlet mapping inside hawtio context path, usually <code>hawtio/jolokia</code>).
+        Some Java applications such as{' '}
+        <a href='https://activemq.apache.org/components/artemis/' target='_blank' rel='noreferrer'>
+          Apache ActiveMQ Artemis
+        </a>{' '}
+        include a Jolokia agent by default (use context path of Jolokia agent, usually <code>jolokia</code>). Or you can
+        always just deploy Hawtio inside the process, which includes the Jolokia servlet agent (use Jolokia servlet
+        mapping inside Hawtio context path, usually <code>hawtio/jolokia</code>).
       </Text>
     </TextContent>
   )
