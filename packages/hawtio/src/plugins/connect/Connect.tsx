@@ -11,25 +11,27 @@ import {
   Dropdown,
   DropdownItem,
   DropdownPosition,
-  ExpandableSection,
   KebabToggle,
   Modal,
   ModalVariant,
   PageSection,
+  Popover,
   Text,
   TextContent,
+  Title,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core'
 import { OutlinedQuestionCircleIcon, PluggedIcon, PlusIcon, UnpluggedIcon } from '@patternfly/react-icons'
 import React, { useContext, useEffect, useState } from 'react'
+import { Route, Routes } from 'react-router-dom'
+import './Connect.css'
 import { ConnectImportModal } from './ConnectImportModal'
 import { ConnectModal } from './ConnectModal'
 import { DELETE } from './connections'
 import { ConnectContext, useConnections } from './context'
 import { log } from './globals'
-import { Route, Routes } from 'react-router-dom'
 import { ConnectLogin } from './login/ConnectLogin'
 
 export const Connect: React.FunctionComponent = () => {
@@ -38,10 +40,9 @@ export const Connect: React.FunctionComponent = () => {
   return (
     <ConnectContext.Provider value={{ connections, dispatch }}>
       <PageSection id='connect-header' variant='light'>
-        <TextContent>
-          <Text component='h1'>Connect</Text>
-          <ConnectHint />
-        </TextContent>
+        <Title id='connect-header-title' headingLevel='h1'>
+          Connect <ConnectHint />
+        </Title>
       </PageSection>
       <PageSection id='connect-main'>
         <Routes>
@@ -53,48 +54,56 @@ export const Connect: React.FunctionComponent = () => {
   )
 }
 
-const ConnectHint: React.FunctionComponent = () => (
-  <ExpandableSection
-    displaySize='large'
-    toggleContent={
-      <Text>
-        <OutlinedQuestionCircleIcon /> Hint
+const ConnectHint: React.FunctionComponent = () => {
+  const content = (
+    <TextContent>
+      <Text component='p'>
+        This page allows you to connect to remote processes which{' '}
+        <strong>
+          already have a{' '}
+          <a href='https://jolokia.org/agent.html' target='_blank' rel='noreferrer'>
+            Jolokia agent
+          </a>{' '}
+          running inside them
+        </strong>
+        . You will need to know the host name, port and path of the Jolokia agent to be able to connect.
       </Text>
-    }
-  >
-    <Text component='p'>
-      This page allows you to connect to remote processes which{' '}
-      <strong>
-        already have a{' '}
-        <a href='https://jolokia.org/agent.html' target='_blank' rel='noreferrer'>
-          Jolokia agent
+      <Text component='p'>
+        If the process you wish to connect to does not have a Jolokia agent inside, please refer to the{' '}
+        <a href='http://jolokia.org/agent.html' target='_blank' rel='noreferrer'>
+          Jolokia documentation
         </a>{' '}
-        running inside them
-      </strong>
-      . You will need to know the host name, port and path of the Jolokia agent to be able to connect.
-    </Text>
-    <Text component='p'>
-      If the process you wish to connect to does not have a Jolokia agent inside, please refer to the{' '}
-      <a href='http://jolokia.org/agent.html' target='_blank' rel='noreferrer'>
-        Jolokia documentation
-      </a>{' '}
-      for how to add a JVM, servlet or OSGi based agent inside it.
-    </Text>
-    <Text component='p'>
-      If you are using{' '}
-      <a href='https://developers.redhat.com/products/fuse/overview/' target='_blank' rel='noreferrer'>
-        Red Hat Fuse{' '}
-      </a>
-      or{' '}
-      <a href='http://activemq.apache.org/' target='_blank' rel='noreferrer'>
-        Apache ActiveMQ
-      </a>
-      , then a Jolokia agent is included by default (use context path of Jolokia agent, usually
-      <code>jolokia</code>). Or you can always just deploy hawtio inside the process (which includes the Jolokia agent,
-      use Jolokia servlet mapping inside hawtio context path, usually <code>hawtio/jolokia</code>).
-    </Text>
-  </ExpandableSection>
-)
+        for how to add a JVM, servlet or OSGi based agent inside it.
+      </Text>
+      <Text component='p'>
+        If you are using{' '}
+        <a href='https://developers.redhat.com/products/fuse/overview/' target='_blank' rel='noreferrer'>
+          Red Hat Fuse{' '}
+        </a>
+        or{' '}
+        <a href='http://activemq.apache.org/' target='_blank' rel='noreferrer'>
+          Apache ActiveMQ
+        </a>
+        , then a Jolokia agent is included by default (use context path of Jolokia agent, usually
+        <code>jolokia</code>). Or you can always just deploy hawtio inside the process (which includes the Jolokia
+        agent, use Jolokia servlet mapping inside hawtio context path, usually <code>hawtio/jolokia</code>).
+      </Text>
+    </TextContent>
+  )
+
+  return (
+    <Popover
+      aria-label='Connect hint popover'
+      position='auto'
+      hasAutoWidth
+      maxWidth='60rem'
+      bodyContent={content}
+      removeFindDomNode
+    >
+      <OutlinedQuestionCircleIcon />
+    </Popover>
+  )
+}
 
 const ConnectContent: React.FunctionComponent = () => {
   const { connections } = useContext(ConnectContext)
