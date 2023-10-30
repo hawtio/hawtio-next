@@ -21,27 +21,32 @@ See also [Developing Hawtio.next](./docs/developing.md) for the project styling,
 
 You need to have installed the following tools before developing the project.
 
-- [Node.js >= 16](https://nodejs.org/en/)
-- [Yarn v3](https://yarnpkg.com/getting-started/install)
+- [Node.js >= 18](https://nodejs.org/en/)
+- [Yarn v4](https://yarnpkg.com/getting-started/install)
 
-#### Minimum Version of Yarn is 3.4.1
-
-The default installation version of yarn on many operating systems is _1.22-19_ (the classic version). This causes a problem as the development app downloads the `@hawtio/react` package rather than using
-the project directory. As a result, the mandated minimum version has been set to _3.4.1_.
-
-If `yarn install` is attempted with a version lower than _3.4.1_ then an error message is displayed, eg.
-
+> [!IMPORTANT] **Building requires Yarn Berry (v2+).**
+> The default installation version of yarn on many operating systems is _1.22-19_ (the classic version). This might cause a problem when building the project. As a result, the mandated minimum version has been set to _4.0.0_.
+>
+> If `yarn install` is attempted with a version lower than _4.0.0_ then an error message is displayed, eg.
+>
+> ```console
 > $ /usr/bin/yarn install
 > yarn install v1.22.19
 > [1/5] Validating package.json...
-> error @hawtio/next-root@0.0.0: The engine "yarn" is incompatible with this module. Expected version ">=3.4.1". Got "1.22.19"
+> error @hawtio/next-root@0.0.0: The engine "yarn" is incompatible with this module. Expected version ">=4". Got "1.22.19"
 > error Found incompatible module.
-
-To upgrade such a version to 3.4.1, use yarn's own `set-version` command:
-
-> yarn set version 3.4.1
-
-This will download the 3.4.1 internals to `hawtio-next/.yarn` which are then deferred to by the installed yarn binary.
+> ```
+>
+> If you have enabled `corepack` already, the project should automatically use [the version of yarn committed to the repository itself](.yarn/releases/yarn-4.0.1.cjs).
+>
+> ```console
+> corepack enable
+> ```
+>
+> ```console
+> $ yarn --version
+> 4.0.1
+> ```
 
 ### Developing
 
@@ -51,7 +56,13 @@ After checking out the project, run the following command to set up the project 
 yarn install
 ```
 
-To develop the project, run the following command and then open <http://localhost:3000/> in the browser.
+Then, build the whole project first.
+
+```console
+yarn build:all
+```
+
+You can start developing the project by running the following command and then opening <http://localhost:3000/> in the browser.
 
 ```console
 yarn start
@@ -76,7 +87,7 @@ You can connect to this example application at the Jolokia URL: <http://localhos
 To build the project for production, run the following command. It's built into the `build/` directory.
 
 ```console
-yarn build
+yarn build:all
 ```
 
 ### Testing
@@ -84,7 +95,7 @@ yarn build
 To execute the unit tests, run the following command.
 
 ```console
-yarn test
+yarn test:all
 ```
 
 ### Linting
@@ -92,7 +103,7 @@ yarn test
 It is recommended to run linting against the code periodically with the following command.
 
 ```console
-yarn lint
+yarn lint && yarn format:check
 ```
 
 ### Contributing
