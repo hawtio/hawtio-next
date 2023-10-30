@@ -24,6 +24,7 @@ You need to have installed the following tools before developing the project.
 - [Node.js >= 18](https://nodejs.org/en/)
 - [Yarn v4](https://yarnpkg.com/getting-started/install)
 
+<!-- prettier-ignore -->
 > [!IMPORTANT]
 > **Building requires Yarn Berry (v2+).**
 > The default installation version of yarn on many operating systems is _1.22.19_ (the classic version). This might cause a problem when building the project. As a result, the mandated minimum version has been set to _4.0.0_.
