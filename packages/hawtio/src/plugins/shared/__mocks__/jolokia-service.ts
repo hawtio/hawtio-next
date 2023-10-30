@@ -28,7 +28,11 @@ class MockJolokiaService implements IJolokiaService {
     return ''
   }
 
-  async list(options: ListRequestOptions): Promise<unknown> {
+  async list(options?: ListRequestOptions): Promise<unknown> {
+    return jmxCamelResponse
+  }
+
+  async sublist(path: string, options?: ListRequestOptions): Promise<unknown> {
     return jmxCamelResponse
   }
 

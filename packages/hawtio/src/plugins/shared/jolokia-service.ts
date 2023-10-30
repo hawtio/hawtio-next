@@ -88,7 +88,8 @@ export interface IJolokiaService {
   getJolokia(): Promise<Jolokia>
   getListMethod(): Promise<JolokiaListMethod>
   getFullJolokiaUrl(): Promise<string>
-  list(options: ListRequestOptions): Promise<unknown>
+  list(options?: ListRequestOptions): Promise<unknown>
+  sublist(path: string, options?: ListRequestOptions): Promise<unknown>
   readAttributes(mbean: string): Promise<AttributeValues>
   readAttribute(mbean: string, attribute: string): Promise<unknown>
   execute(mbean: string, operation: string, args?: unknown[]): Promise<unknown>
@@ -414,14 +415,34 @@ class JolokiaService implements IJolokiaService {
     return this.config.method
   }
 
-  async list(options: ListRequestOptions): Promise<unknown> {
+  list(options?: ListRequestOptions): Promise<unknown> {
+    return this.doList(null, options)
+  }
+
+  sublist(path: string, options?: ListRequestOptions): Promise<unknown> {
+    return this.doList(path, options)
+  }
+
+  private async doList(path: string | null, options: ListRequestOptions = {}): Promise<unknown> {
     const jolokia = await this.getJolokia()
     const { method, mbean } = this.config
 
     const { success, error: errorFn, ajaxError } = options
 
     return new Promise((resolve, reject) => {
-      options.ajaxError = (xhr: JQueryXHR, text: string, error: string) => {
+      const listOptions = onListSuccessAndError(
+        value => {
+          success?.(value)
+          resolve(value)
+        },
+        error => {
+          errorFn?.(error)
+          reject(error)
+        },
+        options,
+      )
+      // Override ajaxError to make sure it terminates in case of ajax error
+      listOptions.ajaxError = (xhr, text, error) => {
         ajaxError?.(xhr, text, error)
         reject(error)
       }
@@ -429,42 +450,25 @@ class JolokiaService implements IJolokiaService {
         case JolokiaListMethod.OPTIMISED:
           log.debug('Invoke Jolokia list MBean in optimised mode')
           // Overwrite max depth as listing MBeans requires some constant depth to work
-          options.maxDepth = OPTIMISED_JOLOKIA_LIST_MAX_DEPTH
-          jolokia.execute(
-            mbean,
-            'list()',
-            // This is execute operation but ListRequestOptions is compatible with
-            // ExecuteRequestOptions for list(), so this is intentional.
-            onListSuccessAndError(
-              value => {
-                success?.(value)
-                resolve(value)
-              },
-              error => {
-                errorFn?.(error)
-                reject(error)
-              },
-              options,
-            ),
-          )
+          // TODO: Is this needed?
+          listOptions.maxDepth = OPTIMISED_JOLOKIA_LIST_MAX_DEPTH
+          // This is execute operation but ListRequestOptions is compatible with
+          // ExecuteRequestOptions for list(), so this usage is intentional.
+          if (path === null) {
+            jolokia.execute(mbean, 'list()', listOptions)
+          } else {
+            jolokia.execute(mbean, 'list(java.lang.String)', path, listOptions)
+          }
           break
         case JolokiaListMethod.DEFAULT:
         case JolokiaListMethod.UNDETERMINED:
         default:
           log.debug('Invoke Jolokia list MBean in default mode')
-          jolokia.list(
-            onListSuccessAndError(
-              value => {
-                success?.(value)
-                resolve(value)
-              },
-              error => {
-                errorFn?.(error)
-                reject(error)
-              },
-              options,
-            ),
-          )
+          if (path === null) {
+            jolokia.list(listOptions)
+          } else {
+            jolokia.list(path, listOptions)
+          }
       }
     })
   }
