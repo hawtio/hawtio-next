@@ -54,7 +54,10 @@ The current implementation guidelines are as follows:
 
 ## Testing
 
-TBD
+Refer to the following issues:
+
+- [E2E testing strategy #16](https://github.com/hawtio/hawtio-next/issues/16)
+- [E2E - Run the E2E suite from Hawtio standalone project directly with hawtio-next #322](https://github.com/hawtio/hawtio-next/issues/322)
 
 ## Supporting projects
 
@@ -62,9 +65,9 @@ There are a few supporting projects that Hawtio.next is based on. Although not s
 
 ### jolokia.js
 
-<https://github.com/hawtio/jolokia.js>
+<https://github.com/jolokia/jolokia/tree/2.0/client/javascript>
 
-Type definitions for Jolokia used in Hawtio.next. It would need to evolve along with Hawtio.next development.
+The official Jolokia JavaScript client library that also provides type definitions. If there are any issues with `jolokia.js` we should raise an issue and contribute a pull request to Jolokia project.
 
 ### hawtio-backend-middleware
 
