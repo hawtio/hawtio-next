@@ -24,8 +24,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        node: ['18', '20']
         java: ['11', '17']
-        node: ['16', '18']
         runtime: ['springboot', 'quarkus']
         browser: ['firefox'] # 'chrome' tests are unstable: https://github.com/hawtio/hawtio-next/issues/478
     env:
