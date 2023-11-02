@@ -1,13 +1,11 @@
 export type CamelOptions = {
+  // Route diagram
   ignoreIdForLabel: boolean
-  showInflightCounter: boolean
+  showInflightCounter: boolean // TODO: Not used yet
   maximumLabelWidth: number
+  // Trace / debug
   maximumTraceOrDebugBodyLength: number
   traceOrDebugIncludeStreams: boolean
-  routeMetricMaximumSeconds: number
-  hideOptionDocumentation: boolean
-  hideOptionDefaultValue: boolean
-  hideOptionUnusedValue: boolean
 }
 
 export const DEFAULT_OPTIONS: CamelOptions = {
@@ -16,10 +14,6 @@ export const DEFAULT_OPTIONS: CamelOptions = {
   maximumLabelWidth: 34,
   maximumTraceOrDebugBodyLength: 5000,
   traceOrDebugIncludeStreams: false,
-  routeMetricMaximumSeconds: 10,
-  hideOptionDocumentation: false,
-  hideOptionDefaultValue: false,
-  hideOptionUnusedValue: false,
 } as const
 
 export const STORAGE_KEY_CAMEL_PREFERENCES = 'camel.preferences'

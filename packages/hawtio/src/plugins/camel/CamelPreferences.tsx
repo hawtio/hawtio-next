@@ -29,46 +29,6 @@ export const CamelPreferences: React.FunctionComponent = () => {
         <FormSection>
           <FormGroup
             hasNoPaddingTop
-            label='Hide option documentation'
-            fieldId='camel-form-hide-option-documentation'
-            labelIcon={
-              <TooltipHelpIcon tooltip='Whether to hide documentation in the properties view and Camel route editor' />
-            }
-          >
-            <Checkbox
-              id='camel-form-hide-option-documentation-input'
-              isChecked={options.hideOptionDocumentation}
-              onChange={updateCheckboxValueFor('hideOptionDocumentation')}
-            />
-          </FormGroup>
-          <FormGroup
-            hasNoPaddingTop
-            label='Hide default options values'
-            fieldId='camel-form-hide-default-option-values'
-            labelIcon={
-              <TooltipHelpIcon tooltip='Whether to hide options that are using a default value in the properties view' />
-            }
-          >
-            <Checkbox
-              id='camel-form-hide-default-option-values-input'
-              isChecked={options.hideOptionDefaultValue}
-              onChange={updateCheckboxValueFor('hideOptionDefaultValue')}
-            />
-          </FormGroup>
-          <FormGroup
-            hasNoPaddingTop
-            label='Hide unused options values'
-            fieldId='camel-form-hide-unused-option-values'
-            labelIcon={<TooltipHelpIcon tooltip='Whether to hide unused/empty options in the properties view' />}
-          >
-            <Checkbox
-              id='camel-form-hide-unused-option-values-input'
-              isChecked={options.hideOptionUnusedValue}
-              onChange={updateCheckboxValueFor('hideOptionUnusedValue')}
-            />
-          </FormGroup>
-          <FormGroup
-            hasNoPaddingTop
             label='Include trace / debug streams'
             fieldId='camel-form-include-trace-debug-streams'
             labelIcon={
@@ -135,21 +95,6 @@ export const CamelPreferences: React.FunctionComponent = () => {
               id='camel-show-inflight-counter-input'
               isChecked={options.showInflightCounter}
               onChange={updateCheckboxValueFor('showInflightCounter')}
-            />
-          </FormGroup>
-          <FormGroup
-            hasNoPaddingTop
-            label='Route metric maximum seconds'
-            fieldId='camel-form-route-metric-maximum-seconds'
-            labelIcon={
-              <TooltipHelpIcon tooltip='The maximum value in seconds used by the route metrics duration and histogram charts' />
-            }
-          >
-            <TextInput
-              id='camel-form-route-metric-maximum-seconds-input'
-              type='number'
-              value={options.routeMetricMaximumSeconds}
-              onChange={updateNumberValueFor('routeMetricMaximumSeconds')}
             />
           </FormGroup>
         </FormSection>
