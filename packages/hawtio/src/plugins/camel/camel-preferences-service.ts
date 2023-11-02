@@ -1,49 +1,47 @@
-export interface ICamelPreferencesService {
-  loadCamelPreferences(): CamelOptions
-  saveCamelPreferences(newValues: Partial<CamelOptions>): void
-}
-
 export type CamelOptions = {
-  isHideOptionDocumentation: boolean
-  isHideDefaultOptionValues: boolean
-  isHideUnusedOptionValues: boolean
-  isIncludeTraceDebugStreams: boolean
-  maximumTraceDebugBodyLength: number
+  ignoreIdForLabel: boolean
+  showInflightCounter: boolean
   maximumLabelWidth: number
-  isIgnoreIDForLabel: boolean
-  isShowInflightCounter: boolean
+  maximumTraceOrDebugBodyLength: number
+  traceOrDebugIncludeStreams: boolean
   routeMetricMaximumSeconds: number
+  hideOptionDocumentation: boolean
+  hideOptionDefaultValue: boolean
+  hideOptionUnusedValue: boolean
 }
 
-export const CAMEL_PREFERENCES_DEFAULT_VALUES: CamelOptions = {
-  isHideOptionDocumentation: false,
-  isHideDefaultOptionValues: false,
-  isHideUnusedOptionValues: false,
-  isIncludeTraceDebugStreams: false,
-  maximumTraceDebugBodyLength: 5000,
+export const DEFAULT_OPTIONS: CamelOptions = {
+  ignoreIdForLabel: false,
+  showInflightCounter: true,
   maximumLabelWidth: 34,
-  isIgnoreIDForLabel: false,
-  isShowInflightCounter: true,
+  maximumTraceOrDebugBodyLength: 5000,
+  traceOrDebugIncludeStreams: false,
   routeMetricMaximumSeconds: 10,
+  hideOptionDocumentation: false,
+  hideOptionDefaultValue: false,
+  hideOptionUnusedValue: false,
 } as const
 
 export const STORAGE_KEY_CAMEL_PREFERENCES = 'camel.preferences'
 
+export interface ICamelPreferencesService {
+  loadOptions(): CamelOptions
+  saveOptions(newValues: Partial<CamelOptions>): void
+}
+
 class CamelPreferencesService implements ICamelPreferencesService {
-  loadCamelPreferences(): CamelOptions {
-    return { ...CAMEL_PREFERENCES_DEFAULT_VALUES, ...this.loadFromStorage() }
+  loadOptions(): CamelOptions {
+    return { ...DEFAULT_OPTIONS, ...this.loadFromStorage() }
   }
 
-  saveCamelPreferences(newValues: Partial<CamelOptions>): void {
-    const preferencesToSave = { ...this.loadFromStorage(), ...newValues }
-
-    localStorage.setItem(STORAGE_KEY_CAMEL_PREFERENCES, JSON.stringify(preferencesToSave))
+  saveOptions(newValues: Partial<CamelOptions>) {
+    const toSave = { ...this.loadFromStorage(), ...newValues }
+    localStorage.setItem(STORAGE_KEY_CAMEL_PREFERENCES, JSON.stringify(toSave))
   }
 
   private loadFromStorage(): Partial<CamelOptions> {
-    const localStorageData = localStorage.getItem(STORAGE_KEY_CAMEL_PREFERENCES)
-
-    return localStorageData ? JSON.parse(localStorageData) : {}
+    const item = localStorage.getItem(STORAGE_KEY_CAMEL_PREFERENCES)
+    return item ? JSON.parse(item) : {}
   }
 }
 

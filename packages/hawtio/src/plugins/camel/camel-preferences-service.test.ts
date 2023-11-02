@@ -1,7 +1,7 @@
 import {
   CamelOptions,
   camelPreferencesService,
-  CAMEL_PREFERENCES_DEFAULT_VALUES,
+  DEFAULT_OPTIONS,
   STORAGE_KEY_CAMEL_PREFERENCES,
 } from './camel-preferences-service'
 
@@ -17,10 +17,10 @@ describe('camel-preferences-service', () => {
       localStorage.removeItem(STORAGE_KEY_CAMEL_PREFERENCES)
 
       //When
-      const preferences = camelPreferencesService.loadCamelPreferences()
+      const preferences = camelPreferencesService.loadOptions()
 
       //Then
-      expect(preferences).toEqual(CAMEL_PREFERENCES_DEFAULT_VALUES)
+      expect(preferences).toEqual(DEFAULT_OPTIONS)
     })
 
     test('Retrieves stored values when they is some key stored, and the default for the others', () => {
@@ -28,25 +28,35 @@ describe('camel-preferences-service', () => {
       localStorage.setItem(STORAGE_KEY_CAMEL_PREFERENCES, JSON.stringify({ maximumLabelWidth: 5 }))
 
       //When
-      const preferences = camelPreferencesService.loadCamelPreferences()
+      const preferences = camelPreferencesService.loadOptions()
 
       //Then
-      expect(preferences).toEqual({ ...CAMEL_PREFERENCES_DEFAULT_VALUES, maximumLabelWidth: 5 })
+      expect(preferences).toEqual({ ...DEFAULT_OPTIONS, maximumLabelWidth: 5 })
     })
 
     test('Retrieves all the values', () => {
       //Given
-      const savedString =
-        '{"isHideOptionDocumentation":true,"isHideDefaultOptionValues":false,"isHideUnusedOptionValues":true,"isIncludeTraceDebugStreams":false,"maximumTraceDebugBodyLength":134234,"maximumLabelWidth":34,"isIgnoreIDForLabel":true,"isShowInflightCounter":true,"routeMetricMaximumSeconds":10,"key":true}'
+      const savedString = JSON.stringify({
+        ignoreIdForLabel: true,
+        showInflightCounter: true,
+        traceOrDebugIncludeStreams: false,
+        maximumLabelWidth: 34,
+        maximumTraceOrDebugBodyLength: 134234,
+        routeMetricMaximumSeconds: 10,
+        hideOptionDocumentation: true,
+        hideOptionDefaultValue: false,
+        hideOptionUnusedValue: true,
+        key: true,
+      })
       const expected: Partial<CamelOptions> = {
-        isHideUnusedOptionValues: true,
-        maximumTraceDebugBodyLength: 134234,
-        isIgnoreIDForLabel: true,
+        ignoreIdForLabel: true,
+        maximumTraceOrDebugBodyLength: 134234,
+        hideOptionUnusedValue: true,
       }
       localStorage.setItem(STORAGE_KEY_CAMEL_PREFERENCES, savedString)
 
       //When
-      const preferences = camelPreferencesService.loadCamelPreferences()
+      const preferences = camelPreferencesService.loadOptions()
 
       //Then
       expect(preferences).toMatchObject(expected)
@@ -57,12 +67,12 @@ describe('camel-preferences-service', () => {
     test('Saving single preference', () => {
       //Given
       const savedPreference: Partial<CamelOptions> = {
-        isHideOptionDocumentation: true,
+        hideOptionDocumentation: true,
       }
       const expectedString = JSON.stringify(savedPreference)
 
       //When
-      camelPreferencesService.saveCamelPreferences(savedPreference)
+      camelPreferencesService.saveOptions(savedPreference)
 
       //Then
       expect(localStorage.getItem(STORAGE_KEY_CAMEL_PREFERENCES)).toEqual(expectedString)
@@ -72,7 +82,7 @@ describe('camel-preferences-service', () => {
       //Given
       const savedPreference: Partial<CamelOptions> = {
         maximumLabelWidth: 5,
-        isHideDefaultOptionValues: true,
+        hideOptionDefaultValue: true,
       }
       const overwrittenPreference: Partial<CamelOptions> = {
         maximumLabelWidth: 4,
@@ -81,7 +91,7 @@ describe('camel-preferences-service', () => {
       const expectedString = JSON.stringify({ ...savedPreference, ...overwrittenPreference })
 
       //When
-      camelPreferencesService.saveCamelPreferences(overwrittenPreference)
+      camelPreferencesService.saveOptions(overwrittenPreference)
 
       //Then
       expect(localStorage.getItem(STORAGE_KEY_CAMEL_PREFERENCES)).toEqual(expectedString)
