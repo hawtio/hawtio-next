@@ -5,6 +5,7 @@ import { parseXML } from '@hawtiosrc/util/xml'
 import dagre from 'dagre'
 import { ReactNode } from 'react'
 import { Edge, MarkerType, Node, Position } from 'reactflow'
+import { camelPreferencesService } from '../camel-preferences-service'
 
 export type CamelNodeData = {
   id: string
@@ -30,7 +31,6 @@ class VisualizationService {
   dagreGraph: dagre.graphlib.Graph
   nodeWidth = 250
   nodeHeight = 80
-  defaultMaximumLabelWidth = 34
   edgeType = 'smoothstep'
   margin = {
     left: 25,
@@ -102,7 +102,7 @@ class VisualizationService {
 
     const allRoutes = doc.getElementsByTagName('route')
 
-    for (const route of allRoutes) {
+    for (const route of Array.from(allRoutes)) {
       const routeId = route.id
       if (!selectedRouteId || !routeId || selectedRouteId === routeId) {
         this.addRouteXmlChildren(node, route, nodes, edges, routeId, '')
@@ -160,7 +160,7 @@ class VisualizationService {
      * routeIdx defines an id for each node in the route so
      */
     let routeIdx = -1
-    for (const route of parent.children) {
+    for (const route of Array.from(parent.children)) {
       const id: string = nodeDatas.length + ''
       routeIdx++
       // from acts as a parent even though its a previous sibling :)
@@ -180,22 +180,22 @@ class VisualizationService {
         if (uri) {
           tooltip += ' ' + uri
         }
+        const { ignoreIdForLabel, maximumLabelWidth } = camelPreferencesService.loadOptions()
         const elementID = route.getAttribute('id')
         let labelSummary = label
         if (elementID) {
           const customId = route.getAttribute('customId')
-          if (!customId || customId === 'false') {
+          if (ignoreIdForLabel || !customId || customId === 'false') {
             labelSummary = 'id: ' + elementID
           } else {
             label = elementID
           }
         }
         // lets check if we need to trim the label
-        const labelLimit = this.defaultMaximumLabelWidth
         const length = label.length
-        if (length > labelLimit) {
+        if (length > maximumLabelWidth) {
           labelSummary = label + '\n\n' + labelSummary
-          label = label.substring(0, labelLimit) + '..'
+          label = label.substring(0, maximumLabelWidth) + '..'
         }
         const imageUrl = routesService.getIcon(node, nodeSettings)
 

@@ -42,16 +42,11 @@ describe('camel-preferences-service', () => {
         traceOrDebugIncludeStreams: false,
         maximumLabelWidth: 34,
         maximumTraceOrDebugBodyLength: 134234,
-        routeMetricMaximumSeconds: 10,
-        hideOptionDocumentation: true,
-        hideOptionDefaultValue: false,
-        hideOptionUnusedValue: true,
         key: true,
       })
       const expected: Partial<CamelOptions> = {
         ignoreIdForLabel: true,
         maximumTraceOrDebugBodyLength: 134234,
-        hideOptionUnusedValue: true,
       }
       localStorage.setItem(STORAGE_KEY_CAMEL_PREFERENCES, savedString)
 
