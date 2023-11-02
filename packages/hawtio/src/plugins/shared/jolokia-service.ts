@@ -10,7 +10,7 @@ import {
   onSuccessAndError,
   onVersionSuccessAndError,
 } from '@hawtiosrc/util/jolokia'
-import { isObject } from '@hawtiosrc/util/objects'
+import { isObject, isString } from '@hawtiosrc/util/objects'
 import { parseBoolean } from '@hawtiosrc/util/strings'
 import Jolokia, {
   AttributeRequestOptions,
@@ -29,9 +29,10 @@ import Jolokia, {
 } from 'jolokia.js'
 import 'jolokia.js/simple'
 import $ from 'jquery'
-import { func, is, object } from 'superstruct'
+import { define, func, is, object, optional, record, string, type } from 'superstruct'
 import { PARAM_KEY_CONNECTION, PARAM_KEY_REDIRECT, connectService } from '../shared/connect-service'
 import { log } from './globals'
+import { OptimisedJmxDomain, OptimisedJmxDomains, OptimisedMBeanInfo } from './tree'
 
 export const DEFAULT_MAX_DEPTH = 7
 export const DEFAULT_MAX_COLLECTION_SIZE = 50000
@@ -66,6 +67,14 @@ const OPTIMISED_JOLOKIA_LIST_MBEAN = 'hawtio:type=security,name=RBACRegistry'
 
 const OPTIMISED_JOLOKIA_LIST_MAX_DEPTH = 9
 
+export type OptimisedListResponse = {
+  cache: OptimisedMBeanInfoCache
+  domains: CacheableOptimisedJmxDomains
+}
+export type OptimisedMBeanInfoCache = Record<string, OptimisedMBeanInfo>
+export type CacheableOptimisedJmxDomains = Record<string, CacheableOptimisedJmxDomain>
+export type CacheableOptimisedJmxDomain = Record<string, OptimisedMBeanInfo | string>
+
 export type JolokiaConfig = {
   method: JolokiaListMethod
   mbean: string
@@ -80,7 +89,11 @@ export const STORAGE_KEY_JOLOKIA_OPTIONS = 'connect.jolokia.options'
 export const STORAGE_KEY_UPDATE_RATE = 'connect.jolokia.updateRate'
 export const STORAGE_KEY_AUTO_REFRESH = 'connect.jolokia.autoRefresh'
 
+type JQueryBeforeSend = (this: unknown, jqXHR: JQueryXHR, settings: unknown) => false | void
+type JQueryAjaxError = (xhr: JQueryXHR, text: string, error: string) => void
 type AjaxErrorResolver = () => void
+
+export type AttributeValues = Record<string, unknown>
 
 export interface IJolokiaService {
   reset(): void
@@ -88,8 +101,8 @@ export interface IJolokiaService {
   getJolokia(): Promise<Jolokia>
   getListMethod(): Promise<JolokiaListMethod>
   getFullJolokiaUrl(): Promise<string>
-  list(options?: ListRequestOptions): Promise<unknown>
-  sublist(path: string, options?: ListRequestOptions): Promise<unknown>
+  list(options?: ListRequestOptions): Promise<OptimisedJmxDomains>
+  sublist(paths: string | string[], options?: ListRequestOptions): Promise<OptimisedJmxDomains>
   readAttributes(mbean: string): Promise<AttributeValues>
   readAttribute(mbean: string, attribute: string): Promise<unknown>
   execute(mbean: string, operation: string, args?: unknown[]): Promise<unknown>
@@ -415,62 +428,238 @@ class JolokiaService implements IJolokiaService {
     return this.config.method
   }
 
-  list(options?: ListRequestOptions): Promise<unknown> {
-    return this.doList(null, options)
+  list(options?: ListRequestOptions): Promise<OptimisedJmxDomains> {
+    return this.doList([], options)
   }
 
-  sublist(path: string, options?: ListRequestOptions): Promise<unknown> {
-    return this.doList(path, options)
+  sublist(paths: string | string[], options?: ListRequestOptions): Promise<OptimisedJmxDomains> {
+    return this.doList(Array.isArray(paths) ? paths : [paths], options)
   }
 
-  private async doList(path: string | null, options: ListRequestOptions = {}): Promise<unknown> {
+  private async doList(paths: string[], options: ListRequestOptions = {}): Promise<OptimisedJmxDomains> {
+    // Granularity of the return value is MBean info and cannot be smaller
+    paths.forEach(path => {
+      if (path.split('/').length > 2) {
+        throw new Error('Path cannot specify children of MBean (attr, op, etc.): ' + path)
+      }
+    })
+
     const jolokia = await this.getJolokia()
+    if (jolokia.CLIENT_VERSION === 'DUMMY') {
+      // For dummy Jolokia client, it's too difficult to properly resolve the promise
+      // of complex bulk list request, so shortcut here.
+      return {}
+    }
+
     const { method, mbean } = this.config
 
     const { success, error: errorFn, ajaxError } = options
 
     return new Promise((resolve, reject) => {
-      const listOptions = onListSuccessAndError(
-        value => {
-          success?.(value)
-          resolve(value)
-        },
-        error => {
-          errorFn?.(error)
-          reject(error)
-        },
-        options,
-      )
       // Override ajaxError to make sure it terminates in case of ajax error
-      listOptions.ajaxError = (xhr, text, error) => {
+      options.ajaxError = (xhr, text, error) => {
         ajaxError?.(xhr, text, error)
         reject(error)
       }
       switch (method) {
-        case JolokiaListMethod.OPTIMISED:
-          log.debug('Invoke Jolokia list MBean in optimised mode')
+        case JolokiaListMethod.OPTIMISED: {
+          log.debug('Invoke Jolokia list MBean in optimised mode:', paths)
+          const execOptions = onExecuteSuccessAndError(
+            value => {
+              // For empty or single list, the first path should be enough
+              const path = paths?.[0]?.split('/')
+              const domains = this.unwindListResponse(value, path)
+              success?.(domains)
+              resolve(domains)
+            },
+            error => {
+              errorFn?.(error)
+              reject(error)
+            },
+            options as BaseRequestOptions,
+          )
           // Overwrite max depth as listing MBeans requires some constant depth to work
           // TODO: Is this needed?
-          listOptions.maxDepth = OPTIMISED_JOLOKIA_LIST_MAX_DEPTH
-          // This is execute operation but ListRequestOptions is compatible with
-          // ExecuteRequestOptions for list(), so this usage is intentional.
-          if (path === null) {
-            jolokia.execute(mbean, 'list()', listOptions)
+          execOptions.maxDepth = OPTIMISED_JOLOKIA_LIST_MAX_DEPTH
+          if (paths.length === 0) {
+            jolokia.execute(mbean, 'list()', execOptions)
+          } else if (paths.length === 1) {
+            jolokia.execute(mbean, 'list(java.lang.String)', paths[0], execOptions)
           } else {
-            jolokia.execute(mbean, 'list(java.lang.String)', path, listOptions)
+            // Bulk request and merge the result
+            const requests: Request[] = paths.map(path => ({
+              type: 'exec',
+              mbean,
+              operation: 'list(java.lang.String)',
+              arguments: [path],
+              config: execOptions,
+            }))
+            this.bulkList(jolokia, requests, execOptions)
           }
           break
+        }
         case JolokiaListMethod.DEFAULT:
         case JolokiaListMethod.UNDETERMINED:
-        default:
-          log.debug('Invoke Jolokia list MBean in default mode')
-          if (path === null) {
+        default: {
+          log.debug('Invoke Jolokia list MBean in default mode:', paths)
+          const listOptions = onListSuccessAndError(
+            value => {
+              // For empty or single list, the first path should be enough
+              const path = paths?.[0]?.split('/')
+              const domains = this.unwindListResponse(value, path)
+              success?.(domains)
+              resolve(domains)
+            },
+            error => {
+              errorFn?.(error)
+              reject(error)
+            },
+            options,
+          )
+          if (paths.length === 0) {
             jolokia.list(listOptions)
+          } else if (paths.length === 1) {
+            jolokia.list(paths[0] ?? '', listOptions)
           } else {
-            jolokia.list(path, listOptions)
+            // Bulk request and merge the result
+            const requests: Request[] = paths.map(path => ({ type: 'list', path, config: listOptions }))
+            this.bulkList(jolokia, requests, listOptions)
           }
+        }
       }
     })
+  }
+
+  /**
+   * Detects whether the given response comes from optimised or default list and
+   * restores its shape to the standard list response of type {@link OptimisedJmxDomains}.
+   *
+   * @param response response value from Jolokia LIST
+   * @param path optional path information to restore the response to {@link OptimisedJmxDomains}
+   */
+  private unwindListResponse(response: unknown, path?: string[]): OptimisedJmxDomains {
+    const isOptimisedListResponse = (value: unknown): value is OptimisedListResponse =>
+      is(value, object({ cache: object(), domains: object() }))
+    const isMBeanInfo = (value: unknown): value is OptimisedMBeanInfo =>
+      is(
+        value,
+        type({
+          desc: string(),
+          class: optional(string()),
+          attr: optional(record(string(), object())),
+          op: optional(record(string(), object())),
+          notif: optional(record(string(), object())),
+        }),
+      )
+    const isJmxDomain = (value: unknown): value is OptimisedJmxDomain =>
+      is(value, record(string(), define('MBeanInfo', isMBeanInfo)))
+    const isJmxDomains = (value: unknown): value is OptimisedJmxDomains =>
+      is(value, record(string(), define('JmxDomain', isJmxDomain)))
+
+    if (isOptimisedListResponse(response)) {
+      // Post process cached MBean info
+      const { cache, domains } = response
+      Object.entries(domains).forEach(([_, domain]) => {
+        Object.entries(domain).forEach(([mbeanName, mbeanOrCache]) => {
+          if (isString(mbeanOrCache)) {
+            domain[mbeanName] = cache[mbeanOrCache] as OptimisedMBeanInfo
+          }
+        })
+      })
+      return domains as OptimisedJmxDomains
+    }
+
+    if (isJmxDomains(response)) {
+      return response
+    }
+
+    if (isJmxDomain(response)) {
+      const domain = path?.[0]
+      if (!domain) {
+        throw new Error('Domain must be provided: ' + path)
+      }
+      return { [domain]: response }
+    }
+
+    if (isMBeanInfo(response)) {
+      const domain = path?.[0]
+      const mbean = path?.[1]
+      if (!domain || !mbean) {
+        throw new Error('Domain/property list must be provided: ' + path)
+      }
+      return { [domain]: { [mbean]: response } }
+    }
+
+    throw new Error('Unexpected Jolokia list response: ' + JSON.stringify(response))
+  }
+
+  private bulkList(jolokia: Jolokia, requests: Request[], listOptions: ListRequestOptions) {
+    const bulkResponse: Response[] = []
+    const mergeResponses = () => {
+      const domains = bulkResponse
+        .filter(response => {
+          if (response.status === 200) {
+            return true
+          } else {
+            const error = response as ErrorResponse
+            log.warn('Bulk list response error:', error.error)
+            return false
+          }
+        })
+        .map(response => {
+          switch (response.request.type) {
+            case 'list': {
+              const path = response.request.path?.split('/')
+              return this.unwindListResponse(response.value, path)
+            }
+            case 'exec': {
+              const path = response.request.arguments as string[]
+              return this.unwindListResponse(response.value, path)
+            }
+            default:
+              return this.unwindListResponse(response.value)
+          }
+        })
+        .reduce((merged, response) => this.mergeDomains(response, merged), {})
+      listOptions.success?.(domains)
+    }
+    jolokia.request(
+      requests,
+      onBulkSuccessAndError(
+        response => {
+          bulkResponse.push(response)
+          // Resolve only when all the responses from the bulk request are collected
+          if (bulkResponse.length === requests.length) {
+            mergeResponses()
+          }
+        },
+        error => {
+          log.error('Error during bulk list:', error)
+          bulkResponse.push(error)
+          // Resolve only when all the responses from the bulk request are collected
+          if (bulkResponse.length === requests.length) {
+            mergeResponses()
+          }
+        },
+        // Reuse the list options other than success and error functions
+        listOptions as BaseRequestOptions,
+      ),
+    )
+  }
+
+  private mergeDomains(source: OptimisedJmxDomains, target: OptimisedJmxDomains): OptimisedJmxDomains {
+    Object.entries(source).forEach(([domainName, domain]) => {
+      const targetDomain = target[domainName]
+      if (targetDomain) {
+        Object.entries(domain).forEach(([mbeanName, mbean]) => {
+          // Latter always overrides former
+          targetDomain[mbeanName] = mbean
+        })
+      } else {
+        target[domainName] = domain
+      }
+    })
+    return target
   }
 
   async readAttributes(mbean: string): Promise<AttributeValues> {
@@ -568,7 +757,11 @@ class JolokiaService implements IJolokiaService {
           },
           error => {
             log.error('Error during bulkRequest:', error)
-            resolve(bulkResponse)
+            bulkResponse.push(error)
+            // Resolve only when all the responses from the bulk request are collected
+            if (bulkResponse.length === requests.length) {
+              resolve(bulkResponse)
+            }
           },
         ),
       )
@@ -616,11 +809,6 @@ class JolokiaService implements IJolokiaService {
   }
 }
 
-type JQueryBeforeSend = (this: unknown, jqXHR: JQueryXHR, settings: unknown) => false | void
-type JQueryAjaxError = (xhr: JQueryXHR, text: string, error: string) => void
-
-export type AttributeValues = Record<string, unknown>
-
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Dummy Jolokia implementation that does nothing.
@@ -660,7 +848,7 @@ class DummyJolokia implements Jolokia {
   }
 
   execute(mbean: string, operation: string, ...args: unknown[]) {
-    args?.forEach(arg => is(arg, object({ success: func() })) && arg.success?.(null))
+    args?.forEach(arg => is(arg, type({ success: func() })) && arg.success(null))
     return null
   }
   search(mbeanPattern: string, opts?: SearchRequestOptions) {
