@@ -13,6 +13,7 @@ import ReactFlow, {
   useNodesState,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
+import { camelPreferencesService } from '../camel-preferences-service'
 import { CamelContext } from '../context'
 import { routesService } from '../routes-service'
 import './RouteDiagram.css'
@@ -119,6 +120,8 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
   const [showFull] = useState(false)
   const [annotation, setAnnotation] = useState<Annotation | undefined>(undefined)
 
+  const { showInflightCounter } = camelPreferencesService.loadOptions()
+
   useEffect(() => {
     if (!annotations || annotations.length === 0) {
       setAnnotation(undefined)
@@ -159,7 +162,7 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
 
       <div className='annotation'>{annotation?.element}</div>
       <div className='icon'>{data.imageUrl}</div>
-      <div className='inflights'>{data.stats?.exchangesInflight} </div>
+      <div className='inflights'>{showInflightCounter && data.stats?.exchangesInflight}</div>
       <div className='number'>{data.stats?.exchangesCompleted}</div>
       <div className='camel-node-label'> {truncate(data.label)}</div>
 

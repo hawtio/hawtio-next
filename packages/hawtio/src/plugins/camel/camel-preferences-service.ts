@@ -1,7 +1,7 @@
 export type CamelOptions = {
   // Route diagram
   ignoreIdForLabel: boolean
-  showInflightCounter: boolean // TODO: Not used yet
+  showInflightCounter: boolean
   maximumLabelWidth: number
 
   // Trace / debug
