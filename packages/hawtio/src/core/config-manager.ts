@@ -7,15 +7,48 @@ const log = Logger.get('hawtio-core-config')
 export const DEFAULT_APP_NAME = 'Hawtio Management Console'
 export const DEFAULT_LOGIN_TITLE = 'Log in to your account'
 
+/**
+ * The single user-customisable entrypoint for the Hawtio console configurations.
+ */
 export type Hawtconfig = {
-  branding?: Branding
-  login?: Login
-  about?: About
+  /**
+   * Configuration for branding & styles.
+   */
+  branding?: BrandingConfig
+
+  /**
+   * Configuration for the built-in login page.
+   */
+  login?: LoginConfig
+
+  /**
+   * Configuration for the About modal.
+   */
+  about?: AboutConfig
+
+  /**
+   * The user can explicitly disable plugins by specifying the plugin route paths.
+   *
+   * This option can be used if some of the built-in plugins are not desirable
+   * for the custom installation of Hawtio console.
+   */
   disabledRoutes?: DisabledRoutes
-  online?: Online
+
+  /**
+   * Configuration for JMX plugin.
+   */
+  jmx?: JmxConfig
+
+  /**
+   * Configuration for Hawtio Online.
+   */
+  online?: OnlineConfig
 }
 
-export type Branding = {
+/**
+ * Branding configuration type.
+ */
+export type BrandingConfig = {
   appName?: string
   showAppName?: boolean
   appLogoUrl?: string
@@ -23,7 +56,10 @@ export type Branding = {
   favicon?: string
 }
 
-export type Login = {
+/**
+ * Login configuration type.
+ */
+export type LoginConfig = {
   title?: string
   description?: string
   links?: LoginLink[]
@@ -34,7 +70,10 @@ export type LoginLink = {
   text: string
 }
 
-export type About = {
+/**
+ * About configuration type.
+ */
+export type AboutConfig = {
   title?: string
   description?: string
   imgSrc?: string
@@ -49,7 +88,33 @@ export type AboutProductInfo = {
 
 export type DisabledRoutes = string[]
 
-export type Online = {
+/**
+ * JMX configuration type.
+ */
+export type JmxConfig = {
+  /**
+   * This option can either disable workspace completely by setting `false`, or
+   * specify an array of MBean paths in the form of
+   * `<domain>/<prop1>=<value1>,<prop2>=<value2>,...`
+   * to fine-tune which MBeans to load into workspace.
+   *
+   * Note that disabling workspace should also deactivate all the plugins that
+   * depend on MBeans provided by workspace.
+   *
+   * @see https://github.com/hawtio/hawtio-next/issues/421
+   */
+  workspace?: boolean | string[]
+}
+
+/**
+ * Hawtio Online configuration type.
+ */
+export type OnlineConfig = {
+  /**
+   * Selector for OpenShift projects or Kubernetes namespaces.
+   *
+   * @see https://github.com/hawtio/hawtio-online/issues/64
+   */
   projectSelector?: string
 }
 

@@ -1,11 +1,11 @@
-import { About, configManager } from '@hawtiosrc/core'
+import { AboutConfig, configManager } from '@hawtiosrc/core'
 import { useEffect, useState } from 'react'
 
 /**
  * Custom React hook for using Hawtio About.
  */
 export function useAbout() {
-  const [about, setAbout] = useState<About>({})
+  const [about, setAbout] = useState<AboutConfig>({})
   const [aboutLoaded, setAboutLoaded] = useState(false)
 
   useEffect(() => {

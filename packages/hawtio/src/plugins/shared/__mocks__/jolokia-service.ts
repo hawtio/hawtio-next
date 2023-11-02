@@ -1,6 +1,7 @@
 import Jolokia, { ListRequestOptions, Request, Response } from 'jolokia.js'
 import { AttributeValues, IJolokiaService, JolokiaListMethod, JolokiaStoredOptions } from '../jolokia-service'
 import jmxCamelResponse from './jmx-camel-tree.json'
+import { OptimisedJmxDomains } from '../tree'
 
 class MockJolokiaService implements IJolokiaService {
   constructor() {
@@ -28,12 +29,12 @@ class MockJolokiaService implements IJolokiaService {
     return ''
   }
 
-  async list(options?: ListRequestOptions): Promise<unknown> {
-    return jmxCamelResponse
+  async list(options?: ListRequestOptions): Promise<OptimisedJmxDomains> {
+    return jmxCamelResponse.domains as unknown as OptimisedJmxDomains
   }
 
-  async sublist(path: string, options?: ListRequestOptions): Promise<unknown> {
-    return jmxCamelResponse
+  async sublist(paths: string | string[], options?: ListRequestOptions): Promise<OptimisedJmxDomains> {
+    return jmxCamelResponse.domains as unknown as OptimisedJmxDomains
   }
 
   async readAttributes(mbean: string): Promise<AttributeValues> {

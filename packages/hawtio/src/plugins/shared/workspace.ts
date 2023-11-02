@@ -1,18 +1,14 @@
 import { userService } from '@hawtiosrc/auth'
-import { eventService, Logger } from '@hawtiosrc/core'
+import { configManager, eventService, JmxConfig, Logger } from '@hawtiosrc/core'
 import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
-import { isString } from '@hawtiosrc/util/objects'
 import { ErrorResponse, ListRequestOptions, Response } from 'jolokia.js'
-import { is, object } from 'superstruct'
 import { pluginName } from './globals'
-import { MBeanNode, MBeanTree, OptimisedJmxDomain, OptimisedJmxDomains, OptimisedMBeanInfo } from './tree'
+import { MBeanNode, MBeanTree } from './tree'
 
 const log = Logger.get(`${pluginName}-workspace`)
 
 const HAWTIO_REGISTRY_MBEAN = 'hawtio:type=Registry'
 const HAWTIO_TREE_WATCHER_MBEAN = 'hawtio:type=TreeWatcher'
-
-export type MBeanCache = { [propertyList: string]: string }
 
 export interface IWorkspace {
   refreshTree(): Promise<void>
@@ -50,7 +46,13 @@ class Workspace implements IWorkspace {
       throw new Error('User needs to have logged in to use workspace')
     }
 
-    log.debug('Load JMX MBean tree')
+    const config = await this.getConfig()
+    if (config.workspace === false || (typeof config.workspace !== 'boolean' && config.workspace?.length === 0)) {
+      return MBeanTree.createEmpty(pluginName)
+    }
+    const mbeanPaths = config.workspace && typeof config.workspace !== 'boolean' ? config.workspace : []
+
+    log.debug('Load JMX MBean tree:', mbeanPaths)
     const options: ListRequestOptions = {
       ignoreErrors: true,
       error: (response: ErrorResponse) => {
@@ -61,9 +63,9 @@ class Workspace implements IWorkspace {
       },
     }
     try {
-      const value = await jolokiaService.list(options)
-
-      const domains = this.unwindResponseWithRBACCache(value)
+      const domains = await (mbeanPaths.length > 0
+        ? jolokiaService.sublist(mbeanPaths, options)
+        : jolokiaService.list(options))
       log.debug('JMX tree loaded:', domains)
 
       const tree = await MBeanTree.createFromDomains(pluginName, domains)
@@ -78,27 +80,9 @@ class Workspace implements IWorkspace {
     }
   }
 
-  /**
-   * Processes response from Jolokia LIST - if it contains "domains" and "cache"
-   * properties.
-   *
-   * @param value response value from Jolokia
-   */
-  private unwindResponseWithRBACCache(value: unknown): OptimisedJmxDomains {
-    if (is(value, object({ domains: object(), cache: object() }))) {
-      // post process cached RBAC info
-      for (const domainName in value.domains) {
-        const domain = value.domains[domainName] as OptimisedJmxDomain | MBeanCache
-        for (const mbeanName in domain) {
-          const mbeanOrCache = domain[mbeanName]
-          if (isString(mbeanOrCache)) {
-            domain[mbeanName] = value.cache[mbeanOrCache] as OptimisedMBeanInfo
-          }
-        }
-      }
-      return value.domains as OptimisedJmxDomains
-    }
-    return value as OptimisedJmxDomains
+  private async getConfig(): Promise<JmxConfig> {
+    const { jmx } = await configManager.getHawtconfig()
+    return jmx ?? {}
   }
 
   /**
