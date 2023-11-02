@@ -3,6 +3,7 @@ export type CamelOptions = {
   ignoreIdForLabel: boolean
   showInflightCounter: boolean // TODO: Not used yet
   maximumLabelWidth: number
+
   // Trace / debug
   maximumTraceOrDebugBodyLength: number
   traceOrDebugIncludeStreams: boolean
