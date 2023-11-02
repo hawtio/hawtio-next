@@ -62,7 +62,7 @@ describe('camel-preferences-service', () => {
     test('Saving single preference', () => {
       //Given
       const savedPreference: Partial<CamelOptions> = {
-        hideOptionDocumentation: true,
+        showInflightCounter: true,
       }
       const expectedString = JSON.stringify(savedPreference)
 
@@ -77,7 +77,7 @@ describe('camel-preferences-service', () => {
       //Given
       const savedPreference: Partial<CamelOptions> = {
         maximumLabelWidth: 5,
-        hideOptionDefaultValue: true,
+        showInflightCounter: true,
       }
       const overwrittenPreference: Partial<CamelOptions> = {
         maximumLabelWidth: 4,
