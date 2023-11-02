@@ -26,36 +26,7 @@ export const CamelPreferences: React.FunctionComponent = () => {
   return (
     <CardBody>
       <Form isHorizontal>
-        <FormSection>
-          <FormGroup
-            hasNoPaddingTop
-            label='Include trace / debug streams'
-            fieldId='camel-form-include-trace-debug-streams'
-            labelIcon={
-              <TooltipHelpIcon tooltip='Whether to include stream based message body when using the tracer and debugger' />
-            }
-          >
-            <Checkbox
-              id='camel-form-include-trace-debug-streams-input'
-              isChecked={options.traceOrDebugIncludeStreams}
-              onChange={updateCheckboxValueFor('traceOrDebugIncludeStreams')}
-            />
-          </FormGroup>
-          <FormGroup
-            hasNoPaddingTop
-            label='Maximum trace / debug body length'
-            fieldId='camel-form-maximum-trace-debug-body-length'
-            labelIcon={
-              <TooltipHelpIcon tooltip='The maximum length of the body before its clipped when using the tracer and debugger' />
-            }
-          >
-            <TextInput
-              id='camel-form-maximum-trace-debug-body-length'
-              type='number'
-              value={options.maximumTraceOrDebugBodyLength}
-              onChange={updateNumberValueFor('maximumTraceOrDebugBodyLength')}
-            />
-          </FormGroup>
+        <FormSection title='Route diagram' titleElement='h2'>
           <FormGroup
             hasNoPaddingTop
             label='Maximum label width'
@@ -95,6 +66,37 @@ export const CamelPreferences: React.FunctionComponent = () => {
               id='camel-show-inflight-counter-input'
               isChecked={options.showInflightCounter}
               onChange={updateCheckboxValueFor('showInflightCounter')}
+            />
+          </FormGroup>
+        </FormSection>
+        <FormSection title='Trace / debug' titleElement='h2'>
+          <FormGroup
+            hasNoPaddingTop
+            label='Include streams'
+            fieldId='camel-form-include-streams'
+            labelIcon={
+              <TooltipHelpIcon tooltip='Whether to include stream based message body when using the tracer and debugger' />
+            }
+          >
+            <Checkbox
+              id='camel-form-include-streams-input'
+              isChecked={options.traceOrDebugIncludeStreams}
+              onChange={updateCheckboxValueFor('traceOrDebugIncludeStreams')}
+            />
+          </FormGroup>
+          <FormGroup
+            hasNoPaddingTop
+            label='Maximum body length'
+            fieldId='camel-form-maximum-body-length'
+            labelIcon={
+              <TooltipHelpIcon tooltip='The maximum length of the body before its clipped when using the tracer and debugger' />
+            }
+          >
+            <TextInput
+              id='camel-form-maximum-body-length-input'
+              type='number'
+              value={options.maximumTraceOrDebugBodyLength}
+              onChange={updateNumberValueFor('maximumTraceOrDebugBodyLength')}
             />
           </FormGroup>
         </FormSection>
