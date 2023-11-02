@@ -60,10 +60,10 @@ class DebugService {
     const db = this.getDebugBean(node)
     if (!db || !db.objectName) return false
 
-    const options = camelPreferencesService.loadCamelPreferences()
-    await jolokiaService.writeAttribute(db.objectName, 'BodyMaxChars', options.maximumTraceDebugBodyLength)
-    await jolokiaService.writeAttribute(db.objectName, 'BodyIncludeStreams', options.isIncludeTraceDebugStreams)
-    await jolokiaService.writeAttribute(db.objectName, 'BodyIncludeFiles', options.isIncludeTraceDebugStreams)
+    const options = camelPreferencesService.loadOptions()
+    await jolokiaService.writeAttribute(db.objectName, 'BodyMaxChars', options.maximumTraceOrDebugBodyLength)
+    await jolokiaService.writeAttribute(db.objectName, 'BodyIncludeStreams', options.traceOrDebugIncludeStreams)
+    await jolokiaService.writeAttribute(db.objectName, 'BodyIncludeFiles', options.traceOrDebugIncludeStreams)
 
     const method = flag ? 'enableDebugger' : 'disableDebugger'
     await jolokiaService.execute(db.objectName, method)

@@ -40,14 +40,14 @@ class TracingService {
     const tb = this.getTracingBean(node)
     if (!tb) return false
 
-    const options = camelPreferencesService.loadCamelPreferences()
-    await jolokiaService.writeAttribute(tb.objectName as string, 'BodyMaxChars', options.maximumTraceDebugBodyLength)
+    const options = camelPreferencesService.loadOptions()
+    await jolokiaService.writeAttribute(tb.objectName as string, 'BodyMaxChars', options.maximumTraceOrDebugBodyLength)
     await jolokiaService.writeAttribute(
       tb.objectName as string,
       'BodyIncludeStreams',
-      options.isIncludeTraceDebugStreams,
+      options.traceOrDebugIncludeStreams,
     )
-    await jolokiaService.writeAttribute(tb.objectName as string, 'BodyIncludeFiles', options.isIncludeTraceDebugStreams)
+    await jolokiaService.writeAttribute(tb.objectName as string, 'BodyIncludeFiles', options.traceOrDebugIncludeStreams)
 
     await jolokiaService.execute(tb.objectName as string, 'setEnabled', [flag])
 
