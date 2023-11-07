@@ -1,7 +1,7 @@
 const { ModuleFederationPlugin } = require('webpack').container
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
-const { dependencies } = require('./package.json')
 const CracoEsbuildPlugin = require('craco-esbuild')
+const { dependencies } = require('./package.json')
 const { hawtioBackend } = require('@hawtio/backend-middleware')
 
 module.exports = {
@@ -32,7 +32,7 @@ module.exports = {
             '@hawtio/react': {
               singleton: true,
               // Hardcoding needed because it cannot handle yarn 'workspace:*' version
-              requiredVersion: '^0.7.0',
+              requiredVersion: '^0.8.0',
             },
           },
         }),
@@ -49,18 +49,18 @@ module.exports = {
       // For suppressing sourcemap warnings coming from some dependencies
       webpackConfig.ignoreWarnings = [/Failed to parse source map/]
 
-      // MiniCssExtractPlugin - Ignore order as otherwise conflicting order warning is raised
-      const miniCssExtractPlugin = webpackConfig.plugins.find(p => p.constructor.name === 'MiniCssExtractPlugin')
-      if (miniCssExtractPlugin) {
-        miniCssExtractPlugin.options.ignoreOrder = true
-      }
-
       webpackConfig.resolve = {
         ...webpackConfig.resolve,
         fallback: {
           path: require.resolve('path-browserify'),
           os: require.resolve('os-browserify'),
         },
+      }
+
+      // MiniCssExtractPlugin - Ignore order as otherwise conflicting order warning is raised
+      const miniCssExtractPlugin = webpackConfig.plugins.find(p => p.constructor.name === 'MiniCssExtractPlugin')
+      if (miniCssExtractPlugin) {
+        miniCssExtractPlugin.options.ignoreOrder = true
       }
 
       // ***** Debugging *****
