@@ -7,6 +7,7 @@ import { logs } from './logs'
 import { quartz } from './quartz'
 import { rbac } from './rbac'
 import { runtime } from './runtime'
+import { springboot } from './springboot'
 
 /**
  * Registers the builtin plugins for Hawtio React.
@@ -24,6 +25,7 @@ export const registerPlugins: HawtioPlugin = () => {
   runtime()
   logs()
   quartz()
+  springboot()
 }
 
 export * from './connect'
