@@ -5,16 +5,7 @@ import { backgroundImages } from '@hawtiosrc/img'
 import { PluginNodeSelectionContext, usePluginNodeSelected } from '@hawtiosrc/plugins'
 import { HawtioPreferences } from '@hawtiosrc/preferences/HawtioPreferences'
 import { preferencesService } from '@hawtiosrc/preferences/preferences-service'
-import {
-  BackgroundImage,
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateVariant,
-  Page,
-  PageSection,
-  PageSectionVariants,
-  Title,
-} from '@patternfly/react-core'
+import { BackgroundImage, EmptyState, EmptyStateIcon, Page, PageSection, Title } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons'
 import React from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
@@ -43,24 +34,8 @@ export const HawtioPage: React.FunctionComponent = () => {
     navigate('login')
   }
 
-  const HawtioHome = () => (
-    <PageSection variant={PageSectionVariants.light}>
-      <EmptyState variant={EmptyStateVariant.full}>
-        <EmptyStateIcon icon={CubesIcon} />
-        <Title headingLevel='h1' size='lg'>
-          Hawtio
-        </Title>
-      </EmptyState>
-    </PageSection>
-  )
-
   const defaultPlugin = plugins[0] ?? null
-  let defaultPage
-  if (defaultPlugin) {
-    defaultPage = <Navigate to={{ pathname: defaultPlugin.path, search }} />
-  } else {
-    defaultPage = <HawtioHome />
-  }
+  const defaultPage = defaultPlugin ? <Navigate to={{ pathname: defaultPlugin.path, search }} /> : <HawtioHome />
 
   const showVerticalNavByDefault = preferencesService.isShowVerticalNavByDefault()
 
@@ -92,3 +67,14 @@ export const HawtioPage: React.FunctionComponent = () => {
     </PageContext.Provider>
   )
 }
+
+const HawtioHome: React.FunctionComponent = () => (
+  <PageSection variant='light'>
+    <EmptyState variant='full'>
+      <EmptyStateIcon icon={CubesIcon} />
+      <Title headingLevel='h1' size='lg'>
+        Hawtio
+      </Title>
+    </EmptyState>
+  </PageSection>
+)
