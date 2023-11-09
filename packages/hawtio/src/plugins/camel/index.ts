@@ -9,7 +9,7 @@ import { jmxDomain, log, pluginPath } from './globals'
 import help from './help.md'
 import { camelTreeProcessor } from './tree-processor'
 
-const order = 13
+const order = 12
 
 export const camel: HawtioPlugin = () => {
   hawtio.addPlugin({

@@ -5,7 +5,7 @@ import { pluginPath } from './globals'
 import help from './help.md'
 import { Jmx } from './Jmx'
 
-const order = 12
+const order = 13
 
 export const jmx: HawtioPlugin = () => {
   hawtio.addPlugin({
