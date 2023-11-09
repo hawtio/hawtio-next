@@ -1,31 +1,20 @@
-name: Test
+name: Audit
 
 on:
-  pull_request:
-    branches:
-      - main
-    paths-ignore:
-      - '**.md'
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - '**.md'
+  schedule:
+    # Run it every Sunday
+    - cron: '0 0 * * 0'
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        node: ['18', '20']
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 18
       - name: Enable yarn v4
         run: |
           corepack enable
@@ -42,9 +31,3 @@ jobs:
             ${{ runner.os }}-yarn-
       - name: Audit
         run: yarn npm audit --all
-      - name: Install
-        run: yarn install
-      - name: Build
-        run: yarn build:all
-      - name: Test
-        run: yarn test:all
