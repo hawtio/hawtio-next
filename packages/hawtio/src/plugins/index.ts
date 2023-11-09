@@ -8,6 +8,11 @@ import { quartz } from './quartz'
 import { rbac } from './rbac'
 import { runtime } from './runtime'
 
+/**
+ * Registers the builtin plugins for Hawtio React.
+ *
+ * The order of loading the builtin plugins is defined by this function.
+ */
 export const registerPlugins: HawtioPlugin = () => {
   // Auth plugins should be loaded before other plugins
   keycloak()

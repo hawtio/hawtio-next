@@ -7,16 +7,19 @@ import { Logs } from './Logs'
 import { logsService } from './logs-service'
 import { LogsPreferences } from './LogsPreferences'
 
+const order = 14
+
 export const logs: HawtioPlugin = () => {
   hawtio.addPlugin({
     id: pluginId,
     title: 'Logs',
     path: pluginPath,
+    order,
     component: Logs,
     isActive: () => logsService.isActive(),
   })
 
-  helpRegistry.add(pluginId, 'Logs', help, 14)
+  helpRegistry.add(pluginId, 'Logs', help, order)
   // To avoid conflicts in name with 'Console Logs'
-  preferencesRegistry.add(pluginId, 'Server Logs', LogsPreferences, 14)
+  preferencesRegistry.add(pluginId, 'Server Logs', LogsPreferences, order)
 }

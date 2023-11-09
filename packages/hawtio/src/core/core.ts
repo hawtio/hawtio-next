@@ -46,6 +46,17 @@ export interface Plugin {
   path: string
 
   /**
+   * The order to be shown in the Hawtio sidebar.
+   *
+   * This only controls presentation and doesn't change the order of plugin to
+   * be loaded.
+   *
+   * If it's not specified, it defaults to `100`. `0` ~ `30` are reserved for
+   * the builtin plugins.
+   */
+  order?: number
+
+  /**
    * If this plugin provides a login form component
    */
   isLogin?: boolean
@@ -64,12 +75,12 @@ export interface Plugin {
   isActive: () => Promise<boolean>
 }
 
+const DEFAULT_PLUGIN_ORDER = 100
+
 /**
  * A collection of internal Hawtio plugins with IDs as keys.
  */
-type Plugins = {
-  [id: string]: Plugin
-}
+type Plugins = Record<string, Plugin>
 
 /**
  * Type definition of the entry point for a Hawtio plugin.
@@ -273,6 +284,9 @@ class HawtioCore {
     }
 
     log.debug('Resolved plugins:', resolved)
+
+    // Sort plugins for presentation
+    resolved.sort((a, b) => (a.order ?? DEFAULT_PLUGIN_ORDER) - (b.order ?? DEFAULT_PLUGIN_ORDER))
 
     return resolved
   }

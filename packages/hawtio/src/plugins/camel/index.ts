@@ -9,11 +9,14 @@ import { jmxDomain, log, pluginPath } from './globals'
 import help from './help.md'
 import { camelTreeProcessor } from './tree-processor'
 
+const order = 13
+
 export const camel: HawtioPlugin = () => {
   hawtio.addPlugin({
     id: 'camel',
     title: 'Camel',
     path: pluginPath,
+    order,
     component: Camel,
     isActive: async () => {
       return workspace.treeContainsDomainAndProperties(jmxDomain)
@@ -21,8 +24,8 @@ export const camel: HawtioPlugin = () => {
   })
 
   treeProcessorRegistry.add('camel', camelTreeProcessor)
-  helpRegistry.add('camel', 'Camel', help, 13)
-  preferencesRegistry.add('camel', 'Camel', CamelPreferences, 13)
+  helpRegistry.add('camel', 'Camel', help, order)
+  preferencesRegistry.add('camel', 'Camel', CamelPreferences, order)
 
   log.info('Using Camel versions:', getCamelVersions())
 }

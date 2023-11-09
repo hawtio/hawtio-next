@@ -9,7 +9,7 @@ export function usePlugins() {
   const [plugins, setPlugins] = useState<Plugin[]>([])
   const [pluginsLoaded, setPluginsLoaded] = useState(false)
 
-  log.debug('Plugins:', hawtio.getPlugins())
+  log.debug('usePlugins - Plugins:', hawtio.getPlugins())
 
   useEffect(() => {
     const loadPlugins = async () => {
