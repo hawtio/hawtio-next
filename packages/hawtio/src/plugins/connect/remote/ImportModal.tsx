@@ -1,16 +1,13 @@
 import { eventService } from '@hawtiosrc/core'
 import { Button, FileUpload, Modal, ModalVariant } from '@patternfly/react-core'
 import { useContext, useState } from 'react'
-import { ConnectContext } from './context'
+import { ConnectContext } from '../context'
 
-type ConnectImportModalProps = {
+export const ImportModal: React.FunctionComponent<{
   isOpen: boolean
   onClose: () => void
-}
-
-export const ConnectImportModal: React.FunctionComponent<ConnectImportModalProps> = props => {
+}> = ({ isOpen, onClose }) => {
   const { dispatch } = useContext(ConnectContext)
-  const { isOpen, onClose } = props
 
   const [fileContent, setFileContent] = useState('')
   const [filename, setFilename] = useState('')
