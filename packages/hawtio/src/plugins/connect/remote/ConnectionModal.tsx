@@ -15,15 +15,8 @@ import {
 } from '@patternfly/react-core'
 import { ExclamationCircleIcon } from '@patternfly/react-icons'
 import React, { useContext, useState } from 'react'
-import { ADD, UPDATE } from './connections'
-import { ConnectContext } from './context'
-
-type ConnectModalProps = {
-  mode: 'add' | 'edit'
-  isOpen: boolean
-  onClose: () => void
-  input: Connection
-}
+import { ADD, UPDATE } from '../connections'
+import { ConnectContext } from '../context'
 
 type Validation = {
   text: string
@@ -44,9 +37,13 @@ const emptyResult: Validations = {
   test: null,
 } as const
 
-export const ConnectModal: React.FunctionComponent<ConnectModalProps> = props => {
+export const ConnectionModal: React.FunctionComponent<{
+  mode: 'add' | 'edit'
+  isOpen: boolean
+  onClose: () => void
+  input: Connection
+}> = ({ mode, isOpen, onClose, input }) => {
   const { connections, dispatch } = useContext(ConnectContext)
-  const { mode, isOpen, onClose, input } = props
 
   const [connection, setConnection] = useState(input)
   const [validations, setValidations] = useState(emptyResult)
