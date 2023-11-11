@@ -38,8 +38,8 @@ To give one example, the Attributes feature of the JMX plugin is mapped as follo
 <!-- prettier-ignore-start -->
 | MVC | Legacy Hawtio | Hawtio.next |
 | --- | ------------- | ----------- |
-| Controller & view | [attributes.controller.ts](https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/ts/attributes/attributes.controller.ts) <br/> [attributes.html](https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/html/attributes/attributes.html) | [Attributes.tsx](https://github.com/hawtio/hawtio-next/blob/main/packages/hawtio/src/plugins/shared/attributes/Attributes.tsx) |
-| Service | [attributes.service.ts](https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/ts/attributes/attributes.service.ts) | [attribute-service.ts](https://github.com/hawtio/hawtio-next/blob/main/packages/hawtio/src/plugins/shared/attributes/attribute-service.ts) |
+| Controller & view | [attributes.controller.ts](https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/ts/attributes/attributes.controller.ts) <br/> [attributes.html](https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/html/attributes/attributes.html) | [Attributes.tsx](../packages/hawtio/src/plugins/shared/attributes/Attributes.tsx) |
+| Service | [attributes.service.ts](https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/ts/attributes/attributes.service.ts) | [attribute-service.ts](../packages/hawtio/src/plugins/shared/attributes/attribute-service.ts) |
 <!-- prettier-ignore-end -->
 
 ### Developing a React component
@@ -49,7 +49,7 @@ Choose `FunctionalComponent` as much as possible for implementing a React compon
 The current implementation guidelines are as follows:
 
 - Create one [React context](https://beta.reactjs.org/reference/react/useContext) per plugin and convey common states and setters from the context within the plugin instead of propagating properties across sub components.
-  - Example: [src/hawtio/plugins/jmx/context.ts](./src/hawtio/plugins/jmx/context.ts)
+  - Example: [src/hawtio/plugins/jmx/context.ts](../packages/hawtio/src/plugins/jmx/context.ts)
 - Don't use [React reducers](https://beta.reactjs.org/reference/react/useReducer) as I find it as a bit too much for Hawtio. Hawtio doesn't need to manage complex client-side states other than one huge JMX tree. (We can revisit this rule anytime if we find it the other way around.)
 
 ## Testing
