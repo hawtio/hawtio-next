@@ -38,8 +38,8 @@ To give one example, the Attributes feature of the JMX plugin is mapped as follo
 <!-- prettier-ignore-start -->
 | MVC | Legacy Hawtio | Hawtio.next |
 | --- | ------------- | ----------- |
-| Controller & view | [attributes.controller.ts](https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/ts/attributes/attributes.controller.ts) <br/> [attributes.html](https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/html/attributes/attributes.html) | [Attributes.tsx](https://github.com/hawtio/hawtio-next/blob/main/src/hawtio/plugins/jmx/attributes/Attributes.tsx) |
-| Service | [attributes.service.ts](https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/ts/attributes/attributes.service.ts) | [attribute-service.ts](https://github.com/hawtio/hawtio-next/blob/main/src/hawtio/plugins/jmx/attributes/attribute-service.ts) |
+| Controller & view | [attributes.controller.ts](https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/ts/attributes/attributes.controller.ts) <br/> [attributes.html](https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/html/attributes/attributes.html) | [Attributes.tsx](https://github.com/hawtio/hawtio-next/blob/main/packages/hawtio/src/plugins/shared/attributes/Attributes.tsx) |
+| Service | [attributes.service.ts](https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/ts/attributes/attributes.service.ts) | [attribute-service.ts](https://github.com/hawtio/hawtio-next/blob/main/packages/hawtio/src/plugins/shared/attributes/attribute-service.ts) |
 <!-- prettier-ignore-end -->
 
 ### Developing a React component
