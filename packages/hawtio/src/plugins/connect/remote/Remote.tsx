@@ -1,4 +1,4 @@
-import { Connection, connectService } from '@hawtiosrc/plugins/shared/connect-service'
+import { Connection, connectService, INITIAL_CONNECTION } from '@hawtiosrc/plugins/shared/connect-service'
 import {
   Button,
   ButtonVariant,
@@ -60,13 +60,7 @@ const RemoteToolbar: React.FunctionComponent = () => {
     connectService.export(connections)
   }
 
-  const initialConnection: Connection = {
-    name: '',
-    scheme: 'http',
-    host: '',
-    port: 8080,
-    path: '/hawtio/jolokia',
-  }
+  const initialConnection = { ...INITIAL_CONNECTION }
 
   return (
     <Toolbar id='connect-toolbar'>

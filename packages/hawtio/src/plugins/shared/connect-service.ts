@@ -15,12 +15,21 @@ export type Connection = {
   port: number
   path: string
 
-  useProxy?: boolean
   jolokiaUrl?: string
   username?: string
   password?: string
+
+  // TODO: check if it is used
   token?: string
 }
+
+export const INITIAL_CONNECTION: Connection = {
+  name: '',
+  scheme: 'http',
+  host: 'localhost',
+  port: 8080,
+  path: '/hawtio/jolokia',
+} as const
 
 export type ConnectionTestResult = {
   ok: boolean
@@ -54,6 +63,7 @@ export interface IConnectService {
   connect(connection: Connection): void
   login(username: string, password: string): Promise<boolean>
   redirect(): void
+  createJolokia(connection: Connection, checkCredentials?: boolean): Jolokia
   getJolokiaUrl(connection: Connection): string
   getJolokiaUrlFromName(name: string): string | null
   getLoginPath(): string
@@ -241,7 +251,7 @@ class ConnectService implements IConnectService {
   /**
    * Create a Jolokia instance with the given connection.
    */
-  private createJolokia(connection: Connection, checkCredentials = false): Jolokia {
+  createJolokia(connection: Connection, checkCredentials = false): Jolokia {
     if (checkCredentials) {
       return new Jolokia({
         url: this.getJolokiaUrl(connection),

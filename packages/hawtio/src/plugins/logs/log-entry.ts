@@ -1,3 +1,4 @@
+import { formatTimestamp } from '@hawtiosrc/util/dates'
 import { isEmpty } from '@hawtiosrc/util/objects'
 
 export type LogEvent = {
@@ -58,22 +59,9 @@ export class LogEntry {
 
   getTimestamp(): string {
     const { seq, timestamp } = this.event
-    const padZero = (n: number, len = 2) => String(n).padStart(len, '0')
-
     // If there is a seq in the log event, then it's the timestamp with milliseconds.
     const date = seq ? new Date(seq) : new Date(timestamp)
-    const year = date.getFullYear()
-    const month = padZero(date.getMonth() + 1)
-    const day = padZero(date.getDate())
-    const hours = padZero(date.getHours())
-    const minutes = padZero(date.getMinutes())
-    const seconds = padZero(date.getSeconds())
-    if (seq) {
-      const millis = padZero(date.getMilliseconds(), 3)
-      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${millis}`
-    } else {
-      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
-    }
+    return formatTimestamp(date, !isNaN(seq))
   }
 
   match(filter: LogFilter): boolean {
