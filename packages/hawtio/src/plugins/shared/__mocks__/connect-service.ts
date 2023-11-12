@@ -1,3 +1,4 @@
+import Jolokia from 'jolokia.js'
 import {
   Connection,
   ConnectionCredentials,
@@ -58,6 +59,10 @@ class MockConnectService implements IConnectService {
 
   redirect() {
     // no-op
+  }
+
+  createJolokia(connection: Connection, checkCredentials?: boolean): Jolokia {
+    return new Jolokia('/jolokia')
   }
 
   getJolokiaUrl(connection: Connection): string {
