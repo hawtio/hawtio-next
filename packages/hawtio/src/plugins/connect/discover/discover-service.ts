@@ -21,33 +21,52 @@ export type Agent = {
   command?: string
 }
 
+/**
+ * @see https://github.com/hawtio/hawtio/blob/3.x/plugins/hawtio-local-jvm-mbean/src/main/java/io/hawt/jvm/local/VMDescriptorDTO.java
+ */
+export type Jvm = {
+  id: string
+  alias: string
+  displayName: string
+  agentUrl: string | null
+  port: number
+  hostname: string | null
+  scheme: string | null
+  path: string | null
+}
+
 class DiscoverService {
-  async isDiscoverable(): Promise<boolean> {
-    return (await this.hasLocalMBean()) || (await this.hasDiscoveryMBean())
-  }
-
-  private hasLocalMBean(): Promise<boolean> {
-    return workspace.treeContainsDomainAndProperties('hawtio', { type: 'JVMList' })
-  }
-
-  private hasDiscoveryMBean(): Promise<boolean> {
+  hasDiscoveryMBean(): Promise<boolean> {
     return workspace.treeContainsDomainAndProperties('jolokia', { type: 'Discovery' })
+  }
+
+  hasLocalMBean(): Promise<boolean> {
+    return workspace.treeContainsDomainAndProperties('hawtio', { type: 'JVMList' })
   }
 
   async discoverAgents(): Promise<Agent[]> {
     // Jolokia 1.x: 'jolokia:type=Discovery'
     // Jolokia 2.x: 'jolokia:type=Discovery,agent=...'
     const discoveryMBean = (await workspace.findMBeans('jolokia', { type: 'Discovery' }))[0]
-    if (discoveryMBean && discoveryMBean.objectName) {
-      // Use 10 sec timeout
-      const agents = (await jolokiaService.execute(discoveryMBean.objectName, 'lookupAgentsWithTimeout(int)', [
-        10 * 1000,
-      ])) as Agent[]
-      await this.fetchMoreJvmDetails(agents)
-      return agents
+    if (!discoveryMBean?.objectName) {
+      return []
     }
 
-    return []
+    // Use 10 sec timeout
+    const agents = (await jolokiaService.execute(discoveryMBean.objectName, 'lookupAgentsWithTimeout(int)', [
+      10 * 1000,
+    ])) as Agent[]
+    await this.fetchMoreJvmDetails(agents)
+    return agents
+  }
+
+  async listJvms(): Promise<Jvm[]> {
+    const jvmListMBean = (await workspace.findMBeans('hawtio', { type: 'JVMList' }))[0]
+    if (!jvmListMBean?.objectName) {
+      return []
+    }
+
+    return (await jolokiaService.execute(jvmListMBean.objectName, 'listLocalJVMs()')) as Jvm[]
   }
 
   private async fetchMoreJvmDetails(agents: Agent[]) {
@@ -56,7 +75,7 @@ class DiscoverService {
         continue
       }
       // One-off Jolokia instance to connect to the agent
-      const jolokia = connectService.createJolokia(this.toConnection(agent))
+      const jolokia = connectService.createJolokia(this.agentToConnection(agent))
       agent.startTime = jolokia.getAttribute('java.lang:type=Runtime', 'StartTime') as number
       if (!this.hasName(agent)) {
         // Only look for command if agent vm is not known
@@ -65,7 +84,11 @@ class DiscoverService {
     }
   }
 
-  toConnection(agent: Agent): Connection {
+  hasName(agent: Agent): boolean {
+    return [agent.server_vendor, agent.server_product, agent.server_version].every(s => !isBlank(s))
+  }
+
+  agentToConnection(agent: Agent): Connection {
     const conn = { ...INITIAL_CONNECTION, name: agent.agent_description ?? `discover-${agent.agent_id}` }
     if (!agent.url) {
       log.warn('No URL available to connect to agent:', agent)
@@ -82,8 +105,41 @@ class DiscoverService {
     return conn
   }
 
-  hasName(agent: Agent): boolean {
-    return [agent.server_vendor, agent.server_product, agent.server_version].every(s => !isBlank(s))
+  jvmToConnection(jvm: Jvm): Connection {
+    const conn = { ...INITIAL_CONNECTION, name: `local-${jvm.port}` }
+    if (!jvm.scheme || !jvm.hostname || jvm.port === 0 || !jvm.path) {
+      log.warn('Lack of information to connect to JVM:', jvm)
+      return conn
+    }
+
+    conn.scheme = jvm.scheme
+    conn.host = jvm.hostname
+    conn.port = jvm.port
+    conn.path = jvm.path
+    log.debug('Discover - connection from JVM:', conn)
+    return conn
+  }
+
+  isConnectable(jvm: Jvm): boolean {
+    return [jvm.scheme, jvm.hostname, jvm.path].every(s => s && !isBlank(s)) && jvm.port !== 0
+  }
+
+  async stopAgent(pid: string) {
+    const jvmListMBean = (await workspace.findMBeans('hawtio', { type: 'JVMList' }))[0]
+    if (!jvmListMBean?.objectName) {
+      return
+    }
+    log.debug('Discover - stop JVM agent:', jvmListMBean, pid)
+    await jolokiaService.execute(jvmListMBean.objectName, 'stopAgent(java.lang.String)', [pid])
+  }
+
+  async startAgent(pid: string) {
+    const jvmListMBean = (await workspace.findMBeans('hawtio', { type: 'JVMList' }))[0]
+    if (!jvmListMBean?.objectName) {
+      return
+    }
+    log.debug('Discover - start JVM agent:', jvmListMBean, pid)
+    await jolokiaService.execute(jvmListMBean.objectName, 'startAgent(java.lang.String)', [pid])
   }
 }
 
