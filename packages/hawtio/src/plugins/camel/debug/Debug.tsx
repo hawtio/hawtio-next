@@ -351,6 +351,7 @@ export const Debug: React.FunctionComponent = () => {
 
     const result = await debugService.stepBreakpoint(selectedNode, suspendedBreakpoint)
     log.debug('Debug - next breakpoint:', result)
+    reloadBreakpointChanges(isDebugging, selectedNode)
   }
 
   const onResume = () => {
