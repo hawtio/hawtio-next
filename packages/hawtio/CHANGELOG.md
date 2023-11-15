@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.9.1](https://github.com/hawtio/hawtio-next/compare/v0.9.0...v0.9.1) (2023-11-15)
+
+
+### Bug Fixes
+
+* **camel:** debug breakpoint suspension doesn't work with Camel v4 ([784261f](https://github.com/hawtio/hawtio-next/commit/784261f6bddb75b148969142a505150e1648bd92)), closes [#666](https://github.com/hawtio/hawtio-next/issues/666)
+* **camel:** reload breakpoints immediately after step in debug ([18170a8](https://github.com/hawtio/hawtio-next/commit/18170a854b481b1e231d69a35df6988c0136efa0))
+
 ## [0.9.0](https://github.com/hawtio/hawtio-next/compare/v0.8.0...v0.9.0) (2023-11-14)
 
 
