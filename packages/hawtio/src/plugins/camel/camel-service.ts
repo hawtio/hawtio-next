@@ -264,6 +264,31 @@ export function getBreakpointsOperation(node: MBeanNode): string {
   return isCamelVersionEQGT(node, 4, 0) ? 'breakpoints' : 'getBreakpoints'
 }
 
+/**
+ * Returns the name of operation for getting all the suspended breakpoint IDs on
+ * the BacklogDebugger MBean. The operation name differs between Camel v3 and v4.
+ */
+export function getSuspendedBreakpointNodeIdsOperation(node: MBeanNode): string {
+  return isCamelVersionEQGT(node, 4, 0) ? 'suspendedBreakpointNodeIds' : 'getSuspendedBreakpointNodeIds'
+}
+
+/**
+ * Executes the operation for dumping traced messages as XML on the BacklogDebugger
+ * MBean. The operation name differs between Camel v3 and v4.
+ */
+export function dumpTracedMessagesAsXml(node: MBeanNode, debugMBean: string, breakpointId: string): Promise<string> {
+  if (isCamelVersionEQGT(node, 4, 0)) {
+    return jolokiaService.execute(debugMBean, 'dumpTracedMessagesAsXml(java.lang.String,boolean)', [
+      breakpointId,
+      false,
+    ]) as Promise<string>
+  } else {
+    return jolokiaService.execute(debugMBean, 'dumpTracedMessagesAsXml(java.lang.String)', [
+      breakpointId,
+    ]) as Promise<string>
+  }
+}
+
 export function canGetBreakpoints(node: MBeanNode): boolean {
   if (!isRouteNode(node)) return false
 
