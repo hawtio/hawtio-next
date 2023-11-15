@@ -1,8 +1,39 @@
-import React from "react"
-import {PageSection} from "@patternfly/react-core"
+import React, { useEffect, useState } from 'react'
+import { FormGroup, PageSection } from '@patternfly/react-core'
+import { getInfo } from '@hawtiosrc/plugins/springboot/springboot-service'
+import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 
-export const Info:React.FunctionComponent = () => (
-  <PageSection variant='light'>
-      Info - TO BE DONE
-  </PageSection>
-)
+export const Info: React.FunctionComponent = () => {
+  const [systemProperties, setSystemProperties] = useState<{ key: string; value: string }[]>([])
+
+  useEffect(() => {
+    getInfo().then(res => {
+      setSystemProperties(res)
+    })
+  }, [])
+
+  return (
+    <PageSection variant='light'>
+      <FormGroup>
+        <TableComposable aria-label='Message Table' variant='compact' height='80vh' isStriped isStickyHeader>
+          <Thead>
+            <Tr>
+              <Th data-testid={'name-header'}>Property Name</Th>
+              <Th data-testid={'value-header'}>Property Value</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {systemProperties.map((prop, index) => {
+              return (
+                <Tr key={'row' + index} data-testid={'row' + index}>
+                  <Td style={{ width: '20%' }}>{prop.key}</Td>
+                  <Td style={{ flex: 3 }}>{prop.value}</Td>
+                </Tr>
+              )
+            })}
+          </Tbody>
+        </TableComposable>
+      </FormGroup>
+    </PageSection>
+  )
+}
