@@ -75,6 +75,7 @@ class DebugService {
     if (!db || !db.objectName) return []
 
     const result = await jolokiaService.execute(db.objectName, camelService.getBreakpointsOperation(node))
+    log.debug('Debug - getBreakpoints:', result)
     return result as string[]
   }
 

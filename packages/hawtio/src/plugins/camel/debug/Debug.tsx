@@ -1,5 +1,6 @@
-import { HawtioEmptyCard, HawtioLoadingCard, MBeanNode } from '@hawtiosrc/plugins/shared'
+import { HawtioLoadingCard, MBeanNode } from '@hawtiosrc/plugins/shared'
 import { compareArrays } from '@hawtiosrc/util/arrays'
+import { isBlank } from '@hawtiosrc/util/strings'
 import { childText, parseXML } from '@hawtiosrc/util/xml'
 import {
   Button,
@@ -36,7 +37,7 @@ import { CamelNodeData } from '../route-diagram/visualization-service'
 import { ConditionalBreakpointModal } from './ConditionalBreakpointModel'
 import './Debug.css'
 import { MessageDrawer } from './MessageDrawer'
-import { ConditionalBreakpoint, MessageData, debugService as ds } from './debug-service'
+import { ConditionalBreakpoint, MessageData, debugService } from './debug-service'
 
 export const Debug: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
@@ -59,21 +60,21 @@ export const Debug: React.FunctionComponent = () => {
   const [isConditionalBreakpointOpen, setIsConditionalBreakpointOpen] = useState(false)
   const [messages, setMessages] = useState<MessageData[]>([])
   const [debugPanelExpanded, setDebugPanelExpanded] = React.useState(false)
-  const bkpsRef = useRef<string[]>([])
+  const breakpointsRef = useRef<string[]>([])
 
   const applyBreakpoints = useCallback((response: unknown) => {
     if (!Array.isArray(response)) {
-      bkpsRef.current = []
+      breakpointsRef.current = []
       setBreakpoints([])
       return
     }
 
     const responseArr: string[] = response as string[]
-    if (compareArrays(bkpsRef.current, responseArr)) return
+    if (compareArrays(breakpointsRef.current, responseArr)) return
 
-    const bkps = [...responseArr]
-    bkpsRef.current = bkps
-    setBreakpoints(bkps)
+    const breakpoints = [...responseArr]
+    breakpointsRef.current = breakpoints
+    setBreakpoints(breakpoints)
   }, [])
 
   /**
@@ -85,8 +86,8 @@ export const Debug: React.FunctionComponent = () => {
       if (!counter || counter === breakpointCounter) return
 
       setBreakpointCounter(counter)
-      const suspendedBkps = await ds.getSuspendedBreakpointIds(routeNode)
-
+      const suspendedBkps = await debugService.getSuspendedBreakpointIds(routeNode)
+      log.debug('Debug - suspended breakpoints:', suspendedBkps)
       setSuspendedBreakpoints(suspendedBkps)
       if (suspendedBkps.length === 0) {
         setDebugPanelExpanded(false)
@@ -96,27 +97,20 @@ export const Debug: React.FunctionComponent = () => {
       if (!suspendedBreakpoint) {
         return
       }
-
       setGraphSelection(suspendedBreakpoint)
 
-      const msgs = await ds.getTracedMessages(routeNode, suspendedBreakpoint)
-      log.debug('onMessage ->', msgs)
-
-      if (!msgs || msgs.length === 0) {
-        log.warn('WARNING: dumpTracedMessagesAsXml() returned no results!')
+      const msgs = await debugService.getTracedMessages(routeNode, suspendedBreakpoint)
+      log.debug('Debug - messages as XML:', msgs)
+      if (isBlank(msgs)) {
+        log.warn('Debug - dumpTracedMessagesAsXml() returned no results!')
         return
       }
-
       const xmlDoc = parseXML(msgs)
-      let allMessages = xmlDoc.getElementsByTagName('fabricTracerEventMessage')
-      if (!allMessages || !allMessages.length) {
-        // lets try find another element name
-        allMessages = xmlDoc.getElementsByTagName('backlogTracerEventMessage')
-      }
+      const allMessages = xmlDoc.getElementsByTagName('backlogTracerEventMessage')
 
       const messages: MessageData[] = []
-      for (const message of allMessages) {
-        const msgData = ds.createMessageFromXml(message)
+      for (const message of Array.from(allMessages)) {
+        const msgData = debugService.createMessageFromXml(message)
         if (!msgData) continue
 
         const toNode = childText(message, 'toNode')
@@ -124,6 +118,7 @@ export const Debug: React.FunctionComponent = () => {
 
         messages.push(msgData)
       }
+      log.debug('Debug - messages:', messages)
 
       setMessages(messages)
     },
@@ -135,9 +130,9 @@ export const Debug: React.FunctionComponent = () => {
    */
   const handleAddBreakpoint = useCallback(
     async (contextNode: MBeanNode, breakpointId: string) => {
-      const result = await ds.addBreakpoint(contextNode, breakpointId)
+      const result = await debugService.addBreakpoint(contextNode, breakpointId)
       if (result) {
-        const result = await ds.getBreakpoints(contextNode)
+        const result = await debugService.getBreakpoints(contextNode)
         applyBreakpoints(result)
       }
     },
@@ -148,9 +143,9 @@ export const Debug: React.FunctionComponent = () => {
    * Handle for the addition of a conditional breakpoint
    */
   const handleAddConditionalBreakpoint = async (contextNode: MBeanNode, breakpoint: ConditionalBreakpoint) => {
-    const result = await ds.addConditionalBreakpoint(contextNode, breakpoint)
+    const result = await debugService.addConditionalBreakpoint(contextNode, breakpoint)
     if (result) {
-      const result = await ds.getBreakpoints(contextNode)
+      const result = await debugService.getBreakpoints(contextNode)
       applyBreakpoints(result)
     }
     setIsConditionalBreakpointOpen(false)
@@ -161,9 +156,9 @@ export const Debug: React.FunctionComponent = () => {
    */
   const handleRemoveBreakpoint = useCallback(
     async (contextNode: MBeanNode, breakpointId: string) => {
-      const result = await ds.removeBreakpoint(contextNode, breakpointId)
+      const result = await debugService.removeBreakpoint(contextNode, breakpointId)
       if (result) {
-        const result = await ds.getBreakpoints(contextNode)
+        const result = await debugService.getBreakpoints(contextNode)
         applyBreakpoints(result)
       }
     },
@@ -182,7 +177,7 @@ export const Debug: React.FunctionComponent = () => {
         return
       }
 
-      const bkps = await ds.getBreakpoints(selectedNode)
+      const bkps = await debugService.getBreakpoints(selectedNode)
       if (bkps.includes(nodeData.cid)) {
         handleRemoveBreakpoint(selectedNode, nodeData.cid)
       } else handleAddBreakpoint(selectedNode, nodeData.cid)
@@ -209,22 +204,22 @@ export const Debug: React.FunctionComponent = () => {
   const reloadBreakpointChanges = useCallback(
     async (isDebugging: boolean, contextNode: MBeanNode) => {
       // Unregister old handles
-      ds.unregisterAll()
+      debugService.unregisterAll()
 
-      const debugNode = ds.getDebugBean(contextNode)
+      const debugNode = debugService.getDebugBean(contextNode)
       if (!debugNode || !debugNode.objectName) return
 
       if (isDebugging) {
-        const result = await ds.getBreakpoints(contextNode)
+        const result = await debugService.getBreakpoints(contextNode)
         applyBreakpoints(result)
 
-        const bc = await ds.getBreakpointCounter(contextNode)
+        const bc = await debugService.getBreakpointCounter(contextNode)
         applyBreakpointCounter(bc, contextNode)
 
         /*
          * Sets up polling and updating of counter when it changes
          */
-        ds.register(
+        debugService.register(
           {
             type: 'exec',
             mbean: debugNode.objectName,
@@ -253,7 +248,7 @@ export const Debug: React.FunctionComponent = () => {
     setShowStatistics(false)
     setDoubleClickAction(doubleClickNodeAction)
 
-    ds.isDebugging(selectedNode).then((value: boolean) => {
+    debugService.isDebugging(selectedNode).then((value: boolean) => {
       setIsDebugging(value)
       reloadBreakpointChanges(value, selectedNode)
       setIsReading(false)
@@ -272,6 +267,14 @@ export const Debug: React.FunctionComponent = () => {
 
     setAnnotations(annotations)
   }, [breakpoints, suspendedBreakpoints, createAnnotation, setAnnotations])
+
+  if (!selectedNode) {
+    return null
+  }
+
+  if (isReading) {
+    return <HawtioLoadingCard />
+  }
 
   /**
    * Is the given breakpoint id, the first node in the route
@@ -317,23 +320,20 @@ export const Debug: React.FunctionComponent = () => {
    *
    *********************************/
   const onDebugging = async () => {
-    if (!selectedNode) return
-
-    const isDb = await ds.setDebugging(selectedNode, !isDebugging)
-    setIsDebugging(isDb)
-    reloadBreakpointChanges(isDb, selectedNode)
+    log.debug('Debug -', isDebugging ? 'stop' : 'start', 'debugging')
+    const result = await debugService.setDebugging(selectedNode, !isDebugging)
+    setIsDebugging(result)
+    reloadBreakpointChanges(result, selectedNode)
   }
 
   const onAddBreakpoint = () => {
-    if (!selectedNode) return
-
+    log.debug('Debug - add breakpoint')
     if (!graphSelection || isFirstGraphNode(graphSelection)) return
     handleAddBreakpoint(selectedNode, graphSelection)
   }
 
   const onRemoveBreakpoint = () => {
-    if (!selectedNode) return
-
+    log.debug('Debug - remove breakpoint')
     if (!hasSelectedBreakpoint()) return
     handleRemoveBreakpoint(selectedNode, graphSelection)
   }
@@ -343,30 +343,21 @@ export const Debug: React.FunctionComponent = () => {
   }
 
   const onStep = async () => {
-    if (!selectedNode) return
-
+    log.debug('Debug - step')
     if (!suspendedBreakpoints || suspendedBreakpoints.length === 0) return
 
     const suspendedBreakpoint = suspendedBreakpoints[0]
     if (!suspendedBreakpoint) return
 
-    await ds.stepBreakpoint(selectedNode, suspendedBreakpoint)
+    const result = await debugService.stepBreakpoint(selectedNode, suspendedBreakpoint)
+    log.debug('Debug - next breakpoint:', result)
   }
 
   const onResume = () => {
-    if (!selectedNode) return
-
-    ds.resume(selectedNode)
+    log.debug('Debug - resume')
+    debugService.resume(selectedNode)
     setMessages([])
     setSuspendedBreakpoints([])
-  }
-
-  if (!selectedNode) {
-    return <HawtioEmptyCard message='No selection has been made.' />
-  }
-
-  if (isReading) {
-    return <HawtioLoadingCard />
   }
 
   /**
@@ -379,33 +370,31 @@ export const Debug: React.FunctionComponent = () => {
   /**
    * Extra panel to add to the drawer slide-in
    */
-  const debugPanelBreakpointsTab = (): JSX.Element => {
-    return (
-      <TableComposable key='breakpoints' aria-label='Breakpoints table' variant='compact'>
-        <Thead>
-          <Tr>
-            <Th>Breakpoint</Th>
-            <Th>Remove</Th>
+  const debugPanelBreakpointsTab = () => (
+    <TableComposable key='breakpoints' aria-label='Breakpoints table' variant='compact'>
+      <Thead>
+        <Tr>
+          <Th>Breakpoint</Th>
+          <Th>Remove</Th>
+        </Tr>
+      </Thead>
+      <Tbody>
+        {breakpoints.map(breakpoint => (
+          <Tr key={breakpoint}>
+            <Td dataLabel='Breakpoint'>{breakpoint}</Td>
+            <Td dataLabel='Remove'>
+              <Button
+                variant='plain'
+                isSmall
+                icon={<TimesCircleIcon />}
+                onClick={() => handleRemoveBreakpoint(selectedNode, breakpoint)}
+              ></Button>
+            </Td>
           </Tr>
-        </Thead>
-        <Tbody>
-          {breakpoints.map(breakpoint => (
-            <Tr key={breakpoint}>
-              <Td dataLabel='Breakpoint'>{breakpoint}</Td>
-              <Td dataLabel='Remove'>
-                <Button
-                  variant='plain'
-                  isSmall={true}
-                  icon={<TimesCircleIcon />}
-                  onClick={() => handleRemoveBreakpoint(selectedNode, breakpoint)}
-                ></Button>
-              </Td>
-            </Tr>
-          ))}
-        </Tbody>
-      </TableComposable>
-    )
-  }
+        ))}
+      </Tbody>
+    </TableComposable>
+  )
 
   const toolbarButtons = (
     <React.Fragment>
@@ -413,7 +402,7 @@ export const Debug: React.FunctionComponent = () => {
         <ToolbarItem spacer={{ default: 'spacerSm' }} title='Remove the breakpoint on the selected node'>
           <Button
             variant='secondary'
-            isSmall={true}
+            isSmall
             icon={<MinusIcon />}
             isDisabled={!graphSelection}
             onClick={onRemoveBreakpoint}
@@ -427,7 +416,7 @@ export const Debug: React.FunctionComponent = () => {
           <ToolbarItem spacer={{ default: 'spacerSm' }} title='Add a breakpoint on the selected node'>
             <Button
               variant='secondary'
-              isSmall={true}
+              isSmall
               icon={<PlusIcon />}
               isDisabled={shouldDisableAddBreakpoint()}
               onClick={onAddBreakpoint}
@@ -438,7 +427,7 @@ export const Debug: React.FunctionComponent = () => {
           <ToolbarItem spacer={{ default: 'spacerSm' }} title='Add a conditional breakpoint on the selected node'>
             <Button
               variant='secondary'
-              isSmall={true}
+              isSmall
               icon={<PlusCircleIcon />}
               isDisabled={shouldDisableAddBreakpoint()}
               onClick={onAddConditionalBreakpointToggle}
@@ -448,11 +437,11 @@ export const Debug: React.FunctionComponent = () => {
           </ToolbarItem>
         </React.Fragment>
       )}
-      <ToolbarItem variant='separator' spacer={{ default: 'spacerSm' }}></ToolbarItem>
+      <ToolbarItem variant='separator' spacer={{ default: 'spacerSm' }} />
       <ToolbarItem spacer={{ default: 'spacerSm' }} title='Step into the next node'>
         <Button
           variant='secondary'
-          isSmall={true}
+          isSmall
           icon={<LongArrowAltDownIcon />}
           isDisabled={suspendedBreakpoints.length === 0}
           onClick={onStep}
@@ -463,7 +452,7 @@ export const Debug: React.FunctionComponent = () => {
       <ToolbarItem spacer={{ default: 'spacerSm' }} title='Resume running'>
         <Button
           variant='secondary'
-          isSmall={true}
+          isSmall
           icon={<PlayIcon />}
           isDisabled={suspendedBreakpoints.length === 0}
           onClick={onResume}
@@ -473,11 +462,11 @@ export const Debug: React.FunctionComponent = () => {
       </ToolbarItem>
       {suspendedBreakpoints.length > 0 && (
         <React.Fragment>
-          <ToolbarItem variant='separator' spacer={{ default: 'spacerSm' }}></ToolbarItem>
+          <ToolbarItem variant='separator' spacer={{ default: 'spacerSm' }} />
           <ToolbarItem spacer={{ default: 'spacerSm' }} title='Show Debug Panel'>
             <Button
               variant='secondary'
-              isSmall={true}
+              isSmall
               icon={<BarsIcon />}
               isDisabled={suspendedBreakpoints.length === 0}
               onClick={onDebugPanelToggle}
@@ -497,7 +486,7 @@ export const Debug: React.FunctionComponent = () => {
         <CardActions>
           <Button
             variant='primary'
-            isSmall={true}
+            isSmall
             icon={!isDebugging ? React.createElement(PlayIcon) : React.createElement(BanIcon)}
             onClick={onDebugging}
             isDisabled={!camelService.canGetBreakpoints(selectedNode)}
