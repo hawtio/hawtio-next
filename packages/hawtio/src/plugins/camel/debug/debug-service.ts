@@ -142,7 +142,10 @@ class DebugService {
     const db = this.getDebugBean(node)
     if (!db || !db.objectName) return []
 
-    const result = await jolokiaService.execute(db.objectName, 'getSuspendedBreakpointNodeIds')
+    const result = await jolokiaService.execute(
+      db.objectName,
+      camelService.getSuspendedBreakpointNodeIdsOperation(node),
+    )
     return result as string[]
   }
 
@@ -168,10 +171,7 @@ class DebugService {
     const db = this.getDebugBean(node)
     if (!db || !db.objectName) return ''
 
-    const result = await jolokiaService.execute(db.objectName, 'dumpTracedMessagesAsXml(java.lang.String)', [
-      breakpointId,
-    ])
-    return result as string
+    return await camelService.dumpTracedMessagesAsXml(node, db.objectName, breakpointId)
   }
 
   async resume(node: MBeanNode): Promise<void> {
