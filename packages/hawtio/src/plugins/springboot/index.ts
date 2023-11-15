@@ -4,15 +4,15 @@ import { pluginId, pluginPath } from './globals'
 import { workspace } from '@hawtiosrc/plugins'
 import { helpRegistry } from '@hawtiosrc/help'
 import help from './help.md'
-import {Springboot} from "@hawtiosrc/plugins/springboot/Springboot"
+import { SpringBoot } from '@hawtiosrc/plugins/springboot/SpringBoot'
 
 export const springboot: HawtioPlugin = () => {
   hawtio.addPlugin({
     id: pluginId,
-    title: 'Springboot',
+    title: 'Spring Boot',
     path: pluginPath,
-    component: Springboot,
-    isActive: async () => workspace.hasMBeans(),
+    component: SpringBoot,
+    isActive: async () => workspace.treeContainsDomainAndProperties('org.springframework.boot'),
   })
-  helpRegistry.add(pluginId, 'Runtime', help, 16)
+  helpRegistry.add(pluginId, 'Spring Boot', help, 17)
 }
