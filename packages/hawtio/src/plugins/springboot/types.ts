@@ -27,3 +27,13 @@ export type JolokiaHealthData = {
     }
   }
 }
+export type LoggerConfiguration = {
+  levels: string[]
+  loggers: Logger[]
+}
+
+export type Logger = {
+  name: string
+  configuredLevel: string
+  effectiveLevel: string
+}
