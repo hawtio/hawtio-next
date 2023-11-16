@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.9.2](https://github.com/hawtio/hawtio-next/compare/v0.9.1...v0.9.2) (2023-11-16)
+
+
+### Bug Fixes
+
+* **auth:** export useUser hook for external plugins ([308ce3f](https://github.com/hawtio/hawtio-next/commit/308ce3f5818d1c2bf03aa103ed7267d19177c5b3))
+* **jmx,camel:** fix Operations tab crashes when used with Camel JBang ([3f66dd3](https://github.com/hawtio/hawtio-next/commit/3f66dd35c110be810fde96c0a117fdc7d1f8794a)), closes [#670](https://github.com/hawtio/hawtio-next/issues/670)
+
 ## [0.9.1](https://github.com/hawtio/hawtio-next/compare/v0.9.0...v0.9.1) (2023-11-15)
 
 
