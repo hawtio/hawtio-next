@@ -1,5 +1,5 @@
 import { jolokiaService, workspace } from '@hawtiosrc/plugins'
-import { HealthComponent, HealthData, JolokiaHealthData } from './types'
+import { HealthComponent, HealthData, JolokiaHealthData, Logger, LoggerConfiguration } from './types'
 
 export async function loadHealth(): Promise<HealthData> {
   const data = (await jolokiaService.execute(
@@ -46,4 +46,41 @@ export async function getInfo() {
 
 export async function hasEndpoint(name: string): Promise<boolean> {
   return await workspace.treeContainsDomainAndProperties('org.springframework.boot', { type: 'Endpoint', name: name })
+}
+
+export async function getLoggerConfiguration() {
+  const data = (await jolokiaService.execute('org.springframework.boot:type=Endpoint,name=Loggers', 'loggers')) as {
+    loggers: {
+      [key: string]: {
+        configuredLevel?: string
+        effectiveLevel: string
+      }
+    }
+    levels: string[]
+  }
+
+  const loggers: Logger[] = []
+
+  Object.entries(data.loggers).forEach(([loggerName, loggerInfo]) => {
+    const logger: Logger = {
+      name: loggerName,
+      configuredLevel: loggerInfo['configuredLevel'] == null ? loggerInfo.effectiveLevel : loggerInfo.configuredLevel,
+      effectiveLevel: loggerInfo.effectiveLevel,
+    }
+    loggers.push(logger)
+  })
+
+  const loggerConfiguration: LoggerConfiguration = {
+    levels: data.levels,
+    loggers: loggers,
+  }
+
+  return loggerConfiguration
+}
+
+export async function configureLogLevel(loggerName: string, loggerLevel: string) {
+  return await jolokiaService.execute('org.springframework.boot:type=Endpoint,name=Loggers', 'configureLogLevel', [
+    loggerName,
+    loggerLevel,
+  ])
 }
