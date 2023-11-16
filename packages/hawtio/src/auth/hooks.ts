@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { userService } from './user-service'
 
 /**
- * Custom React hook for using Hawtio plugins.
+ * Custom React hook for using Hawtio users.
  */
 export function useUser() {
   const [username, setUsername] = useState('')
