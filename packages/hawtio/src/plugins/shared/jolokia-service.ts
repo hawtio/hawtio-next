@@ -65,7 +65,7 @@ export enum JolokiaListMethod {
  */
 const OPTIMISED_JOLOKIA_LIST_MBEAN = 'hawtio:type=security,name=RBACRegistry'
 
-const OPTIMISED_JOLOKIA_LIST_MAX_DEPTH = 9
+const JOLOKIA_LIST_MAX_DEPTH = 9
 
 export type OptimisedListResponse = {
   cache: OptimisedMBeanInfoCache
@@ -461,6 +461,9 @@ class JolokiaService implements IJolokiaService {
         ajaxError?.(xhr, text, error)
         reject(error)
       }
+      // Overwrite max depth as listing MBeans requires some constant depth to work
+      // See: https://github.com/hawtio/hawtio-next/issues/670
+      options.maxDepth = JOLOKIA_LIST_MAX_DEPTH
       switch (method) {
         case JolokiaListMethod.OPTIMISED: {
           log.debug('Invoke Jolokia list MBean in optimised mode:', paths)
@@ -478,9 +481,6 @@ class JolokiaService implements IJolokiaService {
             },
             options as BaseRequestOptions,
           )
-          // Overwrite max depth as listing MBeans requires some constant depth to work
-          // TODO: Is this needed?
-          execOptions.maxDepth = OPTIMISED_JOLOKIA_LIST_MAX_DEPTH
           if (paths.length === 0) {
             jolokia.execute(mbean, 'list()', execOptions)
           } else if (paths.length === 1) {
