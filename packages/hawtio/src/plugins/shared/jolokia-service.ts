@@ -463,7 +463,10 @@ class JolokiaService implements IJolokiaService {
       }
       // Overwrite max depth as listing MBeans requires some constant depth to work
       // See: https://github.com/hawtio/hawtio-next/issues/670
-      options.maxDepth = JOLOKIA_LIST_MAX_DEPTH
+      const { maxDepth } = this.loadJolokiaStoredOptions()
+      if (maxDepth < JOLOKIA_LIST_MAX_DEPTH) {
+        options.maxDepth = JOLOKIA_LIST_MAX_DEPTH
+      }
       switch (method) {
         case JolokiaListMethod.OPTIMISED: {
           log.debug('Invoke Jolokia list MBean in optimised mode:', paths)
@@ -799,8 +802,8 @@ class JolokiaService implements IJolokiaService {
   loadJolokiaStoredOptions(): JolokiaStoredOptions {
     const item = localStorage.getItem(STORAGE_KEY_JOLOKIA_OPTIONS)
     const options: JolokiaStoredOptions = item ? JSON.parse(item) : {}
-    const maxDepth = options.maxDepth || DEFAULT_MAX_DEPTH
-    const maxCollectionSize = options.maxCollectionSize || DEFAULT_MAX_COLLECTION_SIZE
+    const maxDepth = options.maxDepth ?? DEFAULT_MAX_DEPTH
+    const maxCollectionSize = options.maxCollectionSize ?? DEFAULT_MAX_COLLECTION_SIZE
     return { maxDepth, maxCollectionSize }
   }
 
