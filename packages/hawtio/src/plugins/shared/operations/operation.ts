@@ -1,37 +1,50 @@
+import { eventService } from '@hawtiosrc/core'
 import { stringSorter, trimEnd } from '@hawtiosrc/util/strings'
+import { log } from '../globals'
 import { OptimisedMBeanOperation, OptimisedMBeanOperations } from '../tree'
 
 /**
  * Factory function for Operation objects.
  */
-export function createOperations(objectName: string, jmxOperations: OptimisedMBeanOperations): Operation[] {
+export function createOperations(jmxOperations: OptimisedMBeanOperations): Operation[] {
   const operations: Operation[] = []
-  const operationMap: Record<string, Operation> = {}
+  const errors: string[] = []
   Object.entries(jmxOperations).forEach(([name, op]) => {
     if (Array.isArray(op)) {
-      op.forEach(op => addOperation(operations, operationMap, name, op))
+      op.forEach(op => addOperation(operations, name, op, errors))
     } else {
-      addOperation(operations, operationMap, name, op)
+      addOperation(operations, name, op, errors)
     }
   })
+  if (errors.length > 0) {
+    eventService.notify({
+      type: 'danger',
+      message: `Please try increasing max depth for Jolokia in the Connect preferences. Failed to load operations: ${errors.join(
+        ', ',
+      )}.`,
+      duration: 30 * 1000, // 30 sec.
+    })
+  }
   return operations.sort((a, b) => stringSorter(a.readableName, b.readableName))
 }
 
-function addOperation(
-  operations: Operation[],
-  operationMap: Record<string, Operation>,
-  name: string,
-  op: OptimisedMBeanOperation,
-): void {
-  const operation = new Operation(
-    name,
-    op.args.map(arg => new OperationArgument(arg.name, arg.type, arg.desc)),
-    op.desc,
-    op.ret,
-    op.canInvoke,
-  )
-  operations.push(operation)
-  operationMap[operation.name] = operation
+function addOperation(operations: Operation[], name: string, op: OptimisedMBeanOperation, errors: string[]) {
+  try {
+    const operation = new Operation(
+      name,
+      op.args.map(arg => new OperationArgument(arg.name, arg.type, arg.desc)),
+      op.desc,
+      op.ret,
+      op.canInvoke,
+    )
+    operations.push(operation)
+  } catch (error) {
+    // Error can happen when max depth for Jolokia LIST is too small and part of
+    // the returned MBeans are compressed in a string form. In that case, the user
+    // needs to increase max depth for Jolokia requests in Connect preferences.
+    log.error('Operations - Error creating operation:', name, error)
+    errors.push(name)
+  }
 }
 
 export class Operation {

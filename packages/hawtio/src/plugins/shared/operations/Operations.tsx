@@ -10,17 +10,17 @@ import { createOperations } from './operation'
 export const Operations: React.FunctionComponent = () => {
   const { selectedNode } = useContext(PluginNodeSelectionContext)
 
-  if (!selectedNode || !selectedNode.objectName || !selectedNode.mbean) {
+  if (!selectedNode || !selectedNode.mbean) {
     return null
   }
 
-  const { objectName, mbean } = selectedNode
+  const { mbean } = selectedNode
 
   if (!mbean.op || isEmpty(mbean.op)) {
     return <HawtioEmptyCard message='This MBean has no JMX operations.' />
   }
 
-  const operations = createOperations(objectName, mbean.op)
+  const operations = createOperations(mbean.op)
 
   const OperationList = () => (
     <DataList id='jmx-operation-list' aria-label='operation list' isCompact>
