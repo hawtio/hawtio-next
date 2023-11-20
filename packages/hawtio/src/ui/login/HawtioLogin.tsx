@@ -2,7 +2,7 @@ import { useUser } from '@hawtiosrc/auth/hooks'
 import { DEFAULT_APP_NAME, DEFAULT_LOGIN_TITLE, useHawtconfig, usePlugins } from '@hawtiosrc/core'
 import { backgroundImages, hawtioLogo } from '@hawtiosrc/img'
 import { ListItem, ListVariant, LoginFooterItem, LoginPage } from '@patternfly/react-core'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { HawtioNotification } from '../notification'
 import { HawtioLoadingPage } from '../page/HawtioLoadingPage'
@@ -16,15 +16,13 @@ export const HawtioLogin: React.FunctionComponent = () => {
   const { hawtconfig, hawtconfigLoaded } = useHawtconfig()
   const { plugins, pluginsLoaded } = usePlugins()
 
-  useEffect(() => {
-    if (isLogin) {
-      navigate('/')
-    }
-  }, [isLogin, navigate])
-
   if (!userLoaded || !hawtconfigLoaded || !pluginsLoaded) {
     log.debug('Loading:', 'user =', userLoaded, ', hawtconfig =', hawtconfigLoaded, ', pluginsLoaded =', pluginsLoaded)
     return <HawtioLoadingPage />
+  }
+
+  if (isLogin) {
+    navigate('/')
   }
 
   let loginForm = <HawtioLoginForm />
