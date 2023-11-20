@@ -80,7 +80,7 @@
     "replace": "^1.2.2",
     "timezone-mock": "^1.3.6",
     "ts-jest": "^29.1.1",
-    "tsup": "^7.2.0"
+    "tsup": "^8.0.0"
   },
   "peerDependencies": {
     "@patternfly/react-core": "^4.278.0",
