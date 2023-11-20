@@ -2525,7 +2525,7 @@ __metadata:
     "@module-federation/utilities": "npm:^3.0.0"
     "@patternfly/react-charts": "npm:^7.1.1"
     "@patternfly/react-code-editor": "npm:^5.1.1"
-    "@patternfly/react-core": "npm:^4.278.0"
+    "@patternfly/react-core": "npm:^4.278.1"
     "@patternfly/react-table": "npm:^4.113.6"
     "@simbathesailor/use-what-changed": "npm:^2.0.0"
     "@testing-library/jest-dom": "npm:^6.1.4"
@@ -2567,7 +2567,7 @@ __metadata:
     typescript: "npm:^5.2.2"
     xml-formatter: "npm:^3.6.0"
   peerDependencies:
-    "@patternfly/react-core": ^4.278.0
+    "@patternfly/react-core": ^4.278.1
     keycloak-js: ^21
     react: ^16.8 || ^17 || ^18
     react-dom: ^16.8 || ^17 || ^18
@@ -3432,6 +3432,24 @@ __metadata:
     react: ^16.8 || ^17 || ^18
     react-dom: ^16.8 || ^17 || ^18
   checksum: d11cb3caf9a865192c38e2118782ff8955834c5ddcb63ccc0cf6e7a610f4508668b1e7d4602988dd40b5ca01bd8f4dfd2d071e9ca5404d8447fbdb6891675d83
+  languageName: node
+  linkType: hard
+
+"@patternfly/react-core@npm:^4.278.1":
+  version: 4.278.1
+  resolution: "@patternfly/react-core@npm:4.278.1"
+  dependencies:
+    "@patternfly/react-icons": "npm:^4.93.7"
+    "@patternfly/react-styles": "npm:^4.92.8"
+    "@patternfly/react-tokens": "npm:^4.94.7"
+    focus-trap: "npm:6.9.2"
+    react-dropzone: "npm:9.0.0"
+    tippy.js: "npm:5.1.2"
+    tslib: "npm:^2.0.0"
+  peerDependencies:
+    react: ^16.8 || ^17 || ^18
+    react-dom: ^16.8 || ^17 || ^18
+  checksum: 9b949d6644cc8d945bccc50faa9b0333e82887212c483b42deda78ca8965e3d366ef78c28510b76205dbb1040753fc57e9b53a857133f461d8ff5082b533ac38
   languageName: node
   linkType: hard
 
