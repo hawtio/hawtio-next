@@ -1,6 +1,10 @@
 import { jolokiaService, workspace } from '@hawtiosrc/plugins'
 import { HealthComponent, HealthData, JolokiaHealthData, Logger, LoggerConfiguration } from './types'
 
+export function isActive(): Promise<boolean> {
+  return workspace.treeContainsDomainAndProperties('org.springframework.boot')
+}
+
 export async function loadHealth(): Promise<HealthData> {
   const data = (await jolokiaService.execute(
     'org.springframework.boot:type=Endpoint,name=Health',
