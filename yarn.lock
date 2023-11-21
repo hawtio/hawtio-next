@@ -2526,7 +2526,7 @@ __metadata:
     "@patternfly/react-charts": "npm:^7.1.1"
     "@patternfly/react-code-editor": "npm:^5.1.1"
     "@patternfly/react-core": "npm:^4.278.1"
-    "@patternfly/react-table": "npm:^4.113.6"
+    "@patternfly/react-table": "npm:^4.113.7"
     "@simbathesailor/use-what-changed": "npm:^2.0.0"
     "@testing-library/jest-dom": "npm:^6.1.4"
     "@testing-library/react": "npm:^14.1.2"
@@ -3417,24 +3417,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-core@npm:^4.278.0":
-  version: 4.278.0
-  resolution: "@patternfly/react-core@npm:4.278.0"
-  dependencies:
-    "@patternfly/react-icons": "npm:^4.93.7"
-    "@patternfly/react-styles": "npm:^4.92.8"
-    "@patternfly/react-tokens": "npm:^4.94.7"
-    focus-trap: "npm:6.9.2"
-    react-dropzone: "npm:9.0.0"
-    tippy.js: "npm:5.1.2"
-    tslib: "npm:^2.0.0"
-  peerDependencies:
-    react: ^16.8 || ^17 || ^18
-    react-dom: ^16.8 || ^17 || ^18
-  checksum: d11cb3caf9a865192c38e2118782ff8955834c5ddcb63ccc0cf6e7a610f4508668b1e7d4602988dd40b5ca01bd8f4dfd2d071e9ca5404d8447fbdb6891675d83
-  languageName: node
-  linkType: hard
-
 "@patternfly/react-core@npm:^4.278.1":
   version: 4.278.1
   resolution: "@patternfly/react-core@npm:4.278.1"
@@ -3504,11 +3486,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-table@npm:^4.113.6":
-  version: 4.113.6
-  resolution: "@patternfly/react-table@npm:4.113.6"
+"@patternfly/react-table@npm:^4.113.7":
+  version: 4.113.7
+  resolution: "@patternfly/react-table@npm:4.113.7"
   dependencies:
-    "@patternfly/react-core": "npm:^4.278.0"
+    "@patternfly/react-core": "npm:^4.278.1"
     "@patternfly/react-icons": "npm:^4.93.7"
     "@patternfly/react-styles": "npm:^4.92.8"
     "@patternfly/react-tokens": "npm:^4.94.7"
@@ -3517,7 +3499,7 @@ __metadata:
   peerDependencies:
     react: ^16.8 || ^17 || ^18
     react-dom: ^16.8 || ^17 || ^18
-  checksum: e6cd081d4a1810a13aac5e4f45767787bd46a65a7ab985cba7b08d366feee2d83a0217c1f5d90ac5893c661571202800cc0a9b6d5cb902f16508d899421171bc
+  checksum: 9d8f421493d133a47ccf6d2142aa6fda722d3446170f3264d0480bd8546bfd70c765655d3209ae5021ee6a35f9d1da55c94d845f00731c65ab6d20e89c9018de
   languageName: node
   linkType: hard
 
