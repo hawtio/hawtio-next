@@ -1,9 +1,15 @@
 import { jolokiaService, workspace } from '@hawtiosrc/plugins'
-import { HealthComponent, HealthData, JolokiaHealthData, Logger, LoggerConfiguration } from './types'
+import { HealthComponent, HealthData, JmXTrace, JolokiaHealthData, Logger, LoggerConfiguration, Trace } from './types'
 
 class SpringbootService {
+  isSb3 = true
+
   isActive(): Promise<boolean> {
     return workspace.treeContainsDomainAndProperties('org.springframework.boot')
+  }
+
+  setisSb3(is: boolean) {
+    this.isSb3 = is
   }
 
   async loadHealth(): Promise<HealthData> {
@@ -40,21 +46,27 @@ class SpringbootService {
     return { status: data.status, components: healthComponents }
   }
 
-  //
-  // export async function getTraces:Promise<Trace[]> () {
-  //   const isSb4 = true
-  //   let data = {trace
-  //   if(isSb4) {
-  //
-  //   }
-  //   const data = await jolokiaService.execute('org.springframework.boot:type=Endpoint,name=Httpexchanges', 'httpExchanges')
-  // }
   async getInfo() {
+    const properties: { key: string; value: string }[] = []
     const res = await jolokiaService.execute('org.springframework.boot:type=Endpoint,name=Info', 'info')
-    const properties: { key: string; value: string }[] = Object.entries(res as object).map(([key, value]) => ({
-      key,
-      value,
-    }))
+    Object.entries(res as object).forEach(([key, value]) => {
+      const v =
+        typeof value === 'string'
+          ? value
+          : JSON.stringify(value)
+              .replaceAll('"', '')
+              .replaceAll(':', '=')
+              .replaceAll('={', ': [')
+
+              .replaceAll(',', '; ')
+              .replaceAll('}', ']')
+              .slice(1, -1)
+      properties.push({
+        key,
+        value: v,
+      })
+    })
+
     return properties
   }
 
@@ -98,5 +110,37 @@ class SpringbootService {
       loggerLevel,
     ])
   }
+
+  async loadTraces() {
+    const traces: Trace[] = []
+    let mbeanName = 'Httpexchanges'
+    let mbeanOperation = 'httpExchanges'
+    let jmxTraces: JmXTrace[] = []
+    if (!this.isSb3) {
+      mbeanName = 'Httptrace'
+      mbeanOperation = 'traces'
+    }
+    const data = await jolokiaService.execute(
+      `org.springframework.boot:type=Endpoint,name=${mbeanName}`,
+      mbeanOperation,
+    )
+    if (this.isSb3) {
+      jmxTraces = (data as { exchanges: JmXTrace[] }).exchanges
+    } else {
+      jmxTraces = (data as { traces: JmXTrace[] }).traces
+    }
+
+    jmxTraces
+      .filter(trace => {
+        const path = trace.info ? trace.info.path : trace.request?.uri ?? ''
+        // Avoid including our own jolokia requests in the results
+        return /.*?\/jolokia\/?(?:\/.*(?=$))?$/.test(path) === false
+      })
+      .forEach(jmxTrace => {
+        traces.push(new Trace(jmxTrace))
+      })
+    return traces
+  }
 }
+
 export const springbootService = new SpringbootService()

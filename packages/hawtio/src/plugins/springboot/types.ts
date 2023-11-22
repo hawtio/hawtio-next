@@ -37,3 +37,65 @@ export type Logger = {
   configuredLevel: string
   effectiveLevel: string
 }
+
+export class Trace {
+  timestamp: string
+  method: string = ''
+  path: string = ''
+  httpStatusCode: number = -1
+  timeTaken: string = '-1'
+  info: string = ''
+
+  constructor(traceData: unknown) {
+    const trace = traceData as JmXTrace
+    this.timestamp = trace.timestamp
+
+    if (trace.info) {
+      this.method = trace.info.method
+      this.path = trace.info.path
+      this.info = JSON.stringify(trace.info, null, 2)
+
+      if (trace.info.timeTaken) {
+        this.timeTaken = trace.info.timeTaken
+      }
+
+      if (trace.info.headers?.response) {
+        this.httpStatusCode = parseInt(trace.info.headers.response.status)
+      }
+    } else if (trace.request) {
+      this.method = trace.request.method
+      this.path = new URL(trace.request.uri).pathname
+      this.info = JSON.stringify(trace, null, 2)
+
+      if (trace.timeTaken) {
+        this.timeTaken = trace.timeTaken
+      }
+
+      if (trace.response && trace.response.status) {
+        this.httpStatusCode = parseInt(trace.response.status)
+      }
+    }
+  }
+}
+
+export type JmXTrace = {
+  timestamp: string
+  info?: {
+    method: string
+    path: string
+    timeTaken?: string
+    headers?: {
+      response?: {
+        status: string
+      }
+    }
+  }
+  request?: {
+    method: string
+    uri: string
+  }
+  timeTaken?: string
+  response?: {
+    status?: string
+  }
+}
