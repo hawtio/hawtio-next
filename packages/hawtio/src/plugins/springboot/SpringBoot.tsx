@@ -32,10 +32,13 @@ export const SpringBoot: React.FunctionComponent = () => {
         nav.push({ id: 'loggers', title: 'Loggers', component: <Loggers /> })
       }
 
-      if (
-        (await springbootService.hasEndpoint('Httptrace')) ||
-        (await springbootService.hasEndpoint('Httpexchanges'))
-      ) {
+      if (await springbootService.hasEndpoint('Httptrace')) {
+        springbootService.setisSb3(false)
+        nav.push({ id: 'trace', title: 'Trace', component: <TraceView /> })
+      }
+
+      if (await springbootService.hasEndpoint('Httpexchanges')) {
+        springbootService.setisSb3(true)
         nav.push({ id: 'trace', title: 'Trace', component: <TraceView /> })
       }
 
