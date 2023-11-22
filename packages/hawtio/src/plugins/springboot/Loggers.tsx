@@ -19,7 +19,7 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core'
-import { configureLogLevel, getLoggerConfiguration } from '@hawtiosrc/plugins/springboot/springboot-service'
+import { springbootService } from '@hawtiosrc/plugins/springboot/springboot-service'
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import { SearchIcon } from '@patternfly/react-icons'
 import { Logger } from '@hawtiosrc/plugins/springboot/types'
@@ -36,7 +36,7 @@ const SetLogDropdown: React.FunctionComponent<{
     <DropdownItem
       key={loggerName + '' + level}
       onClick={() => {
-        configureLogLevel(loggerName, level)
+        springbootService.configureLogLevel(loggerName, level)
         reloadLoggers()
       }}
     >
@@ -93,7 +93,7 @@ export const Loggers: React.FunctionComponent = () => {
   const [reloadLoggers, setReloadLoggers] = useState(false)
 
   useEffect(() => {
-    getLoggerConfiguration().then(logConf => {
+    springbootService.getLoggerConfiguration().then(logConf => {
       const sorted = logConf.loggers.sort((logger1, logger2) => {
         if (logger1.name === 'ROOT') return -1
         else if (logger2.name === 'ROOT') return 1

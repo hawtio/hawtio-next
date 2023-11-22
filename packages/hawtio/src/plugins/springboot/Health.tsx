@@ -11,7 +11,7 @@ import {
   PageSection,
   Title,
 } from '@patternfly/react-core'
-import { loadHealth } from '@hawtiosrc/plugins/springboot/springboot-service'
+import { springbootService } from '@hawtiosrc/plugins/springboot/springboot-service'
 import { HealthComponentDetail, HealthData } from '@hawtiosrc/plugins/springboot/types'
 import { TableComposable, Tbody, Td, Tr } from '@patternfly/react-table'
 import { humanizeLabels } from '@hawtiosrc/util/strings'
@@ -97,7 +97,7 @@ export const Health: React.FunctionComponent = () => {
   const [healthData, setHealthData] = useState<HealthData>()
 
   useEffect(() => {
-    loadHealth().then(healthData => {
+    springbootService.loadHealth().then(healthData => {
       setHealthData(healthData)
     })
   }, [])
@@ -124,7 +124,7 @@ export const Health: React.FunctionComponent = () => {
               key={component.name}
               mdRowSpan={componentSpanRecord[component.name]![1] as gridSpans}
             >
-              <Card>
+              <Card isFullHeight>
                 <CardHeader>
                   <Title headingLevel='h3'>{humanizeLabels(component.name!)}</Title>
                 </CardHeader>

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { FormGroup, PageSection } from '@patternfly/react-core'
-import { getInfo } from '@hawtiosrc/plugins/springboot/springboot-service'
+import { springbootService } from '@hawtiosrc/plugins/springboot/springboot-service'
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 
 export const Info: React.FunctionComponent = () => {
   const [systemProperties, setSystemProperties] = useState<{ key: string; value: string }[]>([])
 
   useEffect(() => {
-    getInfo().then(res => {
+    springbootService.getInfo().then(res => {
       setSystemProperties(res)
     })
   }, [])

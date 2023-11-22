@@ -5,8 +5,8 @@ import { Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import { Health } from '@hawtiosrc/plugins/springboot/Health'
 import { Info } from '@hawtiosrc/plugins/springboot/Info'
 import { Loggers } from '@hawtiosrc/plugins/springboot/Loggers'
-import { Trace } from '@hawtiosrc/plugins/springboot/Trace'
-import { hasEndpoint } from '@hawtiosrc/plugins/springboot/springboot-service'
+import { TraceView } from '@hawtiosrc/plugins/springboot/TraceView'
+import { springbootService } from '@hawtiosrc/plugins/springboot/springboot-service'
 
 type NavItem = {
   id: string
@@ -20,20 +20,23 @@ export const SpringBoot: React.FunctionComponent = () => {
   useEffect(() => {
     const initNavItems = async () => {
       const nav: NavItem[] = []
-      if (await hasEndpoint('Health')) {
+      if (await springbootService.hasEndpoint('Health')) {
         nav.push({ id: 'health', title: 'Health', component: <Health /> })
       }
 
-      if (await hasEndpoint('Info')) {
+      if (await springbootService.hasEndpoint('Info')) {
         nav.push({ id: 'info', title: 'Info', component: <Info /> })
       }
 
-      if (await hasEndpoint('Loggers')) {
+      if (await springbootService.hasEndpoint('Loggers')) {
         nav.push({ id: 'loggers', title: 'Loggers', component: <Loggers /> })
       }
 
-      if (await hasEndpoint('Trace')) {
-        nav.push({ id: 'trace', title: 'Trace', component: <Trace /> })
+      if (
+        (await springbootService.hasEndpoint('Httptrace')) ||
+        (await springbootService.hasEndpoint('Httpexchanges'))
+      ) {
+        nav.push({ id: 'trace', title: 'Trace', component: <TraceView /> })
       }
 
       setNavItems([...nav])
