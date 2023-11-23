@@ -1,15 +1,15 @@
 import { jolokiaService, workspace } from '@hawtiosrc/plugins'
-import { HealthComponent, HealthData, JmXTrace, JolokiaHealthData, Logger, LoggerConfiguration, Trace } from './types'
+import { HealthComponent, HealthData, JmxTrace, JolokiaHealthData, Logger, LoggerConfiguration, Trace } from './types'
 
-class SpringbootService {
-  isSb3 = true
+class SpringBootService {
+  isSpringBoot3 = true
 
   isActive(): Promise<boolean> {
     return workspace.treeContainsDomainAndProperties('org.springframework.boot')
   }
 
-  setisSb3(is: boolean) {
-    this.isSb3 = is
+  setIsSpringBoot3(is: boolean) {
+    this.isSpringBoot3 = is
   }
 
   async loadHealth(): Promise<HealthData> {
@@ -115,8 +115,8 @@ class SpringbootService {
     const traces: Trace[] = []
     let mbeanName = 'Httpexchanges'
     let mbeanOperation = 'httpExchanges'
-    let jmxTraces: JmXTrace[] = []
-    if (!this.isSb3) {
+    let jmxTraces: JmxTrace[] = []
+    if (!this.isSpringBoot3) {
       mbeanName = 'Httptrace'
       mbeanOperation = 'traces'
     }
@@ -124,10 +124,10 @@ class SpringbootService {
       `org.springframework.boot:type=Endpoint,name=${mbeanName}`,
       mbeanOperation,
     )
-    if (this.isSb3) {
-      jmxTraces = (data as { exchanges: JmXTrace[] }).exchanges
+    if (this.isSpringBoot3) {
+      jmxTraces = (data as { exchanges: JmxTrace[] }).exchanges
     } else {
-      jmxTraces = (data as { traces: JmXTrace[] }).traces
+      jmxTraces = (data as { traces: JmxTrace[] }).traces
     }
 
     jmxTraces
@@ -143,4 +143,4 @@ class SpringbootService {
   }
 }
 
-export const springbootService = new SpringbootService()
+export const springbootService = new SpringBootService()

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { FormGroup, PageSection } from '@patternfly/react-core'
-import { springbootService } from '@hawtiosrc/plugins/springboot/springboot-service'
+import { springbootService } from './springboot-service'
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 
 export const Info: React.FunctionComponent = () => {

@@ -11,8 +11,8 @@ import {
   PageSection,
   Title,
 } from '@patternfly/react-core'
-import { springbootService } from '@hawtiosrc/plugins/springboot/springboot-service'
-import { HealthComponentDetail, HealthData } from '@hawtiosrc/plugins/springboot/types'
+import { springbootService } from './springboot-service'
+import { HealthComponentDetail, HealthData } from './types'
 import { TableComposable, Tbody, Td, Tr } from '@patternfly/react-table'
 import { humanizeLabels } from '@hawtiosrc/util/strings'
 import { ChartDonutUtilization } from '@patternfly/react-charts'
