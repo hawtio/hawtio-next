@@ -1,4 +1,4 @@
-import { humanizeLabels, matchWithWildcard, parseBoolean, toString, trimQuotes } from './strings'
+import { humanizeLabels, matchWithWildcard, parseBoolean, stringSorter, toString, trimQuotes } from './strings'
 
 describe('strings', () => {
   test('toString', () => {
@@ -58,5 +58,23 @@ describe('strings', () => {
     expect(matchWithWildcard(value, '*apache.camel')).toBe(true)
     expect(matchWithWildcard(value, '*apache.c*')).toBe(true)
     expect(matchWithWildcard(value, '*ap*e.c*')).toBe(true)
+  })
+
+  describe('stringSorter', () => {
+    expect(stringSorter('a-string', 'b-string')).toBe(-1)
+    expect(stringSorter('a-string', 'B-string')).toBe(-1)
+    expect(stringSorter('A-string', 'B-string')).toBe(-1)
+    expect(stringSorter('A-string', 'b-string')).toBe(-1)
+
+    expect(stringSorter('a-string', 'b-string', true)).toBe(1)
+    expect(stringSorter('a-string', 'B-string', true)).toBe(1)
+    expect(stringSorter('A-string', 'B-string', true)).toBe(1)
+    expect(stringSorter('A-string', 'b-string', true)).toBe(1)
+
+    expect(stringSorter('string', 'String')).toBe(-1)
+    expect(stringSorter('string', 'string')).toBe(0)
+
+    expect(stringSorter('string-7', 'string-8')).toBe(-1)
+    expect(stringSorter('string-7', 'string-8', true)).toBe(1)
   })
 })

@@ -78,13 +78,7 @@ export function trimQuotes(text: string): string {
 }
 
 export function stringSorter(a: string, b: string, sortDesc?: boolean): number {
-  let res = 0
-  if (a < b) {
-    res = -1
-  }
-  if (a > b) {
-    res = 1
-  }
+  let res = a.localeCompare(b)
   if (sortDesc) {
     res *= -1
   }
