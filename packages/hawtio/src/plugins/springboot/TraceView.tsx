@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Bullseye,
   Button,
@@ -29,8 +29,8 @@ import { Trace } from './types'
 import { springbootService } from './springboot-service'
 
 const HttpStatusIcon: React.FunctionComponent<{ code: number }> = ({ code }) => {
-  if (code < 400) return <CheckCircleIcon color={'#3E8635'} />
-  else return <ExclamationCircleIcon color={'#C9190B'} />
+  if (code < 400) return <CheckCircleIcon color='#3E8635' />
+  else return <ExclamationCircleIcon color='#C9190B' />
 }
 
 const HttpMethodLabel: React.FunctionComponent<{ method: string }> = ({ method }) => {
@@ -85,42 +85,6 @@ export const TraceView: React.FunctionComponent = () => {
   const [isTraceDetailsOpen, setIsTraceDetailsOpen] = useState(false)
   const [traceDetails, setTraceDetails] = useState<string>('')
 
-  const handleSearch = useCallback(
-    (filters: string[], searchTerm: string, httpMethod: string, currentFilter: string) => {
-      let filtered: Trace[] = []
-
-      if (httpMethod === 'ALL') {
-        filtered = [...traces]
-      } else {
-        filtered = traces.filter(trace => {
-          return trace.method.toLowerCase().includes(httpMethod.toLowerCase())
-        })
-      }
-
-      //filter with the rest of the filters
-      ;[...filters, `${currentFilter}: ${searchTerm}`].forEach(value => {
-        const attr = value.split(': ')[0] ?? ''
-        const searchTerm = value.split(': ')[1] ?? ''
-        switch (attr) {
-          case 'Timestamp':
-            filtered = filtered.filter(trace => trace.timestamp.includes(searchTerm))
-            break
-          case 'HTTP Status':
-            filtered = filtered.filter(trace => trace.httpStatusCode.toString().includes(searchTerm))
-            break
-          case 'Path':
-            filtered = filtered.filter(trace => trace.path.includes(searchTerm))
-            break
-          case 'Time Taken':
-            filtered = filtered.filter(trace => trace.timeTaken.includes(searchTerm))
-            break
-        }
-      })
-      setFilteredTraces([...filtered])
-    },
-    [traces],
-  )
-
   useEffect(() => {
     springbootService.loadTraces().then(traces => {
       setTraces(traces)
@@ -129,8 +93,32 @@ export const TraceView: React.FunctionComponent = () => {
   }, [])
 
   useEffect(() => {
-    handleSearch(filters, searchTerm, httpMethodFilter, currentTraceFilter)
-  }, [currentTraceFilter, filters, handleSearch, httpMethodFilter, searchTerm])
+    let filtered: Trace[] = traces.filter(
+      trace => httpMethodFilter === 'ALL' || trace.method.toLowerCase().includes(httpMethodFilter.toLowerCase()),
+    )
+
+    //filter with the rest of the filters
+    ;[...filters, `${currentTraceFilter}: ${searchTerm}`].forEach(value => {
+      const attr = value.split(': ')[0] ?? ''
+      const searchTerm = value.split(': ')[1] ?? ''
+      switch (attr) {
+        case 'Timestamp':
+          filtered = filtered.filter(trace => trace.timestamp.includes(searchTerm))
+          break
+        case 'HTTP Status':
+          filtered = filtered.filter(trace => trace.httpStatusCode.toString().includes(searchTerm))
+          break
+        case 'Time Taken':
+          filtered = filtered.filter(trace => trace.timeTaken.includes(searchTerm))
+          break
+        case 'Path':
+        default:
+          filtered = filtered.filter(trace => trace.path.includes(searchTerm))
+          break
+      }
+    })
+    setFilteredTraces(filtered)
+  }, [traces, currentTraceFilter, filters, httpMethodFilter, searchTerm])
 
   const onDeleteFilter = (filter: string) => {
     const newFilters = filters.filter(f => f !== filter)

@@ -2,11 +2,11 @@ import { Nav, NavItem, NavList, PageGroup, PageNavigation, PageSection, Title } 
 import React, { useEffect, useState } from 'react'
 
 import { Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom'
-import { Health } from '@hawtiosrc/plugins/springboot/Health'
-import { Info } from '@hawtiosrc/plugins/springboot/Info'
-import { Loggers } from '@hawtiosrc/plugins/springboot/Loggers'
-import { TraceView } from '@hawtiosrc/plugins/springboot/TraceView'
-import { springbootService } from '@hawtiosrc/plugins/springboot/springboot-service'
+import { Health } from './Health'
+import { Info } from './Info'
+import { Loggers } from './Loggers'
+import { TraceView } from './TraceView'
+import { springbootService } from './springboot-service'
 
 type NavItem = {
   id: string
@@ -33,12 +33,12 @@ export const SpringBoot: React.FunctionComponent = () => {
       }
 
       if (await springbootService.hasEndpoint('Httptrace')) {
-        springbootService.setisSb3(false)
+        springbootService.setIsSpringBoot3(false)
         nav.push({ id: 'trace', title: 'Trace', component: <TraceView /> })
       }
 
       if (await springbootService.hasEndpoint('Httpexchanges')) {
-        springbootService.setisSb3(true)
+        springbootService.setIsSpringBoot3(true)
         nav.push({ id: 'trace', title: 'Trace', component: <TraceView /> })
       }
 

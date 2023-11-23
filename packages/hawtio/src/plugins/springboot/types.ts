@@ -46,8 +46,7 @@ export class Trace {
   timeTaken: string = '-1'
   info: string = ''
 
-  constructor(traceData: unknown) {
-    const trace = traceData as JmXTrace
+  constructor(trace: JmxTrace) {
     this.timestamp = trace.timestamp
 
     if (trace.info) {
@@ -78,7 +77,7 @@ export class Trace {
   }
 }
 
-export type JmXTrace = {
+export type JmxTrace = {
   timestamp: string
   info?: {
     method: string

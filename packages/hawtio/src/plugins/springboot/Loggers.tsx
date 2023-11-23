@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Bullseye,
   Button,
@@ -19,10 +19,10 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core'
-import { springbootService } from '@hawtiosrc/plugins/springboot/springboot-service'
+import { springbootService } from './springboot-service'
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import { SearchIcon } from '@patternfly/react-icons'
-import { Logger } from '@hawtiosrc/plugins/springboot/types'
+import { Logger } from './types'
 
 const SetLogDropdown: React.FunctionComponent<{
   currentLevel: string
@@ -105,33 +105,16 @@ export const Loggers: React.FunctionComponent = () => {
     })
   }, [reloadLoggers])
 
-  const handleSearch = useCallback(
-    (value: string, logLevel: string, filters: string[]) => {
-      let filtered: Logger[] =
-        loggers.filter(logger => {
-          if (logLevel === 'ALL') {
-            if (value === '') {
-              return true
-            } else {
-              return logger.name.toLowerCase().includes(value.toLowerCase())
-            }
-          }
-          return logger.configuredLevel === logLevel && logger.name.toLowerCase().includes(value.toLowerCase())
-        }) ?? []
-
-      //filter with the rest of the filters
-      filters.forEach(value => {
-        filtered = filtered.filter(prop => prop.name.toLowerCase().includes(value.toLowerCase()))
-      })
-      setFilteredLoggers([...filtered])
-    },
-    [loggers],
-  )
-
   useEffect(() => {
-    handleSearch(searchTerm, logLevel, filters)
+    let filtered: Logger[] = loggers.filter(logger => logLevel === 'ALL' || logger.configuredLevel === logLevel)
+
+    //filter with the rest of the filters
+    ;[...filters, searchTerm].forEach(value => {
+      filtered = filtered.filter(prop => prop.name.toLowerCase().includes(value.toLowerCase()))
+    })
+    setFilteredLoggers([...filtered])
     setPage(1)
-  }, [filters, searchTerm, logLevel, loggers, handleSearch])
+  }, [filters, searchTerm, logLevel, loggers])
 
   const onDeleteFilter = (filter: string) => {
     const newFilters = filters.filter(f => f !== filter)
