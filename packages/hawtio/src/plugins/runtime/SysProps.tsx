@@ -43,10 +43,26 @@ export const SysProps: React.FunctionComponent = () => {
     })
   }, [])
 
+  useEffect(() => {
+    //filter with findTerm
+    let filtered: SystemProperty[] = [...properties]
+
+    //add current search word to filters and filter
+    ;[...filters, `${attributeMenuItem}:${searchTerm}`].forEach(value => {
+      const attr = value.split(':')[0] ?? ''
+      const searchTerm = value.split(':')[1] ?? ''
+      filtered = filtered.filter(prop =>
+        (attr === 'name' ? prop.key : prop.value).toLowerCase().includes(searchTerm.toLowerCase()),
+      )
+    })
+
+    setPage(1)
+    setFilteredProperties([...filtered])
+  }, [searchTerm, properties, filters, attributeMenuItem])
+
   const onDeleteFilter = (filter: string) => {
     const newFilters = filters.filter(f => f !== filter)
     setFilters(newFilters)
-    handleSearch(searchTerm, attributeMenuItem, newFilters)
   }
 
   const addToFilters = () => {
@@ -56,7 +72,6 @@ export const SysProps: React.FunctionComponent = () => {
   const clearFilters = () => {
     setFilters([])
     setSearchTerm('')
-    handleSearch('', attributeMenuItem, [])
   }
 
   const PropsPagination = () => {
@@ -80,32 +95,6 @@ export const SysProps: React.FunctionComponent = () => {
     const end = start + perPage
     return filteredProperties.slice(start, end)
   }
-  const handleSearch = (value: string, attribute: string, filters: string[]) => {
-    setSearchTerm(value)
-    //filter with findTerm
-    let filtered: SystemProperty[] = []
-
-    if (value === '') {
-      filtered = [...properties]
-    } else {
-      filtered = properties.filter(prop => {
-        return (attribute === 'name' ? prop.key : prop.value).toLowerCase().includes(value.toLowerCase())
-      })
-    }
-
-    //filter with the rest of the filters
-    filters.forEach(value => {
-      const attr = value.split(':')[0] ?? ''
-      const searchTerm = value.split(':')[1] ?? ''
-      filtered = filtered.filter(prop =>
-        (attr === 'name' ? prop.key : prop.value).toLowerCase().includes(searchTerm.toLowerCase()),
-      )
-    })
-
-    setSearchTerm(value)
-    setPage(1)
-    setFilteredProperties([...filtered])
-  }
 
   const attributes = [
     { key: 'name', value: 'Name' },
@@ -116,7 +105,6 @@ export const SysProps: React.FunctionComponent = () => {
     <DropdownItem
       onClick={() => {
         setAttributeMenuItem(a.key)
-        handleSearch(searchTerm, a.key, filters)
       }}
       key={a.key}
     >
@@ -178,7 +166,7 @@ export const SysProps: React.FunctionComponent = () => {
               id='search-input'
               placeholder='Search...'
               value={searchTerm}
-              onChange={(_event, value) => handleSearch(value, attributeMenuItem, filters)}
+              onChange={(_event, value) => setSearchTerm(value)}
               aria-label='Search input'
             />
           </ToolbarFilter>
