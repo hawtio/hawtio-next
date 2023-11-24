@@ -93,10 +93,27 @@ export const Threads: React.FunctionComponent = () => {
     return () => runtimeService.unregisterAll()
   }, [])
 
+  useEffect(() => {
+    let filtered: Thread[] = [...threads]
+
+    //add current searchTerm and filter
+    ;[...filters, `${attributeMenuItem}:${searchTerm}`].forEach(value => {
+      const attr = value.split(':')[0] ?? ''
+      const searchTerm = value.split(':')[1] ?? ''
+      filtered = filtered.filter(thread =>
+        (attr === 'Name' ? thread.threadName : String(thread.threadState))
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()),
+      )
+    })
+
+    setPage(1)
+    setFilteredThreads([...filtered])
+  }, [threads, searchTerm, attributeMenuItem, filters])
+
   const onDeleteFilter = (filter: string) => {
     const newFilters = filters.filter(f => f !== filter)
     setFilters(newFilters)
-    handleSearch(searchTerm, attributeMenuItem, newFilters)
   }
 
   const addToFilters = () => {
@@ -107,7 +124,6 @@ export const Threads: React.FunctionComponent = () => {
   const clearFilters = () => {
     setFilters([])
     setSearchTerm('')
-    handleSearch('', attributeMenuItem, [])
   }
 
   const PropsPagination = () => {
@@ -132,37 +148,6 @@ export const Threads: React.FunctionComponent = () => {
     return filteredThreads.slice(start, end)
   }
 
-  const handleSearch = (value: string, key: string, filters: string[]) => {
-    setSearchTerm(value)
-    //filter with findTerm
-    let filtered: Thread[] = []
-
-    if (value === '') {
-      filtered = [...threads]
-    } else {
-      filtered = threads.filter(thread => {
-        return (key === 'Name' ? thread.threadName : String(thread.threadState))
-          .toLowerCase()
-          .includes(value.toLowerCase())
-      })
-    }
-
-    //filter with the rest of the filters
-    filters.forEach(value => {
-      const attr = value.split(':')[0] ?? ''
-      const searchTerm = value.split(':')[1] ?? ''
-      filtered = filtered.filter(thread =>
-        (attr === 'Name' ? thread.threadName : String(thread.threadState))
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()),
-      )
-    })
-
-    setSearchTerm(value)
-    setPage(1)
-    setFilteredThreads([...filtered])
-  }
-
   const tableColumns = [
     { key: 'threadId', value: 'ID' },
     { key: 'threadState', value: 'State' },
@@ -177,7 +162,6 @@ export const Threads: React.FunctionComponent = () => {
     <DropdownItem
       onClick={() => {
         setAttributeMenuItem('Name')
-        handleSearch(searchTerm, 'Name', filters)
       }}
       key={'name-key'}
     >
@@ -186,7 +170,6 @@ export const Threads: React.FunctionComponent = () => {
     <DropdownItem
       onClick={() => {
         setAttributeMenuItem('State')
-        handleSearch(searchTerm, 'State', filters)
       }}
       key={'state'}
     >
@@ -261,7 +244,7 @@ export const Threads: React.FunctionComponent = () => {
               id='search-input'
               placeholder='Search...'
               value={searchTerm}
-              onChange={(_event, value) => handleSearch(value, attributeMenuItem, filters)}
+              onChange={(_event, value) => setSearchTerm(value)}
               aria-label='Search input'
             />
           </ToolbarFilter>
