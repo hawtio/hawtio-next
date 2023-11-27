@@ -2534,7 +2534,7 @@ __metadata:
     "@types/dagre": "npm:^0.7.52"
     "@types/dagre-layout": "npm:^0.8.5"
     "@types/jest": "npm:^29.5.8"
-    "@types/jquery": "npm:^3.5.27"
+    "@types/jquery": "npm:^3.5.29"
     "@types/node": "npm:^18.18.6"
     "@types/react": "npm:^18.2.23"
     "@types/react-dom": "npm:^18.2.17"
@@ -4683,12 +4683,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jquery@npm:^3.5.27":
-  version: 3.5.27
-  resolution: "@types/jquery@npm:3.5.27"
+"@types/jquery@npm:^3.5.29":
+  version: 3.5.29
+  resolution: "@types/jquery@npm:3.5.29"
   dependencies:
     "@types/sizzle": "npm:*"
-  checksum: 7511b60b5c1c3b8e1b51a085d15dffe461216f57ea16a82e366dca829dfcfe138c4f1b607c5623f9b2bebd0065a0d29807f58365510cb0f03eae9f5f1b1f94d1
+  checksum: 364facf2cb0bc935cb4b7f4af0b12c8e901b02b08a85af213172485166123b10aad8563f8e51e363f65a778c4105a59a64dedd0b0fd73f96557219d46477af56
   languageName: node
   linkType: hard
 
