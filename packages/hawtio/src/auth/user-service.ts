@@ -65,8 +65,10 @@ class UserService implements IUserService {
       if (!res.ok) {
         log.error('Failed to fetch user:', res.status, res.statusText)
         if (retry && res.status === 403) {
-          // Wait for 1000ms in case login session is not ready at server side
-          // This retry is mainly needed for Spring Security support
+          // Wait for 1000ms in case login session is not ready at server side.
+          // This retry was originally introduced for Spring Security support,
+          // but it no longer relies on the retry. Now it is kept mainly for
+          // additional resilience at authentication.
           await new Promise(resolve => setTimeout(resolve, 1000))
           return this.fetchUser(false)
         }
