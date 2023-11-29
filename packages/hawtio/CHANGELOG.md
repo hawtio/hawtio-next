@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.0.0-rc.0](https://github.com/hawtio/hawtio-next/compare/v0.9.2...v1.0.0-rc.0) (2023-11-29)
+
+
+### Features
+
+* **springboot-plugin:** Add Loggers tab with posibility to see,filter and customize loggers ([b8ba2cd](https://github.com/hawtio/hawtio-next/commit/b8ba2cd3b7a8829884e0406e3f3e2e4dcf9e2ea5))
+* **springboot-plugin:** Add Trace view ([e1cf816](https://github.com/hawtio/hawtio-next/commit/e1cf816d125aab528f23291a42af88bb7187d7dd))
+* **springboot-plugin:** Create empty plugin with Health,Loggers,Info,Trace pages ([37675ea](https://github.com/hawtio/hawtio-next/commit/37675ea7024c481671982f1dfcf75f04a75cec51))
+
+
+### Bug Fixes
+
+* **jmx,camel:** make Operations more robust on potential Jolokia max depth shortage error ([3ff43cc](https://github.com/hawtio/hawtio-next/commit/3ff43cc5299b3a2e8b3a11260f00e458168dd9f6))
+* Moves code in useEffect into main body of component [#673](https://github.com/hawtio/hawtio-next/issues/673) ([1f54014](https://github.com/hawtio/hawtio-next/commit/1f5401472e838b1c38d97191303992cc0c5aa8e4))
+* **stringSorter:** Use localeCompare in the stringSorter to prevent incorrect sorting when mixed case ([3bce079](https://github.com/hawtio/hawtio-next/commit/3bce07959c06f08f2883bc091cd803ee2f5d60ea))
+* **ui:** sidebar plugin navitem doesn't get active when selected ([1c7608e](https://github.com/hawtio/hawtio-next/commit/1c7608eb0dffefb15b993d0afc58e7974fc1f42c))
+
 ## [0.9.2](https://github.com/hawtio/hawtio-next/compare/v0.9.1...v0.9.2) (2023-11-16)
 
 
