@@ -58,6 +58,24 @@ export function useCamelTree() {
         path.push(...contextsNode.path())
       }
 
+      const parentContext = rootNode.children[0]?.children
+
+      if(parentContext && parentContext[0]) {
+        // expand the context tree
+        parentContext[0].defaultExpanded = true
+
+        // check whether to expand its children
+        parentContext[0].children?.forEach(childChild => {
+          switch (childChild.name) {
+            case 'routes':
+            case 'endpoints':
+            case 'components':
+              childChild.defaultExpanded = true
+              break
+          }
+        })
+      }
+
       // Expand the nodes to redisplay the path
       rootNode.forEach(path, (node: MBeanNode) => {
         const tvd = node as TreeViewDataItem
