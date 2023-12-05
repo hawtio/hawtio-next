@@ -97,7 +97,7 @@ jobs:
           path: hawtio
       - name: Set up Java
         if: ${{ steps.get-images.outputs.repo != ''}}
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: 11
