@@ -243,9 +243,32 @@ class ConnectService implements IConnectService {
    */
   redirect() {
     const url = new URL(window.location.href)
-    const redirect = url.searchParams.get(PARAM_KEY_REDIRECT) ?? hawtio.getBasePath() ?? '/'
+    let redirect = url.searchParams.get(PARAM_KEY_REDIRECT) ?? '/'
+    let safeRedirect: boolean = false
+
+    try {
+      const { hostname, port, protocol, searchParams } = new URL(redirect)
+      const connectionKey = searchParams.get(PARAM_KEY_CONNECTION) ?? ''
+      safeRedirect =
+        hostname === url.hostname &&
+        port === url.port &&
+        ['http:', 'https:'].includes(protocol) &&
+        connectionKey !== '' &&
+        connectionKey === this.currentConnection
+    } catch (_e) {
+      log.error('Invalid URL')
+      eventService.notify({
+        type: 'danger',
+        message: 'Redirect parameter was modified',
+      })
+    }
+
+    if (!safeRedirect) {
+      redirect = hawtio.getBasePath() ?? '/'
+    }
+
     log.debug('Redirect to:', redirect)
-    window.location.href = redirect
+    window.location.href = encodeURI(redirect)
   }
 
   /**
