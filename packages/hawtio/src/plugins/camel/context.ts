@@ -60,7 +60,7 @@ export function useCamelTree() {
 
       const parentContext = rootNode.children[0]?.children
 
-      if(parentContext && parentContext[0]) {
+      if (parentContext && parentContext[0]) {
         // expand the context tree
         parentContext[0].defaultExpanded = true
 
