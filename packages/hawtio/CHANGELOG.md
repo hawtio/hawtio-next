@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.0.1](https://github.com/hawtio/hawtio-next/compare/v1.0.0...v1.0.1) (2023-12-15)
+
+
+### Bug Fixes
+
+* **camel:** fix camel-model v4 version to 4.0.x lts ([e83d0d3](https://github.com/hawtio/hawtio-next/commit/e83d0d3624031db00beb4d68771d6ba6934330b0))
+
 ## [1.0.0](https://github.com/hawtio/hawtio-next/compare/v1.0.0-rc.0...v1.0.0) (2023-12-15)
 
 
