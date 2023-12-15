@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.0.0](https://github.com/hawtio/hawtio-next/compare/v1.0.0-rc.0...v1.0.0) (2023-12-15)
+
+
+### Bug Fixes
+
+* add additional check for the redirect to prevent XSS ([d5e9b4b](https://github.com/hawtio/hawtio-next/commit/d5e9b4b929c3f3dd4f76ab64f70be729f3598896))
+* **camelContext:** expand tree for routes, endpoints & components ([499e118](https://github.com/hawtio/hawtio-next/commit/499e1186960fa20b0fee9fbcf63408d77668b259))
+* code formatting ([496eddd](https://github.com/hawtio/hawtio-next/commit/496edddce494a6ca0b313c7532a0119a0dc94764))
+
 ## [1.0.0-rc.0](https://github.com/hawtio/hawtio-next/compare/v0.9.2...v1.0.0-rc.0) (2023-11-29)
 
 
