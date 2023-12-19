@@ -121,12 +121,19 @@ export type OnlineConfig = {
 export const HAWTCONFIG_JSON = 'hawtconfig.json'
 
 class ConfigManager {
-  private config: Promise<Hawtconfig>
-  private brandingApplied: Promise<boolean>
+  private config?: Promise<Hawtconfig>
 
-  constructor() {
+  reset() {
+    this.config = undefined
+  }
+
+  getHawtconfig(): Promise<Hawtconfig> {
+    if (this.config) {
+      return this.config
+    }
+
     this.config = this.loadConfig()
-    this.brandingApplied = this.applyBranding()
+    return this.config
   }
 
   private async loadConfig(): Promise<Hawtconfig> {
@@ -149,13 +156,13 @@ class ConfigManager {
     }
   }
 
-  private async applyBranding(): Promise<boolean> {
-    const config = await this.config
-
-    const branding = config.branding
+  async applyBranding(): Promise<boolean> {
+    const { branding } = await this.getHawtconfig()
     if (!branding) {
       return false
     }
+
+    log.info('Apply branding', branding)
     let applied = false
     if (branding.appName) {
       log.info('Updating title -', branding.appName)
@@ -181,17 +188,9 @@ class ConfigManager {
     elm.prop('disabled', false)
   }
 
-  getHawtconfig(): Promise<Hawtconfig> {
-    return this.config
-  }
-
-  isBrandingApplied(): Promise<boolean> {
-    return this.brandingApplied
-  }
-
   async isRouteEnabled(path: string): Promise<boolean> {
-    const config = await this.config
-    return !config.disabledRoutes || !config.disabledRoutes.includes(path)
+    const { disabledRoutes } = await this.getHawtconfig()
+    return !disabledRoutes || !disabledRoutes.includes(path)
   }
 
   async filterEnabledPlugins(plugins: Plugin[]): Promise<Plugin[]> {
@@ -207,14 +206,9 @@ class ConfigManager {
   }
 
   async addProductInfo(name: string, value: string) {
-    const config = await this.config
-    config.about?.productInfo?.push({ name, value })
+    const { about } = await this.getHawtconfig()
+    about?.productInfo?.push({ name, value })
   }
 }
 
 export const configManager = new ConfigManager()
-
-// Export non-exported definitions for testing
-export const __testing__ = {
-  ConfigManager,
-}
