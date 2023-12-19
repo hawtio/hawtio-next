@@ -1,9 +1,10 @@
 import fetchMock from 'jest-fetch-mock'
-import { configManager, __testing__ } from './config-manager'
+import { configManager } from './config-manager'
 
 describe('ConfigManager', () => {
   beforeEach(() => {
     fetchMock.resetMocks()
+    configManager.reset()
   })
 
   test('configManager exists', () => {
@@ -23,7 +24,6 @@ describe('ConfigManager', () => {
       }),
     )
 
-    const configManager = new __testing__.ConfigManager()
     const config = await configManager.getHawtconfig()
     expect(config.branding?.appName).toEqual('Test App')
     expect(config.online?.projectSelector).toEqual('environment=dev,networkzone=internal')
@@ -46,8 +46,7 @@ describe('ConfigManager', () => {
       }),
     )
 
-    const configManager = new __testing__.ConfigManager()
-    const brandingApplied = await configManager.isBrandingApplied()
+    const brandingApplied = await configManager.applyBranding()
     expect(brandingApplied).toBe(true)
     const head = document.head.innerHTML
     expect(head).toContain('<title>Test App</title>')
@@ -64,8 +63,7 @@ describe('ConfigManager', () => {
     // response for fetching hawtconfig.json
     fetchMock.mockResponse(JSON.stringify({}))
 
-    const configManager = new __testing__.ConfigManager()
-    const brandingApplied = await configManager.isBrandingApplied()
+    const brandingApplied = await configManager.applyBranding()
     expect(brandingApplied).toBe(false)
     const head = document.head.innerHTML
     expect(head).toContain('<title>Hawtio</title>')
@@ -81,7 +79,6 @@ describe('ConfigManager', () => {
       }),
     )
 
-    const configManager = new __testing__.ConfigManager()
     await expect(configManager.isRouteEnabled('route1')).resolves.toBe(false)
     await expect(configManager.isRouteEnabled('route2')).resolves.toBe(true)
   })
@@ -90,7 +87,6 @@ describe('ConfigManager', () => {
     // response for fetching hawtconfig.json
     fetchMock.mockResponse('{}')
 
-    const configManager = new __testing__.ConfigManager()
     const routeEnabled = await configManager.isRouteEnabled('route1')
     expect(routeEnabled).toEqual(true)
   })
@@ -102,7 +98,7 @@ describe('ConfigManager', () => {
         disabledRoutes: ['route1', 'route3'],
       }),
     )
-    const plugins = [...Array(5).keys()].map(i => ({
+    const plugins = Array.from(Array(5).keys()).map(i => ({
       id: `route${i}`,
       title: `Route ${i}`,
       path: `route${i}`,
@@ -110,7 +106,6 @@ describe('ConfigManager', () => {
       isActive: () => Promise.resolve(true),
     }))
 
-    const configManager = new __testing__.ConfigManager()
     const enabledPlugins = await configManager.filterEnabledPlugins(plugins)
     expect(enabledPlugins.map(p => p.path)).toEqual(['route0', 'route2', 'route4'])
   })
@@ -138,7 +133,6 @@ describe('ConfigManager', () => {
       }),
     )
 
-    const configManager = new __testing__.ConfigManager()
     let config = await configManager.getHawtconfig()
     expect(config.about?.title).toEqual('Test App')
     expect(config.about?.description).toEqual('This is a test.')

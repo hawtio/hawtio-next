@@ -1,6 +1,7 @@
 import { userService } from '@hawtiosrc/auth'
 import { importRemote, ImportRemoteOptions } from '@module-federation/utilities'
 import $ from 'jquery'
+import { configManager } from './config-manager'
 import { eventService } from './event-service'
 import { log } from './globals'
 
@@ -179,7 +180,14 @@ class HawtioCore {
    */
   async bootstrap() {
     log.info('Bootstrapping Hawtio...')
+
+    // Apply branding
+    const brandingApplied = await configManager.applyBranding()
+    log.info('Branding applied:', brandingApplied)
+
+    // Load plugins
     await this.loadPlugins()
+
     log.info('Bootstrapped Hawtio')
   }
 
