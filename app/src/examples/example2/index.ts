@@ -1,4 +1,4 @@
-import { hawtio, HawtioPlugin } from '@hawtio/react'
+import { configManager, hawtio, HawtioPlugin } from '@hawtio/react'
 import { Example2 } from './Example2'
 
 export const registerExample2: HawtioPlugin = () => {
@@ -10,3 +10,12 @@ export const registerExample2: HawtioPlugin = () => {
     isActive: async () => true,
   })
 }
+
+// Plugin can extend Hawtconfig
+configManager.configure(config => {
+  if (!config.about) {
+    config.about = {}
+  }
+  const description = config.about.description
+  config.about.description = (description ?? '') + ' This text is added by the example 2 plugin.'
+})
