@@ -127,6 +127,10 @@ class ConfigManager {
     this.config = undefined
   }
 
+  setHawtconfig(config: Hawtconfig) {
+    this.config = Promise.resolve(config)
+  }
+
   getHawtconfig(): Promise<Hawtconfig> {
     if (this.config) {
       return this.config
@@ -154,6 +158,11 @@ class ConfigManager {
       log.error('Error fetching', HAWTCONFIG_JSON, '-', err)
       return {}
     }
+  }
+
+  async configure(configurer: (config: Hawtconfig) => void) {
+    const config = await this.getHawtconfig()
+    configurer(config)
   }
 
   async applyBranding(): Promise<boolean> {
