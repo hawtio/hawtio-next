@@ -1,16 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  Flex,
-  FlexItem,
-  Grid,
-  GridItem,
-  gridSpans,
-  PageSection,
-  Title,
-} from '@patternfly/react-core'
+import { Card, CardBody, CardHeader, Flex, FlexItem, Grid, GridItem, PageSection, Title } from '@patternfly/react-core'
 import { springbootService } from './springboot-service'
 import { HealthComponentDetail, HealthData } from './types'
 import { TableComposable, Tbody, Td, Tr } from '@patternfly/react-table'
@@ -24,12 +13,8 @@ import {
   QuestionCircleIcon,
 } from '@patternfly/react-icons'
 
-const componentSpanRecord: Record<string, number[]> = {
-  diskSpace: [7, 2],
-  ping: [5, 0],
-  camelHealth: [5, 1],
-  camel: [5, 1],
-}
+const SPAN_6_COMPONENTS = ['diskSpace', 'camelHealth', 'camel']
+
 const ComponentDetails: React.FunctionComponent<{ componentDetails: HealthComponentDetail[] }> = ({
   componentDetails,
 }) => {
@@ -87,7 +72,7 @@ const DiskComponentDetails: React.FunctionComponent<{ componentDetails: HealthCo
           subTitle='of available space'
           title={`${usedPercentage}% used`}
           thresholds={[{ value: 90 }]}
-          width={435}
+          width={300}
         />
       </GridItem>
     </Grid>
@@ -118,33 +103,38 @@ export const Health: React.FunctionComponent = () => {
               </CardHeader>
             </Card>
           </GridItem>
-          {healthData?.components.map(component => (
-            <GridItem
-              span={componentSpanRecord[component.name]![0] as gridSpans}
-              key={component.name}
-              mdRowSpan={componentSpanRecord[component.name]![1] as gridSpans}
-            >
-              <Card isFullHeight>
-                <CardHeader>
-                  <Title headingLevel='h3'>{humanizeLabels(component.name!)}</Title>
-                </CardHeader>
-                <CardBody>
-                  <Flex>
-                    <FlexItem>
-                      <HealthStatusIcon status={component.status} />
-                    </FlexItem>
-                    <FlexItem>Status: {component.status}</FlexItem>
-                    {component.details &&
-                      (component.name === 'diskSpace' ? (
-                        <DiskComponentDetails componentDetails={component.details} />
-                      ) : (
-                        <ComponentDetails componentDetails={component.details} />
-                      ))}
-                  </Flex>
-                </CardBody>
-              </Card>
-            </GridItem>
-          ))}
+          {healthData?.components
+            .sort((a, b) => {
+              if (SPAN_6_COMPONENTS.includes(a.name)) return -1
+              else if (SPAN_6_COMPONENTS.includes(b.name)) return 1
+              else return a.name.localeCompare(b.name)
+            })
+            .map(component => {
+              const span = SPAN_6_COMPONENTS.includes(component.name) ? 6 : 4
+              return (
+                <GridItem span={span} key={component.name}>
+                  <Card isFullHeight>
+                    <CardHeader>
+                      <Title headingLevel='h3'>{humanizeLabels(component.name!)}</Title>
+                    </CardHeader>
+                    <CardBody style={{ overflow: 'auto' }}>
+                      <Flex>
+                        <FlexItem>
+                          <HealthStatusIcon status={component.status} />
+                        </FlexItem>
+                        <FlexItem>Status: {component.status}</FlexItem>
+                        {component.details &&
+                          (component.name === 'diskSpace' ? (
+                            <DiskComponentDetails componentDetails={component.details} />
+                          ) : (
+                            <ComponentDetails componentDetails={component.details} />
+                          ))}
+                      </Flex>
+                    </CardBody>
+                  </Card>
+                </GridItem>
+              )
+            })}
         </Grid>
       )}
     </PageSection>
