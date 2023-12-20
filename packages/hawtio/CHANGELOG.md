@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.0.2](https://github.com/hawtio/hawtio-next/compare/v1.0.1...v1.0.2) (2023-12-20)
+
+
+### Bug Fixes
+
+* **core:** provide API for plugins to customise hawtconfig programmatically ([852d5e0](https://github.com/hawtio/hawtio-next/commit/852d5e0e946192ef7dbc196a69aecad8e0cabe7c))
+
 ## [1.0.1](https://github.com/hawtio/hawtio-next/compare/v1.0.0...v1.0.1) (2023-12-15)
 
 
