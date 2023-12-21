@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.0.3](https://github.com/hawtio/hawtio-next/compare/v1.0.2...v1.0.3) (2023-12-21)
+
+
+### Bug Fixes
+
+* **core:** branding should be applied after loading plugins ([14e83cd](https://github.com/hawtio/hawtio-next/commit/14e83cdab7374873678e026b636c25259c9e7f64))
+
 ## [1.0.2](https://github.com/hawtio/hawtio-next/compare/v1.0.1...v1.0.2) (2023-12-20)
 
 
