@@ -18,4 +18,8 @@ configManager.configure(config => {
   }
   const description = config.about.description
   config.about.description = (description ?? '') + ' This text is added by the example 2 plugin.'
+  if (!config.about.productInfo) {
+    config.about.productInfo = []
+  }
+  config.about.productInfo.push({ name: 'Example 2', value: '1.0.0' })
 })
