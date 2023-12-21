@@ -181,12 +181,13 @@ class HawtioCore {
   async bootstrap() {
     log.info('Bootstrapping Hawtio...')
 
-    // Apply branding
-    const brandingApplied = await configManager.applyBranding()
-    log.info('Branding applied:', brandingApplied)
-
     // Load plugins
     await this.loadPlugins()
+
+    // Apply branding
+    // Branding should be applied after loading plugins as plugins may customise hawtconfig.
+    const brandingApplied = await configManager.applyBranding()
+    log.info('Branding applied:', brandingApplied)
 
     log.info('Bootstrapped Hawtio')
   }
