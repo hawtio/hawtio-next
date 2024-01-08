@@ -2206,7 +2206,7 @@ __metadata:
     "@types/react": "npm:^18.2.23"
     "@types/react-dom": "npm:^18.2.18"
     "@types/react-router-dom": "npm:^5.3.3"
-    commit-and-tag-version: "npm:^12.0.0"
+    commit-and-tag-version: "npm:^12.1.0"
     dagre: "npm:^0.8.5"
     eslint-config-react-app: "npm:^7.0.1"
     eventemitter3: "npm:^5.0.1"
@@ -6684,9 +6684,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commit-and-tag-version@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "commit-and-tag-version@npm:12.0.0"
+"commit-and-tag-version@npm:^12.1.0":
+  version: 12.1.0
+  resolution: "commit-and-tag-version@npm:12.1.0"
   dependencies:
     chalk: "npm:^2.4.2"
     conventional-changelog: "npm:3.1.25"
@@ -6703,7 +6703,7 @@ __metadata:
     yargs: "npm:^17.7.2"
   bin:
     commit-and-tag-version: bin/cli.js
-  checksum: 42bfef65b293252da5ea936125eccd9440111df41068921cc3aa10b42af6a2cd52e662cf27576f1bb89542383caaa6f21681e9526c5cce68c18cf67da4e3d7ff
+  checksum: ccc53aae0aa0ce2cd13d2c2d4b90a3b9cd38e411b7badfb6e917a488eaee9e60d19db7fdbbe3a4c33a361b1c044506e20c8a62884768ab453ed9257b57bfa3e5
   languageName: node
   linkType: hard
 
