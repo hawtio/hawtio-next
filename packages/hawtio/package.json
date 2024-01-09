@@ -40,7 +40,7 @@
     "@patternfly/react-code-editor": "^5.1.2",
     "@patternfly/react-core": "^4.278.1",
     "@patternfly/react-table": "^4.113.7",
-    "@testing-library/jest-dom": "^6.1.5",
+    "@testing-library/jest-dom": "^6.2.0",
     "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "^14.5.2",
     "@types/dagre": "^0.7.52",
