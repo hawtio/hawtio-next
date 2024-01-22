@@ -64,7 +64,7 @@
     "react-monaco-editor": "^0.55.0",
     "react-router-dom": "^6.21.3",
     "react-split": "^2.0.14",
-    "reactflow": "^11.10.1",
+    "reactflow": "^11.10.2",
     "superstruct": "^1.0.3",
     "typescript": "^5.2.2",
     "xml-formatter": "^3.6.0"
