@@ -30,6 +30,8 @@ build/
 .env.test.local
 .env.production.local
 .vscode/
+.idea/
+*.iml
 
 npm-debug.log*
 yarn-debug.log*
