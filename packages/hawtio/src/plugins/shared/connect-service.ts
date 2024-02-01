@@ -1,4 +1,5 @@
 import { eventService, hawtio } from '@hawtiosrc/core'
+import { decrypt, encrypt, generateKey, toBase64, toByteArray } from '@hawtiosrc/util/crypto'
 import { toString } from '@hawtiosrc/util/strings'
 import { joinPaths } from '@hawtiosrc/util/urls'
 import Jolokia from 'jolokia.js'
@@ -42,8 +43,10 @@ export type ConnectionCredentials = {
 }
 
 const STORAGE_KEY_CONNECTIONS = 'connect.connections'
+
 const SESSION_KEY_CURRENT_CONNECTION = 'connect.currentConnection'
-const SESSION_KEY_CREDENTIALS = 'connect.credentials'
+const SESSION_KEY_SALT = 'connect.salt'
+const SESSION_KEY_CREDENTIALS = 'connect.credentials' // Encrypted
 
 export const PARAM_KEY_CONNECTION = 'con'
 export const PARAM_KEY_REDIRECT = 'redirect'
@@ -52,8 +55,8 @@ const LOGIN_PATH = '/connect/login'
 
 export interface IConnectService {
   getCurrentConnectionName(): string | null
-  getCurrentConnection(): Connection | null
-  getCurrentCredentials(): ConnectionCredentials | null
+  getCurrentConnection(): Promise<Connection | null>
+  getCurrentCredentials(): Promise<ConnectionCredentials | null>
   loadConnections(): Connections
   saveConnections(connections: Connections): void
   getConnection(name: string): Connection | null
@@ -97,14 +100,14 @@ class ConnectService implements IConnectService {
     return this.currentConnection
   }
 
-  getCurrentConnection(): Connection | null {
+  async getCurrentConnection(): Promise<Connection | null> {
     const conn = this.currentConnection ? this.getConnection(this.currentConnection) : null
     if (!conn) {
       return null
     }
 
     // Apply credentials if it exists
-    const credentials = this.getCurrentCredentials()
+    const credentials = await this.getCurrentCredentials()
     if (!credentials) {
       return conn
     }
@@ -116,12 +119,30 @@ class ConnectService implements IConnectService {
   }
 
   private clearCredentialsOnLogout() {
-    eventService.onLogout(() => sessionStorage.removeItem(SESSION_KEY_CREDENTIALS))
+    eventService.onLogout(() => sessionStorage.clear())
   }
 
-  getCurrentCredentials(): ConnectionCredentials | null {
-    const item = sessionStorage.getItem(SESSION_KEY_CREDENTIALS)
-    return item ? JSON.parse(item) : null
+  async getCurrentCredentials(): Promise<ConnectionCredentials | null> {
+    const saltItem = sessionStorage.getItem(SESSION_KEY_SALT)
+    if (!saltItem) {
+      return null
+    }
+    const salt = toByteArray(saltItem)
+
+    const credItem = sessionStorage.getItem(SESSION_KEY_CREDENTIALS)
+    if (!credItem) {
+      return null
+    }
+    const key = await generateKey(salt)
+    return JSON.parse(await decrypt(key, credItem))
+  }
+
+  private async setCurrentCredentials(credentials: ConnectionCredentials) {
+    const salt = window.crypto.getRandomValues(new Uint8Array(16))
+    sessionStorage.setItem(SESSION_KEY_SALT, toBase64(salt))
+    const key = await generateKey(salt)
+    const encrypted = await encrypt(key, JSON.stringify(credentials))
+    sessionStorage.setItem(SESSION_KEY_CREDENTIALS, encrypted)
   }
 
   loadConnections(): Connections {
@@ -208,7 +229,7 @@ class ConnectService implements IConnectService {
    * Log in to the current connection.
    */
   async login(username: string, password: string): Promise<boolean> {
-    const connection = this.getCurrentConnection()
+    const connection = await this.getCurrentConnection()
     if (!connection) {
       return false
     }
@@ -231,8 +252,7 @@ class ConnectService implements IConnectService {
     }
 
     // Persist credentials to session storage
-    const credentials: ConnectionCredentials = { username, password }
-    sessionStorage.setItem(SESSION_KEY_CREDENTIALS, JSON.stringify(credentials))
+    await this.setCurrentCredentials({ username, password })
     this.clearCredentialsOnLogout()
 
     return true
