@@ -1,6 +1,7 @@
+import type { Config } from 'jest'
 import path from 'path'
 
-export default {
+const config: Config = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   silent: true,
@@ -27,3 +28,5 @@ export default {
 
   coveragePathIgnorePatterns: ['node_modules/'],
 }
+
+export default config

@@ -17,11 +17,11 @@ class MockConnectService implements IConnectService {
     return null
   }
 
-  getCurrentConnection(): Connection | null {
+  async getCurrentConnection(): Promise<Connection | null> {
     return null
   }
 
-  getCurrentCredentials(): ConnectionCredentials | null {
+  async getCurrentCredentials(): Promise<ConnectionCredentials | null> {
     return null
   }
 

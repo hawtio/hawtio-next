@@ -45,16 +45,21 @@ function isConnectLogin(): boolean {
  * can reflect the remote credentials.
  */
 export function registerUserHooks() {
-  const credentials = connectService.getCurrentCredentials()
-  if (!credentials) {
-    return
-  }
+  const credPromise = connectService.getCurrentCredentials()
 
   userService.addFetchUserHook('connect', async resolve => {
+    const credentials = await credPromise
+    if (!credentials) {
+      return false
+    }
     resolve({ username: credentials.username, isLogin: true })
     return true
   })
   userService.addLogoutHook('connect', async () => {
+    const credentials = await credPromise
+    if (!credentials) {
+      return false
+    }
     // Logout from remote connection should close the window
     window.close()
     return true

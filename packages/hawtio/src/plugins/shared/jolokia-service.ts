@@ -273,7 +273,7 @@ class JolokiaService implements IJolokiaService {
   }
 
   private async beforeSend(): Promise<JQueryBeforeSend> {
-    const connection = connectService.getCurrentConnection()
+    const connection = await connectService.getCurrentConnection()
     // Just set Authorization for now...
     const header = 'Authorization'
     if ((await userService.isLogin()) && userService.getToken()) {
