@@ -96,13 +96,19 @@ class DiscoverService {
     }
 
     const url = new URL(agent.url)
-    conn.scheme = url.protocol.substring(0, url.protocol.length - 1) // strip last ':'
+    conn.scheme = this.schemeFromUrl(url)
     conn.host = url.hostname
     conn.port = parseInt(url.port)
     conn.path = url.pathname
 
     log.debug('Discover - connection from agent:', conn)
     return conn
+  }
+
+  private schemeFromUrl(url: URL): 'http' | 'https' {
+    const scheme = url.protocol.substring(0, url.protocol.length - 1) // strip last ':'
+    // Scheme other than 'http' or 'https' is not valid in the context of Jolokia agent
+    return scheme === 'http' || scheme === 'https' ? scheme : 'http'
   }
 
   jvmToConnection(jvm: Jvm): Connection {
@@ -112,7 +118,7 @@ class DiscoverService {
       return conn
     }
 
-    conn.scheme = jvm.scheme
+    conn.scheme = jvm.scheme === 'http' || jvm.scheme === 'https' ? jvm.scheme : 'http'
     conn.host = jvm.hostname
     conn.port = jvm.port
     conn.path = jvm.path
