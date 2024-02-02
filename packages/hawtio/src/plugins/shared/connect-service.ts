@@ -11,7 +11,7 @@ export type Connections = {
 
 export type Connection = {
   name: string
-  scheme: string
+  scheme: 'http' | 'https'
   host: string
   port: number
   path: string
@@ -146,8 +146,22 @@ class ConnectService implements IConnectService {
   }
 
   loadConnections(): Connections {
-    const conns = localStorage.getItem(STORAGE_KEY_CONNECTIONS)
-    return conns ? JSON.parse(conns) : {}
+    const item = localStorage.getItem(STORAGE_KEY_CONNECTIONS)
+    if (!item) {
+      return {}
+    }
+    const conns: Connections = JSON.parse(item)
+
+    // Make sure scheme is not compromised for each connection
+    Object.values(conns).forEach(conn => {
+      if (conn.scheme !== 'http' && conn.scheme !== 'https') {
+        log.warn('Invalid scheme for connection:', conn)
+        // Force resetting to 'http' for any invalid scheme
+        conn.scheme = 'http'
+      }
+    })
+
+    return conns
   }
 
   saveConnections(connections: Connections) {
