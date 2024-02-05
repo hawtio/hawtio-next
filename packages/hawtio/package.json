@@ -46,7 +46,7 @@
     "@thumbmarkjs/thumbmarkjs": "^0.12.6",
     "@types/dagre": "^0.7.52",
     "@types/dagre-layout": "^0.8.5",
-    "@types/jest": "^29.5.11",
+    "@types/jest": "^29.5.12",
     "@types/jquery": "^3.5.29",
     "@types/node": "^18.19.10",
     "@types/react": "^18.2.23",
