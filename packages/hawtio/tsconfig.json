@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@hawtiosrc/*": ["src/*"],
+      "@hawtiosrc/*": ["src/*"]
     },
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -20,8 +20,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx",
+    "jsx": "react-jsx"
   },
   "include": ["src"],
-  "exclude": ["src/hawtio/**/ignore/**"],
+  "exclude": ["src/hawtio/**/ignore/**"]
 }
