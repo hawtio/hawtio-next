@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.0.4](https://github.com/hawtio/hawtio-next/compare/v1.0.3...v1.0.4) (2024-02-08)
+
+
+### Bug Fixes
+
+* **connect:** HAWNG-441 encrypt session storage ([8ecb827](https://github.com/hawtio/hawtio-next/commit/8ecb8275c5b8641142c6fb4f92043f58b357b13d))
+* **connect:** HAWNG-474 make sure only http(s) is used for connection scheme ([97500b3](https://github.com/hawtio/hawtio-next/commit/97500b3960b5a05d8eaaa8358161ec39ea7f7cb4))
+
 ## [1.0.3](https://github.com/hawtio/hawtio-next/compare/v1.0.2...v1.0.3) (2023-12-21)
 
 
