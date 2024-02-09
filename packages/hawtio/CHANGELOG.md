@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.0.5](https://github.com/hawtio/hawtio-next/compare/v1.0.4...v1.0.5) (2024-02-09)
+
+
+### Bug Fixes
+
+* **deps:** downgrade to @patternfly/react-charts 6.x and @patternfly/react-code-editor 4.x ([793a2f4](https://github.com/hawtio/hawtio-next/commit/793a2f4c3bb2f7f3be6865b7929a50f12a9d83fb))
+
 ## [1.0.4](https://github.com/hawtio/hawtio-next/compare/v1.0.3...v1.0.4) (2024-02-08)
 
 
