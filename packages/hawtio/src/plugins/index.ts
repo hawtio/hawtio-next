@@ -1,5 +1,6 @@
 import type { HawtioPlugin } from '@hawtiosrc/core'
 import { keycloak } from './auth/keycloak'
+import { oidc } from './auth/oidc'
 import { camel } from './camel'
 import { connect } from './connect'
 import { jmx } from './jmx'
@@ -17,6 +18,7 @@ import { springboot } from './springboot'
 export const registerPlugins: HawtioPlugin = () => {
   // Auth plugins should be loaded before other plugins
   keycloak()
+  oidc()
 
   connect()
   jmx()

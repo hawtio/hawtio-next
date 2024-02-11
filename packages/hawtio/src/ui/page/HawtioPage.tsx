@@ -7,7 +7,7 @@ import { HawtioPreferences } from '@hawtiosrc/preferences/HawtioPreferences'
 import { preferencesService } from '@hawtiosrc/preferences/preferences-service'
 import { BackgroundImage, EmptyState, EmptyStateIcon, Page, PageSection, Title } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { HawtioNotification } from '../notification'
 import { HawtioHeader } from './HawtioHeader'
@@ -17,22 +17,26 @@ import { PageContext } from './context'
 import { log } from './globals'
 
 export const HawtioPage: React.FunctionComponent = () => {
-  const { username, isLogin, userLoaded } = useUser()
+  const { username, isLogin, userLoaded, userLoading } = useUser()
   const { plugins, pluginsLoaded } = usePlugins()
   const navigate = useNavigate()
   const { search } = useLocation()
   const { selectedNode, setSelectedNode } = usePluginNodeSelected()
 
-  if (!userLoaded || !pluginsLoaded) {
+  // navigate should be used in effect
+  // otherwise "Cannot update a component (`BrowserRouter`) while rendering a different component" is thrown
+  useEffect(() => {
+    if (!isLogin && !userLoading) {
+      navigate('login')
+    }
+  }, [isLogin, navigate, userLoading])
+
+  if (!userLoaded || !pluginsLoaded || userLoading) {
     log.debug('Loading:', 'user =', userLoaded, ', plugins =', pluginsLoaded)
     return <HawtioLoadingPage />
   }
 
-  log.debug(`Login state: username = ${username}, isLogin = ${isLogin}`)
-
-  if (!isLogin) {
-    navigate('login')
-  }
+  log.info(`Login state: username = ${username}, isLogin = ${isLogin}`)
 
   const defaultPlugin = plugins[0] ?? null
   const defaultPage = defaultPlugin ? <Navigate to={{ pathname: defaultPlugin.path, search }} /> : <HawtioHome />

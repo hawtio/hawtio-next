@@ -167,6 +167,19 @@ module.exports = {
         authenticated = false
         res.redirect('/hawtio/login')
       })
+      devServer.app.get('/hawtio/auth/config', (_, res) => {
+        res.type("application/json")
+        res.send(JSON.stringify({
+          "method": "oidc",
+          "provider": "https://login.microsoftonline.com/8fd8ed3d-c739-410f-83ab-ac2228fa6bbf/v2.0",
+          "client_id": "3bb7fe5a-34bb-4afa-bf6a-292c050cb821",
+          "response_mode": "fragment",
+          "scope": "openid email profile api://hawtio-server/Jolokia.Access",
+          "redirect_uri": "http://localhost:3000/hawtio/",
+          "code_challenge_method": "S256",
+          "prompt": "login"
+        }))
+      })
       devServer.app.get('/hawtio/proxy/enabled', (_, res) => res.send(String(proxyEnabled)))
       devServer.app.get('/hawtio/plugin', (_, res) => res.send(JSON.stringify(plugin)))
       devServer.app.get('/hawtio/keycloak/enabled', (_, res) => res.send(String(keycloakEnabled)))
