@@ -8,20 +8,35 @@ export function useUser() {
   const [username, setUsername] = useState('')
   const [isLogin, setIsLogin] = useState(false)
   const [userLoaded, setUserLoaded] = useState(false)
+  // special, temporary status of user fetching operation. Required to avoid flickering when OAuth2
+  // redirect login is pending
+  const [userLoading, setUserLoading] = useState(true)
 
   useEffect(() => {
+    const abortController = new AbortController()
+    let proceed = true
+    const isProceed = () => proceed
     const fetchUser = async () => {
       // Try syncing the login status with the server here
-      await userService.fetchUser()
+      await userService.fetchUser(true, abortController.signal, () => isProceed())
 
       const username = await userService.getUsername()
       const isLogin = await userService.isLogin()
-      setUsername(username)
-      setIsLogin(isLogin)
-      setUserLoaded(true)
+      const isLoading = await userService.isLoading()
+      if (isProceed()) {
+        setUsername(username)
+        setIsLogin(isLogin)
+        setUserLoading(isLoading)
+        setUserLoaded(true)
+      }
     }
     fetchUser()
+
+    return () => {
+      abortController.abort()
+      proceed = false
+    }
   }, [])
 
-  return { username, isLogin, userLoaded }
+  return { username, isLogin, userLoaded, userLoading }
 }

@@ -7,7 +7,7 @@ import { reportWebVitals } from './reportWebVitals'
 // Configure the console
 const configure = () => {
   configManager.addProductInfo('Test App', '1.0.0')
-  hawtio.addUrl('plugin')
+  //COMMENT_FOR_NOW hawtio.addUrl('plugin')
 }
 configure()
 

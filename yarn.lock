@@ -2231,6 +2231,7 @@ __metadata:
     js-logger: "npm:^1.6.1"
     keycloak-js: "npm:^23.0.7"
     monaco-editor: "npm:^0.46.0"
+    oauth4webapi: "npm:^2.10.3"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     react-markdown: "npm:^8.0.7"
