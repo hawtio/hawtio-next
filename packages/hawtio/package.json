@@ -58,7 +58,7 @@
     "jquery": "^3.7.1",
     "js-logger": "^1.6.1",
     "keycloak-js": "^23.0.6",
-    "monaco-editor": "^0.45.0",
+    "monaco-editor": "^0.46.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-markdown": "^8.0.7",
