@@ -2230,7 +2230,7 @@ __metadata:
     jquery: "npm:^3.7.1"
     js-logger: "npm:^1.6.1"
     keycloak-js: "npm:^23.0.6"
-    monaco-editor: "npm:^0.45.0"
+    monaco-editor: "npm:^0.46.0"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     react-markdown: "npm:^8.0.7"
@@ -14062,10 +14062,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor@npm:^0.45.0":
-  version: 0.45.0
-  resolution: "monaco-editor@npm:0.45.0"
-  checksum: 10/e617aa6e763edc2a432cf1754b7b85a41cf32c34e6147890513d9398fc361ad10e78b08fe715c0c4cc9478ee98a65e55e263d0e77eac197285b37fc733013fa0
+"monaco-editor@npm:^0.46.0":
+  version: 0.46.0
+  resolution: "monaco-editor@npm:0.46.0"
+  checksum: 10/827b8e8e73a2032c14c4f5c7f112e6a42467c1f43ae3b9d63eec68539345156ccef91fd2efcb65b063c960692efe44b8b482832e5d078a781cdff2b0fe5c906c
   languageName: node
   linkType: hard
 
