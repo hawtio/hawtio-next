@@ -3,6 +3,7 @@ const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
 const CracoEsbuildPlugin = require('craco-esbuild')
 const { dependencies } = require('./package.json')
 const { hawtioBackend } = require('@hawtio/backend-middleware')
+const bodyParser = require('body-parser')
 
 module.exports = {
   plugins: [{ plugin: CracoEsbuildPlugin }],
@@ -113,6 +114,8 @@ module.exports = {
   },
   devServer: {
     setupMiddlewares: (middlewares, devServer) => {
+      devServer.app.use(bodyParser.json())
+
       // Redirect / or /hawtio to /hawtio/
       devServer.app.get('/', (_, res) => res.redirect('/hawtio/'))
       devServer.app.get('/hawtio$', (_, res) => res.redirect('/hawtio/'))
@@ -148,7 +151,15 @@ module.exports = {
           res.sendStatus(403)
         }
       })
-      devServer.app.post('/hawtio/auth/login', (_, res) => {
+      devServer.app.post('/hawtio/auth/login', (req, res) => {
+        // Test authentication throttling with username 'throttled'
+        const { username } = req.body
+        if (username === 'throttled') {
+          res.append('Retry-After', 10) // 10 secs
+          res.sendStatus(429)
+          return
+        }
+
         authenticated = true
         res.send(String(login))
       })

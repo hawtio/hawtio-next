@@ -13,3 +13,20 @@ export function formatTimestamp(date: Date, millis = false): string {
   const milliseconds = padZero(date.getMilliseconds(), 3)
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}`
 }
+
+export function humanizeSeconds(seconds: number): string {
+  const humanize = (n: number, unit: string) => {
+    const fixed = Number.isInteger(n) ? n : n.toFixed(1)
+    return `${fixed} ${unit}` + (n === 1 ? '' : 's')
+  }
+  if (seconds < 60) {
+    return humanize(seconds, 'second')
+  }
+  if (seconds < 60 * 60) {
+    return humanize(seconds / 60, 'minute')
+  }
+  if (seconds < 60 * 60 * 24) {
+    return humanize(seconds / (60 * 60), 'hour')
+  }
+  return humanize(seconds / (60 * 60 * 24), 'day')
+}

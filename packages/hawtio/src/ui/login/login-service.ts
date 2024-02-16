@@ -5,15 +5,17 @@ const PATH_LOGIN = 'auth/login'
 
 const STORAGE_KEY_LOGIN = 'login'
 
+export type LoginResult = { type: 'success' } | { type: 'failure' } | { type: 'throttled'; retryAfter: number }
+
 export interface ILoginService {
-  login(username: string, password: string, remember: boolean): Promise<boolean>
+  login(username: string, password: string, remember: boolean): Promise<LoginResult>
   getUser(): string
   rememberUser(username: string): void
   clearUser(): void
 }
 
 class LoginService implements ILoginService {
-  async login(username: string, password: string, remember: boolean): Promise<boolean> {
+  async login(username: string, password: string, remember: boolean): Promise<LoginResult> {
     try {
       const res = await fetch(PATH_LOGIN, {
         method: 'POST',
@@ -25,7 +27,12 @@ class LoginService implements ILoginService {
       if (!res.ok) {
         // Login failed
         log.error('Login error:', res)
-        return false
+        if (res.status === 429) {
+          // Login throttled
+          const retryAfter = parseInt(res.headers.get('Retry-After') ?? '0')
+          return { type: 'throttled', retryAfter }
+        }
+        return { type: 'failure' }
       }
 
       const data = await res.text()
@@ -35,7 +42,7 @@ class LoginService implements ILoginService {
       } else {
         this.clearUser()
       }
-      return true
+      return { type: 'success' }
     } catch (err) {
       // System error at login
       log.error('Login error:', err)
@@ -43,7 +50,7 @@ class LoginService implements ILoginService {
         type: 'danger',
         message: `Login error: ${err}`,
       })
-      return false
+      return { type: 'failure' }
     }
   }
 
