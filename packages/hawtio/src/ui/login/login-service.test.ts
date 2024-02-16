@@ -22,7 +22,7 @@ describe('LoginService', () => {
     fetchMock.mockResponse('true')
 
     const result = await loginService.login('test-user', 'password!', true)
-    expect(result).toBe(true)
+    expect(result.type).toBe('success')
     expect(loginService.getUser()).toEqual('test-user')
   })
 
@@ -30,7 +30,22 @@ describe('LoginService', () => {
     fetchMock.mockResponse('true')
 
     const result = await loginService.login('test-user', 'password!', false)
-    expect(result).toBe(true)
+    expect(result.type).toBe('success')
     expect(loginService.getUser()).toEqual('')
+  })
+
+  test('login failed', async () => {
+    fetchMock.mockResponse('', { status: 403 })
+
+    const result = await loginService.login('test-user', 'password!', false)
+    expect(result.type).toBe('failure')
+  })
+
+  test('login throttled', async () => {
+    fetchMock.mockResponse('', { status: 429, headers: { 'Retry-After': '60' } })
+
+    const result = await loginService.login('test-user', 'password!', false)
+    expect(result.type).toBe('throttled')
+    expect(result.type === 'throttled' && result.retryAfter).toBe(60)
   })
 })
