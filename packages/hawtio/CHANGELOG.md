@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.0.6](https://github.com/hawtio/hawtio-next/compare/v1.0.5...v1.0.6) (2024-02-16)
+
+
+### Bug Fixes
+
+* **ui:** HAWNG-222 block login form based on 429 response Retry-After from /auth/login ([468d2ac](https://github.com/hawtio/hawtio-next/commit/468d2accd4f0a8bd9e333cc2e9a9debb099476e3))
+
 ## [1.0.5](https://github.com/hawtio/hawtio-next/compare/v1.0.4...v1.0.5) (2024-02-09)
 
 
