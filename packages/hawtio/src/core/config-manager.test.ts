@@ -159,4 +159,22 @@ describe('ConfigManager', () => {
     expect(product3?.name).toEqual('Hawtio React')
     expect(product3?.value).toEqual('1.0.0')
   })
+
+  test('adds product info to empty config', async () => {
+    // response for fetching hawtconfig.json
+    fetchMock.mockResponse(JSON.stringify({}))
+
+    configManager.addProductInfo('Hawtio React', '1.0.0')
+    const config = await configManager.getHawtconfig()
+    expect(config.about).not.toBeUndefined()
+    expect(config.about?.productInfo).toHaveLength(1)
+    expect(config.about?.title).toBeUndefined()
+    expect(config.about?.description).toBeUndefined()
+    expect(config.about?.imgSrc).toBeUndefined()
+    expect(config.about?.copyright).toBeUndefined()
+
+    const product = config.about?.productInfo?.[0]
+    expect(product?.name).toEqual('Hawtio React')
+    expect(product?.value).toEqual('1.0.0')
+  })
 })
