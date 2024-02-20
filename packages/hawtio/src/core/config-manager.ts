@@ -215,8 +215,14 @@ class ConfigManager {
   }
 
   async addProductInfo(name: string, value: string) {
-    const { about } = await this.getHawtconfig()
-    about?.productInfo?.push({ name, value })
+    const config = await this.getHawtconfig()
+    if (!config.about) {
+      config.about = {}
+    }
+    if (!config.about.productInfo) {
+      config.about.productInfo = []
+    }
+    config.about.productInfo.push({ name, value })
   }
 }
 
