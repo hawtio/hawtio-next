@@ -1,4 +1,4 @@
-import { HawtioPlugin } from '@hawtiosrc/core'
+import type { HawtioPlugin } from '@hawtiosrc/core'
 import { keycloak } from './auth/keycloak'
 import { camel } from './camel'
 import { connect } from './connect'
@@ -28,6 +28,10 @@ export const registerPlugins: HawtioPlugin = () => {
   springboot()
 }
 
+// Export each plugin's entry point so that a custom console assembler can select which to bundle
+export { camel, connect, jmx, keycloak, logs, quartz, rbac, runtime, springboot }
+
+// Common plugin API
 export * from './connect'
 export * from './context'
 export * from './shared'

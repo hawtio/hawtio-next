@@ -13,6 +13,12 @@ configure()
 
 // Bootstrap Hawtio
 registerPlugins()
+
+// You can also select which builtin plugins to load
+//connect()
+//jmx()
+//camel()
+
 registerExamples()
 hawtio.bootstrap()
 
