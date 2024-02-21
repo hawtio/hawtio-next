@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.0.7](https://github.com/hawtio/hawtio-next/compare/v1.0.6...v1.0.7) (2024-02-21)
+
+
+### Bug Fixes
+
+* **api:** expose each builtin plugin's entry point to the public API ([470a6cb](https://github.com/hawtio/hawtio-next/commit/470a6cbc867ba049838242b742286c46a44a234f)), closes [#788](https://github.com/hawtio/hawtio-next/issues/788)
+* **core:** branding css cannot override PatternFly styles with :root selector ([db6e857](https://github.com/hawtio/hawtio-next/commit/db6e857a43e6f766cae9e335f9da72a98e169f62)), closes [#787](https://github.com/hawtio/hawtio-next/issues/787)
+* **core:** cannot add productInfo to hawtconfig when about is absent ([47d7d15](https://github.com/hawtio/hawtio-next/commit/47d7d157d5514bc241ecf360947aa224c019092d)), closes [#715](https://github.com/hawtio/hawtio-next/issues/715)
+
 ## [1.0.6](https://github.com/hawtio/hawtio-next/compare/v1.0.5...v1.0.6) (2024-02-16)
 
 
