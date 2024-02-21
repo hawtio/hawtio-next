@@ -179,7 +179,8 @@ class ConfigManager {
       applied = true
     }
     if (branding.css) {
-      this.updateHref('#branding', branding.css)
+      // Branding css should be pushed to last to override the builtin PatternFly styles
+      this.updateHref('#branding', branding.css, true)
       applied = true
     }
     if (branding.favicon) {
@@ -189,11 +190,15 @@ class ConfigManager {
     return applied
   }
 
-  private updateHref(id: string, path: string): void {
-    log.info('Updating href for', id, '-', path)
+  private updateHref(id: string, path: string, moveToLast: boolean = false): void {
+    log.info('Updating href for', id, '-', path, moveToLast)
     const elm = $(id)
     elm.prop('disabled', true)
     elm.attr({ href: path })
+    if (moveToLast) {
+      elm.remove()
+      $('head').append(elm)
+    }
     elm.prop('disabled', false)
   }
 
