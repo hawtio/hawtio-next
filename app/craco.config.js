@@ -170,18 +170,18 @@ module.exports = {
 
       const oidcEnabled = true
       const oidcConfig = {
-        "method": "oidc",
-        "provider": "https://login.microsoftonline.com/11111111-2222-3333-4444-555555555555/v2.0",
-        "client_id": "66666666-7777-8888-9999-000000000000",
-        "response_mode": "fragment",
-        "scope": "openid email profile api://hawtio-server/Jolokia.Access",
-        "redirect_uri": "http://localhost:3000/hawtio/",
-        "code_challenge_method": "S256",
-        "prompt": "login"
+        method: 'oidc',
+        provider: 'https://login.microsoftonline.com/11111111-2222-3333-4444-555555555555/v2.0',
+        client_id: '66666666-7777-8888-9999-000000000000',
+        response_mode: 'fragment',
+        scope: 'openid email profile api://hawtio-server/Jolokia.Access',
+        redirect_uri: 'http://localhost:3000/hawtio/',
+        code_challenge_method: 'S256',
+        prompt: 'login',
       }
       devServer.app.get('/hawtio/auth/config', (_, res) => {
         if (oidcEnabled) {
-          res.type("application/json")
+          res.type('application/json')
           res.send(JSON.stringify(oidcConfig))
         } else {
           res.sendStatus(404)
