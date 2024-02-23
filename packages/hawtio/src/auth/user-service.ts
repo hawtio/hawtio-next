@@ -8,7 +8,11 @@ type User = {
 }
 
 export type ResolveUser = (user: User) => void
-export type FetchUserHook = (resolve: ResolveUser, signal: AbortSignal | null, proceed: (() => boolean) | null) => Promise<boolean>
+export type FetchUserHook = (
+  resolve: ResolveUser,
+  signal: AbortSignal | null,
+  proceed: (() => boolean) | null,
+) => Promise<boolean>
 export type LogoutHook = () => Promise<boolean>
 
 export interface IUserService {
@@ -48,7 +52,11 @@ class UserService implements IUserService {
   /**
    * Sync login status with the server by fetching login user.
    */
-  async fetchUser(retry = true, signal: AbortSignal | null = null, proceed: (() => boolean) | null = null): Promise<void> {
+  async fetchUser(
+    retry = true,
+    signal: AbortSignal | null = null,
+    proceed: (() => boolean) | null = null,
+  ): Promise<void> {
     // First, let fetch user hooks to resolve the user in a special way
     for (const [name, fetchUser] of Object.entries(this.fetchUserHooks)) {
       const resolved = await fetchUser(this.resolveUser, signal, proceed)

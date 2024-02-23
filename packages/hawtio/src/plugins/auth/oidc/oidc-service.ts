@@ -1,19 +1,18 @@
-import { ResolveUser, userService } from "@hawtiosrc/auth/user-service"
-import { Logger } from "@hawtiosrc/core"
-import { jwtDecode } from "jwt-decode"
-import * as oidc from "oauth4webapi"
-import { AuthorizationServer, Client, OAuth2Error } from "oauth4webapi"
-import { fetchPath } from "@hawtiosrc/util/fetch"
-import $ from "jquery"
-import { getCookie } from "@hawtiosrc/util/https"
+import { ResolveUser, userService } from '@hawtiosrc/auth/user-service'
+import { Logger } from '@hawtiosrc/core'
+import { jwtDecode } from 'jwt-decode'
+import * as oidc from 'oauth4webapi'
+import { AuthorizationServer, Client, OAuth2Error } from 'oauth4webapi'
+import { fetchPath } from '@hawtiosrc/util/fetch'
+import $ from 'jquery'
+import { getCookie } from '@hawtiosrc/util/https'
 
-const pluginName = "hawtio-oidc"
+const pluginName = 'hawtio-oidc'
 const log = Logger.get(pluginName)
 
 export type OidcConfig = {
-
   /** Provider type. If "null", then OIDC is not enabled */
-  method: "oidc" | null
+  method: 'oidc' | null
 
   /** Provider URL. Should be the URL without ".well-known/openid-configuration" */
   provider: string
@@ -22,7 +21,7 @@ export type OidcConfig = {
   client_id: string
 
   /** Response mode according to https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes */
-  response_mode: "query" | "fragment"
+  response_mode: 'query' | 'fragment'
 
   /** Scope used to obtain relevant access token from OIDC provider */
   scope: string
@@ -31,10 +30,10 @@ export type OidcConfig = {
   redirect_uri: string
 
   /** PKCE method for Authorization grant, according to https://datatracker.ietf.org/doc/html/rfc7636#section-4.3 */
-  code_challenge_method: "S256" | "plain" | null
+  code_challenge_method: 'S256' | 'plain' | null
 
   /** Prompt type according to https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest */
-  prompt: "none" | "login" | "consent" | "select_account" | null
+  prompt: 'none' | 'login' | 'consent' | 'select_account' | null
 }
 
 export interface IOidcService {
@@ -56,11 +55,11 @@ export class OidcService implements IOidcService {
   private readonly userInfo: Promise<UserInfo | null>
 
   constructor() {
-    this.config = fetchPath<OidcConfig | null>("auth/config", {
+    this.config = fetchPath<OidcConfig | null>('auth/config', {
       success: (data: string) => {
         return JSON.parse(data)
       },
-      error: () => null
+      error: () => null,
     })
 
     this.enabled = this.isOidcEnabled()
@@ -70,7 +69,7 @@ export class OidcService implements IOidcService {
 
   private async isOidcEnabled(): Promise<boolean> {
     const cfg = await this.config
-    return cfg?.method === "oidc" && cfg?.provider != null
+    return cfg?.method === 'oidc' && cfg?.provider != null
   }
 
   private async fetchOidcMetadata(): Promise<AuthorizationServer | null> {
@@ -78,19 +77,19 @@ export class OidcService implements IOidcService {
     const enabled = await this.enabled
     const cfg = await this.config
     if (!enabled || !cfg) {
-      log.debug("OpenID authorization is disabled")
+      log.debug('OpenID authorization is disabled')
       return null
     }
 
-    if (cfg["openid-configuration"]) {
+    if (cfg['openid-configuration']) {
       // no need to contact .well-known/openid-configuration here - we have what we need from auth/config
-      log.info("Using pre-fetched openid-configuration")
-      return cfg["openid-configuration"]
+      log.info('Using pre-fetched openid-configuration')
+      return cfg['openid-configuration']
     } else {
-      log.info("Fetching openid-configuration")
+      log.info('Fetching openid-configuration')
       const cfgUrl = new URL(cfg!.provider)
       res = await oidc.discoveryRequest(cfgUrl).catch(e => {
-        log.error("Failed OIDC discovery request", e)
+        log.error('Failed OIDC discovery request', e)
       })
       if (!res || !res.ok) {
         return null
@@ -113,22 +112,22 @@ export class OidcService implements IOidcService {
     // have we just been redirected with OAuth2 authirization response in query/fragment?
     let urlParams: URLSearchParams | null = null
 
-    if (config!.response_mode === "fragment") {
+    if (config!.response_mode === 'fragment') {
       if (window.location.hash && window.location.hash.length > 0) {
         urlParams = new URLSearchParams(window.location.hash.substring(1))
       }
-    } else if (config!.response_mode === "query") {
+    } else if (config!.response_mode === 'query') {
       if (window.location.search || window.location.search.length > 0) {
         urlParams = new URLSearchParams(window.location.search.substring(1))
       }
     }
 
-    const goodParamsRequired = [ "code", "state" ]
-    const errorParamsRequired = [ "error" ]
+    const goodParamsRequired = ['code', 'state']
+    const errorParamsRequired = ['error']
 
-    if (as["authorization_response_iss_parameter_supported"]) {
+    if (as['authorization_response_iss_parameter_supported']) {
       // https://datatracker.ietf.org/doc/html/rfc9207#section-2.3
-      goodParamsRequired.push("iss")
+      goodParamsRequired.push('iss')
     }
 
     let oauthSuccess = urlParams != null
@@ -145,11 +144,11 @@ export class OidcService implements IOidcService {
     if (oauthError) {
       // we are already after redirect, but there was an OAuth2/OpenID problem
       const error: OAuth2Error = {
-        error: urlParams?.get("error") as string,
-        error_description: urlParams?.get("error_description") as string,
-        error_uri: urlParams?.get("error_uri") as string
+        error: urlParams?.get('error') as string,
+        error_description: urlParams?.get('error_description') as string,
+        error_uri: urlParams?.get('error_uri') as string,
       }
-      log.error("OpenID Connect error", error)
+      log.error('OpenID Connect error', error)
       return null
     }
 
@@ -163,14 +162,17 @@ export class OidcService implements IOidcService {
       const nonce = oidc.generateRandomNonce()
 
       // put some data to localStorage, so we can verify the OAuth2 response after redirect
-      localStorage.removeItem("hawtio-oidc-login")
-      localStorage.setItem("hawtio-oidc-login", JSON.stringify({
-        "st": state,
-        "cv": code_verifier,
-        "n": nonce,
-        "h": window.location.href
-      }))
-      log.info("Added to local storage", localStorage.getItem("hawtio-oidc-login"))
+      localStorage.removeItem('hawtio-oidc-login')
+      localStorage.setItem(
+        'hawtio-oidc-login',
+        JSON.stringify({
+          st: state,
+          cv: code_verifier,
+          n: nonce,
+          h: window.location.href,
+        }),
+      )
+      log.info('Added to local storage', localStorage.getItem('hawtio-oidc-login'))
 
       const authorizationUrl = new URL(as!.authorization_endpoint!)
       authorizationUrl.searchParams.set('response_type', 'code')
@@ -190,32 +192,32 @@ export class OidcService implements IOidcService {
         authorizationUrl.searchParams.set('prompt', config.prompt)
       }
 
-      log.info("Redirecting to ", authorizationUrl)
+      log.info('Redirecting to ', authorizationUrl)
 
       // point of no return
       window.location.assign(authorizationUrl)
       // return unresolvable promise to wait for redirect
       return new Promise((resolve, reject) => {
-        log.debug("Waiting for redirect")
+        log.debug('Waiting for redirect')
       })
     }
 
     const client: Client = {
       client_id: config.client_id,
-      token_endpoint_auth_method: "none"
+      token_endpoint_auth_method: 'none',
     }
 
     // there are proper OAuth2/OpenID params, so we can exchange them for access_token, refresh_token and id_token
-    const state = urlParams!.get("state")
+    const state = urlParams!.get('state')
     const authResponse = oidc.validateAuthResponse(as, client, urlParams!, state!)
 
     if (oidc.isOAuth2Error(authResponse)) {
-      log.error("OpenID Authorization error", authResponse)
+      log.error('OpenID Authorization error', authResponse)
       return null
     }
 
-    log.info("Getting localStore data, because we have params", urlParams)
-    const loginDataString = localStorage.getItem("hawtio-oidc-login")
+    log.info('Getting localStore data, because we have params', urlParams)
+    const loginDataString = localStorage.getItem('hawtio-oidc-login')
     // localStorage.removeItem("hawtio-oidc-login")
     if (!loginDataString) {
       log.warn("No local data, can't proceed with OpenID authorization grant")
@@ -228,57 +230,59 @@ export class OidcService implements IOidcService {
     }
 
     const options: { signal?: AbortSignal } = {}
-    const res = await oidc.authorizationCodeGrantRequest(as, client, authResponse, config.redirect_uri, loginData.cv, options)
-        .catch(e => {
-          log.warn("Problem accessing OpenID token endpoint", e)
-          return null
-        })
+    const res = await oidc
+      .authorizationCodeGrantRequest(as, client, authResponse, config.redirect_uri, loginData.cv, options)
+      .catch(e => {
+        log.warn('Problem accessing OpenID token endpoint', e)
+        return null
+      })
     if (!res) {
       return null
     }
 
-    const tokenResponse = await oidc.processAuthorizationCodeOpenIDResponse(as, client, res, loginData.n, oidc.skipAuthTimeCheck)
-        .catch(e => {
-          log.warn("Problem processing OpenID token response", e)
-          return null
-        })
+    const tokenResponse = await oidc
+      .processAuthorizationCodeOpenIDResponse(as, client, res, loginData.n, oidc.skipAuthTimeCheck)
+      .catch(e => {
+        log.warn('Problem processing OpenID token response', e)
+        return null
+      })
     if (!tokenResponse) {
       return null
     }
     if (oidc.isOAuth2Error(tokenResponse)) {
-      log.error("OpenID Token error", tokenResponse)
+      log.error('OpenID Token error', tokenResponse)
       return null
     }
 
-    const access_token = tokenResponse["access_token"]
-    const refresh_token = tokenResponse["refresh_token"]
+    const access_token = tokenResponse['access_token']
+    const refresh_token = tokenResponse['refresh_token']
     let at_exp: number = 0
     // const id_token = tokenResponse["id_token"]
 
     // we have to parse (though we shouldn't according to MS) access_token to get it's validity
     try {
       const access_token_decoded = jwtDecode(access_token)
-      if (access_token_decoded["exp"]) {
-        at_exp = access_token_decoded["exp"]
+      if (access_token_decoded['exp']) {
+        at_exp = access_token_decoded['exp']
       } else {
         at_exp = 0
-        log.warn("Access token doesn't contain \"exp\" information")
+        log.warn('Access token doesn\'t contain "exp" information')
       }
     } catch (e) {
-      log.warn("Problem determining access token validity", e)
+      log.warn('Problem determining access token validity', e)
     }
 
     const claims = oidc.getValidatedIdTokenClaims(tokenResponse)
     const user = (claims.preferred_username ?? claims.sub) as string
 
     // clear the URL bar
-    window.history.replaceState(null, "", loginData.h)
+    window.history.replaceState(null, '', loginData.h)
 
     return {
       user,
       access_token,
       refresh_token,
-      at_exp
+      at_exp,
     }
 
     this.setupJQueryAjax()
@@ -310,7 +314,7 @@ export class OidcService implements IOidcService {
 
       return true
     }
-    userService.addFetchUserHook("oidc", fetchUser)
+    userService.addFetchUserHook('oidc', fetchUser)
 
     const logout = async () => {
       const md = await this.oidcMetadata
@@ -320,7 +324,7 @@ export class OidcService implements IOidcService {
       }
       return false
     }
-    userService.addLogoutHook("oidc", logout)
+    userService.addLogoutHook('oidc', logout)
   }
 
   private async updateToken(success: (token: string) => void, failure?: () => void) {
@@ -338,11 +342,11 @@ export class OidcService implements IOidcService {
 
       const client: Client = {
         client_id: config.client_id,
-        token_endpoint_auth_method: "none"
+        token_endpoint_auth_method: 'none',
       }
 
       const res = await oidc.refreshTokenGrantRequest(as, client, userInfo.refresh_token).catch(e => {
-        log.error("Problem refreshing token", e)
+        log.error('Problem refreshing token', e)
         if (failure) {
           failure()
         }
@@ -351,23 +355,23 @@ export class OidcService implements IOidcService {
         return
       }
       const refreshResponse = await oidc.processRefreshTokenResponse(as, client, res).catch(e => {
-        log.error("Problem processing refresh token response", e)
+        log.error('Problem processing refresh token response', e)
       })
       if (!refreshResponse) {
         return
       }
-      userInfo.access_token = refreshResponse["access_token"] as string
-      userInfo.refresh_token = refreshResponse["refresh_token"] as string
+      userInfo.access_token = refreshResponse['access_token'] as string
+      userInfo.refresh_token = refreshResponse['refresh_token'] as string
       const access_token_decoded = jwtDecode(userInfo.access_token)
-      if (access_token_decoded["exp"]) {
-        userInfo.at_exp = access_token_decoded["exp"]
+      if (access_token_decoded['exp']) {
+        userInfo.at_exp = access_token_decoded['exp']
       } else {
         userInfo.at_exp = 0
-        log.warn("Access token doesn't contain \"exp\" information")
+        log.warn('Access token doesn\'t contain "exp" information')
       }
       success(userInfo.access_token)
     } else {
-      log.error("No refresh token available")
+      log.error('No refresh token available')
     }
   }
 
@@ -383,18 +387,18 @@ export class OidcService implements IOidcService {
       if (!userInfo.access_token || this.isTokenExpiring(userInfo.at_exp)) {
         log.debug(logPrefix, 'Try to update token for request:', settings.url)
         this.updateToken(
-            token => {
-              if (token) {
-                log.debug(logPrefix, 'OIDC token refreshed. Set new value to userService')
-                userService.setToken(token)
-              }
-              log.debug(logPrefix, 'Re-sending request after successfully updating OIDC token:', settings.url)
-              $.ajax(settings)
-            },
-            () => {
-              log.debug(logPrefix, 'Logging out due to token update failed')
-              userService.logout()
-            },
+          token => {
+            if (token) {
+              log.debug(logPrefix, 'OIDC token refreshed. Set new value to userService')
+              userService.setToken(token)
+            }
+            log.debug(logPrefix, 'Re-sending request after successfully updating OIDC token:', settings.url)
+            $.ajax(settings)
+          },
+          () => {
+            log.debug(logPrefix, 'Logging out due to token update failed')
+            userService.logout()
+          },
         )
         return false
       }
@@ -429,19 +433,19 @@ export class OidcService implements IOidcService {
         log.debug(logPrefix, 'Try to update token for request:', input)
         return new Promise((resolve, reject) => {
           this.updateToken(
-              token => {
-                if (token) {
-                  log.debug(logPrefix, 'OIDC token refreshed. Set new value to userService')
-                  userService.setToken(token)
-                }
-                log.debug(logPrefix, 'Re-sending request after successfully updating OIDC token:', input)
-                resolve(fetch(input, init))
-              },
-              () => {
-                log.debug(logPrefix, 'Logging out due to token update failed')
-                userService.logout()
-                reject()
-              },
+            token => {
+              if (token) {
+                log.debug(logPrefix, 'OIDC token refreshed. Set new value to userService')
+                userService.setToken(token)
+              }
+              log.debug(logPrefix, 'Re-sending request after successfully updating OIDC token:', input)
+              resolve(fetch(input, init))
+            },
+            () => {
+              log.debug(logPrefix, 'Logging out due to token update failed')
+              userService.logout()
+              reject()
+            },
           )
         })
       }
