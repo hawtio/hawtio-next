@@ -2229,7 +2229,7 @@ __metadata:
     jolokia.js: "npm:^2.0.0"
     jquery: "npm:^3.7.1"
     js-logger: "npm:^1.6.1"
-    keycloak-js: "npm:^23.0.6"
+    keycloak-js: "npm:^23.0.7"
     monaco-editor: "npm:^0.46.0"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
@@ -13003,14 +13003,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"keycloak-js@npm:^23.0.6":
-  version: 23.0.6
-  resolution: "keycloak-js@npm:23.0.6"
+"keycloak-js@npm:^23.0.7":
+  version: 23.0.7
+  resolution: "keycloak-js@npm:23.0.7"
   dependencies:
     base64-js: "npm:^1.5.1"
     js-sha256: "npm:^0.10.1"
     jwt-decode: "npm:^4.0.0"
-  checksum: 10/66f5fcfec147f372b93c61a0c0dac4617889b327d96abc8b938e093ee224e07339d6d3bf7c1063c5a872949f281e7583cc9fc92fc0c7bf499d0de8f30c110e58
+  checksum: 10/61c127a9ac4954d1d0f7f1eee2348043322e21ec956f1ac7819bced39ce1360470cbbb5bd6f81ac1ee59a6fecc1cc5c2667f4e4f249c9c9b86a747a3654efb97
   languageName: node
   linkType: hard
 
