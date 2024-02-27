@@ -4,21 +4,20 @@ import { log, PATH_LOGOUT, PATH_USER, PUBLIC_USER } from './globals'
 type User = {
   username: string
   isLogin: boolean
-  isLoading: boolean
+  isLoading?: boolean
 }
 
 export type ResolveUser = (user: User) => void
 export type FetchUserHook = (
   resolve: ResolveUser,
-  signal: AbortSignal | null,
-  proceed: (() => boolean) | null,
+  proceed?: () => boolean,
 ) => Promise<boolean>
 export type LogoutHook = () => Promise<boolean>
 
 export interface IUserService {
   addFetchUserHook(name: string, hook: FetchUserHook): void
   addLogoutHook(name: string, hook: LogoutHook): void
-  fetchUser(retry?: boolean, signal?: AbortSignal, proceed?: () => boolean): Promise<void>
+  fetchUser(retry?: boolean, proceed?: () => boolean): Promise<void>
   getUsername(): Promise<string>
   isLogin(): Promise<boolean>
   getToken(): string | null
@@ -54,12 +53,11 @@ class UserService implements IUserService {
    */
   async fetchUser(
     retry = true,
-    signal: AbortSignal | null = null,
-    proceed: (() => boolean) | null = null,
+    proceed?: () => boolean,
   ): Promise<void> {
     // First, let fetch user hooks to resolve the user in a special way
     for (const [name, fetchUser] of Object.entries(this.fetchUserHooks)) {
-      const resolved = await fetchUser(this.resolveUser, signal, proceed)
+      const resolved = await fetchUser(this.resolveUser, proceed)
       if (proceed && !proceed()) {
         return
       }
@@ -73,7 +71,7 @@ class UserService implements IUserService {
 
     // Default fetch user logic
     try {
-      const res = await fetch(PATH_USER, { signal })
+      const res = await fetch(PATH_USER)
       if (!res.ok) {
         log.error('Failed to fetch user:', res.status, res.statusText)
         if (retry && res.status === 403) {
@@ -82,23 +80,23 @@ class UserService implements IUserService {
           // but it no longer relies on the retry. Now it is kept mainly for
           // additional resilience at authentication.
           await new Promise(resolve => setTimeout(resolve, 1000))
-          return this.fetchUser(false, signal)
+          return this.fetchUser(false)
         }
 
-        this.resolveUser({ username: PUBLIC_USER, isLogin: false, isLoading: false })
+        this.resolveUser({ username: PUBLIC_USER, isLogin: false })
         return
       }
 
       const username = await res.json()
       log.info('Logged in as:', username)
-      this.resolveUser({ username, isLogin: true, isLoading: false })
+      this.resolveUser({ username, isLogin: true })
 
       // Send login event
       eventService.login()
     } catch (err) {
       // Silently ignore as mostly it's just not logged-in yet
       log.debug('Failed to get logged-in user from', PATH_USER, '-', err)
-      this.resolveUser({ username: PUBLIC_USER, isLogin: false, isLoading: false })
+      this.resolveUser({ username: PUBLIC_USER, isLogin: false })
     }
   }
 
@@ -111,9 +109,8 @@ class UserService implements IUserService {
   }
 
   async isLoading(): Promise<boolean> {
-    return this.user.then(u => {
-      return u.isLoading || false
-    })
+    const u = await this.user
+    return u.isLoading ?? false
   }
 
   getToken(): string | null {
