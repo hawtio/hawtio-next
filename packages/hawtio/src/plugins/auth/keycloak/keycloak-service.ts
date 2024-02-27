@@ -135,7 +135,7 @@ class KeycloakService implements IKeycloakService {
       }
 
       if (userProfile.username && userProfile.token) {
-        resolve({ username: userProfile.username, isLogin: true, isLoading: false })
+        resolve({ username: userProfile.username, isLogin: true })
         userService.setToken(userProfile.token)
       }
 

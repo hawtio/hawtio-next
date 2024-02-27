@@ -31,7 +31,7 @@ export const registerPlugins: HawtioPlugin = () => {
 }
 
 // Export each plugin's entry point so that a custom console assembler can select which to bundle
-export { camel, connect, jmx, keycloak, logs, quartz, rbac, runtime, springboot }
+export { camel, connect, jmx, keycloak, oidc, logs, quartz, rbac, runtime, springboot }
 
 // Common plugin API
 export * from './connect'

@@ -13,12 +13,11 @@ export function useUser() {
   const [userLoading, setUserLoading] = useState(true)
 
   useEffect(() => {
-    const abortController = new AbortController()
     let proceed = true
     const isProceed = () => proceed
     const fetchUser = async () => {
       // Try syncing the login status with the server here
-      await userService.fetchUser(true, abortController.signal, () => isProceed())
+      await userService.fetchUser(true, () => isProceed())
 
       const username = await userService.getUsername()
       const isLogin = await userService.isLogin()
@@ -33,7 +32,6 @@ export function useUser() {
     fetchUser()
 
     return () => {
-      abortController.abort()
       proceed = false
     }
   }, [])

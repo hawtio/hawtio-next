@@ -33,7 +33,9 @@ export type OidcConfig = {
   code_challenge_method: 'S256' | 'plain' | null
 
   /** Prompt type according to https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest */
-  prompt: 'none' | 'login' | 'consent' | 'select_account' | null
+  prompt: 'none' | 'login' | 'consent' | 'select_account' | null,
+
+  "openid-configuration": oidc.AuthorizationServer
 }
 
 export interface IOidcService {
@@ -229,9 +231,8 @@ export class OidcService implements IOidcService {
       return null
     }
 
-    const options: { signal?: AbortSignal } = {}
     const res = await oidc
-      .authorizationCodeGrantRequest(as, client, authResponse, config.redirect_uri, loginData.cv, options)
+      .authorizationCodeGrantRequest(as, client, authResponse, config.redirect_uri, loginData.cv, {})
       .catch(e => {
         log.warn('Problem accessing OpenID token endpoint', e)
         return null
@@ -284,9 +285,6 @@ export class OidcService implements IOidcService {
       refresh_token,
       at_exp,
     }
-
-    this.setupJQueryAjax()
-    this.setupFetch()
   }
 
   private isTokenExpiring(at_exp: number): boolean {
@@ -300,7 +298,7 @@ export class OidcService implements IOidcService {
   }
 
   registerUserHooks() {
-    const fetchUser = async (resolveUser: ResolveUser, signal: AbortSignal | null, proceed: (() => boolean) | null) => {
+    const fetchUser = async (resolveUser: ResolveUser, proceed?: () => boolean) => {
       if (proceed && !proceed()) {
         return false
       }
@@ -309,8 +307,11 @@ export class OidcService implements IOidcService {
       if (!userInfo) {
         return false
       }
-      resolveUser({ username: userInfo.user!, isLogin: true, isLoading: false })
+      resolveUser({ username: userInfo.user!, isLogin: true })
       userService.setToken(userInfo.access_token!)
+
+      this.setupJQueryAjax()
+      this.setupFetch()
 
       return true
     }
