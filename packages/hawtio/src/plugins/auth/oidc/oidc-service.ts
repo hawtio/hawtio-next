@@ -33,9 +33,9 @@ export type OidcConfig = {
   code_challenge_method: 'S256' | 'plain' | null
 
   /** Prompt type according to https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest */
-  prompt: 'none' | 'login' | 'consent' | 'select_account' | null,
+  prompt: 'none' | 'login' | 'consent' | 'select_account' | null
 
-  "openid-configuration": oidc.AuthorizationServer
+  'openid-configuration': oidc.AuthorizationServer
 }
 
 export interface IOidcService {
