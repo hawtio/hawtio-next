@@ -8,7 +8,6 @@ import {
   Tooltip,
   TreeViewSearch,
 } from '@patternfly/react-core'
-import { MinusIcon, PlusIcon } from '@patternfly/react-icons'
 
 interface ToolbarProps {
   onSearch: (event: ChangeEvent<HTMLInputElement>) => void
@@ -47,8 +46,8 @@ export const PluginTreeViewToolbar: React.FunctionComponent<ToolbarProps> = (pro
           </ToolbarItem>
           <ToolbarItem variant='expand-all'>
             <Tooltip content={expanded ? 'Collapse all' : 'Expand all'} removeFindDomNode>
-              <Button variant='plain' aria-label='Expand Collapse' onClick={toggleExpanded}>
-                {expanded ? <MinusIcon /> : <PlusIcon />}
+              <Button variant='link' aria-label='Expand Collapse' onClick={toggleExpanded}>
+                {expanded ? 'Collapse all' : 'Expand all'}
               </Button>
             </Tooltip>
           </ToolbarItem>
