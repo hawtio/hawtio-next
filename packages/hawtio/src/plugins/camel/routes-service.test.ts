@@ -1,7 +1,7 @@
 import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import { parseXML } from '@hawtiosrc/util/xml'
-import { cleanup, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import fs from 'fs'
 import path from 'path'
 import React from 'react'
@@ -111,6 +111,5 @@ describe('routes-service', () => {
 
     expect(screen.getAllByAltText(IconNames.EndpointIcon).length).toBe(3)
     expect(screen.getByAltText(IconNames.SetBodyIcon)).toBeInTheDocument()
-    cleanup()
   })
 })

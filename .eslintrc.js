@@ -1,7 +1,5 @@
 module.exports = {
   extends: [
-    'react-app',
-    'react-app/jest',
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:react/recommended',
@@ -30,7 +28,7 @@ module.exports = {
     '@typescript-eslint/no-redeclare': 'off',
     'import/no-default-export': 'error',
     'react/prop-types': 'off',
-    'testing-library/await-async-query': 'off',
+    'testing-library/await-async-queries': 'off',
     'testing-library/no-debugging-utils': [
       'warn',
       {
@@ -39,6 +37,21 @@ module.exports = {
         },
       },
     ],
+    // Derived from react-app
+    'no-undef': 'off',
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': [
+      'warn',
+      {
+        args: 'none',
+        ignoreRestSiblings: true,
+      },
+    ],
+  },
+  settings: {
+    react: {
+      version: 'detect',
+    },
   },
   root: true,
 }
