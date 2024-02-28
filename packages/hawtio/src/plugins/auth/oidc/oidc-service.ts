@@ -54,7 +54,8 @@ export class OidcService implements IOidcService {
   private readonly config: Promise<OidcConfig | null>
   private readonly enabled: Promise<boolean>
   private readonly oidcMetadata: Promise<AuthorizationServer | null>
-  private readonly userInfo: Promise<UserInfo | null>
+  private userInfo: Promise<UserInfo | null>
+  private originalFetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
 
   constructor() {
     this.config = fetchPath<OidcConfig | null>('auth/config', {
@@ -67,6 +68,7 @@ export class OidcService implements IOidcService {
     this.enabled = this.isOidcEnabled()
     this.oidcMetadata = this.fetchOidcMetadata()
     this.userInfo = this.initialize()
+    this.originalFetch = fetch
   }
 
   private async isOidcEnabled(): Promise<boolean> {
@@ -279,6 +281,9 @@ export class OidcService implements IOidcService {
     // clear the URL bar
     window.history.replaceState(null, '', loginData.h)
 
+    this.setupJQueryAjax()
+    this.setupFetch()
+
     return {
       user,
       access_token,
@@ -310,9 +315,6 @@ export class OidcService implements IOidcService {
       resolveUser({ username: userInfo.user!, isLogin: true })
       userService.setToken(userInfo.access_token!)
 
-      this.setupJQueryAjax()
-      this.setupFetch()
-
       return true
     }
     userService.addFetchUserHook('oidc', fetchUser)
@@ -328,7 +330,7 @@ export class OidcService implements IOidcService {
     userService.addLogoutHook('oidc', logout)
   }
 
-  private async updateToken(success: (token: string) => void, failure?: () => void) {
+  private async updateToken(success: (userInfo: UserInfo) => void, failure?: () => void) {
     const userInfo = await this.userInfo
     if (!userInfo) {
       return
@@ -346,7 +348,8 @@ export class OidcService implements IOidcService {
         token_endpoint_auth_method: 'none',
       }
 
-      const res = await oidc.refreshTokenGrantRequest(as, client, userInfo.refresh_token).catch(e => {
+      const options: oidc.TokenEndpointRequestOptions = { [oidc.customFetch]: this.originalFetch }
+      const res = await oidc.refreshTokenGrantRequest(as, client, userInfo.refresh_token, options).catch(e => {
         log.error('Problem refreshing token', e)
         if (failure) {
           failure()
@@ -370,14 +373,16 @@ export class OidcService implements IOidcService {
         userInfo.at_exp = 0
         log.warn('Access token doesn\'t contain "exp" information')
       }
-      success(userInfo.access_token)
+
+      this.userInfo = Promise.resolve(userInfo)
+      success(userInfo)
     } else {
       log.error('No refresh token available')
     }
   }
 
   private async setupJQueryAjax() {
-    const userInfo = await this.userInfo
+    let userInfo = await this.userInfo
     if (!userInfo) {
       return
     }
@@ -385,13 +390,14 @@ export class OidcService implements IOidcService {
     log.debug('Set authorization header to OIDC token for AJAX requests')
     const beforeSend = (xhr: JQueryXHR, settings: JQueryAjaxSettings) => {
       const logPrefix = 'jQuery -'
-      if (!userInfo.access_token || this.isTokenExpiring(userInfo.at_exp)) {
+      if (userInfo && (!userInfo.access_token || this.isTokenExpiring(userInfo.at_exp))) {
         log.debug(logPrefix, 'Try to update token for request:', settings.url)
         this.updateToken(
-          token => {
-            if (token) {
+          _userInfo => {
+            if (_userInfo) {
+              userInfo = _userInfo
               log.debug(logPrefix, 'OIDC token refreshed. Set new value to userService')
-              userService.setToken(token)
+              userService.setToken(userInfo.access_token!)
             }
             log.debug(logPrefix, 'Re-sending request after successfully updating OIDC token:', settings.url)
             $.ajax(settings)
@@ -404,7 +410,7 @@ export class OidcService implements IOidcService {
         return false
       }
 
-      xhr.setRequestHeader('Authorization', `Bearer ${userInfo.access_token}`)
+      xhr.setRequestHeader('Authorization', `Bearer ${userInfo!.access_token}`)
 
       // For CSRF protection with Spring Security
       const token = getCookie('XSRF-TOKEN')
@@ -419,25 +425,27 @@ export class OidcService implements IOidcService {
   }
 
   private async setupFetch() {
-    const userInfo = await this.userInfo
+    let userInfo = await this.userInfo
     if (!userInfo) {
       return
     }
 
     log.debug('Intercept Fetch API to attach OIDC token to authorization header')
     const { fetch: originalFetch } = window
+    this.originalFetch = originalFetch
     window.fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
       const logPrefix = 'Fetch -'
       log.debug(logPrefix, 'Fetch intercepted for OIDC authentication')
 
-      if (!userInfo.access_token || this.isTokenExpiring(userInfo.at_exp)) {
+      if (userInfo && (!userInfo.access_token || this.isTokenExpiring(userInfo.at_exp))) {
         log.debug(logPrefix, 'Try to update token for request:', input)
         return new Promise((resolve, reject) => {
           this.updateToken(
-            token => {
-              if (token) {
+            _userInfo => {
+              if (_userInfo) {
+                userInfo = _userInfo
                 log.debug(logPrefix, 'OIDC token refreshed. Set new value to userService')
-                userService.setToken(token)
+                userService.setToken(userInfo!.access_token!)
               }
               log.debug(logPrefix, 'Re-sending request after successfully updating OIDC token:', input)
               resolve(fetch(input, init))
@@ -455,7 +463,7 @@ export class OidcService implements IOidcService {
 
       init.headers = {
         ...init.headers,
-        Authorization: `Bearer ${userInfo.access_token}`,
+        Authorization: `Bearer ${userInfo!.access_token}`,
       }
 
       // For CSRF protection with Spring Security
