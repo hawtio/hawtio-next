@@ -1,5 +1,3 @@
-import * as camel3 from '@hawtio/camel-model-v3'
-import * as camel4 from '@hawtio/camel-model-v4'
 import { eventService } from '@hawtiosrc/core'
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
@@ -22,6 +20,9 @@ import {
   routesType,
 } from './globals'
 import { ROUTE_OPERATIONS } from './routes-service'
+
+let _camel3: CamelModel | null = null
+let _camel4: CamelModel | null = null
 
 // TODO: Should be provided by @hawtio/camel-model package
 export type CamelModel = {
@@ -325,6 +326,7 @@ export function hasProperties(node: MBeanNode): boolean {
 }
 
 export function getCamelVersions(): string[] {
+  const { camel4, camel3 } = fetchCamelModules()
   return [camel3.apacheCamelModelVersion, camel4.apacheCamelModelVersion]
 }
 
@@ -333,6 +335,7 @@ export function getCamelVersions(): string[] {
  * the given node. Currently, it supports Camel v3 and v4.
  */
 export function getCamelModel(node: MBeanNode): CamelModel {
+  const { camel4, camel3 } = fetchCamelModules()
   if (isCamelVersionEQGT(node, 4, 0)) {
     return camel4 as unknown as CamelModel
   }
@@ -396,4 +399,24 @@ export function isCamelVersionEQGT(node: MBeanNode, major: number, minor: number
   }
 
   return compareVersions(camelVersion, major, minor) >= 0
+}
+
+const camelModelPromises = Promise.all([
+  import('@hawtio/camel-model-v3').then(c => {
+    _camel3 = c as unknown as CamelModel
+  }),
+  import('@hawtio/camel-model-v4').then(c => {
+    _camel4 = c as unknown as CamelModel
+  }),
+])
+
+function fetchCamelModules(): { camel3: CamelModel; camel4: CamelModel } {
+  if (!_camel3 || !_camel4) {
+    ;(async () => await camelModelPromises)()
+  }
+
+  return {
+    camel3: _camel3!,
+    camel4: _camel4!,
+  }
 }
