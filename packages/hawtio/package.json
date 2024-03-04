@@ -57,7 +57,7 @@
     "jolokia.js": "^2.0.0",
     "jquery": "^3.7.1",
     "js-logger": "^1.6.1",
-    "keycloak-js": "^23.0.7",
+    "keycloak-js": "^24.0.0",
     "monaco-editor": "^0.46.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
