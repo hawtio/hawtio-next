@@ -5,7 +5,7 @@ export const registerDisabled: HawtioPlugin = () => {
   hawtio.addPlugin({
     id: 'disabled',
     title: 'Disabled',
-    path: 'disabled',
+    path: '/disabled',
     component: DisabledExample,
     isActive: async () => true,
   })

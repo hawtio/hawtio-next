@@ -25,5 +25,5 @@
     ],
     "copyright": "© Hawtio project"
   },
-  "disabledRoutes": ["disabled"]
+  "disabledRoutes": ["/disabled"]
 }
