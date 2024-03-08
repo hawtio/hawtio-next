@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.1.0](https://github.com/hawtio/hawtio-next/compare/v1.0.7...v1.1.0) (2024-03-08)
+
+
+### Features
+
+* **auth:** Fix token refresh scenario ([b132958](https://github.com/hawtio/hawtio-next/commit/b1329584151fd89751b6a16d7731395d66bbfffc))
+* **auth:** just mock oauth4webapi (it's ES module not working with jest) ([d8bbae2](https://github.com/hawtio/hawtio-next/commit/d8bbae21f96fe03e2bd662ee9c03efe34883d95a))
+* **auth:** OIDC authentication works with server side support ([537ae18](https://github.com/hawtio/hawtio-next/commit/537ae180fe201faa55b6b405e9524647d9446cd1))
+* **auth:** Remove unnecessary AbortController and use isLoading flag in less places ([3b85bfd](https://github.com/hawtio/hawtio-next/commit/3b85bfd698a39b7652a6e77dc229e01e5d2e4c95))
+* **auth:** Working Azure OIDC authentication (work in progress, hardcoded config) ([99005f4](https://github.com/hawtio/hawtio-next/commit/99005f4dbce69ae318b69c0cd07e819de46c3bff))
+* **camel:** upgrade Camel models to 4.0.4 and 4.4.0 ([eb04807](https://github.com/hawtio/hawtio-next/commit/eb04807eacb511d7a9d06b52e06ac0d04837b4c0)), closes [#800](https://github.com/hawtio/hawtio-next/issues/800)
+
+
+### Bug Fixes
+
+* **app:** plugin path should start with '/' ([7c2ccc7](https://github.com/hawtio/hawtio-next/commit/7c2ccc7e4e1a8ae0390cf42cf4b3d087ffa85306)), closes [hawtio/hawtio-operator#111](https://github.com/hawtio/hawtio-operator/issues/111)
+* **HAWNG-514:** Change icons for Collapse and Expand to links ([be16ff4](https://github.com/hawtio/hawtio-next/commit/be16ff46a4f1501a6d48bf05c171422e5edbd20c))
+* yarn dedupe to fix lint ([3721466](https://github.com/hawtio/hawtio-next/commit/372146603214a2c21eb3726d81435956b90f01fb))
+
 ## [1.0.7](https://github.com/hawtio/hawtio-next/compare/v1.0.6...v1.0.7) (2024-02-21)
 
 
