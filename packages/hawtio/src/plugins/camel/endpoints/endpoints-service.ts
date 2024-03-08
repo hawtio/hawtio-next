@@ -161,6 +161,7 @@ export function loadEndpointSchema(node: MBeanNode, componentName: string): came
   if (isBlank(componentName)) return null
 
   const camelModel = camelService.getCamelModel(ctxNode)
+  log.info('Endpoints - Use Camel model version:', camelModel.apacheCamelModelVersion)
   return camelModel.components[componentName] ?? null
 }
 
