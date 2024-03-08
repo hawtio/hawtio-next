@@ -2177,17 +2177,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hawtio/camel-model-v3@npm:@hawtio/camel-model@^3.21.2":
-  version: 3.21.2
-  resolution: "@hawtio/camel-model@npm:3.21.2"
-  checksum: 10/feebd08f32479336191e5df8e859d1dcfc32c0d05b307a5d05ce7a2a2730b9de110951fc6787664c43a2ddb1146bcbe2bfa441a467320f2d2c492d1335c840cc
+"@hawtio/camel-model-v4_0@npm:@hawtio/camel-model@~4.0.4":
+  version: 4.0.4
+  resolution: "@hawtio/camel-model@npm:4.0.4"
+  checksum: 10/c4c92f7dc07216205adb84e544b52d0d1c7d7271cc42925ac9dc290cf3abd74cce4fc7910f8a65d409a4e7df53d5f9db84e5223ffb3d0ee5bbd9e0a81679ddb4
   languageName: node
   linkType: hard
 
-"@hawtio/camel-model-v4@npm:@hawtio/camel-model@~4.0.3":
-  version: 4.0.3
-  resolution: "@hawtio/camel-model@npm:4.0.3"
-  checksum: 10/0270c632bdeea39fdc1febd0380d862eeb1059cbd9c6627a41fa02fdba175a6d67a089cbf953db32a62f402de546b5a212e3d0745bcbc9a4518002cb928dae1c
+"@hawtio/camel-model-v4_4@npm:@hawtio/camel-model@~4.4.0":
+  version: 4.4.0
+  resolution: "@hawtio/camel-model@npm:4.4.0"
+  checksum: 10/895dbe3988e552842ab6443574631b185145fe6c97123cc24d43eef074815bdac5bd0c06a648e795dd366d12fafb280a30fe76f81a7f79e32884c01a49af3fa2
   languageName: node
   linkType: hard
 
@@ -2213,8 +2213,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hawtio/react@workspace:packages/hawtio"
   dependencies:
-    "@hawtio/camel-model-v3": "npm:@hawtio/camel-model@^3.21.2"
-    "@hawtio/camel-model-v4": "npm:@hawtio/camel-model@~4.0.3"
+    "@hawtio/camel-model-v4_0": "npm:@hawtio/camel-model@~4.0.4"
+    "@hawtio/camel-model-v4_4": "npm:@hawtio/camel-model@~4.4.0"
     "@module-federation/utilities": "npm:^3.0.5"
     "@patternfly/react-charts": "npm:~6.94.21"
     "@patternfly/react-code-editor": "npm:~4.82.122"

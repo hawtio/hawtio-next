@@ -1,5 +1,5 @@
-import * as camel3 from '@hawtio/camel-model-v3'
-import * as camel4 from '@hawtio/camel-model-v4'
+import * as camel4_0 from '@hawtio/camel-model-v4_0'
+import * as camel4_4 from '@hawtio/camel-model-v4_4'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import * as camelService from './camel-service'
 import { contextNodeType, endpointNodeType, endpointsType, jmxDomain } from './globals'
@@ -44,25 +44,51 @@ describe('camel-service', () => {
     camel3Node.addMetadata('version', '3.21.0')
     const camel3Model = camelService.getCamelModel(camel3Node)
     expect(camel3Model).toBeDefined()
-    expect(camel3Model.apacheCamelModelVersion).toBe(camel3.apacheCamelModelVersion)
+    expect(camel3Model.apacheCamelModelVersion).toBe(camel4_0.apacheCamelModelVersion)
     expect(camel3Model.components).not.toBeUndefined()
     expect(camel3Model.dataformats).not.toBeUndefined()
     expect(camel3Model.definitions).not.toBeUndefined()
     expect(camel3Model.languages).not.toBeUndefined()
     expect(camel3Model.rests).not.toBeUndefined()
 
-    const camel4Node = new MBeanNode(null, 'test-context-camel4', true)
-    camel4Node.addMetadata('domain', jmxDomain)
-    camel4Node.setType(contextNodeType)
-    camel4Node.addMetadata('version', '4.0.0')
-    const camel4Model = camelService.getCamelModel(camel4Node)
+    const camel40Node = new MBeanNode(null, 'test-context-camel4_0', true)
+    camel40Node.addMetadata('domain', jmxDomain)
+    camel40Node.setType(contextNodeType)
+    camel40Node.addMetadata('version', '4.0.4')
+    const camel4Model = camelService.getCamelModel(camel40Node)
     expect(camel4Model).toBeDefined()
-    expect(camel4Model.apacheCamelModelVersion).toBe(camel4.apacheCamelModelVersion)
+    expect(camel4Model.apacheCamelModelVersion).toBe(camel4_0.apacheCamelModelVersion)
     expect(camel4Model.components).not.toBeUndefined()
     expect(camel4Model.dataformats).not.toBeUndefined()
     expect(camel4Model.definitions).not.toBeUndefined()
     expect(camel4Model.languages).not.toBeUndefined()
     expect(camel4Model.rests).not.toBeUndefined()
+
+    const camel41Node = new MBeanNode(null, 'test-context-camel4_1', true)
+    camel41Node.addMetadata('domain', jmxDomain)
+    camel41Node.setType(contextNodeType)
+    camel41Node.addMetadata('version', '4.1.0')
+    const camel41Model = camelService.getCamelModel(camel41Node)
+    expect(camel41Model).toBeDefined()
+    expect(camel41Model.apacheCamelModelVersion).toBe(camel4_0.apacheCamelModelVersion)
+    expect(camel41Model.components).not.toBeUndefined()
+    expect(camel41Model.dataformats).not.toBeUndefined()
+    expect(camel41Model.definitions).not.toBeUndefined()
+    expect(camel41Model.languages).not.toBeUndefined()
+    expect(camel41Model.rests).not.toBeUndefined()
+
+    const camel44Node = new MBeanNode(null, 'test-context-camel4_4', true)
+    camel44Node.addMetadata('domain', jmxDomain)
+    camel44Node.setType(contextNodeType)
+    camel44Node.addMetadata('version', '4.4.0')
+    const camel44Model = camelService.getCamelModel(camel44Node)
+    expect(camel44Model).toBeDefined()
+    expect(camel44Model.apacheCamelModelVersion).toBe(camel4_4.apacheCamelModelVersion)
+    expect(camel44Model.components).not.toBeUndefined()
+    expect(camel44Model.dataformats).not.toBeUndefined()
+    expect(camel44Model.definitions).not.toBeUndefined()
+    expect(camel44Model.languages).not.toBeUndefined()
+    expect(camel44Model.rests).not.toBeUndefined()
   })
 
   test('compareVersions', () => {

@@ -1,5 +1,5 @@
-import * as camel3 from '@hawtio/camel-model-v3'
-import * as camel4 from '@hawtio/camel-model-v4'
+import * as camel4_0 from '@hawtio/camel-model-v4_0'
+import * as camel4_4 from '@hawtio/camel-model-v4_4'
 import { eventService } from '@hawtiosrc/core'
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
@@ -325,18 +325,24 @@ export function hasProperties(node: MBeanNode): boolean {
 }
 
 export function getCamelVersions(): string[] {
-  return [camel3.apacheCamelModelVersion, camel4.apacheCamelModelVersion]
+  return [camel4_0.apacheCamelModelVersion, camel4_4.apacheCamelModelVersion]
 }
 
 /**
  * Returns the corresponding version of Camel model based on the Camel version of
- * the given node. Currently, it supports Camel v3 and v4.
+ * the given node.
  */
 export function getCamelModel(node: MBeanNode): CamelModel {
-  if (isCamelVersionEQGT(node, 4, 0)) {
-    return camel4 as unknown as CamelModel
+  // 4.4 ~     => 4.4.x
+  // 4.0 ~ 4.3 => 4.0.x
+  if (isCamelVersionEQGT(node, 4, 4)) {
+    return camel4_4 as unknown as CamelModel
   }
-  return camel3 as unknown as CamelModel
+  if (isCamelVersionEQGT(node, 4, 0)) {
+    return camel4_0 as unknown as CamelModel
+  }
+  // Fallback to 4.0.x model
+  return camel4_0 as unknown as CamelModel
 }
 
 /**
