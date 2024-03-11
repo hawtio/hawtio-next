@@ -1,7 +1,7 @@
 import { eventService } from '@hawtiosrc/core'
 import { log, PATH_LOGOUT, PATH_USER, PUBLIC_USER } from './globals'
 
-type User = {
+export type User = {
   username: string
   isLogin: boolean
   isLoading?: boolean
