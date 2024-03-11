@@ -22,12 +22,12 @@ import {
 } from '@patternfly/react-core'
 import React, { useEffect, useState } from 'react'
 
-import { Thread } from '@hawtiosrc/plugins/runtime/types'
+import { Thread } from './types'
 import { objectSorter } from '@hawtiosrc/util/objects'
 import { SearchIcon } from '@patternfly/react-icons'
 import { TableComposable, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
 import { runtimeService } from './runtime-service'
-import { ThreadInfoModal } from './ThreadInfoModal'
+import { ThreadInfoModal, ThreadState } from './ThreadInfoModal'
 
 const ThreadsDumpModal: React.FunctionComponent<{
   isOpen: boolean
@@ -112,8 +112,12 @@ export const Threads: React.FunctionComponent = () => {
   }, [threads, searchTerm, attributeMenuItem, filters])
 
   const onDeleteFilter = (filter: string) => {
-    const newFilters = filters.filter(f => f !== filter)
-    setFilters(newFilters)
+    if (`${attributeMenuItem}:${searchTerm}` === filter) {
+      setSearchTerm('')
+    } else {
+      const newFilters = filters.filter(f => f !== filter)
+      setFilters(newFilters)
+    }
   }
 
   const addToFilters = () => {
@@ -222,7 +226,10 @@ export const Threads: React.FunctionComponent = () => {
         <ToolbarGroup>
           <Dropdown
             data-testid='attribute-select'
-            onSelect={() => setIsDropdownOpen(false)}
+            onSelect={() => {
+              setIsDropdownOpen(false)
+              addToFilters()
+            }}
             defaultValue='Name'
             toggle={
               <DropdownToggle data-testid='attribute-select-toggle' id='toggle-basic' onToggle={setIsDropdownOpen}>
@@ -233,7 +240,7 @@ export const Threads: React.FunctionComponent = () => {
             dropdownItems={dropdownItems}
           />
           <ToolbarFilter
-            chips={filters}
+            chips={searchTerm !== '' ? [...filters, `${attributeMenuItem}:${searchTerm}`] : filters}
             deleteChip={(_e, filter) => onDeleteFilter(filter as string)}
             deleteChipGroup={clearFilters}
             categoryName='Filters'
@@ -248,22 +255,17 @@ export const Threads: React.FunctionComponent = () => {
               aria-label='Search input'
             />
           </ToolbarFilter>
-          <ToolbarItem>
-            <Button variant='secondary' onClick={addToFilters} isSmall>
-              Add Filter
-            </Button>
-          </ToolbarItem>
         </ToolbarGroup>
 
         <ToolbarGroup>
           <ToolbarItem>
-            <Button variant='secondary' onClick={handleConnectionThreadMonitoring} isSmall>
-              {threadConnectionMonitoring ? 'Disable' : 'Enable'} Connection Thread Monitoring
+            <Button variant='primary' onClick={handleConnectionThreadMonitoring} isSmall>
+              {threadConnectionMonitoring ? 'Disable' : 'Enable'} connection thread monitoring
             </Button>
           </ToolbarItem>
           <ToolbarItem>
             <Button variant='secondary' onClick={onThreadDumpClick} isSmall>
-              Thread Dump
+              Thread dump
             </Button>
           </ToolbarItem>
         </ToolbarGroup>
@@ -290,7 +292,7 @@ export const Threads: React.FunctionComponent = () => {
                     {att.value}
                   </Th>
                 ))}
-                <Th> Actions</Th>
+                <Th></Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -298,7 +300,13 @@ export const Threads: React.FunctionComponent = () => {
                 return (
                   <Tr key={'row' + index} data-testid={'row' + index}>
                     {tableColumns.map((att, column) => (
-                      <Td key={'col' + index + '-' + column}>{getIndexedThread(thread)[column]}</Td>
+                      <Td key={'col' + index + '-' + column}>
+                        {att.key === 'threadState' ? (
+                          <ThreadState state={getIndexedThread(thread)[column] as string} />
+                        ) : (
+                          getIndexedThread(thread)[column]
+                        )}
+                      </Td>
                     ))}
                     <Td>
                       <Button
@@ -307,8 +315,9 @@ export const Threads: React.FunctionComponent = () => {
                           setCurrentThread(thread)
                         }}
                         isSmall
+                        variant='link'
                       >
-                        More
+                        Details
                       </Button>
                     </Td>
                   </Tr>

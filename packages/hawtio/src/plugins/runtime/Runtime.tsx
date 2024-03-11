@@ -15,7 +15,7 @@ export const Runtime: React.FunctionComponent = () => {
   const location = useLocation()
 
   const navItems: NavItem[] = [
-    { id: 'sysprops', title: 'System Properties', component: <SysProps /> },
+    { id: 'sysprops', title: 'System properties', component: <SysProps /> },
     { id: 'metrics', title: 'Metrics', component: <Metrics /> },
     { id: 'threads', title: 'Threads', component: <Threads /> },
   ]
