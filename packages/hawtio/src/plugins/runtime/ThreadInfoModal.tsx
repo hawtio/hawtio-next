@@ -1,7 +1,18 @@
 import React from 'react'
 import { Thread } from '@hawtiosrc/plugins/runtime/types'
-import { Grid, GridItem, Modal, ModalVariant } from '@patternfly/react-core'
+import { Grid, GridItem, Label, Modal, ModalVariant } from '@patternfly/react-core'
 
+export const ThreadState: React.FunctionComponent<{ state: string }> = ({ state }) => {
+  switch (state) {
+    case 'RUNNABLE':
+      return <Label color='green'>{state}</Label>
+    case 'WAITING':
+    case 'TIMED_WAITING':
+      return <Label color='orange'>{state}</Label>
+    default:
+      return <Label color='grey'>{state}</Label>
+  }
+}
 export const ThreadInfoModal: React.FunctionComponent<{
   thread?: Thread
   isOpen: boolean
@@ -16,7 +27,7 @@ export const ThreadInfoModal: React.FunctionComponent<{
       bodyAriaLabel='Thread Details'
       tabIndex={0}
       variant={ModalVariant.medium}
-      title='Thread Details'
+      title='Thread details'
       isOpen={isOpen}
       onClose={() => setIsOpen(false)}
     >
@@ -132,7 +143,7 @@ const CustomItem: React.FunctionComponent<{
       <GridItem span={3}>
         <i>{itemName}</i>
       </GridItem>
-      <GridItem span={9}>{itemValue}</GridItem>
+      <GridItem span={9}> {itemName === 'State' ? <ThreadState state={itemValue as string} /> : itemValue}</GridItem>
     </>
   )
 }
