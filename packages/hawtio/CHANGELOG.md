@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.1.1](https://github.com/hawtio/hawtio-next/compare/v1.1.0...v1.1.1) (2024-03-11)
+
+
+### Bug Fixes
+
+* **api:** export types from auth/user-serivce.ts ([8363283](https://github.com/hawtio/hawtio-next/commit/83632832f6b53ede63dcf5efef4ae7c69e66dccc))
+
 ## [1.1.0](https://github.com/hawtio/hawtio-next/compare/v1.0.7...v1.1.0) (2024-03-08)
 
 
