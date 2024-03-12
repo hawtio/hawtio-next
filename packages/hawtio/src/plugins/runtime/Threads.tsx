@@ -121,8 +121,10 @@ export const Threads: React.FunctionComponent = () => {
   }
 
   const addToFilters = () => {
-    setFilters([...filters, `${attributeMenuItem}:${searchTerm}`])
-    setSearchTerm('')
+    if (searchTerm !== '') {
+      setFilters([...filters, `${attributeMenuItem}:${searchTerm}`])
+      setSearchTerm('')
+    }
   }
 
   const clearFilters = () => {
@@ -221,7 +223,7 @@ export const Threads: React.FunctionComponent = () => {
   }
 
   const tableToolbar = (
-    <Toolbar>
+    <Toolbar clearAllFilters={clearFilters}>
       <ToolbarContent>
         <ToolbarGroup>
           <Dropdown

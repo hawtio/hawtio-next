@@ -1,7 +1,6 @@
 import { objectSorter } from '@hawtiosrc/util/objects'
 import {
   Bullseye,
-  Button,
   Card,
   Dropdown,
   DropdownItem,
@@ -31,7 +30,7 @@ export const SysProps: React.FunctionComponent = () => {
   const [perPage, setPerPage] = useState(20)
   const [searchTerm, setSearchTerm] = useState('')
   const [filters, setFilters] = useState<string[]>([])
-  const [attributeMenuItem, setAttributeMenuItem] = useState('name')
+  const [filteredAttribute, setFilteredAttribute] = useState('name')
   const [sortIndex, setSortIndex] = React.useState<number>(-1)
   const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('asc')
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -48,7 +47,7 @@ export const SysProps: React.FunctionComponent = () => {
     let filtered: SystemProperty[] = [...properties]
 
     //add current search word to filters and filter
-    ;[...filters, `${attributeMenuItem}:${searchTerm}`].forEach(value => {
+    ;[...filters, `${filteredAttribute}:${searchTerm}`].forEach(value => {
       const attr = value.split(':')[0] ?? ''
       const searchTerm = value.split(':')[1] ?? ''
       filtered = filtered.filter(prop =>
@@ -58,16 +57,22 @@ export const SysProps: React.FunctionComponent = () => {
 
     setPage(1)
     setFilteredProperties([...filtered])
-  }, [searchTerm, properties, filters, attributeMenuItem])
+  }, [searchTerm, properties, filters, filteredAttribute])
 
   const onDeleteFilter = (filter: string) => {
-    const newFilters = filters.filter(f => f !== filter)
-    setFilters(newFilters)
+    if (`${filteredAttribute}:${searchTerm}` === filter) {
+      setSearchTerm('')
+    } else {
+      const newFilters = filters.filter(f => f !== filter)
+      setFilters(newFilters)
+    }
   }
 
   const addToFilters = () => {
-    setFilters([...filters, `${attributeMenuItem}:${searchTerm}`])
-    setSearchTerm('')
+    if (searchTerm !== '') {
+      setFilters([...filters, `${filteredAttribute}:${searchTerm}`])
+      setSearchTerm('')
+    }
   }
   const clearFilters = () => {
     setFilters([])
@@ -104,7 +109,7 @@ export const SysProps: React.FunctionComponent = () => {
   const dropdownItems = attributes.map(a => (
     <DropdownItem
       onClick={() => {
-        setAttributeMenuItem(a.key)
+        setFilteredAttribute(a.key)
       }}
       key={a.key}
     >
@@ -139,23 +144,26 @@ export const SysProps: React.FunctionComponent = () => {
   }
 
   const tableToolbar = (
-    <Toolbar>
+    <Toolbar clearAllFilters={clearFilters}>
       <ToolbarContent>
         <ToolbarGroup>
           <Dropdown
             data-testid='attribute-select'
-            onSelect={() => setIsDropdownOpen(false)}
+            onSelect={() => {
+              setIsDropdownOpen(false)
+              addToFilters()
+            }}
             defaultValue='name'
             toggle={
               <DropdownToggle data-testid='attribute-select-toggle' id='toggle-basic' onToggle={setIsDropdownOpen}>
-                {attributes.find(att => att.key === attributeMenuItem)?.value}
+                {attributes.find(att => att.key === filteredAttribute)?.value}
               </DropdownToggle>
             }
             isOpen={isDropdownOpen}
             dropdownItems={dropdownItems}
           />
           <ToolbarFilter
-            chips={filters}
+            chips={searchTerm !== '' ? [...filters, `${filteredAttribute}:${searchTerm}`] : filters}
             deleteChip={(_e, filter) => onDeleteFilter(filter as string)}
             deleteChipGroup={clearFilters}
             categoryName='Filters'
@@ -164,15 +172,12 @@ export const SysProps: React.FunctionComponent = () => {
               type='text'
               data-testid='filter-input'
               id='search-input'
-              placeholder='Search...'
+              placeholder={'Fliter by ' + filteredAttribute}
               value={searchTerm}
               onChange={(_event, value) => setSearchTerm(value)}
               aria-label='Search input'
             />
           </ToolbarFilter>
-          <Button variant='secondary' onClick={addToFilters} isSmall>
-            Add Filter
-          </Button>
         </ToolbarGroup>
 
         <ToolbarItem variant='pagination'>
