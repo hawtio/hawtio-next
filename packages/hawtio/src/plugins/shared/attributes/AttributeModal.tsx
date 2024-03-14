@@ -75,18 +75,20 @@ export const AttributeModal: React.FunctionComponent<{
 
   const modalTitle = `Attribute: ${attributeName}`
 
-  const modalActions = [
-    <Button key='close' variant='primary' onClick={onClose}>
-      Close
-    </Button>,
-  ]
+  const modalActions = []
+
   if (isWritable) {
     modalActions.push(
       <Button key='update' variant='danger' onClick={updateAttribute}>
-        Update
+        Save
       </Button>,
     )
   }
+  modalActions.push(
+    <Button key='close' variant='link' onClick={onClose}>
+      Cancel
+    </Button>,
+  )
 
   return (
     <Modal variant='medium' title={modalTitle} isOpen={isOpen} onClose={onClose} actions={modalActions}>
