@@ -36,8 +36,6 @@ export const HawtioPage: React.FunctionComponent = () => {
     return <HawtioLoadingPage />
   }
 
-  log.info(`Login state: username = ${username}, isLogin = ${isLogin}`)
-
   const defaultPlugin = plugins[0] ?? null
   const defaultPage = defaultPlugin ? <Navigate to={{ pathname: defaultPlugin.path, search }} /> : <HawtioHome />
 
