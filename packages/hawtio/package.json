@@ -95,6 +95,9 @@
       "optional": true
     }
   },
+  "resolutions": {
+    "victory-core": "36.8.6"
+  },
   "engines": {
     "node": ">=18"
   },
