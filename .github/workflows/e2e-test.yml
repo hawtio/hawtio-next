@@ -21,6 +21,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+env:
+  HAWTIO_BRANCH: 4.x
+
 jobs:
   test:
     permissions:
@@ -82,7 +85,7 @@ jobs:
               echo "branch=${BASH_REMATCH[2]:1}" >> $GITHUB_OUTPUT
             fi
           else
-            branch=3.x
+            branch=${{env.HAWTIO_BRANCH}}
             app_image=quay.io/hawtio/hawtio-${{ matrix.runtime }}-test-app:$branch-${{ matrix.java }}
             testsuite_image=quay.io/hawtio/hawtio-test-suite:$branch-${{ matrix.java }}
 
@@ -189,8 +192,8 @@ jobs:
       - name: Generate summary
         run: |
           export CHECK_URL=$(jq -r .check_url results.json)
-          wget https://raw.githubusercontent.com/hawtio/hawtio/3.x/tests/hawtio-test-suite/process_test_results.sh
-          wget https://raw.githubusercontent.com/hawtio/hawtio/3.x/tests/hawtio-test-suite/pr_results_template.xsl
+          wget https://raw.githubusercontent.com/hawtio/hawtio/${{ env.HAWTIO_BRANCH }}/tests/hawtio-test-suite/process_test_results.sh
+          wget https://raw.githubusercontent.com/hawtio/hawtio/${{ env.HAWTIO_BRANCH }}/tests/hawtio-test-suite/pr_results_template.xsl
           bash process_test_results.sh test-results > summary.md
       - name: Update summary
         run: |
