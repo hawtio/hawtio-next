@@ -1,0 +1,1 @@
+export { HawtioLoadingPage } from './page'

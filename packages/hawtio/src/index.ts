@@ -8,6 +8,7 @@ export * from './core'
 export * from './help'
 export * from './plugins'
 export * from './preferences'
+export * from './ui'
 
 // Register Hawtio React component version
 configManager.addProductInfo('Hawtio React', '__PACKAGE_VERSION_PLACEHOLDER__')
