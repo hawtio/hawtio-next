@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.1.2](https://github.com/hawtio/hawtio-next/compare/v1.1.1...v1.1.2) (2024-03-15)
+
+
+### Features
+
+* **auth:** Do not log.info a login state ([9a29de8](https://github.com/hawtio/hawtio-next/commit/9a29de88b0aabcc1bf5ce9c5caeadd0fc16316eb))
+
+
+### Bug Fixes
+
+* **HAWNG-571:** Runtime/Threads UX changes ([07d7620](https://github.com/hawtio/hawtio-next/commit/07d7620fd403bb7df189deb386a58a1ba7dd5db3))
+* **ui:** export HawtioLoadingPage as part of Hawtio API ([b3d5ff1](https://github.com/hawtio/hawtio-next/commit/b3d5ff1a4a9db3515bc57abbab94fd46a92b3e0e)), closes [hawtio/hawtio-online#387](https://github.com/hawtio/hawtio-online/issues/387)
+
 ## [1.1.1](https://github.com/hawtio/hawtio-next/compare/v1.1.0...v1.1.1) (2024-03-11)
 
 
