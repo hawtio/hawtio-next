@@ -1,5 +1,18 @@
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
-import { Button, ClipboardCopy, Form, FormGroup, Modal, TextArea, TextInput } from '@patternfly/react-core'
+import {
+  Button,
+  ClipboardCopy,
+  DrawerActions,
+  DrawerCloseButton,
+  DrawerHead,
+  DrawerPanelBody,
+  DrawerPanelContent,
+  Form,
+  FormGroup,
+  TextArea,
+  TextInput,
+  Title,
+} from '@patternfly/react-core'
 import React, { useContext, useEffect, useState } from 'react'
 import { attributeService } from './attribute-service'
 import { log } from '../globals'
@@ -84,54 +97,61 @@ export const AttributeModal: React.FunctionComponent<{
       </Button>,
     )
   }
-  modalActions.push(
-    <Button key='close' variant='link' onClick={onClose}>
-      Cancel
-    </Button>,
-  )
 
   return (
-    <Modal variant='medium' title={modalTitle} isOpen={isOpen} onClose={onClose} actions={modalActions}>
-      <Form id='attribute-form' isHorizontal>
-        <FormGroup label='Name' fieldId='attribute-form-name'>
-          <TextInput
-            id='attribute-form-name'
-            name='attribute-form-name'
-            value={attributeName}
-            readOnlyVariant='default'
-          />
-        </FormGroup>
-        <FormGroup label='Description' fieldId='attribute-form-description'>
-          <TextArea
-            id='attribute-form-description'
-            name='attribute-form-description'
-            value={attribute.desc}
-            readOnlyVariant='default'
-          />
-        </FormGroup>
-        <FormGroup label='Type' fieldId='attribute-form-type'>
-          <TextInput
-            id='attribute-form-type'
-            name='attribute-form-type'
-            value={attribute.type}
-            readOnlyVariant='default'
-          />
-        </FormGroup>
-        <FormGroup label='Jolokia URL' fieldId='attribute-form-jolokia-url'>
-          <ClipboardCopy isReadOnly removeFindDomNode>
-            {jolokiaUrl}
-          </ClipboardCopy>
-        </FormGroup>
-        <FormGroup label='Value' fieldId='attribute-form-value'>
-          <TextInput
-            id='attribute-form-value'
-            name='attribute-form-value'
-            value={attributeValue}
-            onChange={value => setAttributeValue(value)}
-            readOnlyVariant={isWritable ? undefined : 'default'}
-          />
-        </FormGroup>
-      </Form>
-    </Modal>
+    <DrawerPanelContent isResizable>
+      <DrawerHead>
+        <Title headingLevel='h2' size='xl'>
+          {modalTitle}
+        </Title>
+        <DrawerActions>
+          <DrawerCloseButton onClick={onClose} />
+        </DrawerActions>
+      </DrawerHead>
+
+      <DrawerPanelBody>
+        <Form id='attribute-form' isHorizontal>
+          <FormGroup label='Name' fieldId='attribute-form-name'>
+            <TextInput
+              id='attribute-form-name'
+              name='attribute-form-name'
+              value={attributeName}
+              readOnlyVariant='default'
+            />
+          </FormGroup>
+          <FormGroup label='Description' fieldId='attribute-form-description'>
+            <TextArea
+              id='attribute-form-description'
+              name='attribute-form-description'
+              value={attribute.desc}
+              readOnlyVariant='default'
+            />
+          </FormGroup>
+          <FormGroup label='Type' fieldId='attribute-form-type'>
+            <TextInput
+              id='attribute-form-type'
+              name='attribute-form-type'
+              value={attribute.type}
+              readOnlyVariant='default'
+            />
+          </FormGroup>
+          <FormGroup label='Jolokia URL' fieldId='attribute-form-jolokia-url'>
+            <ClipboardCopy isReadOnly removeFindDomNode>
+              {jolokiaUrl}
+            </ClipboardCopy>
+          </FormGroup>
+          <FormGroup label='Value' fieldId='attribute-form-value'>
+            <TextInput
+              id='attribute-form-value'
+              name='attribute-form-value'
+              value={attributeValue}
+              onChange={value => setAttributeValue(value)}
+              readOnlyVariant={isWritable ? undefined : 'default'}
+            />
+          </FormGroup>
+          <FormGroup>{modalActions}</FormGroup>
+        </Form>
+      </DrawerPanelBody>
+    </DrawerPanelContent>
   )
 }

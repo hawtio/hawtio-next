@@ -1,7 +1,7 @@
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
 import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { isObject } from '@hawtiosrc/util/objects'
-import { Card } from '@patternfly/react-core'
+import { Card, Drawer, DrawerContent, DrawerContentBody } from '@patternfly/react-core'
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useState } from 'react'
 import { HawtioEmptyCard } from '../HawtioEmptyCard'
@@ -72,16 +72,22 @@ export const Attributes: React.FunctionComponent = () => {
 
   const selectAttribute = (attribute: { name: string; value: string }) => {
     setSelected(attribute)
-    handleModalToggle()
+    if (!isModalOpen) {
+      setIsModalOpen(true)
+    }
   }
 
-  const handleModalToggle = () => {
-    setIsModalOpen(!isModalOpen)
-  }
+  const panelContent = (
+    <AttributeModal
+      isOpen={isModalOpen}
+      onClose={() => setIsModalOpen(false)}
+      onUpdate={() => setReload(true)}
+      input={selected}
+    />
+  )
 
-  return (
-    <Card isFullHeight>
-      {/*<DataListClickableRows />*/}
+  const attributesTable = (
+    <div style={{ height: '75vh' }}>
       <TableComposable aria-label='Attributes' variant='compact'>
         <Thead>
           <Tr>
@@ -90,9 +96,9 @@ export const Attributes: React.FunctionComponent = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {rows.map(att => (
+          {rows.map((att, index) => (
             <Tr
-              key={att.name}
+              key={att.name + '-' + index}
               isHoverable
               isRowSelected={selected.name === att.name}
               onRowClick={() => selectAttribute(att)}
@@ -103,12 +109,17 @@ export const Attributes: React.FunctionComponent = () => {
           ))}
         </Tbody>
       </TableComposable>
-      <AttributeModal
-        isOpen={isModalOpen}
-        onClose={handleModalToggle}
-        onUpdate={() => setReload(true)}
-        input={selected}
-      />
-    </Card>
+    </div>
+  )
+  return (
+    <React.Fragment>
+      <Card isFullHeight>
+        <Drawer isExpanded={isModalOpen} className={'pf-m-inline-on-2xl'}>
+          <DrawerContent panelContent={panelContent}>
+            <DrawerContentBody hasPadding> {attributesTable}</DrawerContentBody>
+          </DrawerContent>
+        </Drawer>
+      </Card>
+    </React.Fragment>
   )
 }
