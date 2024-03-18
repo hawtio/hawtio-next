@@ -19658,7 +19658,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"victory-core@npm:^36.6.7":
+"victory-core@npm:36.8.6":
   version: 36.8.6
   resolution: "victory-core@npm:36.8.6"
   dependencies:
@@ -19669,19 +19669,6 @@ __metadata:
   peerDependencies:
     react: ">=16.6.0"
   checksum: 10/0e1f82776016c781112d7fa57ff30a9d4e7d0d7acb23ecde42bec91ee9cb015fe537902094e5eb30d76595bd4e02c09675c40eb5412a8e3a6c75a8a19f82b9a8
-  languageName: node
-  linkType: hard
-
-"victory-core@npm:^36.9.1":
-  version: 36.9.1
-  resolution: "victory-core@npm:36.9.1"
-  dependencies:
-    lodash: "npm:^4.17.21"
-    react-fast-compare: "npm:^3.2.0"
-    victory-vendor: "npm:^36.9.1"
-  peerDependencies:
-    react: ">=16.6.0"
-  checksum: 10/745cc37502f8d0f167c31e6339db15025e26d35cbdcf9080380f032a2cccbc8820728bac41cf4b5326f217239ad523bee4efa1049c905c4ad30b557f5ab0e869
   languageName: node
   linkType: hard
 

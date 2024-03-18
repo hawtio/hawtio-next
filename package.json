@@ -45,7 +45,8 @@
     "prettier": "3.2.5"
   },
   "resolutions": {
-    "fork-ts-checker-webpack-plugin": "6.5.3"
+    "fork-ts-checker-webpack-plugin": "6.5.3",
+    "victory-core": "36.8.6"
   },
   "config": {
     "commitizen": {
