@@ -44,7 +44,7 @@ export const ConnectLogin: React.FunctionComponent = () => {
 
   return (
     <Modal variant='small' title={title} isOpen={isOpen} onClose={handleClose} actions={actions}>
-      <Form id='connect-login-form' isHorizontal>
+      <Form id='connect-login-form' isHorizontal onKeyUp={e => e.key === 'Enter' && handleLogin()}>
         {loginFailed && (
           <FormAlert>
             <Alert variant='danger' title='Incorrect username or password' isInline />
@@ -57,6 +57,7 @@ export const ConnectLogin: React.FunctionComponent = () => {
             name='connect-login-form-username'
             value={username}
             onChange={value => setUsername(value)}
+            autoFocus={true}
           />
         </FormGroup>
         <FormGroup label='Password' isRequired fieldId='connect-login-form-password'>
