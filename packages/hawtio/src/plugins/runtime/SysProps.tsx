@@ -172,7 +172,7 @@ export const SysProps: React.FunctionComponent = () => {
               type='text'
               data-testid='filter-input'
               id='search-input'
-              placeholder={'Fliter by ' + filteredAttribute}
+              placeholder={'Filter by ' + filteredAttribute}
               value={searchTerm}
               onChange={(_event, value) => setSearchTerm(value)}
               aria-label='Search input'
