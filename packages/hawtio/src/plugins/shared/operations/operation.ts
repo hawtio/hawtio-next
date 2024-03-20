@@ -1,5 +1,5 @@
 import { eventService } from '@hawtiosrc/core'
-import { stringSorter, trimEnd } from '@hawtiosrc/util/strings'
+import { stringSorter } from '@hawtiosrc/util/strings'
 import { log } from '../globals'
 import { OptimisedMBeanOperation, OptimisedMBeanOperations } from '../tree'
 
@@ -47,6 +47,46 @@ function addOperation(operations: Operation[], name: string, op: OptimisedMBeanO
   }
 }
 
+function readableType(tn: string): string {
+  let typeName = tn
+  if (typeName.startsWith('[') && typeName.length == 2) {
+    // primitive array type
+    switch (typeName[1]) {
+      case 'C':
+        return 'char[]'
+      case 'B':
+        return 'byte[]'
+      case 'S':
+        return 'short[]'
+      case 'I':
+        return 'int[]'
+      case 'J':
+        return 'long[]'
+      case 'Z':
+        return 'boolean[]'
+      case 'F':
+        return 'float[]'
+      case 'D':
+        return 'double[]'
+    }
+  }
+  let array = false
+  if (typeName.startsWith('[L') && typeName.endsWith(';')) {
+    // non-primitive array type
+    array = true
+    typeName = typeName.substring(2, typeName.length - 1)
+  }
+  const splitName = typeName.split('.')
+  const lastName = splitName.pop()
+  const packageName = splitName.join('.')
+
+  if (typeName && Operation.IGNORED_PACKAGES.includes(packageName)) {
+    return lastName + (array ? '[]' : '')
+  } else {
+    return typeName + (array ? '[]' : '')
+  }
+}
+
 export class Operation {
   readonly name: string
   readonly readableName: string
@@ -75,15 +115,7 @@ export class Operation {
   }
 
   private buildReadableReturnType(): string {
-    const splitName = this.returnType.split('.')
-    const typeName = splitName.pop()
-    const packageName = splitName.join('.')
-
-    if (typeName && Operation.IGNORED_PACKAGES.includes(packageName)) {
-      return typeName
-    } else {
-      return this.returnType
-    }
+    return readableType(this.returnType)
   }
 }
 
@@ -99,12 +131,7 @@ export class OperationArgument {
   }
 
   private buildReadableType(): string {
-    const lastDotIndex = this.type.lastIndexOf('.')
-    let answer = lastDotIndex > 0 ? this.type.substring(lastDotIndex + 1) : this.type
-    if (this.type.startsWith('[') && this.type.endsWith(';')) {
-      answer = trimEnd(answer, ';') + '[]'
-    }
-    return answer
+    return readableType(this.type)
   }
 
   helpText(): string {
