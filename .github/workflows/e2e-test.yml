@@ -120,35 +120,40 @@ jobs:
         run: |
           case ${{ matrix.runtime }} in
               quarkus)
-              APP_PORT=8080
+                APP_PORT=8080
                 echo "url-suffix=hawtio" >> $GITHUB_ENV
+                echo 'app-port=8080' >> $GITHUB_ENV
               ;;
 
               springboot)
                 APP_PORT=10001
                 echo "url-suffix=actuator/hawtio" >> $GITHUB_ENV
+                echo 'app-port=10001' >> $GITHUB_ENV
               ;;
           esac
 
-          id=$(docker run --name app --network host -p 10001:$APP_PORT -d ${{ env.app-image }})
+          id=$(docker run --name app --network host -d ${{ env.app-image }})
           timeout 30 bash -c "while ! docker logs $id 2>&1 | grep -q 'Hello Camel!'; do sleep 1; done"
       - name: Run tests
         run: |
+          mkdir -p $PWD/$REPORT_DIR/
           docker run --rm --network host \
           -v $PWD/$REPORT_DIR:/hawtio-test-suite/tests/hawtio-test-suite/target \
           -v $PWD/$REPORT_DIR/build:/hawtio-test-suite/tests/hawtio-test-suite/build/ \
           --shm-size="2g" \
           ${{ env.testsuite-image }} -Pe2e-${{ matrix.runtime }} -Dselenide.browser=${{ matrix.browser }} \
           -Dio.hawt.test.url=http://localhost:3000/hawtio \
-          -Dio.hawt.test.app.connect.url=http://localhost:10001/${{env.url-suffix}}/jolokia \
+          -Dio.hawt.test.app.connect.url=http://localhost:${{ env.app-port }}/${{ env.url-suffix }}/jolokia \
           -Dhawtio-next-ci
       - name: Prepare report artifacts
         if: always()
         run: |
           mkdir -p results/$REPORT_DIR/
-          docker logs app > results/$REPORT_DIR/container.log
           cp $REPORT_DIR/cucumber-reports/* results/$REPORT_DIR/
-          ls $REPORT_DIR/cucumber-reports/
+          docker logs app 2>&1 > results/$REPORT_DIR/container.log
+          docker logs app 2>&1 > $REPORT_DIR/container.log
+          echo "Container log:"
+          cat results/$REPORT_DIR/container.log
       - name: Archive test artifacts
         uses: actions/upload-artifact@v3
         if: always()
