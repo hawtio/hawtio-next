@@ -32,7 +32,7 @@ jobs:
       fail-fast: false
       matrix:
         node: ['18', '20']
-        java: ['11', '17']
+        java: ['17', '21']
         runtime: ['springboot', 'quarkus']
         browser: ['firefox'] # 'chrome' tests are unstable: https://github.com/hawtio/hawtio-next/issues/478
     env:
@@ -107,15 +107,15 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: 11
+          java-version: ${{matrix.java}}
           cache: 'maven'
       - name: Build Hawtio
         if: ${{ steps.get-images.outputs.repo != ''}}
         run: |
           cd hawtio
           mvn --batch-mode --no-transfer-progress install -DskipTests -Pe2e -Pdocker-testsuite -Ptests-docker -Dhawtio-container -pl :hawtio-test-suite,:hawtio-tests-quarkus,:hawtio-tests-springboot -am
-          echo 'app-image=hawtio-${{ matrix.runtime }}-app:11' >> $GITHUB_ENV
-          echo 'testsuite-image=hawtio-test-suite:11' >> $GITHUB_ENV
+          echo 'app-image=hawtio-${{ matrix.runtime }}-app:${{ matrix.java }}' >> $GITHUB_ENV
+          echo 'testsuite-image=hawtio-test-suite:${{ matrix.java }}' >> $GITHUB_ENV
       - name: Setup application
         run: |
           case ${{ matrix.runtime }} in
@@ -130,22 +130,23 @@ jobs:
               ;;
           esac
 
-          id=$(docker run -p 10001:$APP_PORT -d ${{ env.app-image }})
+          id=$(docker run --name app --network host -p 10001:$APP_PORT -d ${{ env.app-image }})
           timeout 30 bash -c "while ! docker logs $id 2>&1 | grep -q 'Hello Camel!'; do sleep 1; done"
       - name: Run tests
         run: |
-          docker run --rm \
+          docker run --rm --network host \
           -v $PWD/$REPORT_DIR:/hawtio-test-suite/tests/hawtio-test-suite/target \
           -v $PWD/$REPORT_DIR/build:/hawtio-test-suite/tests/hawtio-test-suite/build/ \
-          --shm-size="2g" --add-host=host.docker.internal:host-gateway \
+          --shm-size="2g" \
           ${{ env.testsuite-image }} -Pe2e-${{ matrix.runtime }} -Dselenide.browser=${{ matrix.browser }} \
-          -Dio.hawt.test.url=http://host.docker.internal:3000/hawtio \
+          -Dio.hawt.test.url=http://localhost:3000/hawtio \
           -Dio.hawt.test.app.connect.url=http://localhost:10001/${{env.url-suffix}}/jolokia \
           -Dhawtio-next-ci
       - name: Prepare report artifacts
         if: always()
         run: |
           mkdir -p results/$REPORT_DIR/
+          docker logs app > results/$REPORT_DIR/container.log
           cp $REPORT_DIR/cucumber-reports/* results/$REPORT_DIR/
           ls $REPORT_DIR/cucumber-reports/
       - name: Archive test artifacts
