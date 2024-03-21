@@ -282,7 +282,7 @@ const OperationExecuteForm: React.FunctionComponent<{
       <ActionGroup>
         <Button
           key={`operation-action-execute-${name}`}
-          variant='primary'
+          variant='danger'
           onClick={execute}
           isSmall
           isDisabled={!operation.canInvoke || isExecuting}
