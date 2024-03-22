@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button, Modal, ModalVariant } from '@patternfly/react-core'
 import { userService } from '@hawtiosrc/auth'
 import { sessionService } from './session-service'
 
 export const SessionMonitor = () => {
   // state for alert dialog
-  const [ sessionAlertVisible, setSessionAlertVisible ] = useState(false)
+  const [sessionAlertVisible, setSessionAlertVisible] = useState(false)
   // state for time till (server-side) session end. When -1, we don't track session
-  const [ time, setTime ] = useState(-1)
+  const [time, setTime] = useState(-1)
 
   // configuration effect (no deps)
   useEffect(() => {
     // 1. get session config and if there's session activity timeout, start a ticker which updates "time" state
     let ticker: NodeJS.Timeout | null = null
     // run immediate timeout, so we can use await
-    const configureSession = setTimeout(async() => {
+    const configureSession = setTimeout(async () => {
       await sessionService.fetchConfiguration()
       const sessionTimeout = sessionService.getSessionTimeout()
       if (sessionTimeout > 0) {
@@ -26,7 +26,9 @@ export const SessionMonitor = () => {
             setTime(sessionService.getSessionTimeout())
             sessionService.clearResetTimerFlag()
           } else {
-            setTime(v => { return v > 0 ? v - 1 : v })
+            setTime(v => {
+              return v > 0 ? v - 1 : v
+            })
           }
         }, 1000)
       }
@@ -70,14 +72,20 @@ export const SessionMonitor = () => {
   }
 
   return (
-      <>
-        <Modal isOpen={sessionAlertVisible} variant={ModalVariant.small} title="Session expires soon"
-               onClose={keepSessionAlive}
-               actions={[
-                 <Button key='continue' onClick={keepSessionAlive}>Stay connected</Button>
-               ]}>
-          <div>{time > 0 ? 'Session expires in ' + time + ' second' + (time == 1 ? '.' : 's.') : 'Logging out...'}</div>
-        </Modal>
-      </>
+    <>
+      <Modal
+        isOpen={sessionAlertVisible}
+        variant={ModalVariant.small}
+        title='Session expires soon'
+        onClose={keepSessionAlive}
+        actions={[
+          <Button key='continue' onClick={keepSessionAlive}>
+            Stay connected
+          </Button>,
+        ]}
+      >
+        <div>{time > 0 ? 'Session expires in ' + time + ' second' + (time == 1 ? '.' : 's.') : 'Logging out...'}</div>
+      </Modal>
+    </>
   )
 }

@@ -12,7 +12,7 @@ class SessionConfig {
   }
 }
 
-const log = Logger.get("Session")
+const log = Logger.get('Session')
 
 class SessionService {
   private lastActivity = 0
@@ -60,7 +60,7 @@ class SessionService {
     // no need to ping server otherwise
     fetchPath('refresh', {
       success: () => true,
-      error: () => false
+      error: () => false,
     }).catch(_ => false)
 
     // clear the flag, so next refresh happens only after user clicks anything
@@ -104,23 +104,25 @@ class SessionService {
   async fetchConfiguration() {
     this.sessionTimeout = -1
     this.sessionConfig = await fetchPath('auth/config/session-timeout?t=' + Date.now(), {
-      success: (data) => {
+      success: data => {
         const cfg = JSON.parse(data) as SessionConfig
         if (cfg.timeout <= 0) {
           cfg.timeout = -1
         }
         cfg.res = Date.now()
-        log.info("Session configuration", cfg)
+        log.info('Session configuration', cfg)
         return cfg
       },
       error: () => {
         return new SessionConfig(-1)
-      }
+      },
     })
     if (this.sessionConfig.timeout > 0) {
       // session expires at "current server time + session timeout". Subtracting current client time we roughly
       // get session end time from client point of view
-      this.sessionTimeout = Math.floor((this.sessionConfig.timeout*1000 + this.sessionConfig.now! - this.sessionConfig.req!) / 1000)
+      this.sessionTimeout = Math.floor(
+        (this.sessionConfig.timeout * 1000 + this.sessionConfig.now! - this.sessionConfig.req!) / 1000,
+      )
       // If server-side session is set to last less than 30 seconds, we skip the logic at client side
       if (this.sessionTimeout <= 30) {
         this.sessionTimeout = -1
