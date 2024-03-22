@@ -15,6 +15,7 @@ import { HawtioLoadingPage } from './HawtioLoadingPage'
 import { HawtioSidebar } from './HawtioSidebar'
 import { PageContext } from './context'
 import { log } from './globals'
+import { sessionService, SessionMonitor } from '@hawtiosrc/ui/session'
 
 export const HawtioPage: React.FunctionComponent = () => {
   const { username, isLogin, userLoaded, userLoading } = useUser()
@@ -43,6 +44,10 @@ export const HawtioPage: React.FunctionComponent = () => {
 
   const showVerticalNavByDefault = preferencesService.isShowVerticalNavByDefault()
 
+  const keepAlive = (): void => {
+    sessionService.userActivity()
+  }
+
   return (
     <PageContext.Provider value={{ username, plugins }}>
       <BackgroundImage src={backgroundImages} />
@@ -51,6 +56,7 @@ export const HawtioPage: React.FunctionComponent = () => {
         sidebar={<HawtioSidebar />}
         isManagedSidebar
         defaultManagedSidebarIsOpen={showVerticalNavByDefault}
+        onClick={keepAlive}
       >
         {/* Provider for handling selected node shared between the plugins */}
         <PluginNodeSelectionContext.Provider value={{ selectedNode, setSelectedNode }}>
@@ -67,6 +73,7 @@ export const HawtioPage: React.FunctionComponent = () => {
           </Routes>
         </PluginNodeSelectionContext.Provider>
         <HawtioNotification />
+        <SessionMonitor />
       </Page>
     </PageContext.Provider>
   )
