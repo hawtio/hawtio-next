@@ -35,12 +35,10 @@ export const Scheduler: React.FunctionComponent = () => {
 
     setIsReading(true)
     const { objectName } = selectedNode
-    const readAttributes = async () => {
-      const attrs = await attributeService.read(objectName)
+    attributeService.readWithCallback(objectName, attrs => {
       setAttributes(attrs)
       setIsReading(false)
-    }
-    readAttributes()
+    })
 
     attributeService.register({ type: 'read', mbean: objectName }, response => {
       log.debug('Scheduler - Attributes:', response.value)
@@ -58,12 +56,12 @@ export const Scheduler: React.FunctionComponent = () => {
 
     log.debug('Reload scheduler attributes')
 
+    setIsReading(true)
     const { objectName } = selectedNode
-    const readAttributes = async () => {
-      const attrs = await attributeService.read(objectName)
+    attributeService.readWithCallback(objectName, attrs => {
       setAttributes(attrs)
-    }
-    readAttributes()
+      setIsReading(false)
+    })
 
     setReload(false)
   }, [selectedNode, reload])

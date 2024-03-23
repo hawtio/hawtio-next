@@ -12,6 +12,11 @@ class AttributeService {
     return await jolokiaService.readAttributes(mbean)
   }
 
+  async readWithCallback(mbean: string, callback: (attrs: AttributeValues) => void): Promise<void> {
+    const attrs = await jolokiaService.readAttributes(mbean)
+    callback(attrs)
+  }
+
   async register(request: Request, callback: (response: Response) => void) {
     const handle = await jolokiaService.register(request, callback)
     log.debug('Register handle:', handle)
