@@ -3,7 +3,6 @@ import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { isObject } from '@hawtiosrc/util/objects'
 import { Card } from '@patternfly/react-core'
 import { OnRowClick, Table, TableBody, TableHeader, TableProps } from '@patternfly/react-table'
-import { Response } from 'jolokia.js'
 import { useContext, useEffect, useState } from 'react'
 import { HawtioEmptyCard } from '../HawtioEmptyCard'
 import { HawtioLoadingCard } from '../HawtioLoadingCard'
@@ -17,7 +16,27 @@ export const Attributes: React.FunctionComponent = () => {
   const [isReading, setIsReading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selected, setSelected] = useState({ name: '', value: '' })
-  const [reload, setReload] = useState(true)
+  const [reload, setReload] = useState(false)
+
+  useEffect(() => {
+    if (!selectedNode || !selectedNode.mbean || !selectedNode.objectName) {
+      return
+    }
+
+    setIsReading(true)
+    const { objectName } = selectedNode
+    attributeService.readWithCallback(objectName, attrs => {
+      setAttributes(attrs)
+      setIsReading(false)
+    })
+
+    attributeService.register({ type: 'read', mbean: objectName }, response => {
+      log.debug('Scheduler - Attributes:', response.value)
+      setAttributes(response.value as AttributeValues)
+    })
+
+    return () => attributeService.unregisterAll()
+  }, [selectedNode])
 
   useEffect(() => {
     if (!selectedNode || !selectedNode.mbean || !selectedNode.objectName || !reload) {
@@ -25,30 +44,14 @@ export const Attributes: React.FunctionComponent = () => {
     }
 
     setIsReading(true)
-    const objectName = selectedNode.objectName
-    const readAttributes = async () => {
-      const attrs = await attributeService.read(objectName)
+    const { objectName } = selectedNode
+    attributeService.readWithCallback(objectName, attrs => {
       setAttributes(attrs)
       setIsReading(false)
-    }
-    readAttributes()
+    })
 
     setReload(false)
   }, [selectedNode, reload])
-
-  useEffect(() => {
-    if (!selectedNode || !selectedNode.mbean || !selectedNode.objectName) {
-      return
-    }
-
-    const mbean = selectedNode.objectName
-    attributeService.register({ type: 'read', mbean }, (response: Response) => {
-      log.debug('Scheduler - Attributes:', response.value)
-      setAttributes(response.value as AttributeValues)
-    })
-
-    return () => attributeService.unregisterAll()
-  }, [selectedNode])
 
   if (!selectedNode || !selectedNode.mbean || !selectedNode.objectName) {
     return null
