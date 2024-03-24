@@ -108,6 +108,10 @@ It is recommended to run linting against the code periodically with the followin
 yarn lint && yarn format:check
 ```
 
+### E2E
+
+Read [Running E2E tests locally](./docs/e2e.md).
+
 ### Contributing
 
 When making a PR E2E tests from hawtio/hawtio will be run against your frontend.
