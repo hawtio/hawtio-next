@@ -23,7 +23,8 @@ In terminal 2:
 
 ```console
 mvn clean install -Pe2e,fastinstall
-mvn quarkus:dev -Pe2e -pl tests/quarkus
+mvn package -Pe2e -pl tests/quarkus
+java -jar tests/quarkus/target/quarkus-app/quarkus-run.jar
 ```
 
 #### Run the test suite for Quarkus
