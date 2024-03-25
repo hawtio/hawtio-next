@@ -43,6 +43,8 @@ mvn install -Pe2e,e2e-quarkus -pl tests/hawtio-test-suite \
 
 #### Run target Spring Boot application
 
+In terminal 2:
+
 ```console
 mvn clean install -DskipTests -Pe2e
 mvn spring-boot:run -Pe2e -pl tests/springboot
