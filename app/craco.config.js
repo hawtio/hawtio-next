@@ -168,7 +168,7 @@ module.exports = {
         res.redirect('/hawtio/login')
       })
 
-      const oidcEnabled = true
+      const oidcEnabled = false
       const oidcConfig = {
         method: 'oidc',
         provider: 'https://login.microsoftonline.com/11111111-2222-3333-4444-555555555555/v2.0',
@@ -180,11 +180,11 @@ module.exports = {
         prompt: 'login',
       }
       devServer.app.get('/hawtio/auth/config', (_, res) => {
+        res.type('application/json')
         if (oidcEnabled) {
-          res.type('application/json')
           res.send(JSON.stringify(oidcConfig))
         } else {
-          res.sendStatus(404)
+          res.send('{}')
         }
       })
       devServer.app.get('/hawtio/proxy/enabled', (_, res) => res.send(String(proxyEnabled)))
