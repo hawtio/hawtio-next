@@ -22,7 +22,7 @@ Go to [hawtio/hawtio](https://github.com/hawtio/hawtio) project.
 In terminal 2:
 
 ```console
-mvn clean install -Pe2e,fastinstall
+mvn clean install -DskipTests -Pe2e
 mvn package -Pe2e -pl tests/quarkus
 java -jar tests/quarkus/target/quarkus-app/quarkus-run.jar
 ```
@@ -44,7 +44,7 @@ mvn install -Pe2e,e2e-quarkus -pl tests/hawtio-test-suite \
 #### Run target Spring Boot application
 
 ```console
-mvn clean install -Pe2e,fastinstall
+mvn clean install -DskipTests -Pe2e
 mvn spring-boot:run -Pe2e -pl tests/springboot
 ```
 
