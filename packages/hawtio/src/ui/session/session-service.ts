@@ -1,5 +1,5 @@
 import { fetchPath } from '@hawtiosrc/util/fetch'
-import { Logger } from '@hawtiosrc/core'
+import { log } from './globals'
 
 class SessionConfig {
   req?: number
@@ -11,8 +11,6 @@ class SessionConfig {
     this.timeout = timeout
   }
 }
-
-const log = Logger.get('Session')
 
 class SessionService {
   private lastActivity = 0
@@ -101,7 +99,7 @@ class SessionService {
     this.resetTimer = false
   }
 
-  async fetchConfiguration() {
+  async fetchConfiguration(): Promise<void> {
     this.sessionTimeout = -1
     this.sessionConfig = await fetchPath('auth/config/session-timeout?t=' + Date.now(), {
       success: data => {
