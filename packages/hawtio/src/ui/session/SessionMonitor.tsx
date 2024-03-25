@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Modal, ModalVariant } from '@patternfly/react-core'
 import { userService } from '@hawtiosrc/auth'
 import { sessionService } from './session-service'
 
-export const SessionMonitor = () => {
+export const SessionMonitor: React.FunctionComponent = () => {
   // state for alert dialog
   const [sessionAlertVisible, setSessionAlertVisible] = useState(false)
   // state for time till (server-side) session end. When -1, we don't track session
@@ -72,7 +72,7 @@ export const SessionMonitor = () => {
   }
 
   return (
-    <>
+    <React.Fragment>
       <Modal
         isOpen={sessionAlertVisible}
         variant={ModalVariant.small}
@@ -86,6 +86,6 @@ export const SessionMonitor = () => {
       >
         <div>{time > 0 ? 'Session expires in ' + time + ' second' + (time == 1 ? '.' : 's.') : 'Logging out...'}</div>
       </Modal>
-    </>
+    </React.Fragment>
   )
 }
