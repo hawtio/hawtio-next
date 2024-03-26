@@ -50,7 +50,7 @@
     "@types/jquery": "^3.5.29",
     "@types/node": "^18.19.23",
     "@types/react": "^18.2.23",
-    "@types/react-dom": "^18.2.21",
+    "@types/react-dom": "^18.2.22",
     "@types/react-router-dom": "^5.3.3",
     "dagre": "^0.8.5",
     "eventemitter3": "^5.0.1",
