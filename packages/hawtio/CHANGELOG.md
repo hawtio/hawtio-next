@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.2.0](https://github.com/hawtio/hawtio-next/compare/v1.1.2...v1.2.0) (2024-03-27)
+
+
+### Features
+
+* **session:** Add alert window when the session is about to expire. Closes [#822](https://github.com/hawtio/hawtio-next/issues/822) ([9650c01](https://github.com/hawtio/hawtio-next/commit/9650c0162a585f705a55ce81298bd7734ca97291))
+
+
+### Bug Fixes
+
+* **#827:** Translate primitive Java array types into readable names ([#829](https://github.com/hawtio/hawtio-next/issues/829)) ([eb57d1c](https://github.com/hawtio/hawtio-next/commit/eb57d1c12c9d8de345f1bec06d534330b8d04991)), closes [#827](https://github.com/hawtio/hawtio-next/issues/827)
+* **api:** export AttributeTable from shared ([6068e1d](https://github.com/hawtio/hawtio-next/commit/6068e1da6b02f38f45283e8dc0ef987beda05fb9))
+* Autofocus login form & allow submit with Enter ([2ff0b4e](https://github.com/hawtio/hawtio-next/commit/2ff0b4e90426e31018344fc301923dac2182f113))
+* change code organization in ui/session ([f866b6b](https://github.com/hawtio/hawtio-next/commit/f866b6b3f3040fa054191e4ca8d0369a4402bb28))
+* **ci:** fix e2e for hawtio-next for v4.x ([c58eeb7](https://github.com/hawtio/hawtio-next/commit/c58eeb70065d765f1ec10fee6fab5bc71847d86f))
+* **ci:** run on correct port on localhost for quarkus & attach app logs ([19a7212](https://github.com/hawtio/hawtio-next/commit/19a7212e0d6c75b0a2401ed30ceaca67e8fbd94d))
+* **ci:** use supported java versions for 4.x ([1623613](https://github.com/hawtio/hawtio-next/commit/162361372108f7db6eba784b2b486194e715956e))
+* **CLUX-495:** Use TableComposable for attributes and refactor the Attribute modal ([bc9d463](https://github.com/hawtio/hawtio-next/commit/bc9d463540835f15e05342bf1848d6c57b152705))
+* **deps:** pin victory libraries more comprehensively ([3ec453d](https://github.com/hawtio/hawtio-next/commit/3ec453dfd02865a05c43f9462e8ad116d6b3e39d))
+* fix code style ([e220907](https://github.com/hawtio/hawtio-next/commit/e2209075bd0554bc04d65d3998c3927873211da0))
+* **shared:** fix Attributes view not refreshed immediately for external plugins ([a75ffda](https://github.com/hawtio/hawtio-next/commit/a75ffda04a212b3618ca212e58401a7078ef4eec))
+
 ## [1.1.2](https://github.com/hawtio/hawtio-next/compare/v1.1.1...v1.1.2) (2024-03-15)
 
 
