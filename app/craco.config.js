@@ -187,6 +187,10 @@ module.exports = {
           res.send('{}')
         }
       })
+      devServer.app.get('/hawtio/auth/config/session-timeout', (_, res) => {
+        res.type('application/json')
+        res.send('{}')
+      })
       devServer.app.get('/hawtio/proxy/enabled', (_, res) => res.send(String(proxyEnabled)))
       devServer.app.get('/hawtio/plugin', (_, res) => res.send(JSON.stringify(plugin)))
       devServer.app.get('/hawtio/keycloak/enabled', (_, res) => res.send(String(keycloakEnabled)))

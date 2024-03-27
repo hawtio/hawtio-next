@@ -1,15 +1,11 @@
 import { fetchPath } from '@hawtiosrc/util/fetch'
 import { log } from './globals'
 
-class SessionConfig {
+type SessionConfig = {
   req?: number
   res?: number
   now?: number
   timeout: number
-
-  constructor(timeout: number) {
-    this.timeout = timeout
-  }
 }
 
 class SessionService {
@@ -80,18 +76,18 @@ class SessionService {
    * Indicates whether the session is ended and user should be logged-out
    * @param time
    */
-  sessionEnded(time: number) {
+  sessionEnded(time: number): boolean {
     return time <= 0 && this.sessionTimeout > 0
   }
 
   /**
    * Returns session timeout in seconds. If "-1", there's no session and session tracking is enabled.
    */
-  getSessionTimeout() {
+  getSessionTimeout(): number {
     return this.sessionTimeout
   }
 
-  shouldResetTimer() {
+  shouldResetTimer(): boolean {
     return this.resetTimer
   }
 
@@ -101,10 +97,10 @@ class SessionService {
 
   async fetchConfiguration(): Promise<void> {
     this.sessionTimeout = -1
-    this.sessionConfig = await fetchPath('auth/config/session-timeout?t=' + Date.now(), {
+    this.sessionConfig = await fetchPath<SessionConfig>('auth/config/session-timeout?t=' + Date.now(), {
       success: data => {
         const cfg = JSON.parse(data) as SessionConfig
-        if (cfg.timeout <= 0) {
+        if (!cfg.timeout || cfg.timeout <= 0) {
           cfg.timeout = -1
         }
         cfg.res = Date.now()
@@ -112,7 +108,7 @@ class SessionService {
         return cfg
       },
       error: () => {
-        return new SessionConfig(-1)
+        return { timeout: -1 }
       },
     })
     if (this.sessionConfig.timeout > 0) {
