@@ -50,6 +50,10 @@ class AttributeService {
     await jolokiaService.writeAttribute(mbeanName, attribute, value)
     eventService.notify({ type: 'success', message: `Updated attribute: ${attribute}` })
   }
+
+  async bulkRequest(requests: Request[]) {
+    return jolokiaService.bulkRequest(requests)
+  }
 }
 
 export const attributeService = new AttributeService()
