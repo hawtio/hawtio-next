@@ -2,39 +2,107 @@ import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
 import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import { isNumber } from '@hawtiosrc/util/objects'
-import { ChartArea, ChartAxis, Chart as ChartDraw, ChartVoronoiContainer } from '@patternfly/react-charts'
+import {
+  ChartArea,
+  ChartAxis,
+  Chart as ChartDraw,
+  ChartVoronoiContainer,
+  getResizeObserver,
+} from '@patternfly/react-charts'
 import {
   Button,
   Card,
   CardActions,
   CardBody,
   CardHeader,
+  Grid,
+  GridItem,
   PageSection,
   PageSectionVariants,
+  Switch,
   Text,
+  Title,
 } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
-import { Response } from 'jolokia.js'
+import { Request, Response } from 'jolokia.js'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { HawtioEmptyCard } from '../HawtioEmptyCard'
 import { HawtioLoadingCard } from '../HawtioLoadingCard'
 import { attributeService } from '../attributes/attribute-service'
 import { WatchableAttributesForm } from './WatchableAttributesForm'
+import { TableComposable, Tbody, Td, Tr } from '@patternfly/react-table'
 
 type MBeanChartData = {
-  [name: string]: MBeanChartDataEntriesTime[]
+  [name: string]: { attributes: AttributeChartEntries }
 }
 
-type MBeanChartDataEntriesTime = {
-  name: string
-  time: number
-  data: AttributeValues
+type AttributeChartEntries = {
+  [name: string]: {
+    data: {
+      time: number
+      value: number
+    }[]
+    min: number
+    hasConstantValue: boolean
+  }
 }
+type AttributesEntry = { [attName: string]: { time: number; value: number } }
 
 export type AttributesToWatch = {
-  [name: string]: {
-    [attributeName: string]: boolean
+  [name: string]: { [attributeName: string]: boolean }
+}
+const AttributeChart = ({
+  name,
+  data,
+  min,
+}: {
+  name: string
+  data: { name: string; x: number; y: number }[]
+  min?: number
+}) => {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [width, setWidth] = useState<number>(0)
+  const handleResize = () => {
+    if (containerRef.current && containerRef.current.clientWidth) {
+      setWidth(containerRef.current.clientWidth)
+    }
   }
+
+  useEffect(() => {
+    const observer = getResizeObserver(containerRef.current!, handleResize)
+    handleResize()
+    return () => observer()
+  }, [])
+
+  return (
+    <div ref={containerRef} style={{ width: '100%', height: '220px' }}>
+      <ChartDraw
+        ariaTitle={name}
+        containerComponent={
+          <ChartVoronoiContainer labels={({ datum }) => `${datum.name}: ${datum.y}`} constrainToVisibleArea />
+        }
+        name={name}
+        key={name}
+        height={220}
+        width={width}
+        padding={{ left: 160, top: 30, bottom: 30, right: 20 }}
+        minDomain={{ y: min }}
+      >
+        <ChartArea data={data} />
+        <ChartAxis
+          fixLabelOverlap
+          orientation='bottom'
+          tickFormat={time => {
+            const date = new Date(time * 1000)
+            return `${date.getHours() >= 10 ? date.getHours() : '0' + date.getHours()}:${
+              date.getMinutes() >= 10 ? date.getMinutes() : '0' + date.getMinutes()
+            }:${date.getSeconds() >= 10 ? date.getSeconds() : '0' + date.getSeconds()}`
+          }}
+        />
+        <ChartAxis dependentAxis showGrid />
+      </ChartDraw>
+    </div>
+  )
 }
 
 export const Chart: React.FunctionComponent = () => {
@@ -42,73 +110,118 @@ export const Chart: React.FunctionComponent = () => {
   const [chartData, setChartData] = useState<MBeanChartData>({})
   const attributesToWatch = useRef<AttributesToWatch>({})
   const [initialTime, setInitialTime] = useState<number>(-1)
+  const [showConstants, setShowConstants] = useState<boolean>(true)
   const [isWatchableAttributesModalOpen, setIsWatchableAttributesModalOpen] = useState<boolean>(false)
-
-  // Two ways to go about this: either I query for the attributes, pick up the ones with number value
-  // and create the job for those, or just fetch all the data and filter the unwatched, non-numeric values
-  // The base version uses the second so I went for that.
 
   function updateNumericAttributesToWatch(
     currentWatchedAttributes: { [attributeName: string]: boolean },
-    newData: AttributeValues,
+    newData: AttributesEntry,
   ) {
-    // Shouldn't be a costly operation plus this way I ensure that if any attributes come undefined on the first call
-    // they will actually be added.
-
-    const numberAttributes = Object.entries(newData)
-      .filter(([_, value]) => isNumber(value))
-      .map(([name, _]) => name)
-
     //Now we set it if it's not already set
-    numberAttributes.forEach(name => {
+    Object.entries(newData).forEach(([name, _value]) => {
       if (currentWatchedAttributes[name] === undefined) {
         currentWatchedAttributes[name] = true
       }
     })
   }
 
-  function updateNode(mbeanObjectName: string, data: MBeanChartDataEntriesTime): void {
-    if (!chartData[mbeanObjectName]) chartData[mbeanObjectName] = []
-
-    // Don't add repeated responses to avoid duplicate points
-    if (!chartData[mbeanObjectName]?.find(value => value.time === data.time)) {
-      chartData[mbeanObjectName]?.push(data)
+  function updateNode(mbeanObjectName: string, data: AttributesEntry): void {
+    if (!chartData[mbeanObjectName]) {
+      chartData[mbeanObjectName] = {
+        attributes: {},
+      }
     }
 
-    if (!attributesToWatch.current[data.name]) {
-      attributesToWatch.current[data.name] = {}
+    const objectChartData = chartData[mbeanObjectName]!
+    //for every attribute
+    Object.entries(data).forEach(([attributeName, data]) => {
+      if (!objectChartData.attributes[attributeName]) {
+        objectChartData.attributes[attributeName] = {
+          data: [],
+          min: Number.MAX_SAFE_INTEGER,
+          hasConstantValue: true,
+        }
+      }
+
+      const attributeChartData = objectChartData.attributes[attributeName]!
+      // Don't add repeated responses to avoid duplicate points
+      if (!attributeChartData.data.find(entry => entry.time === data.time)) {
+        attributeChartData.data.push(data)
+
+        //track the min value for setting the min domain
+        if (data.value < attributeChartData.min) {
+          attributeChartData.min = data.value
+        }
+
+        if (
+          attributeChartData.data.length > 1 &&
+          attributeChartData.data[0]!.value !== data.value &&
+          attributeChartData.hasConstantValue
+        ) {
+          attributeChartData.hasConstantValue = false
+        }
+      }
+    })
+
+    if (!attributesToWatch.current[mbeanObjectName]) {
+      attributesToWatch.current[mbeanObjectName] = {}
     }
 
-    const current = attributesToWatch.current[data.name] ?? {}
-    updateNumericAttributesToWatch(current, data.data)
+    const current = attributesToWatch.current[mbeanObjectName] ?? {}
+    updateNumericAttributesToWatch(current, data)
 
     setChartData({ ...chartData })
     attributesToWatch.current = { ...attributesToWatch.current }
   }
 
-  function updateChartData(mbeanObjectName: string, data: MBeanChartDataEntriesTime): void {
+  function updateChartData(mbeanObjectName: string, data: AttributesEntry): void {
     if (!selectedNode) return
     else updateNode(mbeanObjectName, data)
   }
 
-  async function setJobForSpecificNode(
-    node: MBeanNode | null,
-    updateCallback: (mbeanObjectName: string, data: MBeanChartDataEntriesTime) => void,
-  ): Promise<void> {
-    if (!node || !node?.objectName) return
+  function extractChartDataFromResponse(response: Response, nodeName: string) {
+    const time = response.timestamp
+    const attr = response.value as AttributeValues
 
-    attributeService.register({ type: 'read', mbean: node.objectName }, (response: Response) => {
-      updateCallback(node.name, {
-        name: node.name,
-        time: response.timestamp,
-        data: response.value as AttributeValues,
+    const attributesEntry: AttributesEntry = {}
+    Object.entries(attr)
+      .filter(value => isNumber(value[1]))
+      .forEach(([attrName, value]) => {
+        attributesEntry[attrName] = {
+          time: time,
+          value: value as number,
+        }
       })
-    })
+    updateChartData(nodeName, attributesEntry)
   }
 
   async function setJobsForNode(node: MBeanNode): Promise<void> {
     if (!node) return
-    ;[node, ...node.getChildren()].forEach(async node => await setJobForSpecificNode(node, updateChartData))
+    ;[node, ...node.getChildren()]
+      .filter(node => node && node.objectName)
+      .forEach(node => {
+        attributeService.register({ type: 'read', mbean: node.objectName! }, (response: Response) =>
+          extractChartDataFromResponse(response, node.name),
+        )
+      })
+  }
+
+  async function fetchChartData(node: MBeanNode) {
+    if (!node) return
+    const requests: Request[] = []
+    ;[node, ...node.getChildren()].forEach(node => {
+      if (node.objectName) requests.push({ type: 'read', mbean: node.objectName })
+    })
+
+    const responses = await attributeService.bulkRequest(requests)
+    responses.forEach(resp => {
+      const req = resp.request as unknown as { mbean: string }
+      let name = req.mbean.match(/name="([^"]+)"/)
+      if (!name) {
+        name = req.mbean.match(/type="([^"]+)"/)
+      }
+      if (name && name.length > 1) extractChartDataFromResponse(resp, name![1] as string)
+    })
   }
 
   useEffect(() => {
@@ -119,7 +232,7 @@ export const Chart: React.FunctionComponent = () => {
     if (initialTime === -1) {
       setInitialTime(new Date().getTime())
     }
-
+    fetchChartData(selectedNode)
     setJobsForNode(selectedNode)
 
     return () => {
@@ -181,40 +294,6 @@ export const Chart: React.FunctionComponent = () => {
     )
   }
 
-  const AttributeChart = ({ name, data }: { name: string; data: { name: string; x: number; y: number }[] }) => (
-    <div style={{ height: '140px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <div style={{ width: '20%', overflow: 'hidden', fontSize: 10, paddingRight: 10, flexGrow: 1, flexShrink: 0 }}>
-        {name}
-      </div>
-      <div style={{ width: '80%', maxWidth: '80%', height: '140px', flexGrow: 0, flexShrink: 0 }}>
-        <ChartDraw
-          ariaTitle={name}
-          containerComponent={
-            <ChartVoronoiContainer labels={({ datum }) => `${datum.name}: ${datum.y}`} constrainToVisibleArea />
-          }
-          height={50}
-          name={name}
-          key={name}
-          padding={{ left: 50, right: 50 }}
-          width={700}
-        >
-          <ChartArea data={data} />
-          <ChartAxis
-            fixLabelOverlap
-            orientation='bottom'
-            width={700}
-            tickFormat={time => {
-              const date = new Date(time * 1000)
-              return `${date.getMinutes() >= 10 ? date.getMinutes() : '0' + date.getMinutes()}:${
-                date.getSeconds() >= 10 ? date.getSeconds() : '0' + date.getSeconds()
-              }`
-            }}
-          />
-        </ChartDraw>
-      </div>
-    </div>
-  )
-
   return (
     <React.Fragment>
       <WatchableAttributesForm
@@ -225,38 +304,81 @@ export const Chart: React.FunctionComponent = () => {
         attributesToWatch={attributesToWatch.current}
         onAttributesToWatchUpdate={newAttributes => (attributesToWatch.current = newAttributes)}
       />
-      <Card isFullHeight>
-        <CardHeader>
-          <CardActions>
-            <Button onClick={() => setIsWatchableAttributesModalOpen(true)}>Edit watches</Button>
-          </CardActions>
-        </CardHeader>
-        <CardBody>
-          {Object.entries(attributesToWatch.current)
-            .flatMap(([name, attributes]) =>
-              Object.entries(attributes)
-                .filter(([_, isShown]) => isShown)
-                .map(([attributeName, _]) => [name, attributeName]),
-            )
+      <Grid hasGutter span={12} xl2={6}>
+        <GridItem span={12}>
+          <Card>
+            <CardHeader>
+              <Switch
+                id='showConstants'
+                label='Show attributes with the constant value as a chart'
+                isChecked={showConstants}
+                onChange={checked => setShowConstants(checked)}
+              />
+              <CardActions>
+                <Button onClick={() => setIsWatchableAttributesModalOpen(true)}>Edit watches</Button>
+              </CardActions>
+            </CardHeader>
+          </Card>
+        </GridItem>
+        {Object.entries(chartData).map(([name, attributes]) =>
+          Object.entries(attributes.attributes)
+            .filter(([_, data]) => (showConstants ? true : !data.hasConstantValue))
             .map(
-              ([name, attributeName]) =>
-                name &&
-                attributeName && (
-                  <AttributeChart
-                    key={`${name} ${attributeName}`}
-                    name={`${name} ${attributeName}`}
-                    data={[
-                      ...(chartData[name] ?? []).map(value => ({
-                        name: new Date(value.time * 1000).toLocaleTimeString(),
-                        x: value.time,
-                        y: (value.data[attributeName] as number) ?? 0,
-                      })),
-                    ]}
-                  />
+              ([attributeName, chartEntries]) =>
+                attributesToWatch.current[name]![attributeName] && (
+                  <GridItem key={attributeName}>
+                    <Card key={attributeName}>
+                      <CardHeader>
+                        <Title headingLevel='h3'>
+                          {name}: {attributeName}: {chartEntries.data[chartEntries.data.length - 1]!.value}
+                        </Title>
+                      </CardHeader>
+                      <CardBody>
+                        <AttributeChart
+                          key={`${name}-${attributeName}`}
+                          name={`${name}-${attributeName}`}
+                          min={chartEntries.hasConstantValue ? 0 : chartEntries.min}
+                          data={[
+                            ...chartEntries.data.map(data => ({
+                              name: new Date(data.time * 1000).toLocaleTimeString(),
+                              x: data.time,
+                              y: data.value,
+                            })),
+                          ]}
+                        />
+                      </CardBody>
+                    </Card>
+                  </GridItem>
                 ),
-            )}
-        </CardBody>
-      </Card>
+            ),
+        )}
+
+        {!showConstants && (
+          <GridItem>
+            <Card>
+              <CardHeader>Attributes with the constant value:</CardHeader>
+              <CardBody>
+                <TableComposable variant={'compact'}>
+                  <Tbody>
+                    {Object.entries(chartData).map(([name, attributes]) =>
+                      Object.entries(attributes.attributes).map(
+                        ([attributeName, chartEntries]) =>
+                          attributesToWatch.current[name]![attributeName] &&
+                          chartEntries.hasConstantValue && (
+                            <Tr key={'obj-' + name + '-' + attributeName}>
+                              <Td>{attributeName}</Td>
+                              <Td>{chartEntries.data[0]!.value}</Td>
+                            </Tr>
+                          ),
+                      ),
+                    )}
+                  </Tbody>
+                </TableComposable>
+              </CardBody>
+            </Card>
+          </GridItem>
+        )}
+      </Grid>
     </React.Fragment>
   )
 }
