@@ -2236,7 +2236,7 @@ __metadata:
     "@types/dagre-layout": "npm:^0.8.5"
     "@types/jest": "npm:^29.5.12"
     "@types/jquery": "npm:^3.5.29"
-    "@types/node": "npm:^18.19.26"
+    "@types/node": "npm:^18.19.28"
     "@types/react": "npm:^18.2.23"
     "@types/react-dom": "npm:^18.2.22"
     "@types/react-router-dom": "npm:^5.3.3"
@@ -4334,12 +4334,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^18.19.26":
-  version: 18.19.26
-  resolution: "@types/node@npm:18.19.26"
+"@types/node@npm:^18.19.28":
+  version: 18.19.28
+  resolution: "@types/node@npm:18.19.28"
   dependencies:
     undici-types: "npm:~5.26.4"
-  checksum: 10/d44a8313875c1c25cf09398d2b31bb7c57fc575d83ab4e9e401081ace35d9f052d47cd610139472c2da80e2bfb281a292490e4a5070b1427726b25ac01219868
+  checksum: 10/ee2320c51e00d620fde75c54c70ffd218c104fa3203fc143c9db67e9a26c88b6b28d226b5daa511c77fbaeb2a32bd88c70cabcd07e1fe2fbfda68225ecb06d9b
   languageName: node
   linkType: hard
 
