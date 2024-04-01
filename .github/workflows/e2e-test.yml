@@ -68,6 +68,7 @@ jobs:
       - name: Build
         run: yarn build:all
       - name: Start server
+        shell: bash
         run: |
           # Check both CRACO and Webpack log messages until we migrate to Webpack
           # https://github.com/hawtio/hawtio-next/pull/847
