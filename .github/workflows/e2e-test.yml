@@ -69,8 +69,10 @@ jobs:
         run: yarn build:all
       - name: Start server
         run: |
+          # Check both CRACO and Webpack log messages until we migrate to Webpack
+          # https://github.com/hawtio/hawtio-next/pull/847
           yarn start:app > log &
-          timeout 2m bash -c "while ! grep 'You can now view app in the browser.' log ; do cat log; sleep 5; done"
+          timeout 2m bash -c "while ! grep -e 'You can now view app in the browser.' -e 'webpack .\+ compiled successfully' log ; do cat log; sleep 5; done"
       - name: Detect testsuite branch
         id: get-images
         env:
