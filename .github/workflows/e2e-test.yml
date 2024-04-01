@@ -69,7 +69,7 @@ jobs:
         run: yarn build:all
       - name: Start server
         run: |
-          yarn start > log &
+          yarn start:app > log &
           timeout 2m bash -c "while ! grep 'You can now view app in the browser.' log ; do cat log; sleep 5; done"
       - name: Detect testsuite branch
         id: get-images
