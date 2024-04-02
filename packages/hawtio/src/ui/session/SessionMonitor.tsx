@@ -55,6 +55,7 @@ export const SessionMonitor: React.FunctionComponent = () => {
   //  - reset the timer, when session was just refreshed by some user activity
   useEffect(() => {
     if (sessionService.sessionEnding(time)) {
+      sessionService.setRefresh(false)
       setSessionAlertVisible(true)
     }
     if (sessionService.sessionEnded(time)) {
@@ -67,6 +68,7 @@ export const SessionMonitor: React.FunctionComponent = () => {
   // called when user closes the alert dialog. Session should be kept alive
   const keepSessionAlive = () => {
     setSessionAlertVisible(false)
+    sessionService.setRefresh(true)
     sessionService.updateSession()
     setTime(sessionService.getSessionTimeout())
   }

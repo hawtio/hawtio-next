@@ -16,6 +16,8 @@ class SessionService {
   private keepAlive = true
   // when this flag is set, SessionMonitor component should be informed. it'll reset its state then
   private resetTimer = false
+  // a flag which may be used to disable "userActivity()" handler
+  private refresh = true
 
   private sessionConfig: SessionConfig | null = null
   private sessionTimeout = -1
@@ -28,6 +30,10 @@ class SessionService {
    * But this didn't work when clicking on JMX tree nodes.
    */
   userActivity() {
+    if (!this.refresh) {
+      return
+    }
+
     this.keepAlive = true
 
     const now = Date.now()
@@ -122,6 +128,14 @@ class SessionService {
         this.sessionTimeout = -1
       }
     }
+  }
+
+  /**
+   * Can be used to enable/disable on-click refreshes. Should be disabled when we display a Modal with explicit
+   * "keep session" button
+   */
+  setRefresh(refresh: boolean) {
+    this.refresh = refresh
   }
 }
 
