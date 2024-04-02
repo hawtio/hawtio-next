@@ -125,7 +125,8 @@ export class MBeanNode implements TreeViewDataItem {
       // final mbean node
       const path = paths[0]
       if (!path) {
-        throw new Error('path should not be empty')
+        log.error('Failed to process MBean. Malformed ObjectName:', `"${props.objectName()}"`)
+        return
       }
       const mbeanNode = this.create(path, false)
       mbeanNode.configureMBean(props, mbean)
@@ -134,7 +135,8 @@ export class MBeanNode implements TreeViewDataItem {
 
     const path = paths.shift()
     if (path === undefined) {
-      throw new Error('path should not be empty')
+      log.error('Failed to process MBean. Malformed ObjectName:', `"${props.objectName()}"`)
+      return
     }
     const child = this.getOrCreate(path, true)
     child.createMBeanNode(paths, props, mbean)

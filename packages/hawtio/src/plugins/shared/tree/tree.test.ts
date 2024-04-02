@@ -102,6 +102,34 @@ describe('MBeanTree', () => {
     expect(xnio2Addr.childCount()).toEqual(0)
   })
 
+  test('createFromDomains should be robust in presence of malformed mbeans', async () => {
+    const domains = {
+      'java.lang': { 'type=Memory': { desc: '' } },
+      'malformed.mbean': { '': { desc: '' } },
+    }
+    const tree = (await MBeanTree.createFromDomains('test', domains)).getTree()
+
+    expect(tree.length).toEqual(2)
+
+    const javaLang = tree[0] as MBeanNode
+    expect(javaLang.id).toEqual('java.lang-folder')
+    expect(javaLang.name).toEqual('java.lang')
+    expect(javaLang.mbean).toBeUndefined()
+    expect(javaLang.childCount()).toEqual(1)
+
+    const memory = javaLang.getChildren()[0] as MBeanNode
+    expect(memory.id).toEqual('java.lang-folder-Memory')
+    expect(memory.name).toEqual('Memory')
+    expect(memory.mbean).toBeDefined()
+    expect(memory.childCount()).toEqual(0)
+
+    const malformed = tree[1] as MBeanNode
+    expect(malformed.id).toEqual('malformed.mbean-folder')
+    expect(malformed.name).toEqual('malformed.mbean')
+    expect(malformed.mbean).toBeUndefined()
+    expect(malformed.childCount()).toEqual(0)
+  })
+
   test('flatten empty tree', () => {
     const tree = MBeanTree.createFromNodes('test', [])
     expect(tree.flatten()).toEqual({})

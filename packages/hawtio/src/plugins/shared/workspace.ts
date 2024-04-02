@@ -74,8 +74,8 @@ class Workspace implements IWorkspace {
       this.maybeMonitorTree()
 
       return tree
-    } catch (response) {
-      log.error('A request to list the JMX tree failed: ' + response)
+    } catch (error) {
+      log.error('A request to list the JMX tree failed:', error)
       return MBeanTree.createEmpty(pluginName)
     }
   }
