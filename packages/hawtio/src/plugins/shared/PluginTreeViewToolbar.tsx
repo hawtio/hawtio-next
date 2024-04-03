@@ -1,13 +1,5 @@
 import React, { ChangeEvent, useState } from 'react'
-import {
-  Button,
-  Toolbar,
-  ToolbarContent,
-  ToolbarGroup,
-  ToolbarItem,
-  Tooltip,
-  TreeViewSearch,
-} from '@patternfly/react-core'
+import { Button, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, TreeViewSearch } from '@patternfly/react-core'
 
 interface ToolbarProps {
   onSearch: (event: ChangeEvent<HTMLInputElement>) => void
@@ -45,11 +37,9 @@ export const PluginTreeViewToolbar: React.FunctionComponent<ToolbarProps> = (pro
             />
           </ToolbarItem>
           <ToolbarItem variant='expand-all'>
-            <Tooltip content={expanded ? 'Collapse all' : 'Expand all'} removeFindDomNode>
-              <Button variant='link' aria-label='Expand Collapse' onClick={toggleExpanded}>
-                {expanded ? 'Collapse all' : 'Expand all'}
-              </Button>
-            </Tooltip>
+            <Button variant='link' aria-label='Expand Collapse' onClick={toggleExpanded}>
+              {expanded ? 'Collapse all' : 'Expand all'}
+            </Button>
           </ToolbarItem>
         </ToolbarGroup>
       </ToolbarContent>
