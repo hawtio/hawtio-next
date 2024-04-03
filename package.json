@@ -45,7 +45,6 @@
     "prettier": "3.2.5"
   },
   "resolutions": {
-    "fork-ts-checker-webpack-plugin": "6.5.3",
     "victory-area": "36.8.6",
     "victory-bar": "36.8.6",
     "victory-brush-container": "36.8.6",

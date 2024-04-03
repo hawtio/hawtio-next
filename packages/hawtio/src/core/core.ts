@@ -136,6 +136,7 @@ class HawtioCore {
   getBasePath(): string | undefined {
     if (!this.basePath) {
       const basePath = this.documentBase()
+      log.info('Base path from html head:', basePath)
       if (basePath && basePath.length > 1 && basePath.endsWith('/')) {
         // Remove trailing '/'
         this.basePath = basePath.slice(0, -1)
