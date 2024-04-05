@@ -69,7 +69,7 @@ jobs:
         run: yarn build:all
       - name: Start server
         run: |
-          yarn start:app --no-color > log &
+          yarn start:app --no-color --no-hot --no-live-reload --no-client-overlay > log &
           # Check both CRACO and Webpack log messages until we migrate to Webpack
           # https://github.com/hawtio/hawtio-next/pull/847
           timeout 30 bash -c "while ! grep -e 'You can now view app in the browser.' -e 'webpack .\+ compiled successfully' log ; do cat log; sleep 5; done"
