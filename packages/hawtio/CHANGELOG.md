@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.2.1](https://github.com/hawtio/hawtio-next/compare/v1.2.0...v1.2.1) (2024-04-05)
+
+
+### Bug Fixes
+
+* **#809:** Remove unnecessary tooltips for Expand All/Collapse All ([77c8db1](https://github.com/hawtio/hawtio-next/commit/77c8db11fa60550a18b16ec4006f3e03dd74396c)), closes [#809](https://github.com/hawtio/hawtio-next/issues/809)
+* **session:** Do not refresh session by clicking around session-expiration modal ([f353923](https://github.com/hawtio/hawtio-next/commit/f35392304bcdbd375a74a630af50dd30669a756a))
+* **shared:** HAWNG-612 jmx tree should keep rendering even in presence of malformed mbeans ([3ee4368](https://github.com/hawtio/hawtio-next/commit/3ee436834ef83803e7e17875d4ef697dac782604))
+
 ## [1.2.0](https://github.com/hawtio/hawtio-next/compare/v1.1.2...v1.2.0) (2024-03-27)
 
 
