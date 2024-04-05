@@ -1,8 +1,8 @@
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
 import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
-import { isObject } from '@hawtiosrc/util/objects'
+import { isObject, objectSorter } from '@hawtiosrc/util/objects'
 import { Card, Drawer, DrawerContent, DrawerContentBody } from '@patternfly/react-core'
-import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { TableComposable, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useState } from 'react'
 import { HawtioEmptyCard } from '../HawtioEmptyCard'
 import { HawtioLoadingCard } from '../HawtioLoadingCard'
@@ -15,6 +15,7 @@ export const Attributes: React.FunctionComponent = () => {
   const [attributes, setAttributes] = useState<AttributeValues>({})
   const [isReading, setIsReading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('asc')
   const [selected, setSelected] = useState({ name: '', value: '' })
   const [reload, setReload] = useState(false)
 
@@ -77,6 +78,18 @@ export const Attributes: React.FunctionComponent = () => {
     }
   }
 
+  const getSortParams = (): ThProps['sort'] => ({
+    sortBy: {
+      index: 0,
+      direction: sortDirection,
+      defaultDirection: 'asc', // starting sort direction when first sorting a column. Defaults to 'asc'
+    },
+    onSort: (_event, _index, direction) => {
+      setSortDirection(direction)
+    },
+    columnIndex: 0,
+  })
+
   const panelContent = (
     <AttributeModal
       isOpen={isModalOpen}
@@ -91,22 +104,24 @@ export const Attributes: React.FunctionComponent = () => {
       <TableComposable aria-label='Attributes' variant='compact'>
         <Thead>
           <Tr>
-            <Th>Attribute</Th>
+            <Th sort={getSortParams()}>Attribute</Th>
             <Th>Value</Th>
           </Tr>
         </Thead>
         <Tbody>
-          {rows.map((att, index) => (
-            <Tr
-              key={att.name + '-' + index}
-              isHoverable
-              isRowSelected={selected.name === att.name}
-              onRowClick={() => selectAttribute(att)}
-            >
-              <Td>{att.name}</Td>
-              <Td>{att.value}</Td>
-            </Tr>
-          ))}
+          {rows
+            .sort((a, b) => objectSorter(a.name, b.name, sortDirection === 'desc'))
+            .map((att, index) => (
+              <Tr
+                key={att.name + '-' + index}
+                isHoverable
+                isRowSelected={selected.name === att.name}
+                onRowClick={() => selectAttribute(att)}
+              >
+                <Td>{att.name}</Td>
+                <Td>{att.value}</Td>
+              </Tr>
+            ))}
         </Tbody>
       </TableComposable>
     </div>
