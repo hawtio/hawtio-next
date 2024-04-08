@@ -781,7 +781,7 @@ __metadata:
   dependencies:
     "@hawtio/camel-model-v4_0": "npm:@hawtio/camel-model@~4.0.4"
     "@hawtio/camel-model-v4_4": "npm:@hawtio/camel-model@~4.4.0"
-    "@module-federation/utilities": "npm:^3.0.5"
+    "@module-federation/utilities": "npm:^3.0.7"
     "@patternfly/react-charts": "npm:~6.94.21"
     "@patternfly/react-code-editor": "npm:~4.82.122"
     "@patternfly/react-core": "npm:~4.278.1"
@@ -1204,9 +1204,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@module-federation/utilities@npm:^3.0.5":
-  version: 3.0.5
-  resolution: "@module-federation/utilities@npm:3.0.5"
+"@module-federation/sdk@npm:0.1.2":
+  version: 0.1.2
+  resolution: "@module-federation/sdk@npm:0.1.2"
+  checksum: 10/fd51f78d60dc2c911911a68ebcd507ae4c653e035951922f3bdaace36c2ae2efbf3ef61ad2aded70d126fc88b44bc7bcf166f0ada0af8b9b474765d3db75ce9b
+  languageName: node
+  linkType: hard
+
+"@module-federation/utilities@npm:^3.0.7":
+  version: 3.0.7
+  resolution: "@module-federation/utilities@npm:3.0.7"
+  dependencies:
+    "@module-federation/sdk": "npm:0.1.2"
   peerDependencies:
     react: ^16 || ^17 || ^18
     react-dom: ^16 || ^17 || ^18
@@ -1218,7 +1227,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10/fd54fe1ba28106ae9089c4d95e7ec6cb7bb4f2a8f06f7e08083eb727c7f696b13965d57a93a303158517843d6417ca520adcc05b4ffd1224707d1dd60e252ecc
+  checksum: 10/022f1d1547d176302cd7c15764db56964506979a967e5b6089c856d6111f624c29154c2ea68299974ef0972a7d60a2a8f165bae7d16af1bf972a724af6c9f2da
   languageName: node
   linkType: hard
 
