@@ -1,7 +1,7 @@
 import { CamelContext } from '@hawtiosrc/plugins/camel/context'
 import { HawtioEmptyCard, HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
 import { Card, CardBody, CardTitle } from '@patternfly/react-core'
-import { Table, TableBody, TableHeader, TableProps, wrappable } from '@patternfly/react-table'
+import { TableComposable, Tbody, Th, Td, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useState } from 'react'
 import * as exs from './exchanges-service'
 
@@ -54,23 +54,32 @@ export const InflightExchanges: React.FunctionComponent = () => {
     return <HawtioEmptyCard title='Inflight Exchanges' message='No inflight exchanges found.' testid='no-exchanges' />
   }
 
-  const columns: TableProps['cells'] = []
-  columns.push({ title: 'Exchange ID', transforms: [wrappable] })
-  columns.push({ title: 'Route ID', transforms: [wrappable] })
-  columns.push({ title: 'Node ID', transforms: [wrappable] })
-  columns.push({ title: 'Duration (ms)', transforms: [wrappable] })
-  columns.push({ title: 'Elapsed (ms)', transforms: [wrappable] })
-
-  const rows: TableProps['rows'] = exchanges.map(ex => [ex.exchangeId, ex.routeId, ex.nodeId, ex.duration, ex.elapsed])
-
   return (
     <Card isFullHeight>
       <CardTitle>Inflight Exchanges</CardTitle>
       <CardBody>
-        <Table data-testid='exchange-table' aria-label='Inflight Exchanges' cells={columns} rows={rows}>
-          <TableHeader />
-          <TableBody />
-        </Table>
+        <TableComposable data-testid='exchange-table' aria-label='Inflight Exchanges' variant='compact'>
+          <Thead>
+            <Tr>
+              <Th modifier='wrap'>Exchange ID</Th>
+              <Th modifier='wrap'>Route ID</Th>
+              <Th modifier='wrap'>Node ID</Th>
+              <Th modifier='wrap'>Duration (ms)</Th>
+              <Th modifier='wrap'>Elapsed (ms)</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {exchanges.map(ex => (
+              <Tr key={ex.exchangeId}>
+                <Td>{ex.exchangeId}</Td>
+                <Td>{ex.routeId}</Td>
+                <Td>{ex.nodeId}</Td>
+                <Td>{ex.duration}</Td>
+                <Td>{ex.elapsed}</Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </TableComposable>
       </CardBody>
     </Card>
   )
