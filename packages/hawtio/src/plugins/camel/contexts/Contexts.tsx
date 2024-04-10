@@ -4,7 +4,7 @@ import { HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
 import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { Card, CardBody, Text } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
-import { Table, TableBody, TableHeader, TableProps, wrappable } from '@patternfly/react-table'
+import { TableComposable, TableProps, Tbody, Td, Th, Thead, Tr, wrappable } from '@patternfly/react-table'
 import { Response } from 'jolokia.js'
 import React, { useContext, useEffect, useState } from 'react'
 import { log } from '../globals'
@@ -15,21 +15,20 @@ export const Contexts: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
   const [isReading, setIsReading] = useState(true)
 
-  const emptyCtxs: ContextState[] = []
-  const [contexts, setContexts] = useState(emptyCtxs)
-  const [selectedCtx, setSelectedCtx] = useState<ContextState[]>([])
+  const [contexts, setContexts] = useState<ContextState[]>([])
+  const [selectedCtx, setSelectedCtx] = useState<string[]>([])
 
   const onSelectContext = (ctx: ContextState, isSelecting: boolean) => {
-    const otherSelectedCtx = selectedCtx.filter(c => c.node !== ctx.node)
-    setSelectedCtx(isSelecting ? [...otherSelectedCtx, ctx] : [...otherSelectedCtx])
+    const otherSelectedCtx = selectedCtx.filter(c => c !== ctx.node.name)
+    setSelectedCtx(isSelecting ? [...otherSelectedCtx, ctx.node.name] : [...otherSelectedCtx])
   }
 
   const selectAllContexts = (isSelecting = true) => {
-    setSelectedCtx(isSelecting ? [...contexts] : [])
+    setSelectedCtx(isSelecting ? contexts.map(c => c.node.name) : [])
   }
 
   const isContextSelected = (ctx: ContextState) => {
-    return selectedCtx.includes(ctx)
+    return selectedCtx.includes(ctx.node.name)
   }
 
   useEffect(() => {
@@ -127,27 +126,39 @@ export const Contexts: React.FunctionComponent = () => {
 
   return (
     <Card isFullHeight>
-      <ContextToolbar contexts={selectedCtx} deleteCallback={handleDeletedContexts} />
-      <Table
-        onSelect={(_event, isSelecting, rowIndex) => {
-          if (rowIndex === -1) {
-            selectAllContexts(isSelecting)
-          } else {
-            const ctx = contexts[rowIndex]
-            if (ctx) {
-              onSelectContext(ctx, isSelecting)
-            }
-          }
-        }}
-        canSelectAll={true}
-        aria-label='Contexts'
-        variant='compact'
-        cells={columns}
-        rows={rows}
-      >
-        <TableHeader />
-        <TableBody />
-      </Table>
+      <ContextToolbar
+        contexts={contexts.filter(c => selectedCtx.includes(c.node.name))}
+        deleteCallback={handleDeletedContexts}
+      />
+      <TableComposable aria-label='Contexts' variant='compact'>
+        <Thead>
+          <Tr>
+            <Th
+              select={{
+                onSelect: (_event, isSelecting) => selectAllContexts(isSelecting),
+                isSelected: contexts.length === selectedCtx.length,
+              }}
+            />
+            <Th key='context-header'>Context</Th>
+            <Th key={'state-header'}>State</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {contexts.map((ctx, idx) => (
+            <Tr key={ctx.node.name}>
+              <Td
+                select={{
+                  rowIndex: idx,
+                  onSelect: (_event, isSelecting) => onSelectContext(ctx, isSelecting),
+                  isSelected: isContextSelected(ctx),
+                }}
+              />
+              <Td key={'context-' + idx}>{ctx.node.name}</Td>
+              <Td key={'state-' + idx}>{ctx.state}</Td>
+            </Tr>
+          ))}
+        </Tbody>
+      </TableComposable>
     </Card>
   )
 }
