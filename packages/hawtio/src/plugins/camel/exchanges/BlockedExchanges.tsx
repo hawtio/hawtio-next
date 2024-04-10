@@ -1,7 +1,7 @@
 import { CamelContext } from '@hawtiosrc/plugins/camel/context'
 import { HawtioEmptyCard, HawtioLoadingCard, MBeanNode } from '@hawtiosrc/plugins/shared'
 import { Button, Card, CardBody, CardTitle, Modal, ModalVariant } from '@patternfly/react-core'
-import { Table, TableBody, TableHeader, TableProps, TableText, fitContent, wrappable } from '@patternfly/react-table'
+import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import * as exs from './exchanges-service'
 
@@ -65,30 +65,9 @@ export const BlockedExchanges: React.FunctionComponent = () => {
   if (isReading) {
     return <HawtioLoadingCard />
   }
-
   if (exchanges.length === 0) {
     return <HawtioEmptyCard title='Blocked Exchanges' message='No blocked exchanges found.' testid='no-exchanges' />
   }
-
-  const columns: TableProps['cells'] = []
-  columns.push({ title: 'Exchange ID', transforms: [wrappable] })
-  columns.push({ title: 'Route ID', transforms: [wrappable] })
-  columns.push({ title: 'Node ID', transforms: [wrappable] })
-  columns.push({ title: 'Duration (ms)', transforms: [wrappable] })
-  columns.push({ title: 'Elapsed (ms)', transforms: [wrappable] })
-  columns.push({ title: '', dataLabel: 'Action', transforms: [fitContent] })
-
-  const rows: TableProps['rows'] = exchanges.map(ex => {
-    const unblockActionButton = (
-      <TableText>
-        <Button variant='secondary' onClick={() => onUnblockClicked(ex)}>
-          Unblock
-        </Button>
-      </TableText>
-    )
-
-    return [ex.exchangeId, ex.routeId, ex.nodeId, ex.duration, ex.elapsed, unblockActionButton]
-  })
 
   const ConfirmUnblockModal = () => (
     <Modal
@@ -115,10 +94,33 @@ export const BlockedExchanges: React.FunctionComponent = () => {
     <Card isFullHeight>
       <CardTitle>Blocked Exchanges</CardTitle>
       <CardBody>
-        <Table data-testid='exchange-table' aria-label='Blocked Exchanges' cells={columns} rows={rows}>
-          <TableHeader />
-          <TableBody />
-        </Table>
+        <TableComposable variant={'compact'} data-testid='exchange-table' aria-label='Blocked Exchanges'>
+          <Thead>
+            <Tr>
+              <Th modifier='wrap'>Exchange ID</Th>
+              <Th modifier='wrap'>Route ID</Th>
+              <Th modifier='wrap'>Node ID</Th>
+              <Th modifier='wrap'>Duration (ms)</Th>
+              <Th modifier='wrap'>Elapsed (ms)</Th>
+              <Th dataLabel='Action' wrap=''></Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {exchanges.map((ex, index) => (
+              <Tr key={ex.exchangeId + '-' + index}>
+                <Td>{ex.exchangeId}</Td>g <Td>{ex.routeId}</Td>
+                <Td>{ex.nodeId}</Td>
+                <Td>{ex.duration}</Td>
+                <Td>{ex.elapsed}</Td>
+                <Td>
+                  <Button variant='link' onClick={() => onUnblockClicked(ex)}>
+                    Unblock
+                  </Button>
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </TableComposable>
         <ConfirmUnblockModal />
       </CardBody>
     </Card>
