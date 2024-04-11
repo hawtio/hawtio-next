@@ -13,7 +13,7 @@ This project reimplements the following Hawtio JS components in one project:
 
 ## Development
 
-This project was generated with [Create React App](https://create-react-app.dev/) and is managed through [CRACO](https://craco.js.org/) for customised Webpack configurations.
+This project uses [tsup](https://tsup.egoist.dev/) and [Webpack](https://webpack.js.org/) for building packages.
 
 See also [Developing Hawtio.next](./docs/developing.md) for the project styling, guidelines, and more details on development.
 
