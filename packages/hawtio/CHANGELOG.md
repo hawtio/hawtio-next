@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.2.2](https://github.com/hawtio/hawtio-next/compare/v1.2.1...v1.2.2) (2024-04-15)
+
+
+### Bug Fixes
+
+* **#852:** Make Attributes table sortable ([1d8c882](https://github.com/hawtio/hawtio-next/commit/1d8c882a4a09be027a060c62799b281a9a9f0a47)), closes [#852](https://github.com/hawtio/hawtio-next/issues/852)
+* **Contexts:** fix [#845](https://github.com/hawtio/hawtio-next/issues/845) ([26df634](https://github.com/hawtio/hawtio-next/commit/26df6342d8faf2a641319c49d420dac1b0bd7bce))
+
 ## [1.2.1](https://github.com/hawtio/hawtio-next/compare/v1.2.0...v1.2.1) (2024-04-05)
 
 
