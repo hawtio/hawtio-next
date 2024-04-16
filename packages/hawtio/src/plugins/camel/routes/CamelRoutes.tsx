@@ -6,6 +6,7 @@ import {
   Dropdown,
   DropdownItem,
   KebabToggle,
+  Label,
   Modal,
   Toolbar,
   ToolbarContent,
@@ -19,6 +20,13 @@ import { CamelRoute } from './route'
 import { routesService } from './routes-service'
 
 const ROUTES_REFRESH_INTERVAL = 10000 // milliseconds
+
+export const RouteStateLabel: React.FunctionComponent<{ state: string | null }> = ({ state }) => {
+  if (!state) {
+    return <Label color='grey'>Unknown</Label>
+  }
+  return state === 'Started' ? <Label color='green'>{state}</Label> : <Label color='red'>{state}</Label>
+}
 
 export const CamelRoutes: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
@@ -215,7 +223,9 @@ export const CamelRoutes: React.FunctionComponent = () => {
                   }}
                 />
                 <Td dataLabel='Name'>{route.routeId}</Td>
-                <Td dataLabel='State'>{route.state}</Td>
+                <Td dataLabel='State'>
+                  <RouteStateLabel state={route.state} />
+                </Td>
                 <Td dataLabel='Uptime'>{route.uptime}</Td>
                 <Td dataLabel='Completed'>{route.exchangesCompleted}</Td>
                 <Td dataLabel='Failed'>{route.exchangesFailed}</Td>
