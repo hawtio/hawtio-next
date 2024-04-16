@@ -3372,7 +3372,7 @@ __metadata:
     "@hawtio/react": "workspace:*"
     "@swc/core": "npm:^1.4.14"
     copy-webpack-plugin: "npm:^12.0.2"
-    css-loader: "npm:^7.1.0"
+    css-loader: "npm:^7.1.1"
     html-webpack-plugin: "npm:^5.6.0"
     jest: "npm:^29.7.0"
     monaco-editor-webpack-plugin: "npm:^7.1.0"
@@ -4861,9 +4861,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"css-loader@npm:^7.1.0":
-  version: 7.1.0
-  resolution: "css-loader@npm:7.1.0"
+"css-loader@npm:^7.1.1":
+  version: 7.1.1
+  resolution: "css-loader@npm:7.1.1"
   dependencies:
     icss-utils: "npm:^5.1.0"
     postcss: "npm:^8.4.33"
@@ -4881,7 +4881,7 @@ __metadata:
       optional: true
     webpack:
       optional: true
-  checksum: 10/7444ad8ea9927fead724412ba61aa6207eafff8d2cfa0bc2824301343353a1029e65b6583aa3e55d33e725e623edd0bcb44f407378033c39f58ce8b35f265f1e
+  checksum: 10/435a21f19594f89e4d5da51f4d6d2de4d25d6f882117890875f6529e99fbe931ea258662fb680b70e7ccab2fd723084f2c3fff022c76d45c38893ae50ab6f08e
   languageName: node
   linkType: hard
 
