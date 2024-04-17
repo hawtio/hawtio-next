@@ -1,7 +1,7 @@
 import { userService } from '@hawtiosrc/auth'
 import { camelTreeProcessor } from '@hawtiosrc/plugins/camel/tree-processor'
 import { MBeanNode, MBeanTree, jolokiaService, workspace } from '@hawtiosrc/plugins/shared'
-import { fireEvent, render, screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, waitForElementToBeRemoved } from '@testing-library/react'
 import fs from 'fs'
 import path from 'path'
 import { CamelContext } from '../context'
@@ -176,7 +176,7 @@ describe('BlockedExchanges', () => {
     const { rerender } = render(BlockedXchgs)
     await waitForElementToBeRemoved(() => screen.queryByTestId('loading'))
 
-    let tblXchgs = await screen.findByTestId('exchange-table')
+    const tblXchgs = await screen.findByTestId('exchange-table')
     expect(tblXchgs).toBeInTheDocument()
 
     /* Find the unblock button */
@@ -208,8 +208,10 @@ describe('BlockedExchanges', () => {
     expect(modal).not.toBeInTheDocument()
 
     /* There should be no table in the page */
-    tblXchgs = await screen.findByTestId('exchange-table')
-    expect(tblXchgs).not.toBeInTheDocument()
+    await waitFor(() => {
+      const noExchgTable = screen.queryByTestId('exchange-table')
+      expect(noExchgTable).not.toBeInTheDocument()
+    })
 
     /* There should be the no blocked exchanges message only */
     expect(screen.getByTestId('no-exchanges')).toHaveTextContent('No blocked exchanges')
