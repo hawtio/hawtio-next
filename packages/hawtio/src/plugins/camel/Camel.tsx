@@ -45,7 +45,7 @@ export const Camel: React.FunctionComponent = () => {
         <div>
           <CamelTreeView />
         </div>
-        <div>
+        <div className='camel-content-page'>
           <CamelContent />
         </div>
       </Split>
