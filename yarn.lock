@@ -799,7 +799,7 @@ __metadata:
     "@types/react": "npm:^18.2.23"
     "@types/react-dom": "npm:^18.2.25"
     "@types/react-router-dom": "npm:^5.3.3"
-    commit-and-tag-version: "npm:^12.2.0"
+    commit-and-tag-version: "npm:^12.4.0"
     dagre: "npm:^0.8.5"
     eventemitter3: "npm:^5.0.1"
     jest: "npm:^29.7.0"
@@ -4331,9 +4331,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commit-and-tag-version@npm:^12.2.0":
-  version: 12.2.0
-  resolution: "commit-and-tag-version@npm:12.2.0"
+"commit-and-tag-version@npm:^12.4.0":
+  version: 12.4.0
+  resolution: "commit-and-tag-version@npm:12.4.0"
   dependencies:
     chalk: "npm:^2.4.2"
     conventional-changelog: "npm:3.1.25"
@@ -4349,10 +4349,11 @@ __metadata:
     jsdom: "npm:^23.2.0"
     semver: "npm:^7.5.4"
     w3c-xmlserializer: "npm:^5.0.0"
+    yaml: "npm:^2.4.1"
     yargs: "npm:^17.7.2"
   bin:
     commit-and-tag-version: bin/cli.js
-  checksum: 10/16915b3defd9e4fb8f595297af30673ef489cd8a22e75fc2910fb860f4632587d5223190d6e178cabe7c882e736064e66ca89e5fc41a9568433f0513ad906606
+  checksum: 10/9575b12899b858ad340f212d9448f184e93f03ac10a620553db42023b9cbbb26c54d2aff1212d48b2708a8945a347e04a6864ffc8b32a403de24e09425ac7808
   languageName: node
   linkType: hard
 
@@ -14167,6 +14168,15 @@ __metadata:
   version: 2.3.1
   resolution: "yaml@npm:2.3.1"
   checksum: 10/66501d597e43766eb94dc175d28ec8b2c63087d6a78783e59b4218eee32b9172740f9f27d54b7bc0ca8af61422f7134929f9974faeaac99d583787e793852fd2
+  languageName: node
+  linkType: hard
+
+"yaml@npm:^2.4.1":
+  version: 2.4.1
+  resolution: "yaml@npm:2.4.1"
+  bin:
+    yaml: bin.mjs
+  checksum: 10/2c54fd69ef59126758ae710f9756405a7d41abcbb61aca894250d0e81e76057c14dc9bb00a9528f72f99b8f24077f694a6f7fd09cdd6711fcec2eebfbb5df409
   languageName: node
   linkType: hard
 
