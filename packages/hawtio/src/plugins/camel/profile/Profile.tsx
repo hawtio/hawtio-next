@@ -1,5 +1,5 @@
 import { HawtioEmptyCard, HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
-import { Card, CardBody, CardHeader, CardTitle } from '@patternfly/react-core'
+import { Panel, PanelHeader, PanelMain, PanelMainBody, Title } from '@patternfly/react-core'
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import { Response } from 'jolokia.js'
 import React, { useContext, useEffect, useState } from 'react'
@@ -52,42 +52,44 @@ export const Profile: React.FunctionComponent = () => {
   }
 
   return (
-    <Card isFullHeight>
-      <CardHeader>
-        <CardTitle>Profiling</CardTitle>
-      </CardHeader>
-      <CardBody>
-        <TableComposable aria-label='message table' variant='compact' isStriped>
-          <Thead>
-            <Tr>
-              <Th>ID</Th>
-              <Th>Count</Th>
-              <Th>Last</Th>
-              <Th>Delta</Th>
-              <Th>Mean</Th>
-              <Th>Min</Th>
-              <Th>Max</Th>
-              <Th>Total</Th>
-              <Th>Self</Th>
-            </Tr>
-          </Thead>
-          <Tbody isOddStriped>
-            {profileData.map(pd => (
-              <Tr key={pd.id}>
-                <Td dataLabel='ID'>{pd.id}</Td>
-                <Td dataLabel='Count'>{pd.count}</Td>
-                <Td dataLabel='Last'>{pd.last}</Td>
-                <Td dataLabel='Delta'>{pd.delta}</Td>
-                <Td dataLabel='Mean'>{pd.mean}</Td>
-                <Td dataLabel='Min'>{pd.min}</Td>
-                <Td dataLabel='Max'>{pd.max}</Td>
-                <Td dataLabel='Total'>{pd.total}</Td>
-                <Td dataLabel='Self'>{pd.self}</Td>
+    <Panel>
+      <PanelHeader>
+        <Title headingLevel='h3'>Profiling</Title>
+      </PanelHeader>
+      <PanelMain>
+        <PanelMainBody>
+          <TableComposable aria-label='message table' variant='compact' isStriped>
+            <Thead>
+              <Tr>
+                <Th>ID</Th>
+                <Th>Count</Th>
+                <Th>Last</Th>
+                <Th>Delta</Th>
+                <Th>Mean</Th>
+                <Th>Min</Th>
+                <Th>Max</Th>
+                <Th>Total</Th>
+                <Th>Self</Th>
               </Tr>
-            ))}
-          </Tbody>
-        </TableComposable>
-      </CardBody>
-    </Card>
+            </Thead>
+            <Tbody isOddStriped>
+              {profileData.map(pd => (
+                <Tr key={pd.id}>
+                  <Td dataLabel='ID'>{pd.id}</Td>
+                  <Td dataLabel='Count'>{pd.count}</Td>
+                  <Td dataLabel='Last'>{pd.last}</Td>
+                  <Td dataLabel='Delta'>{pd.delta}</Td>
+                  <Td dataLabel='Mean'>{pd.mean}</Td>
+                  <Td dataLabel='Min'>{pd.min}</Td>
+                  <Td dataLabel='Max'>{pd.max}</Td>
+                  <Td dataLabel='Total'>{pd.total}</Td>
+                  <Td dataLabel='Self'>{pd.self}</Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </TableComposable>
+        </PanelMainBody>
+      </PanelMain>
+    </Panel>
   )
 }
