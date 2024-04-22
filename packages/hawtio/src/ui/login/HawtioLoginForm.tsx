@@ -20,7 +20,7 @@ export const HawtioLoginForm: React.FunctionComponent = () => {
   const [loginFailedMessage, setLoginFailedMessage] = useState('')
   const [isEnabled, setIsEnabled] = useState(true)
 
-  log.debug(`Login state: username = ${username}, isLogin = ${isLogin}`)
+  log.debug('Login state: username =', username, 'isLogin =', isLogin)
 
   const reset = () => {
     setIsValidUsername(true)

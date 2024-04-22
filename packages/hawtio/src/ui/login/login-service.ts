@@ -59,7 +59,7 @@ class LoginService implements ILoginService {
     if (!login) {
       return ''
     }
-    return JSON.parse(login).username || ''
+    return JSON.parse(login).username ?? ''
   }
 
   rememberUser(username: string) {
