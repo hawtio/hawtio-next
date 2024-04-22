@@ -6,6 +6,12 @@
   margin-top: 0.5em;
 }
 
+#trace-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 #route-message-table-header button {
   float: right;
 }
