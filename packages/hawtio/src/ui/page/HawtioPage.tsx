@@ -16,6 +16,7 @@ import { HawtioSidebar } from './HawtioSidebar'
 import { PageContext } from './context'
 import { log } from './globals'
 import { sessionService, SessionMonitor } from '@hawtiosrc/ui/session'
+import './HawtioPage.css'
 
 export const HawtioPage: React.FunctionComponent = () => {
   const { username, isLogin, userLoaded, userLoading } = useUser()
@@ -52,6 +53,7 @@ export const HawtioPage: React.FunctionComponent = () => {
     <PageContext.Provider value={{ username, plugins }}>
       <BackgroundImage src={backgroundImages} />
       <Page
+        id='hawtio-main-page'
         header={<HawtioHeader />}
         sidebar={<HawtioSidebar />}
         isManagedSidebar
