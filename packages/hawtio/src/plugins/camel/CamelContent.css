@@ -5,7 +5,9 @@
 #camel-content-main .pf-c-page__main {
   overflow-x: auto;
 }
-
+#camel-content {
+  height: 100%;
+}
 #camel-content-header > #camel-contexts-toolbar {
   float: right;
   padding-top: 0;

@@ -1,6 +1,7 @@
 import { eventService } from '@hawtiosrc/core'
 import { AttributeValues, Attributes, Chart, JmxContentMBeans, MBeanNode, Operations } from '@hawtiosrc/plugins/shared'
 import {
+  Divider,
   EmptyState,
   EmptyStateIcon,
   EmptyStateVariant,
@@ -8,7 +9,6 @@ import {
   NavItem,
   NavList,
   PageGroup,
-  PageNavigation,
   PageSection,
   PageSectionVariants,
   Text,
@@ -159,17 +159,28 @@ export const CamelContent: React.FunctionComponent = () => {
   const camelNavRoutes = navItems.map(nav => <Route key={nav.id} path={nav.id} element={nav.component} />)
 
   return (
-    <React.Fragment>
-      <PageGroup>
-        <PageSection id='camel-content-header' variant={PageSectionVariants.light}>
-          {camelService.isContext(selectedNode) && <CamelContentContextToolbar />}
-          <Title headingLevel='h1'>{selectedNode.name}</Title>
-          {selectedNode.objectName && <Text component='small'>{selectedNode.objectName}</Text>}
+    <PageGroup id='camel-content'>
+      <PageSection id='camel-content-header' variant={PageSectionVariants.light}>
+        {camelService.isContext(selectedNode) && <CamelContentContextToolbar />}
+        <Title headingLevel='h1'>{selectedNode.name}</Title>
+        {selectedNode.objectName && <Text component='small'>{selectedNode.objectName}</Text>}
+      </PageSection>
+      <Divider />
+      {navItems.length > 1 && (
+        <PageSection type={'tabs'} variant={PageSectionVariants.light} hasShadowBottom>
+          {camelNav}
         </PageSection>
-        {navItems.length > 1 && <PageNavigation>{camelNav}</PageNavigation>}
-      </PageGroup>
-
-      <PageSection id='camel-content-main'>
+      )}
+      <Divider />
+      <PageSection
+        id='camel-content-main'
+        variant={
+          pathname.includes('chart') || pathname.includes('properties')
+            ? PageSectionVariants.default
+            : PageSectionVariants.light
+        }
+        hasOverflowScroll
+      >
         {navItems.length > 0 && (
           <Routes>
             {camelNavRoutes}
@@ -178,7 +189,7 @@ export const CamelContent: React.FunctionComponent = () => {
         )}
         {navItems.length === 0 && !selectedNode.objectName && <JmxContentMBeans />}
       </PageSection>
-    </React.Fragment>
+    </PageGroup>
   )
 }
 
