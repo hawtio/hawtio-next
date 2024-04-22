@@ -1,9 +1,8 @@
 import { HawtioEmptyCard, HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
 import {
-  Card,
-  CardBody,
-  CardHeader,
-  CardTitle,
+  Panel,
+  PanelMain,
+  PanelMainBody,
   SearchInput,
   Select,
   SelectDirection,
@@ -189,72 +188,71 @@ export const RestServices: React.FunctionComponent = () => {
   }
 
   return (
-    <Card isFullHeight>
-      <CardHeader>
-        <CardTitle>REST Services</CardTitle>
-      </CardHeader>
-      <CardBody id='rest-services-card-body'>
-        <Toolbar clearAllFilters={clearFilters}>
-          <ToolbarContent>
-            <ToolbarGroup variant='filter-group'>
-              <ToolbarItem>
-                <Select
-                  toggleRef={() => filterTypeToggleRef}
-                  variant={SelectVariant.single}
-                  id='select-filter-type'
-                  aria-label='select-filter-type'
-                  onToggle={onSelectFilterTypeToggle}
-                  onSelect={onSelectFilterType}
-                  selections={filterType}
-                  isOpen={isFilterTypeOpen}
-                  direction={SelectDirection.down}
+    <Panel>
+      <PanelMain>
+        <PanelMainBody id='rest-services-card-body'>
+          <Toolbar clearAllFilters={clearFilters}>
+            <ToolbarContent>
+              <ToolbarGroup variant='filter-group'>
+                <ToolbarItem>
+                  <Select
+                    toggleRef={() => filterTypeToggleRef}
+                    variant={SelectVariant.single}
+                    id='select-filter-type'
+                    aria-label='select-filter-type'
+                    onToggle={onSelectFilterTypeToggle}
+                    onSelect={onSelectFilterType}
+                    selections={filterType}
+                    isOpen={isFilterTypeOpen}
+                    direction={SelectDirection.down}
+                  >
+                    {headers.map((name, index) => (
+                      <SelectOption key={name + '-' + index} value={name} />
+                    ))}
+                  </Select>
+                </ToolbarItem>
+                <ToolbarFilter
+                  chips={filterChips()}
+                  deleteChip={(_e, filter) => deleteFilter(filter as string)}
+                  deleteChipGroup={clearFilters}
+                  categoryName='Filters'
                 >
-                  {headers.map((name, index) => (
-                    <SelectOption key={name + '-' + index} value={name} />
-                  ))}
-                </Select>
-              </ToolbarItem>
-              <ToolbarFilter
-                chips={filterChips()}
-                deleteChip={(_e, filter) => deleteFilter(filter as string)}
-                deleteChipGroup={clearFilters}
-                categoryName='Filters'
-              >
-                <SearchInput
-                  type='text'
-                  id='search-filter-input'
-                  aria-label='filter input value'
-                  placeholder={filterInputPlaceholder}
-                  value={filterInput}
-                  onChange={(_event, value) => setFilterInput(value)}
-                  onClear={() => setFilterInput('')}
-                  onSearch={(_event, value) => createFilter(value)}
-                />
-              </ToolbarFilter>
-            </ToolbarGroup>
-          </ToolbarContent>
-        </Toolbar>
-        <TableComposable aria-label='message table' variant='compact' isStriped>
-          <Thead>
-            <Tr>
-              {headers.map(header => (
-                <Th key={header}>{header}</Th>
-              ))}
-            </Tr>
-          </Thead>
-          <Tbody isOddStriped>
-            {filteredRestSvcData.map(rsdata => (
-              <Tr key={rsdata.url + '_' + rsdata.method}>
-                <Td dataLabel='URL'>{rsdata.url}</Td>
-                <Td dataLabel='Method'>{rsdata.method}</Td>
-                <Td dataLabel='Consumes'>{rsdata.consumes}</Td>
-                <Td dataLabel='Produces'>{rsdata.produces}</Td>
-                <Td dataLabel='Route ID'>{rsdata.routeId}</Td>
+                  <SearchInput
+                    type='text'
+                    id='search-filter-input'
+                    aria-label='filter input value'
+                    placeholder={filterInputPlaceholder}
+                    value={filterInput}
+                    onChange={(_event, value) => setFilterInput(value)}
+                    onClear={() => setFilterInput('')}
+                    onSearch={(_event, value) => createFilter(value)}
+                  />
+                </ToolbarFilter>
+              </ToolbarGroup>
+            </ToolbarContent>
+          </Toolbar>
+          <TableComposable aria-label='message table' variant='compact' isStriped>
+            <Thead>
+              <Tr>
+                {headers.map(header => (
+                  <Th key={header}>{header}</Th>
+                ))}
               </Tr>
-            ))}
-          </Tbody>
-        </TableComposable>
-      </CardBody>
-    </Card>
+            </Thead>
+            <Tbody isOddStriped>
+              {filteredRestSvcData.map(rsdata => (
+                <Tr key={rsdata.url + '_' + rsdata.method}>
+                  <Td dataLabel='URL'>{rsdata.url}</Td>
+                  <Td dataLabel='Method'>{rsdata.method}</Td>
+                  <Td dataLabel='Consumes'>{rsdata.consumes}</Td>
+                  <Td dataLabel='Produces'>{rsdata.produces}</Td>
+                  <Td dataLabel='Route ID'>{rsdata.routeId}</Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </TableComposable>
+        </PanelMainBody>
+      </PanelMain>
+    </Panel>
   )
 }

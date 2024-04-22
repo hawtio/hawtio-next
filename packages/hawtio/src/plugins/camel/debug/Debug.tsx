@@ -4,15 +4,17 @@ import { isBlank } from '@hawtiosrc/util/strings'
 import { childText, parseXML } from '@hawtiosrc/util/xml'
 import {
   Button,
-  Card,
   CardActions,
-  CardBody,
-  CardHeader,
+  PanelMainBody,
   CardTitle,
   Text,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
+  PanelHeader,
+  PanelMain,
+  Panel,
+  Title,
 } from '@patternfly/react-core'
 import {
   BanIcon,
@@ -481,9 +483,11 @@ export const Debug: React.FunctionComponent = () => {
   )
 
   return (
-    <Card isFullHeight>
-      <CardHeader>
-        <CardTitle>Debug</CardTitle>
+    <Panel>
+      <PanelHeader>
+        <CardTitle>
+          <Title headingLevel='h3'>Debug</Title>
+        </CardTitle>
         <CardActions>
           <Button
             variant='primary'
@@ -495,57 +499,59 @@ export const Debug: React.FunctionComponent = () => {
             {!isDebugging ? 'Start Debugging' : 'Stop Debugging'}
           </Button>
         </CardActions>
-      </CardHeader>
-      <CardBody>
-        {!isDebugging && (
-          <Text data-testid='no-debugging' component='p'>
-            Debugging allows you to step through camel routes to diagnose issues.
-          </Text>
-        )}
-        {isDebugging && (
-          <React.Fragment>
-            <Toolbar id='toolbar-items'>
-              <ToolbarContent>{toolbarButtons}</ToolbarContent>
-            </Toolbar>
+      </PanelHeader>
+      <PanelMain>
+        <PanelMainBody>
+          {!isDebugging && (
+            <Text data-testid='no-debugging' component='p'>
+              Debugging allows you to step through camel routes to diagnose issues.
+            </Text>
+          )}
+          {isDebugging && (
+            <React.Fragment>
+              <Toolbar id='toolbar-items'>
+                <ToolbarContent>{toolbarButtons}</ToolbarContent>
+              </Toolbar>
 
-            <MessageDrawer
-              messages={messages}
-              expanded={debugPanelExpanded}
-              setExpanded={setDebugPanelExpanded}
-              extraPanel={{
-                id: 'debug-panel-tab-breakpoints',
-                label: 'Breakpoints',
-                panelFn: debugPanelBreakpointsTab,
-              }}
-            >
-              <div id='route-diagram-breakpoint-view'>
-                <RouteDiagramContext.Provider
-                  value={{
-                    graphNodeData,
-                    setGraphNodeData,
-                    graphSelection,
-                    setGraphSelection,
-                    setShowStatistics,
-                    doubleClickAction,
-                    setDoubleClickAction,
-                    annotations,
-                    setAnnotations,
-                  }}
-                >
-                  <RouteDiagram />
-                </RouteDiagramContext.Provider>
-              </div>
-            </MessageDrawer>
-          </React.Fragment>
-        )}
-        <ConditionalBreakpointModal
-          selectedNode={selectedNode}
-          selection={graphSelection}
-          isConditionalBreakpointOpen={isConditionalBreakpointOpen}
-          onAddConditionalBreakpointToggle={onAddConditionalBreakpointToggle}
-          addConditionalBreakpoint={handleAddConditionalBreakpoint}
-        />
-      </CardBody>
-    </Card>
+              <MessageDrawer
+                messages={messages}
+                expanded={debugPanelExpanded}
+                setExpanded={setDebugPanelExpanded}
+                extraPanel={{
+                  id: 'debug-panel-tab-breakpoints',
+                  label: 'Breakpoints',
+                  panelFn: debugPanelBreakpointsTab,
+                }}
+              >
+                <div id='route-diagram-breakpoint-view'>
+                  <RouteDiagramContext.Provider
+                    value={{
+                      graphNodeData,
+                      setGraphNodeData,
+                      graphSelection,
+                      setGraphSelection,
+                      setShowStatistics,
+                      doubleClickAction,
+                      setDoubleClickAction,
+                      annotations,
+                      setAnnotations,
+                    }}
+                  >
+                    <RouteDiagram />
+                  </RouteDiagramContext.Provider>
+                </div>
+              </MessageDrawer>
+            </React.Fragment>
+          )}
+          <ConditionalBreakpointModal
+            selectedNode={selectedNode}
+            selection={graphSelection}
+            isConditionalBreakpointOpen={isConditionalBreakpointOpen}
+            onAddConditionalBreakpointToggle={onAddConditionalBreakpointToggle}
+            addConditionalBreakpoint={handleAddConditionalBreakpoint}
+          />
+        </PanelMainBody>
+      </PanelMain>
+    </Panel>
   )
 }

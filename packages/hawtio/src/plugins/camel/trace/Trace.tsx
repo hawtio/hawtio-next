@@ -2,17 +2,14 @@ import { HawtioEmptyCard, HawtioLoadingCard, MBeanNode } from '@hawtiosrc/plugin
 import { childText, parseXML } from '@hawtiosrc/util/xml'
 import {
   Button,
-  Card,
-  CardActions,
   CardBody,
-  CardHeader,
-  CardTitle,
   Divider,
   Panel,
   PanelHeader,
   PanelMain,
   PanelMainBody,
   Text,
+  Title,
 } from '@patternfly/react-core'
 import { BanIcon, PlayIcon } from '@patternfly/react-icons'
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
@@ -189,21 +186,19 @@ export const Trace: React.FunctionComponent = () => {
   }
 
   return (
-    <Card isFullHeight>
-      <CardHeader>
-        <CardTitle>Tracing</CardTitle>
-        <CardActions>
-          <Button
-            variant='primary'
-            isSmall={true}
-            icon={!isTracing ? React.createElement(PlayIcon) : React.createElement(BanIcon)}
-            onClick={onTracing}
-            isDisabled={!camelService.canTrace(selectedNode)}
-          >
-            {!isTracing ? 'Start Tracing' : 'Stop Tracing'}
-          </Button>
-        </CardActions>
-      </CardHeader>
+    <Panel>
+      <PanelHeader id='trace-header-container'>
+        <Title headingLevel='h3'>Tracing</Title>
+        <Button
+          variant='primary'
+          isSmall={true}
+          icon={!isTracing ? React.createElement(PlayIcon) : React.createElement(BanIcon)}
+          onClick={onTracing}
+          isDisabled={!camelService.canTrace(selectedNode)}
+        >
+          {!isTracing ? 'Start Tracing' : 'Stop Tracing'}
+        </Button>
+      </PanelHeader>
       <CardBody>
         {!isTracing && (
           <React.Fragment>
@@ -223,7 +218,7 @@ export const Trace: React.FunctionComponent = () => {
         )}
         {isTracing && (
           <React.Fragment>
-            <Panel id='route-diagram-tracing-view' isScrollable variant='raised'>
+            <Panel id='route-diagram-tracing-view' isScrollable>
               <PanelMain>
                 <PanelMainBody>
                   <RouteDiagramContext.Provider
@@ -282,6 +277,6 @@ export const Trace: React.FunctionComponent = () => {
           </React.Fragment>
         )}
       </CardBody>
-    </Card>
+    </Panel>
   )
 }

@@ -125,7 +125,7 @@ export const Contexts: React.FunctionComponent = () => {
   }
 
   return (
-    <Card isFullHeight>
+    <React.Fragment>
       <ContextToolbar
         contexts={contexts.filter(c => selectedCtx.includes(c.node.name))}
         deleteCallback={handleDeletedContexts}
@@ -159,6 +159,6 @@ export const Contexts: React.FunctionComponent = () => {
           ))}
         </Tbody>
       </TableComposable>
-    </Card>
+    </React.Fragment>
   )
 }

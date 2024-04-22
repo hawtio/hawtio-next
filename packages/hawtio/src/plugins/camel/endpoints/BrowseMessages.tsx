@@ -2,9 +2,6 @@ import { NotificationType, eventService } from '@hawtiosrc/core'
 import {
   Bullseye,
   Button,
-  Card,
-  CardBody,
-  CardTitle,
   CodeBlock,
   CodeBlockCode,
   EmptyState,
@@ -16,6 +13,10 @@ import {
   Modal,
   ModalVariant,
   Pagination,
+  Panel,
+  PanelHeader,
+  PanelMain,
+  PanelMainBody,
   SearchInput,
   TextInput,
   Title,
@@ -191,109 +192,113 @@ export const BrowseMessages: React.FunctionComponent = () => {
   }
 
   return (
-    <Card isFullHeight>
-      <CardTitle>Browse Messages</CardTitle>
-      <CardBody>
-        <Toolbar clearAllFilters={clearFilters}>
-          <ToolbarContent>
-            <ToolbarGroup>
-              <ToolbarFilter
-                chips={filters}
-                deleteChip={(_e, filter) => onDeleteFilter(filter as string)}
-                deleteChipGroup={clearFilters}
-                categoryName='Filters'
-              >
-                <SearchInput
-                  type='text'
-                  data-testid='filter-input'
-                  id='search-input'
-                  placeholder='Search...'
-                  value={searchTerm}
-                  onChange={(_event, value) => handleSearch(value, filters)}
-                  aria-label='Search input'
-                />
-              </ToolbarFilter>
-              <Button variant='secondary' onClick={addToFilters}>
-                Add Filter
-              </Button>
-            </ToolbarGroup>
-            <ToolbarItem>
-              <Button variant='secondary' onClick={loadMessages}>
-                Refresh
-              </Button>
-            </ToolbarItem>
-            <ToolbarItem>
-              <ForwardMessagesModal
-                endpoints={endpoints}
-                enabled={selected.length > 0}
-                onForwardMessages={forwardMessages}
-              />
-            </ToolbarItem>
-            <ToolbarItem variant='pagination'>
-              <MessagesPagination />
-            </ToolbarItem>
-          </ToolbarContent>
-        </Toolbar>
-
-        {filteredMessages.length > 0 && (
-          <FormGroup>
-            <TableComposable aria-label='Message Table' variant='compact' height='80vh'>
-              <Thead>
-                <Tr>
-                  <Th
-                    select={{
-                      onSelect: (_event, isSelecting) => onSelectAll(isSelecting),
-                      isSelected: isAllSelected(),
-                    }}
+    <Panel>
+      <PanelHeader>
+        <Title headingLevel='h3'>Browse Messages</Title>
+      </PanelHeader>
+      <PanelMain>
+        <PanelMainBody>
+          <Toolbar clearAllFilters={clearFilters}>
+            <ToolbarContent>
+              <ToolbarGroup>
+                <ToolbarFilter
+                  chips={filters}
+                  deleteChip={(_e, filter) => onDeleteFilter(filter as string)}
+                  deleteChipGroup={clearFilters}
+                  categoryName='Filters'
+                >
+                  <SearchInput
+                    type='text'
+                    data-testid='filter-input'
+                    id='search-input'
+                    placeholder='Search...'
+                    value={searchTerm}
+                    onChange={(_event, value) => handleSearch(value, filters)}
+                    aria-label='Search input'
                   />
-                  <Th>Message ID</Th>
-                  <Th>Body</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {getPage().map((m, index) => {
-                  return (
-                    <Tr key={index}>
-                      <Td
-                        style={{ flex: 1 }}
-                        select={{
-                          rowIndex: index,
-                          onSelect: (_event, isSelected) => {
-                            onSelect(m.messageId, isSelected)
-                          },
-                          isSelected: selected.includes(m.messageId),
-                        }}
-                      />
-                      <Td style={{ width: '20%' }}>
-                        <MessageDetails
-                          aria-label={`message-details ${m.messageId}`}
-                          message={m}
-                          endpoints={endpoints}
-                          mid={m.messageId}
-                          index={getFromIndex() + index}
-                          getMessage={handleNextMessage}
-                          forwardMessages={forwardMessages}
-                          maxValue={filteredMessages.length}
+                </ToolbarFilter>
+                <Button variant='secondary' onClick={addToFilters}>
+                  Add Filter
+                </Button>
+              </ToolbarGroup>
+              <ToolbarItem>
+                <Button variant='secondary' onClick={loadMessages}>
+                  Refresh
+                </Button>
+              </ToolbarItem>
+              <ToolbarItem>
+                <ForwardMessagesModal
+                  endpoints={endpoints}
+                  enabled={selected.length > 0}
+                  onForwardMessages={forwardMessages}
+                />
+              </ToolbarItem>
+              <ToolbarItem variant='pagination'>
+                <MessagesPagination />
+              </ToolbarItem>
+            </ToolbarContent>
+          </Toolbar>
+
+          {filteredMessages.length > 0 && (
+            <FormGroup>
+              <TableComposable aria-label='Message Table' variant='compact' height='80vh'>
+                <Thead>
+                  <Tr>
+                    <Th
+                      select={{
+                        onSelect: (_event, isSelecting) => onSelectAll(isSelecting),
+                        isSelected: isAllSelected(),
+                      }}
+                    />
+                    <Th>Message ID</Th>
+                    <Th>Body</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {getPage().map((m, index) => {
+                    return (
+                      <Tr key={index}>
+                        <Td
+                          style={{ flex: 1 }}
+                          select={{
+                            rowIndex: index,
+                            onSelect: (_event, isSelected) => {
+                              onSelect(m.messageId, isSelected)
+                            },
+                            isSelected: selected.includes(m.messageId),
+                          }}
                         />
-                      </Td>
-                      <Td style={{ flex: 3 }}>{getSubstring(m.body)}</Td>
-                    </Tr>
-                  )
-                })}
-              </Tbody>
-            </TableComposable>
-          </FormGroup>
-        )}
-        {filteredMessages.length === 0 && (
-          <Bullseye>
-            <EmptyState>
-              <EmptyStateIcon icon={SearchIcon} />
-              <EmptyStateBody>No results found.</EmptyStateBody>
-            </EmptyState>
-          </Bullseye>
-        )}
-      </CardBody>
-    </Card>
+                        <Td style={{ width: '20%' }}>
+                          <MessageDetails
+                            aria-label={`message-details ${m.messageId}`}
+                            message={m}
+                            endpoints={endpoints}
+                            mid={m.messageId}
+                            index={getFromIndex() + index}
+                            getMessage={handleNextMessage}
+                            forwardMessages={forwardMessages}
+                            maxValue={filteredMessages.length}
+                          />
+                        </Td>
+                        <Td style={{ flex: 3 }}>{getSubstring(m.body)}</Td>
+                      </Tr>
+                    )
+                  })}
+                </Tbody>
+              </TableComposable>
+            </FormGroup>
+          )}
+          {filteredMessages.length === 0 && (
+            <Bullseye>
+              <EmptyState>
+                <EmptyStateIcon icon={SearchIcon} />
+                <EmptyStateBody>No results found.</EmptyStateBody>
+              </EmptyState>
+            </Bullseye>
+          )}
+        </PanelMainBody>
+      </PanelMain>
+    </Panel>
   )
 }
 
