@@ -1,15 +1,5 @@
 import { HawtioEmptyCard, HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  CardTitle,
-  Label,
-  LabelGroup,
-  Panel,
-  PanelMain,
-  PanelMainBody,
-} from '@patternfly/react-core'
+import { Label, LabelGroup, Panel, PanelMain, PanelMainBody } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
 import React, { useContext, useEffect, useState } from 'react'
 import { CamelContext } from '../context'
@@ -85,37 +75,32 @@ export const Properties: React.FunctionComponent = () => {
   }
 
   return (
-    <Card isFullHeight>
-      <CardHeader>
-        <CardTitle>Properties</CardTitle>
-      </CardHeader>
-      <CardBody id='properties-card-body'>
-        <Panel variant='raised'>
+    <React.Fragment>
+      <Panel id='properties-card-body'>
+        <PanelMain>
+          <PanelMainBody id='properties-card-title-panel'>
+            {icon}
+            <span>{title}</span>
+            <LabelGroup id='properties-card-title-panel-labelgroup'>
+              {labels.map(label => (
+                <Label key={label} icon={<InfoCircleIcon />}>
+                  {label}
+                </Label>
+              ))}
+            </LabelGroup>
+          </PanelMainBody>
+        </PanelMain>
+      </Panel>
+      {description && (
+        <Panel>
           <PanelMain>
-            <PanelMainBody id='properties-card-title-panel'>
-              {icon}
-              <span>{title}</span>
-              <LabelGroup id='properties-card-title-panel-labelgroup'>
-                {labels.map(label => (
-                  <Label key={label} icon={<InfoCircleIcon />}>
-                    {label}
-                  </Label>
-                ))}
-              </LabelGroup>
-            </PanelMainBody>
+            <PanelMainBody id='properties-card-description-panel'>{description}</PanelMainBody>
           </PanelMain>
         </Panel>
-        {description && (
-          <Panel variant='raised'>
-            <PanelMain>
-              <PanelMainBody id='properties-card-description-panel'>{description}</PanelMainBody>
-            </PanelMain>
-          </Panel>
-        )}
-        <PropertiesList title='Defined Properties' values={definedProperties} />
-        <PropertiesList title='Default Properties' values={defaultProperties} />
-        <PropertiesList title='Undefined Properties' values={undefinedProperties} />
-      </CardBody>
-    </Card>
+      )}
+      <PropertiesList title='Defined Properties' values={definedProperties} />
+      <PropertiesList title='Default Properties' values={defaultProperties} />
+      <PropertiesList title='Undefined Properties' values={undefinedProperties} />
+    </React.Fragment>
   )
 }

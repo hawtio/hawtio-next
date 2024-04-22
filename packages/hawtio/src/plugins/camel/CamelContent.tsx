@@ -174,11 +174,7 @@ export const CamelContent: React.FunctionComponent = () => {
       <Divider />
       <PageSection
         id='camel-content-main'
-        variant={
-          pathname.includes('chart') || pathname.includes('properties')
-            ? PageSectionVariants.default
-            : PageSectionVariants.light
-        }
+        variant={pathname.includes('chart') ? PageSectionVariants.default : PageSectionVariants.light}
         hasOverflowScroll
       >
         {navItems.length > 0 && (

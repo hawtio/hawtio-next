@@ -3,18 +3,20 @@ import { isBlank } from '@hawtiosrc/util/strings'
 import { CodeEditor, Language } from '@patternfly/react-code-editor'
 import {
   Button,
-  Card,
-  CardBody,
-  CardTitle,
   Flex,
   FlexItem,
   Form,
   FormGroup,
+  Panel,
+  PanelHeader,
+  PanelMain,
+  PanelMainBody,
   Select,
   SelectOption,
   SelectOptionObject,
   SelectVariant,
   TextInput,
+  Title,
 } from '@patternfly/react-core'
 import { TrashIcon } from '@patternfly/react-icons'
 import * as monacoEditor from 'monaco-editor'
@@ -56,20 +58,25 @@ export const SendMessage: React.FunctionComponent = () => {
   }
 
   return (
-    <Card isFullHeight>
-      <CardTitle>Send Message</CardTitle>
-      <CardBody>
-        <Form onSubmit={handleSubmit}>
-          <MessageHeaders onHeadersChange={updateHeaders} />
-          <MessageBody onBodyChange={updateTheMessageBody} />
-          <FormGroup>
-            <Button type='submit' className='pf-m-1-col'>
-              Send
-            </Button>
-          </FormGroup>
-        </Form>
-      </CardBody>
-    </Card>
+    <Panel>
+      <PanelHeader>
+        <Title headingLevel='h3'>Send Message</Title>
+      </PanelHeader>
+
+      <PanelMain>
+        <PanelMainBody>
+          <Form onSubmit={handleSubmit}>
+            <MessageHeaders onHeadersChange={updateHeaders} />
+            <MessageBody onBodyChange={updateTheMessageBody} />
+            <FormGroup>
+              <Button type='submit' className='pf-m-1-col'>
+                Send
+              </Button>
+            </FormGroup>
+          </Form>
+        </PanelMainBody>
+      </PanelMain>
+    </Panel>
   )
 }
 
