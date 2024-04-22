@@ -1,6 +1,6 @@
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
 import { isEmpty } from '@hawtiosrc/util/objects'
-import { Card, CardBody, DataList, Text } from '@patternfly/react-core'
+import { DataList, Panel, PanelHeader, PanelMain, PanelMainBody, Text } from '@patternfly/react-core'
 import React, { useContext } from 'react'
 import { HawtioEmptyCard } from '../HawtioEmptyCard'
 import { OperationForm } from './OperationForm'
@@ -31,15 +31,17 @@ export const Operations: React.FunctionComponent = () => {
   )
 
   return (
-    <Card isFullHeight>
-      <CardBody>
+    <Panel>
+      <PanelHeader>
         <Text component='p'>
           This MBean supports the following JMX operations. Expand an item in the list to invoke that operation.
         </Text>
-      </CardBody>
-      <CardBody>
-        <OperationList />
-      </CardBody>
-    </Card>
+      </PanelHeader>
+      <PanelMain>
+        <PanelMainBody>
+          <OperationList />
+        </PanelMainBody>
+      </PanelMain>
+    </Panel>
   )
 }

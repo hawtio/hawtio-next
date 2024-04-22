@@ -1,7 +1,7 @@
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
 import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { isObject, objectSorter } from '@hawtiosrc/util/objects'
-import { Card, Drawer, DrawerContent, DrawerContentBody } from '@patternfly/react-core'
+import { Drawer, DrawerContent, DrawerContentBody, Panel } from '@patternfly/react-core'
 import { TableComposable, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useState } from 'react'
 import { HawtioEmptyCard } from '../HawtioEmptyCard'
@@ -9,6 +9,7 @@ import { HawtioLoadingCard } from '../HawtioLoadingCard'
 import { log } from '../globals'
 import { AttributeModal } from './AttributeModal'
 import { attributeService } from './attribute-service'
+import './AttributeTable.css'
 
 export const Attributes: React.FunctionComponent = () => {
   const { selectedNode } = useContext(PluginNodeSelectionContext)
@@ -100,7 +101,7 @@ export const Attributes: React.FunctionComponent = () => {
   )
 
   const attributesTable = (
-    <div style={{ height: '75vh' }}>
+    <div id='attribute-table-with-panel'>
       <TableComposable aria-label='Attributes' variant='compact'>
         <Thead>
           <Tr>
@@ -128,13 +129,13 @@ export const Attributes: React.FunctionComponent = () => {
   )
   return (
     <React.Fragment>
-      <Card isFullHeight>
+      <Panel>
         <Drawer isExpanded={isModalOpen} className={'pf-m-inline-on-2xl'}>
           <DrawerContent panelContent={panelContent}>
             <DrawerContentBody hasPadding> {attributesTable}</DrawerContentBody>
           </DrawerContent>
         </Drawer>
-      </Card>
+      </Panel>
     </React.Fragment>
   )
 }

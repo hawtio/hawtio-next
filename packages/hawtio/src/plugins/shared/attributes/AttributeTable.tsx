@@ -2,7 +2,7 @@ import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
 import { JmxContentMBeans } from '@hawtiosrc/plugins/shared/JmxContentMBeans'
 import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { humanizeLabels } from '@hawtiosrc/util/strings'
-import { Card } from '@patternfly/react-core'
+import { Panel } from '@patternfly/react-core'
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import { Response } from 'jolokia.js'
 import React, { useContext, useEffect, useState } from 'react'
@@ -106,7 +106,7 @@ export const AttributeTable: React.FunctionComponent = () => {
   const labels = Object.keys(attributesEntries[0] ?? {})
 
   return (
-    <Card isFullHeight>
+    <Panel>
       <TableComposable aria-label='MBeans' variant='compact'>
         <Thead>
           <Tr>
@@ -125,6 +125,6 @@ export const AttributeTable: React.FunctionComponent = () => {
           ))}
         </Tbody>
       </TableComposable>
-    </Card>
+    </Panel>
   )
 }
