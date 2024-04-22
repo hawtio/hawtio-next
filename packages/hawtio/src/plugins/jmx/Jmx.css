@@ -1,6 +1,7 @@
 .jmx-split {
   display: flex;
   flex-direction: row;
+  height: calc(100vh - 85px);
 }
 
 .gutter {
