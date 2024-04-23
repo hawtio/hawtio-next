@@ -2,6 +2,7 @@ import { Chart, JmxContentMBeans, MBeanNode } from '@hawtiosrc/plugins/shared'
 import { AttributeTable, Attributes } from '@hawtiosrc/plugins/shared/attributes'
 import { Operations } from '@hawtiosrc/plugins/shared/operations'
 import {
+  Divider,
   EmptyState,
   EmptyStateIcon,
   EmptyStateVariant,
@@ -9,7 +10,6 @@ import {
   NavItem,
   NavList,
   PageGroup,
-  PageNavigation,
   PageSection,
   PageSectionVariants,
   Text,
@@ -86,9 +86,17 @@ export const JmxContent: React.FunctionComponent = () => {
           <Title headingLevel='h1'>{selectedNode.name}</Title>
           <Text component='small'>{selectedNode.objectName}</Text>
         </PageSection>
-        <PageNavigation>{mbeanNav}</PageNavigation>
+        <Divider />
+        <PageSection type='tabs' variant={PageSectionVariants.light} hasShadowBottom>
+          {mbeanNav}
+        </PageSection>
+        <Divider />
       </PageGroup>
-      <PageSection id='jmx-content-main'>
+      <PageSection
+        id='jmx-content-main'
+        variant={pathname.includes('chart') ? PageSectionVariants.default : PageSectionVariants.light}
+        hasOverflowScroll
+      >
         <Routes>
           {mbeanRoutes}
           <Route key='root' path='/' element={<Navigate to={navItems[0]?.id ?? ''} />} />
