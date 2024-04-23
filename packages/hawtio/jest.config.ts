@@ -3,7 +3,7 @@ import path from 'path'
 
 const config: Config = {
   preset: 'ts-jest',
-  testEnvironment: 'jsdom',
+  testEnvironment: './jsdom-test-env.ts',
   silent: true,
 
   // Automatically clear mock calls and instances between every test
