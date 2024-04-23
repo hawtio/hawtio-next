@@ -2,10 +2,12 @@ import { HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
 import {
   Bullseye,
   Button,
-  Card,
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
+  Panel,
+  PanelMain,
+  PanelMainBody,
   SearchInput,
   Select,
   SelectOption,
@@ -176,30 +178,34 @@ export const Jobs: React.FunctionComponent = () => {
   )
 
   return (
-    <Card isFullHeight>
-      {tableToolbar}
-      <TableComposable id='quartz-jobs-table' variant='compact' aria-label='Jobs Table' isStriped isStickyHeader>
-        <Thead noWrap>
-          <Tr>
-            <Th>Group</Th>
-            <Th>Name</Th>
-            <Th>Durable</Th>
-            <Th>Recover</Th>
-            <Th>Job Class Name</Th>
-            <Th>Description</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {filteredJobs.map((job, index) => (
-            <JobsTableRow key={index} job={job} />
-          ))}
-          {filteredJobs.length === 0 && (
-            <Tr>
-              <Td colSpan={6}>{emptyResult}</Td>
-            </Tr>
-          )}
-        </Tbody>
-      </TableComposable>
-    </Card>
+    <Panel>
+      <PanelMain>
+        <PanelMainBody>
+          {tableToolbar}
+          <TableComposable id='quartz-jobs-table' variant='compact' aria-label='Jobs Table' isStriped isStickyHeader>
+            <Thead noWrap>
+              <Tr>
+                <Th>Group</Th>
+                <Th>Name</Th>
+                <Th>Durable</Th>
+                <Th>Recover</Th>
+                <Th>Job Class Name</Th>
+                <Th>Description</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {filteredJobs.map((job, index) => (
+                <JobsTableRow key={index} job={job} />
+              ))}
+              {filteredJobs.length === 0 && (
+                <Tr>
+                  <Td colSpan={6}>{emptyResult}</Td>
+                </Tr>
+              )}
+            </Tbody>
+          </TableComposable>
+        </PanelMainBody>
+      </PanelMain>
+    </Panel>
   )
 }
