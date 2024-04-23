@@ -2,6 +2,11 @@
   overflow: auto;
   margin-top: 1.5em;
 }
+#debug-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
 .react-flow {
   background-color: white !important;
