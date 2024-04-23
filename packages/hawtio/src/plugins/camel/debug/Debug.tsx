@@ -4,9 +4,7 @@ import { isBlank } from '@hawtiosrc/util/strings'
 import { childText, parseXML } from '@hawtiosrc/util/xml'
 import {
   Button,
-  CardActions,
   PanelMainBody,
-  CardTitle,
   Text,
   Toolbar,
   ToolbarContent,
@@ -484,21 +482,17 @@ export const Debug: React.FunctionComponent = () => {
 
   return (
     <Panel>
-      <PanelHeader>
-        <CardTitle>
-          <Title headingLevel='h3'>Debug</Title>
-        </CardTitle>
-        <CardActions>
-          <Button
-            variant='primary'
-            isSmall
-            icon={!isDebugging ? React.createElement(PlayIcon) : React.createElement(BanIcon)}
-            onClick={onDebugging}
-            isDisabled={!camelService.canGetBreakpoints(selectedNode)}
-          >
-            {!isDebugging ? 'Start Debugging' : 'Stop Debugging'}
-          </Button>
-        </CardActions>
+      <PanelHeader id='debug-header-container'>
+        <Title headingLevel='h3'>Debug</Title>
+        <Button
+          variant='primary'
+          isSmall
+          icon={!isDebugging ? React.createElement(PlayIcon) : React.createElement(BanIcon)}
+          onClick={onDebugging}
+          isDisabled={!camelService.canGetBreakpoints(selectedNode)}
+        >
+          {!isDebugging ? 'Start Debugging' : 'Stop Debugging'}
+        </Button>
       </PanelHeader>
       <PanelMain>
         <PanelMainBody>
