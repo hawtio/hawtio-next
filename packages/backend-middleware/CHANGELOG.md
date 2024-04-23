@@ -1,6 +1,13 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
+
+## 1.0.5 (2024-04-23)
+
+
+### Bug Fixes
+
+* **backend-middleware:** propagate 429 errors for connect login throttling ([f7f9634](https://github.com/hawtio/hawtio-next/commit/f7f9634ebc004ee7b2466fabbc181c4a5b27a7ee))
 
 ### [1.0.4](https://github.com/hawtio/hawtio-backend-middleware/compare/v1.0.3...v1.0.4) (2023-10-24)
 

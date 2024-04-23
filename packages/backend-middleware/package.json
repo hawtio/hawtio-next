@@ -1,6 +1,6 @@
 {
   "name": "@hawtio/backend-middleware",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "An Express middleware that implements Hawtio backend",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
@@ -32,7 +32,7 @@
     "build:module": "tsc -p tsconfig.module.json",
     "build:watch": "tsc -p tsconfig.json -w",
     "test": "jest",
-    "release": "commit-and-tag-version --path . --tag-prefix backend-middleware-v",
+    "release": "commit-and-tag-version --path . --tag-prefix backend-middleware-v --releaseCommitMessageFormat \"chore(release): ${npm_package_name} v{{currentTag}}\"",
     "prepack": "yarn build"
   },
   "dependencies": {
