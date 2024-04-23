@@ -1,7 +1,6 @@
 import {
   Bullseye,
   Button,
-  Card,
   CodeBlock,
   CodeBlockCode,
   Dropdown,
@@ -13,6 +12,10 @@ import {
   FormGroup,
   Modal,
   Pagination,
+  Panel,
+  PanelHeader,
+  PanelMain,
+  PanelMainBody,
   SearchInput,
   Toolbar,
   ToolbarContent,
@@ -280,63 +283,67 @@ export const Threads: React.FunctionComponent = () => {
   )
 
   return (
-    <Card isFullHeight>
+    <Panel>
       <ThreadsDumpModal isOpen={isThreadsDumpModalOpen} setIsOpen={setIsThreadsDumpModalOpen} />
       <ThreadInfoModal isOpen={isThreadDetailsOpen} thread={currentThread} setIsOpen={setIsThreadDetailsOpen} />
-      {tableToolbar}
-      {sortThreads().length > 0 && (
-        <FormGroup>
-          <TableComposable aria-label='Message Table' variant='compact' height='80vh' isStriped isStickyHeader>
-            <Thead>
-              <Tr>
-                {tableColumns.map((att, index) => (
-                  <Th key={'th-key' + index} data-testid={'id-' + att.key} sort={getSortParams(index)}>
-                    {att.value}
-                  </Th>
-                ))}
-                <Th></Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {getThreadsPage().map((thread, index) => {
-                return (
-                  <Tr key={'row' + index} data-testid={'row' + index}>
-                    {tableColumns.map((att, column) => (
-                      <Td key={'col' + index + '-' + column}>
-                        {att.key === 'threadState' ? (
-                          <ThreadState state={getIndexedThread(thread)[column] as string} />
-                        ) : (
-                          getIndexedThread(thread)[column]
-                        )}
-                      </Td>
+      <PanelHeader>{tableToolbar}</PanelHeader>
+      <PanelMain>
+        <PanelMainBody>
+          {sortThreads().length > 0 && (
+            <FormGroup>
+              <TableComposable aria-label='Message Table' variant='compact' height='80vh' isStriped isStickyHeader>
+                <Thead>
+                  <Tr>
+                    {tableColumns.map((att, index) => (
+                      <Th key={'th-key' + index} data-testid={'id-' + att.key} sort={getSortParams(index)}>
+                        {att.value}
+                      </Th>
                     ))}
-                    <Td>
-                      <Button
-                        onClick={_event => {
-                          setIsThreadDetailsOpen(true)
-                          setCurrentThread(thread)
-                        }}
-                        isSmall
-                        variant='link'
-                      >
-                        Details
-                      </Button>
-                    </Td>
+                    <Th></Th>
                   </Tr>
-                )
-              })}
-            </Tbody>
-          </TableComposable>
-        </FormGroup>
-      )}
-      {filteredThreads.length === 0 && (
-        <Bullseye>
-          <EmptyState>
-            <EmptyStateIcon icon={SearchIcon} />
-            <EmptyStateBody>No results found.</EmptyStateBody>
-          </EmptyState>
-        </Bullseye>
-      )}
-    </Card>
+                </Thead>
+                <Tbody>
+                  {getThreadsPage().map((thread, index) => {
+                    return (
+                      <Tr key={'row' + index} data-testid={'row' + index}>
+                        {tableColumns.map((att, column) => (
+                          <Td key={'col' + index + '-' + column}>
+                            {att.key === 'threadState' ? (
+                              <ThreadState state={getIndexedThread(thread)[column] as string} />
+                            ) : (
+                              getIndexedThread(thread)[column]
+                            )}
+                          </Td>
+                        ))}
+                        <Td>
+                          <Button
+                            onClick={_event => {
+                              setIsThreadDetailsOpen(true)
+                              setCurrentThread(thread)
+                            }}
+                            isSmall
+                            variant='link'
+                          >
+                            Details
+                          </Button>
+                        </Td>
+                      </Tr>
+                    )
+                  })}
+                </Tbody>
+              </TableComposable>
+            </FormGroup>
+          )}
+          {filteredThreads.length === 0 && (
+            <Bullseye>
+              <EmptyState>
+                <EmptyStateIcon icon={SearchIcon} />
+                <EmptyStateBody>No results found.</EmptyStateBody>
+              </EmptyState>
+            </Bullseye>
+          )}
+        </PanelMainBody>
+      </PanelMain>
+    </Panel>
   )
 }
