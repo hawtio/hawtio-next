@@ -37,7 +37,7 @@ To release a `@hawtio/<package-name>` package that uses [commit-and-tag-version]
 1. Run the following script to increase the `version` in `packages/<package-name>/package.json` (for example, [packages/hawtio/package.json](../packages/hawtio/package.json)) automatically. Since it uses `commit-and-tag-version`, the script automatically increases the version appropriately based on the commit history, creates a commit and a tag, and updates the changelog:
 
    ```console
-   yarn release:hawtio
+   yarn release:<package-name>
    ```
 
 2. Check that the commit and tag are made as expected:
