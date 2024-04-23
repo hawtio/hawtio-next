@@ -4,35 +4,30 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## 1.0.5 (2024-04-23)
 
-
 ### Bug Fixes
 
 * **backend-middleware:** propagate 429 errors for connect login throttling ([f7f9634](https://github.com/hawtio/hawtio-next/commit/f7f9634ebc004ee7b2466fabbc181c4a5b27a7ee))
 
-### [1.0.4](https://github.com/hawtio/hawtio-backend-middleware/compare/v1.0.3...v1.0.4) (2023-10-24)
-
+## [1.0.4](https://github.com/hawtio/hawtio-backend-middleware/compare/v1.0.3...v1.0.4) (2023-10-24)
 
 ### Bug Fixes
 
 * propagate 40x errors from the target correctly ([bb00ac6](https://github.com/hawtio/hawtio-backend-middleware/commit/bb00ac69f9d22037c2f5d7411861f82a90ec691b))
 
-### [1.0.3](https://github.com/hawtio/hawtio-backend-middleware/compare/v1.0.2...v1.0.3) (2022-10-30)
-
+## [1.0.3](https://github.com/hawtio/hawtio-backend-middleware/compare/v1.0.2...v1.0.3) (2022-10-30)
 
 ### Bug Fixes
 
 * build files not included with yarn pack ([c56f658](https://github.com/hawtio/hawtio-backend-middleware/commit/c56f6583e82957e09dce8111b9d3c30f72fa7377))
 
-### [1.0.2](https://github.com/hawtio/hawtio-backend-middleware/compare/v1.0.1...v1.0.2) (2022-10-30)
-
+## [1.0.2](https://github.com/hawtio/hawtio-backend-middleware/compare/v1.0.1...v1.0.2) (2022-10-30)
 
 ### Bug Fixes
 
 * fix spelling lint ([5d9d4b7](https://github.com/hawtio/hawtio-backend-middleware/commit/5d9d4b77028b42b6a78d788f4db215997f02901a))
 * version back to 1.0.1 ([22dbc91](https://github.com/hawtio/hawtio-backend-middleware/commit/22dbc91c9c445869aece0f89f255588a123b8d00))
 
-### [1.0.1](https://github.com/tadayosi/hawtio-backend-middleware/compare/v1.0.0...v1.0.1) (2022-10-06)
-
+## [1.0.1](https://github.com/tadayosi/hawtio-backend-middleware/compare/v1.0.0...v1.0.1) (2022-10-06)
 
 ### Bug Fixes
 
