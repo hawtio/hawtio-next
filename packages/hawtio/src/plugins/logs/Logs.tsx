@@ -10,6 +10,7 @@ import {
   DescriptionListDescription,
   DescriptionListGroup,
   DescriptionListTerm,
+  Divider,
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
@@ -18,6 +19,7 @@ import {
   PageSection,
   Pagination,
   PaginationProps,
+  Panel,
   SearchInput,
   Select,
   SelectOption,
@@ -40,10 +42,11 @@ import { LOGS_UPDATE_INTERVAL, logsService } from './logs-service'
 export const Logs: React.FunctionComponent = () => {
   return (
     <React.Fragment>
-      <PageSection id='logs-header' variant='light'>
+      <PageSection id='logs-header' hasShadowBottom variant='light'>
         <Title headingLevel='h1'>Logs</Title>
       </PageSection>
-      <PageSection id='logs-table' isFilled>
+      <Divider />
+      <PageSection id='logs-table' variant='light' isFilled>
         <LogsTable />
       </PageSection>
     </React.Fragment>
@@ -272,7 +275,7 @@ const LogsTable: React.FunctionComponent = () => {
   }
 
   return (
-    <Card>
+    <Panel>
       {tableToolbar}
       <TableComposable variant='compact' aria-label='Logs Table' isStriped isStickyHeader>
         <Thead>
@@ -316,7 +319,7 @@ const LogsTable: React.FunctionComponent = () => {
       </TableComposable>
       {renderPagination('bottom', false)}
       <LogModal isOpen={isModalOpen} onClose={handleModalToggle} log={selected} />
-    </Card>
+    </Panel>
   )
 }
 
