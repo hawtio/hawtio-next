@@ -128,14 +128,12 @@ export const Attributes: React.FunctionComponent = () => {
     </div>
   )
   return (
-    <React.Fragment>
-      <Panel>
-        <Drawer isExpanded={isModalOpen} className={'pf-m-inline-on-2xl'}>
-          <DrawerContent panelContent={panelContent}>
-            <DrawerContentBody hasPadding> {attributesTable}</DrawerContentBody>
-          </DrawerContent>
-        </Drawer>
-      </Panel>
-    </React.Fragment>
+    <Panel>
+      <Drawer isExpanded={isModalOpen} className={'pf-m-inline-on-2xl'}>
+        <DrawerContent panelContent={panelContent}>
+          <DrawerContentBody hasPadding> {attributesTable}</DrawerContentBody>
+        </DrawerContent>
+      </Drawer>
+    </Panel>
   )
 }
