@@ -2,10 +2,12 @@ import { HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
 import {
   Bullseye,
   Button,
-  Card,
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
+  Panel,
+  PanelMain,
+  PanelMainBody,
   SearchInput,
   Select,
   SelectOption,
@@ -172,40 +174,45 @@ export const Triggers: React.FunctionComponent = () => {
   )
 
   return (
-    <Card isFullHeight>
-      {tableToolbar}
-      <TableComposable
-        id='quartz-triggers-table'
-        variant='compact'
-        aria-label='Triggers Table'
-        isStriped
-        isStickyHeader
-      >
-        <Thead noWrap>
-          <Tr>
-            <Th>State</Th>
-            <Th>Group</Th>
-            <Th>Name</Th>
-            <Th>Type</Th>
-            <Th>Expression</Th>
-            <Th>Misfire Instruction</Th>
-            <Th>Previous Fire</Th>
-            <Th>Next Fire</Th>
-            <Th>Final Fire</Th>
-            <Th colSpan={2}>Actions</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {filteredTriggers.map((trigger, index) => (
-            <TriggersTableRow key={index} trigger={trigger} reload={() => setReload(true)} />
-          ))}
-          {filteredTriggers.length === 0 && (
-            <Tr>
-              <Td colSpan={11}>{emptyResult}</Td>
-            </Tr>
-          )}
-        </Tbody>
-      </TableComposable>
-    </Card>
+    <Panel>
+      {' '}
+      <PanelMain>
+        <PanelMainBody>
+          {tableToolbar}
+          <TableComposable
+            id='quartz-triggers-table'
+            variant='compact'
+            aria-label='Triggers Table'
+            isStriped
+            isStickyHeader
+          >
+            <Thead noWrap>
+              <Tr>
+                <Th>State</Th>
+                <Th>Group</Th>
+                <Th>Name</Th>
+                <Th>Type</Th>
+                <Th>Expression</Th>
+                <Th>Misfire Instruction</Th>
+                <Th>Previous Fire</Th>
+                <Th>Next Fire</Th>
+                <Th>Final Fire</Th>
+                <Th colSpan={2}>Actions</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {filteredTriggers.map((trigger, index) => (
+                <TriggersTableRow key={index} trigger={trigger} reload={() => setReload(true)} />
+              ))}
+              {filteredTriggers.length === 0 && (
+                <Tr>
+                  <Td colSpan={11}>{emptyResult}</Td>
+                </Tr>
+              )}
+            </Tbody>
+          </TableComposable>
+        </PanelMainBody>
+      </PanelMain>
+    </Panel>
   )
 }

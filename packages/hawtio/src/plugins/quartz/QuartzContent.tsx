@@ -1,5 +1,6 @@
 import { Attributes, Operations } from '@hawtiosrc/plugins/shared'
 import {
+  Divider,
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
@@ -7,7 +8,6 @@ import {
   NavItem,
   NavList,
   PageGroup,
-  PageNavigation,
   PageSection,
   PageSectionVariants,
   Text,
@@ -87,9 +87,13 @@ export const QuartzContent: React.FunctionComponent = () => {
           <Title headingLevel='h1'>{selectedNode.name}</Title>
           <Text component='small'>{selectedNode.objectName}</Text>
         </PageSection>
-        <PageNavigation>{nav}</PageNavigation>
+        <Divider />
+        <PageSection type='tabs' hasShadowBottom>
+          {nav}
+        </PageSection>
+        <Divider />
       </PageGroup>
-      <PageSection id='quartz-content-main'>
+      <PageSection variant='light' id='quartz-content-main' padding={{ default: 'noPadding' }}>
         <Routes>
           {routes}
           <Route key='root' path='/' element={<Navigate to={navItems[0]?.id ?? ''} />} />
