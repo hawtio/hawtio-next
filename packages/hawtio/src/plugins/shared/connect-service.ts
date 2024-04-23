@@ -42,6 +42,8 @@ export type ConnectionCredentials = {
   password: string
 }
 
+export type LoginResult = { type: 'success' } | { type: 'failure' } | { type: 'throttled'; retryAfter: number }
+
 const STORAGE_KEY_CONNECTIONS = 'connect.connections'
 
 const SESSION_KEY_CURRENT_CONNECTION = 'connect.currentConnection'
@@ -64,7 +66,7 @@ export interface IConnectService {
   checkReachable(connection: Connection): Promise<boolean>
   testConnection(connection: Connection): Promise<ConnectionTestResult>
   connect(connection: Connection): void
-  login(username: string, password: string): Promise<boolean>
+  login(username: string, password: string): Promise<LoginResult>
   redirect(): void
   createJolokia(connection: Connection, checkCredentials?: boolean): Jolokia
   getJolokiaUrl(connection: Connection): string
@@ -242,34 +244,43 @@ class ConnectService implements IConnectService {
   /**
    * Log in to the current connection.
    */
-  async login(username: string, password: string): Promise<boolean> {
+  async login(username: string, password: string): Promise<LoginResult> {
     const connection = await this.getCurrentConnection()
     if (!connection) {
-      return false
+      return { type: 'failure' }
     }
 
     // Check credentials
-    const ok = await new Promise<boolean>(resolve => {
+    const result = await new Promise<LoginResult>(resolve => {
       connection.username = username
       connection.password = password
       this.createJolokia(connection, true).request(
         { type: 'version' },
         {
-          success: () => resolve(true),
-          error: () => resolve(false),
-          ajaxError: () => resolve(false),
+          success: () => resolve({ type: 'success' }),
+          error: () => resolve({ type: 'failure' }),
+          ajaxError: (xhr: JQueryXHR) => {
+            log.debug('Login error:', xhr.status, xhr.statusText)
+            if (xhr.status === 429) {
+              // Login throttled
+              const retryAfter = parseInt(xhr.getResponseHeader('Retry-After') ?? '0')
+              resolve({ type: 'throttled', retryAfter })
+              return
+            }
+            resolve({ type: 'failure' })
+          },
         },
       )
     })
-    if (!ok) {
-      return false
+    if (result.type !== 'success') {
+      return result
     }
 
     // Persist credentials to session storage
     await this.setCurrentCredentials({ username, password })
     this.clearCredentialsOnLogout()
 
-    return true
+    return result
   }
 
   /**
