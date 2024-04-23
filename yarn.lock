@@ -731,17 +731,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hawtio/backend-middleware@npm:^1.0.4":
-  version: 1.0.4
-  resolution: "@hawtio/backend-middleware@npm:1.0.4"
+"@hawtio/backend-middleware@workspace:*, @hawtio/backend-middleware@workspace:packages/backend-middleware":
+  version: 0.0.0-use.local
+  resolution: "@hawtio/backend-middleware@workspace:packages/backend-middleware"
   dependencies:
     "@bitauth/libauth": "npm:^1.17.1"
+    "@types/express": "npm:^4.17.14"
+    "@types/jest": "npm:^29.5.12"
+    "@types/node": "npm:^20.12.7"
     axios: "npm:^1.0.0"
+    commit-and-tag-version: "npm:^12.2.0"
+    concurrently: "npm:^8.2.2"
     express: "npm:^4.18.1"
+    jest: "npm:^29.7.0"
     js-logger: "npm:^1.6.1"
-  checksum: 10/abdb7e55cba7c88e4779765544d394373f7c3010746a277619b20dc9f82537ce246af6a814154b9558fc5cdd14d764357ec423af75cb56becf7847a2d976377c
-  languageName: node
-  linkType: hard
+    ts-jest: "npm:^29.1.2"
+    ts-node: "npm:^10.9.2"
+    typescript: "npm:^5.3.3"
+  languageName: unknown
+  linkType: soft
 
 "@hawtio/camel-model-v4_0@npm:@hawtio/camel-model@~4.0.4":
   version: 4.0.4
@@ -2287,7 +2295,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:*, @types/express@npm:^4.17.21":
+"@types/express@npm:*, @types/express@npm:^4.17.14, @types/express@npm:^4.17.21":
   version: 4.17.21
   resolution: "@types/express@npm:4.17.21"
   dependencies:
@@ -2498,6 +2506,15 @@ __metadata:
   dependencies:
     undici-types: "npm:~5.26.4"
   checksum: 10/654194d4f3cc5867e5525a39647773a12c0c7175972bc4d288cdc74991fc969be2a9689267a3dc1cc5c5c7617e8f7c4769ac4829525726cd3e2f60eb238c1ff4
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^20.12.7":
+  version: 20.12.7
+  resolution: "@types/node@npm:20.12.7"
+  dependencies:
+    undici-types: "npm:~5.26.4"
+  checksum: 10/b4a28a3b593a9bdca5650880b6a9acef46911d58cf7cfa57268f048e9a7157a7c3196421b96cea576850ddb732e3b54bc982c8eb5e1e5ef0635d4424c2fce801
   languageName: node
   linkType: hard
 
@@ -3368,7 +3385,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "app@workspace:app"
   dependencies:
-    "@hawtio/backend-middleware": "npm:^1.0.4"
+    "@hawtio/backend-middleware": "workspace:*"
     "@hawtio/react": "workspace:*"
     "@swc/core": "npm:^1.4.16"
     copy-webpack-plugin: "npm:^12.0.2"
@@ -4331,7 +4348,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commit-and-tag-version@npm:^12.4.0":
+"commit-and-tag-version@npm:^12.2.0, commit-and-tag-version@npm:^12.4.0":
   version: 12.4.0
   resolution: "commit-and-tag-version@npm:12.4.0"
   dependencies:
