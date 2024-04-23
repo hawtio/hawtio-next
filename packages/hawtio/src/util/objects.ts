@@ -6,7 +6,7 @@ export function isObject(value: unknown): value is object {
 }
 
 export function cloneObject<T>(value: T): T {
-  return JSON.parse(JSON.stringify(value))
+  return structuredClone(value)
 }
 
 export function isEmpty(obj: object): boolean {
