@@ -1,4 +1,4 @@
-import { Nav, NavItem, NavList, PageGroup, PageNavigation, PageSection, Title } from '@patternfly/react-core'
+import { Divider, Nav, NavItem, NavList, PageGroup, PageSection, Title } from '@patternfly/react-core'
 import React from 'react'
 
 import { Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom'
@@ -26,7 +26,8 @@ export const Runtime: React.FunctionComponent = () => {
         <Title headingLevel='h1'>Runtime</Title>
       </PageSection>
       <PageGroup>
-        <PageNavigation>
+        <Divider />
+        <PageSection type='tabs' hasShadowBottom>
           <Nav aria-label='Runtime Nav' variant='tertiary'>
             <NavList>
               {navItems.map(navItem => (
@@ -36,9 +37,10 @@ export const Runtime: React.FunctionComponent = () => {
               ))}
             </NavList>
           </Nav>
-        </PageNavigation>
+        </PageSection>
       </PageGroup>
-      <PageSection>
+      <Divider />
+      <PageSection variant={location.pathname.includes('metrics') ? 'default' : 'light'}>
         <Routes>
           {navItems.map(navItem => (
             <Route key={navItem.id} path={navItem.id} element={navItem.component} />

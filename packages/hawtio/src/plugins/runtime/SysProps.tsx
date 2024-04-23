@@ -1,7 +1,6 @@
 import { objectSorter } from '@hawtiosrc/util/objects'
 import {
   Bullseye,
-  Card,
   Dropdown,
   DropdownItem,
   DropdownToggle,
@@ -10,6 +9,10 @@ import {
   EmptyStateIcon,
   FormGroup,
   Pagination,
+  Panel,
+  PanelHeader,
+  PanelMain,
+  PanelMainBody,
   SearchInput,
   Toolbar,
   ToolbarContent,
@@ -188,42 +191,46 @@ export const SysProps: React.FunctionComponent = () => {
   )
 
   return (
-    <Card isFullHeight>
-      {tableToolbar}
-      {sortProperties().length > 0 && (
-        <FormGroup>
-          <TableComposable aria-label='Message Table' variant='compact' height='80vh' isStriped isStickyHeader>
-            <Thead>
-              <Tr>
-                <Th data-testid={'name-header'} sort={getSortParams(0)}>
-                  Property Name
-                </Th>
-                <Th data-testid={'value-header'} sort={getSortParams(1)}>
-                  Property Value
-                </Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {getPageProperties().map((prop, index) => {
-                return (
-                  <Tr key={'row' + index} data-testid={'row' + index}>
-                    <Td style={{ width: '20%' }}>{prop.key}</Td>
-                    <Td style={{ flex: 3 }}>{prop.value}</Td>
+    <Panel>
+      <PanelHeader>{tableToolbar}</PanelHeader>
+      <PanelMain>
+        <PanelMainBody>
+          {sortProperties().length > 0 && (
+            <FormGroup>
+              <TableComposable aria-label='Message Table' variant='compact' height='80vh' isStriped isStickyHeader>
+                <Thead>
+                  <Tr>
+                    <Th data-testid={'name-header'} sort={getSortParams(0)}>
+                      Property Name
+                    </Th>
+                    <Th data-testid={'value-header'} sort={getSortParams(1)}>
+                      Property Value
+                    </Th>
                   </Tr>
-                )
-              })}
-            </Tbody>
-          </TableComposable>
-        </FormGroup>
-      )}
-      {filteredProperties.length === 0 && (
-        <Bullseye>
-          <EmptyState>
-            <EmptyStateIcon icon={SearchIcon} />
-            <EmptyStateBody>No results found.</EmptyStateBody>
-          </EmptyState>
-        </Bullseye>
-      )}
-    </Card>
+                </Thead>
+                <Tbody>
+                  {getPageProperties().map((prop, index) => {
+                    return (
+                      <Tr key={'row' + index} data-testid={'row' + index}>
+                        <Td style={{ width: '20%' }}>{prop.key}</Td>
+                        <Td style={{ flex: 3 }}>{prop.value}</Td>
+                      </Tr>
+                    )
+                  })}
+                </Tbody>
+              </TableComposable>
+            </FormGroup>
+          )}
+          {filteredProperties.length === 0 && (
+            <Bullseye>
+              <EmptyState>
+                <EmptyStateIcon icon={SearchIcon} />
+                <EmptyStateBody>No results found.</EmptyStateBody>
+              </EmptyState>
+            </Bullseye>
+          )}
+        </PanelMainBody>
+      </PanelMain>
+    </Panel>
   )
 }
