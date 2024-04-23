@@ -10,7 +10,6 @@ import {
   EmptyStateIcon,
   FormGroup,
   Label,
-  PageSection,
   Pagination,
   SearchInput,
   Toolbar,
@@ -210,7 +209,7 @@ export const Loggers: React.FunctionComponent = () => {
   )
 
   return (
-    <PageSection variant='light'>
+    <React.Fragment>
       {tableToolbar}
       {getCurrentPage().length > 0 && (
         <FormGroup>
@@ -253,6 +252,6 @@ export const Loggers: React.FunctionComponent = () => {
           </EmptyState>
         </Bullseye>
       )}
-    </PageSection>
+    </React.Fragment>
   )
 }
