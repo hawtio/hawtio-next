@@ -27,6 +27,7 @@ export async function proxy(uri: string, req: Request, res: Response) {
       switch (res2.status) {
         case 401:
         case 403:
+        case 429:
           log.info('Authentication failed on remote server:', error.status, error.message, uri)
           log.debug('Response headers:', res2.headers)
           res.header(res2.headers).sendStatus(res2.status)
