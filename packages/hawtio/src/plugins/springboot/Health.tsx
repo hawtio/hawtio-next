@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Card, CardBody, CardHeader, Flex, FlexItem, Grid, GridItem, PageSection, Title } from '@patternfly/react-core'
+import { Card, CardBody, CardHeader, Flex, FlexItem, Grid, GridItem, Title } from '@patternfly/react-core'
 import { springbootService } from './springboot-service'
 import { HealthComponentDetail, HealthData } from './types'
 import { TableComposable, Tbody, Td, Tr } from '@patternfly/react-table'
@@ -88,7 +88,7 @@ export const Health: React.FunctionComponent = () => {
   }, [])
 
   return (
-    <PageSection variant='default'>
+    <React.Fragment>
       {healthData && (
         <Grid hasGutter span={4}>
           <GridItem span={12}>
@@ -137,6 +137,6 @@ export const Health: React.FunctionComponent = () => {
             })}
         </Grid>
       )}
-    </PageSection>
+    </React.Fragment>
   )
 }

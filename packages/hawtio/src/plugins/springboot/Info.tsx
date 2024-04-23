@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { FormGroup, PageSection } from '@patternfly/react-core'
+import { FormGroup } from '@patternfly/react-core'
 import { springbootService } from './springboot-service'
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 
@@ -13,7 +13,7 @@ export const Info: React.FunctionComponent = () => {
   }, [])
 
   return (
-    <PageSection variant='light'>
+    <React.Fragment>
       <FormGroup>
         <TableComposable aria-label='Message Table' variant='compact' height='80vh' isStriped isStickyHeader>
           <Thead>
@@ -34,6 +34,6 @@ export const Info: React.FunctionComponent = () => {
           </Tbody>
         </TableComposable>
       </FormGroup>
-    </PageSection>
+    </React.Fragment>
   )
 }
