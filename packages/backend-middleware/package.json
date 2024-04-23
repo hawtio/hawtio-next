@@ -32,7 +32,7 @@
     "build:module": "tsc -p tsconfig.module.json",
     "build:watch": "tsc -p tsconfig.json -w",
     "test": "jest",
-    "release": "commit-and-tag-version",
+    "release": "commit-and-tag-version --path . --tag-prefix backend-middleware-v",
     "prepack": "yarn build"
   },
   "dependencies": {

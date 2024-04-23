@@ -30,11 +30,11 @@ The criteria for determining the target version is as follows:
 > [!NOTE]
 > Hawtio is a web UI console, so we normally think new features to the console are backward compatible. Thus, we raise the major version only when the project reaches an important milestone, requires major upgrades of some key components such as React and PatternFly in a backward compatible way, or needs to pivot the basic conditions of the project.
 
-## Releasing @hawtio/react
+## Releasing a package
 
-To release the `@hawtio/react` package, follow these steps:
+To release a `@hawtio/<package-name>` package that uses [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version), follow these steps:
 
-1. Run the following script to increase the `version` in [packages/hawtio/package.json](../packages/hawtio/package.json). It uses [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version), which automatically increases the version appropriately based on the commit history, creates a commit and a tag, and updates the changelog:
+1. Run the following script to increase the `version` in `packages/<package-name>/package.json` (for example, [packages/hawtio/package.json](../packages/hawtio/package.json)) automatically. Since it uses `commit-and-tag-version`, the script automatically increases the version appropriately based on the commit history, creates a commit and a tag, and updates the changelog:
 
    ```console
    yarn release:hawtio
@@ -52,8 +52,8 @@ To release the `@hawtio/react` package, follow these steps:
 3. Check the contents to be packaged before the actual release is made with `yarn pack` command.
 
    ```console
-   $ yarn workspace @hawtio/react pack
-   $ tar -tf packages/hawtio/package.tgz
+   $ yarn workspace @hawtio/<package-name> pack
+   $ tar -tf packages/<package-name>/package.tgz
    package/CHANGELOG.md
    package/LICENSE
    package/README.md
@@ -74,7 +74,7 @@ To release the `@hawtio/react` package, follow these steps:
 4. Publish the release.
 
    ```console
-   yarn publish:hawtio
+   yarn publish:<package-name>
    ```
 
 5. Push the commit and tag to the repository. The previous step doesn't automatically push changes to the repository, so don't forget to do this step.
@@ -83,11 +83,14 @@ To release the `@hawtio/react` package, follow these steps:
    git push <repo> main --tags
    ```
 
-## Releasing other @hawtio/\<package-name\> packages
+## Releasing a package manually
 
-To release a `@hawtio/<package-name>` package, follow these steps:
+> [!IMPORTANT]
+> For packages that use `commit-and-tag-version`, always follow [Releasing a package](#releasing-a-package). Manually releasing should be done only when really necessary.
 
-1. Manually increase the `version` in packages/\<package-name\>/package.json. (Currently, we don't use any automation tool for increasing versions yet.)
+To release a `@hawtio/<package-name>` package manually, follow these steps:
+
+1. Manually increase the `version` in `packages/<package-name>/package.json`.
 
    ```diff
     {
