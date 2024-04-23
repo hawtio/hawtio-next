@@ -5,6 +5,7 @@ import {
   ConnectionTestResult,
   Connections,
   IConnectService,
+  LoginResult,
 } from '../connect-service'
 
 class MockConnectService implements IConnectService {
@@ -53,8 +54,8 @@ class MockConnectService implements IConnectService {
     // no-op
   }
 
-  async login(username: string, password: string): Promise<boolean> {
-    return false
+  async login(username: string, password: string): Promise<LoginResult> {
+    return { type: 'failure' }
   }
 
   redirect() {
