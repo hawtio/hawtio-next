@@ -40,7 +40,10 @@ export const Runtime: React.FunctionComponent = () => {
         </PageSection>
       </PageGroup>
       <Divider />
-      <PageSection variant={location.pathname.includes('metrics') ? 'default' : 'light'}>
+      <PageSection
+        variant={location.pathname.includes('metrics') ? 'default' : 'light'}
+        padding={{ default: location.pathname.includes('metrics') ? 'padding' : 'noPadding' }}
+      >
         <Routes>
           {navItems.map(navItem => (
             <Route key={navItem.id} path={navItem.id} element={navItem.component} />

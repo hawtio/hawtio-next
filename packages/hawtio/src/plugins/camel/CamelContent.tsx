@@ -175,6 +175,7 @@ export const CamelContent: React.FunctionComponent = () => {
       <PageSection
         id='camel-content-main'
         variant={pathname.includes('chart') ? PageSectionVariants.default : PageSectionVariants.light}
+        padding={{ default: pathname.includes('chart') ? 'padding' : 'noPadding' }}
         hasOverflowScroll
       >
         {navItems.length > 0 && (

@@ -95,6 +95,7 @@ export const JmxContent: React.FunctionComponent = () => {
       <PageSection
         id='jmx-content-main'
         variant={pathname.includes('chart') ? PageSectionVariants.default : PageSectionVariants.light}
+        padding={{ default: pathname.includes('chart') ? 'padding' : 'noPadding' }}
         hasOverflowScroll
       >
         <Routes>
