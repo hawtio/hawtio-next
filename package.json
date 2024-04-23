@@ -20,16 +20,20 @@
     "build:app": "yarn workspace app build",
     "build:hawtio": "yarn workspace @hawtio/react build",
     "build:hawtio:watch": "yarn workspace @hawtio/react build:watch",
+    "build:backend-middleware": "yarn workspace @hawtio/backend-middleware build",
     "test": "yarn test:hawtio",
     "test:all": "yarn workspaces foreach -v -Aipt --exclude @hawtio/next-root run test",
     "test:hawtio": "yarn workspace @hawtio/react test",
     "test:hawtio:watch": "yarn workspace @hawtio/react test:watch",
+    "test:backend-middleware": "yarn workspace @hawtio/backend-middleware test",
     "lint": "yarn eslint packages/hawtio/src/ packages/hawtio/scripts/ app/src/",
     "lint:fix": "yarn lint --fix",
     "format:check": "yarn prettier --check .",
     "format:fix": "yarn prettier --write .",
     "release:hawtio": "yarn workspace @hawtio/react release",
-    "publish:hawtio": "yarn workspace @hawtio/react npm publish --tolerate-republish"
+    "release:backend-middleware": "yarn workspace @hawtio/backend-middleware release",
+    "publish:hawtio": "yarn workspace @hawtio/react npm publish --tolerate-republish",
+    "publish:backend-middleware": "yarn workspace @hawtio/backend-middleware npm publish --tolerate-republish"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.1.0",

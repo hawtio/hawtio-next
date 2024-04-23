@@ -14,7 +14,7 @@
     "react-router-dom": "^6.21.1"
   },
   "devDependencies": {
-    "@hawtio/backend-middleware": "^1.0.4",
+    "@hawtio/backend-middleware": "workspace:*",
     "@swc/core": "^1.4.16",
     "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^7.1.1",
