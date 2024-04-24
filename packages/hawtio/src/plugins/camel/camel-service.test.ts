@@ -7,7 +7,7 @@ import { contextNodeType, endpointNodeType, endpointsType, jmxDomain } from './g
 jest.mock('@hawtiosrc/plugins/shared/jolokia-service')
 
 describe('camel-service', () => {
-  test('setChildProperties', async () => {
+  test('setChildProperties', () => {
     const domainNode = new MBeanNode(null, jmxDomain, true)
     const endpointsNode = domainNode.create(endpointsType, true)
 
@@ -37,12 +37,12 @@ describe('camel-service', () => {
     }
   })
 
-  test('getCamelModel', () => {
+  test('getCamelModel', async () => {
     const camel3Node = new MBeanNode(null, 'test-context-camel3', true)
     camel3Node.addMetadata('domain', jmxDomain)
     camel3Node.setType(contextNodeType)
     camel3Node.addMetadata('version', '3.21.0')
-    const camel3Model = camelService.getCamelModel(camel3Node)
+    const camel3Model = await camelService.getCamelModel(camel3Node)
     expect(camel3Model).toBeDefined()
     expect(camel3Model.apacheCamelModelVersion).toBe(camel4_0.apacheCamelModelVersion)
     expect(camel3Model.components).not.toBeUndefined()
@@ -55,7 +55,7 @@ describe('camel-service', () => {
     camel40Node.addMetadata('domain', jmxDomain)
     camel40Node.setType(contextNodeType)
     camel40Node.addMetadata('version', '4.0.4')
-    const camel4Model = camelService.getCamelModel(camel40Node)
+    const camel4Model = await camelService.getCamelModel(camel40Node)
     expect(camel4Model).toBeDefined()
     expect(camel4Model.apacheCamelModelVersion).toBe(camel4_0.apacheCamelModelVersion)
     expect(camel4Model.components).not.toBeUndefined()
@@ -68,7 +68,7 @@ describe('camel-service', () => {
     camel41Node.addMetadata('domain', jmxDomain)
     camel41Node.setType(contextNodeType)
     camel41Node.addMetadata('version', '4.1.0')
-    const camel41Model = camelService.getCamelModel(camel41Node)
+    const camel41Model = await camelService.getCamelModel(camel41Node)
     expect(camel41Model).toBeDefined()
     expect(camel41Model.apacheCamelModelVersion).toBe(camel4_0.apacheCamelModelVersion)
     expect(camel41Model.components).not.toBeUndefined()
@@ -81,7 +81,7 @@ describe('camel-service', () => {
     camel44Node.addMetadata('domain', jmxDomain)
     camel44Node.setType(contextNodeType)
     camel44Node.addMetadata('version', '4.4.0')
-    const camel44Model = camelService.getCamelModel(camel44Node)
+    const camel44Model = await camelService.getCamelModel(camel44Node)
     expect(camel44Model).toBeDefined()
     expect(camel44Model.apacheCamelModelVersion).toBe(camel4_4.apacheCamelModelVersion)
     expect(camel44Model.components).not.toBeUndefined()

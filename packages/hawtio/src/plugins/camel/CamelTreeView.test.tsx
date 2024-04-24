@@ -1,6 +1,6 @@
 import { userService } from '@hawtiosrc/auth'
 import { camelTreeProcessor } from '@hawtiosrc/plugins/camel/tree-processor'
-import { MBeanNode, MBeanTree, jolokiaService, workspace } from '@hawtiosrc/plugins/shared'
+import { MBeanTree, jolokiaService, workspace } from '@hawtiosrc/plugins/shared'
 import { render, screen } from '@testing-library/react'
 import fs from 'fs'
 import path from 'path'
@@ -49,7 +49,7 @@ describe('CamelTreeView', () => {
     await userService.fetchUser()
 
     const wkspTree = await workspace.getTree()
-    camelTreeProcessor(wkspTree)
+    await camelTreeProcessor(wkspTree)
     const rootNode = wkspTree.find(node => node.name === jmxDomain)
 
     if (rootNode) {
@@ -61,7 +61,7 @@ describe('CamelTreeView', () => {
   test('Tree Display', async () => {
     expect(tree).not.toBeUndefined()
 
-    const domainNode: MBeanNode = tree.get(jmxDomain) as MBeanNode
+    const domainNode = tree.get(jmxDomain)
     expect(domainNode).toBeNull()
 
     render(

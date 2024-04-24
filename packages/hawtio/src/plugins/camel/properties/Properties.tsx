@@ -31,7 +31,7 @@ export const Properties: React.FunctionComponent = () => {
     const init = async () => {
       const localName = selectedNode.getMetadata(xmlNodeLocalName) ?? ''
       const schemaKey = localName ? localName : selectedNode.name
-      const schema = schemaService.getSchema(selectedNode, schemaKey)
+      const schema = await schemaService.getSchema(selectedNode, schemaKey)
 
       let newTitle = localName
       let newIcon = selectedNode.icon
@@ -40,7 +40,7 @@ export const Properties: React.FunctionComponent = () => {
 
       if (schema) {
         newTitle = schema['title'] as string
-        newIcon = routesService.getIcon(selectedNode, schema, 24)
+        newIcon = await routesService.getIcon(selectedNode, schema, 24)
         newDescription = schema['description'] as string
         const groupStr = schema['group'] as string
         groups = groupStr.split(',')

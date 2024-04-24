@@ -75,7 +75,7 @@ describe('routes-service', () => {
   })
 
   test('loadRouteXml', async () => {
-    routesService.loadRouteXml(simpleRouteNode, simpleRouteXml)
+    await routesService.loadRouteXml(simpleRouteNode, simpleRouteXml)
     expect(simpleRouteNode.getMetadata('xml')).toBe('    ' + simpleRouteXml.outerHTML)
     expect(simpleRouteNode.childCount()).toBe(4)
 

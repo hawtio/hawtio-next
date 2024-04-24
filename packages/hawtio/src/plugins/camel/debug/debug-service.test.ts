@@ -56,7 +56,7 @@ describe('debug-service', () => {
     await userService.fetchUser()
 
     tree = await workspace.getTree()
-    camelTreeProcessor(tree)
+    await camelTreeProcessor(tree)
   })
 
   beforeEach(async () => {

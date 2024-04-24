@@ -95,7 +95,11 @@ class VisualizationService {
     return method ? `${ref}.${method}()` : `ref:${ref}`
   }
 
-  loadRouteXmlNodes(node: MBeanNode, xml: string, selectedRouteId?: string): { camelNodes: Node[]; edges: Edge[] } {
+  async loadRouteXmlNodes(
+    node: MBeanNode,
+    xml: string,
+    selectedRouteId?: string,
+  ): Promise<{ camelNodes: Node[]; edges: Edge[] }> {
     const nodes: CamelNodeData[] = []
     const edges: Edge[] = []
     const doc: XMLDocument = parseXML(xml)
@@ -105,7 +109,7 @@ class VisualizationService {
     for (const route of Array.from(allRoutes)) {
       const routeId = route.id
       if (!selectedRouteId || !routeId || selectedRouteId === routeId) {
-        this.addRouteXmlChildren(node, route, nodes, edges, routeId, '')
+        await this.addRouteXmlChildren(node, route, nodes, edges, routeId, '')
       }
     }
     // parse stats
@@ -142,7 +146,7 @@ class VisualizationService {
     })
   }
 
-  addRouteXmlChildren(
+  async addRouteXmlChildren(
     node: MBeanNode,
     parent: Element,
     nodeDatas: CamelNodeData[],
@@ -150,7 +154,7 @@ class VisualizationService {
     routeId: string,
     parentId: string,
     parentNode: CamelNodeData | null = null,
-  ): number[] {
+  ): Promise<number[]> {
     let rid = parent.getAttribute('id')
     let siblingNodes: number[] = []
     const parenNodeName: string = parent.localName
@@ -168,7 +172,7 @@ class VisualizationService {
       if (nodeId === 'from' && parentId !== '-1') {
         parentId = id
       }
-      const nodeSettings = schemaService.getSchema(node, nodeId)
+      const nodeSettings = await schemaService.getSchema(node, nodeId)
       let nodeData: CamelNodeData | null = null
       if (nodeSettings) {
         let label: string = (nodeSettings['title'] as string) || (nodeId as string)
@@ -197,7 +201,7 @@ class VisualizationService {
           labelSummary = label + '\n\n' + labelSummary
           label = label.substring(0, maximumLabelWidth) + '..'
         }
-        const imageUrl = routesService.getIcon(node, nodeSettings)
+        const imageUrl = await routesService.getIcon(node, nodeSettings)
 
         if ((nodeId === 'from' || nodeId === 'to') && uri) {
           const uriIdx = uri.indexOf(':')
@@ -267,7 +271,7 @@ class VisualizationService {
         }
       }
 
-      const siblings = this.addRouteXmlChildren(node, route, nodeDatas, links, routeId, id, nodeData)
+      const siblings = await this.addRouteXmlChildren(node, route, nodeDatas, links, routeId, id, nodeData)
       if (parenNodeName === 'choice') {
         siblingNodes = siblingNodes.concat(siblings)
       } else if (

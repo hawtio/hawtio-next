@@ -33,9 +33,9 @@ describe('schema-service', () => {
     expect(Object.entries(def['properties'] as object).length).toBe(3)
   })
 
-  test('lookupDefinition of routes', () => {
+  test('lookupDefinition of routes', async () => {
     const node = new MBeanNode(null, 'test', true)
-    const camelModel = camelService.getCamelModel(node)
+    const camelModel = await camelService.getCamelModel(node)
     const routeDefn = schemaService.lookupDefinition('routes', camelModel.definitions)
     expect(routeDefn).not.toBeNull()
     const rd: Record<string, unknown> = routeDefn as Record<string, unknown>
@@ -45,9 +45,9 @@ describe('schema-service', () => {
     expect(rd.icon).toBe('generic24.png')
   })
 
-  test('getSchema nodeId', () => {
+  test('getSchema nodeId', async () => {
     const node = new MBeanNode(null, 'test', true)
-    const routeDefn: Record<string, unknown> | null = schemaService.getSchema(node, 'routes')
+    const routeDefn = await schemaService.getSchema(node, 'routes')
     expect(routeDefn).not.toBeNull()
 
     const rd = routeDefn as Record<string, unknown>
@@ -57,7 +57,7 @@ describe('schema-service', () => {
     expect(rd.icon).toBe('generic24.png')
   })
 
-  test('getSchema nodeDefn', () => {
+  test('getSchema nodeDefn', async () => {
     const routeDefn = {
       type: 'object',
       title: 'Routes',
@@ -69,7 +69,7 @@ describe('schema-service', () => {
     }
 
     const node = new MBeanNode(null, 'test', true)
-    const rd = schemaService.getSchema(node, routeDefn)
+    const rd = await schemaService.getSchema(node, routeDefn)
     expect(rd).toBe(routeDefn)
   })
 })

@@ -45,9 +45,13 @@ class SchemaService {
     return fullSchema
   }
 
-  getSchema(node: MBeanNode, nodeIdOrDefinition: Record<string, unknown> | string): Record<string, unknown> | null {
+  async getSchema(
+    node: MBeanNode,
+    nodeIdOrDefinition: Record<string, unknown> | string,
+  ): Promise<Record<string, unknown> | null> {
     if (isString(nodeIdOrDefinition)) {
-      return this.lookupDefinition(nodeIdOrDefinition, getCamelModel(node).definitions)
+      const { definitions } = await getCamelModel(node)
+      return this.lookupDefinition(nodeIdOrDefinition, definitions)
     } else {
       return nodeIdOrDefinition
     }
