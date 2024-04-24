@@ -87,56 +87,56 @@ export const Health: React.FunctionComponent = () => {
     })
   }, [])
 
+  if (!healthData) {
+    return null
+  }
+
   return (
-    <React.Fragment>
-      {healthData && (
-        <Grid hasGutter span={4}>
-          <GridItem span={12}>
-            <Card>
-              <CardHeader>
-                <Flex>
-                  <HealthStatusIcon status={healthData?.status} />
-                  <Title headingLevel='h3'>
-                    <span>Overall status: {healthData?.status}</span>
-                  </Title>
-                </Flex>
-              </CardHeader>
-            </Card>
-          </GridItem>
-          {healthData?.components
-            .sort((a, b) => {
-              if (SPAN_6_COMPONENTS.includes(a.name)) return -1
-              else if (SPAN_6_COMPONENTS.includes(b.name)) return 1
-              else return a.name.localeCompare(b.name)
-            })
-            .map(component => {
-              const span = SPAN_6_COMPONENTS.includes(component.name) ? 6 : 4
-              return (
-                <GridItem span={span} key={component.name}>
-                  <Card isFullHeight>
-                    <CardHeader>
-                      <Title headingLevel='h3'>{humanizeLabels(component.name!)}</Title>
-                    </CardHeader>
-                    <CardBody style={{ overflow: 'auto' }}>
-                      <Flex>
-                        <FlexItem>
-                          <HealthStatusIcon status={component.status} />
-                        </FlexItem>
-                        <FlexItem>Status: {component.status}</FlexItem>
-                        {component.details &&
-                          (component.name === 'diskSpace' ? (
-                            <DiskComponentDetails componentDetails={component.details} />
-                          ) : (
-                            <ComponentDetails componentDetails={component.details} />
-                          ))}
-                      </Flex>
-                    </CardBody>
-                  </Card>
-                </GridItem>
-              )
-            })}
-        </Grid>
-      )}
-    </React.Fragment>
+    <Grid hasGutter span={4}>
+      <GridItem span={12}>
+        <Card>
+          <CardHeader>
+            <Flex>
+              <HealthStatusIcon status={healthData?.status} />
+              <Title headingLevel='h3'>
+                <span>Overall status: {healthData?.status}</span>
+              </Title>
+            </Flex>
+          </CardHeader>
+        </Card>
+      </GridItem>
+      {healthData?.components
+        .sort((a, b) => {
+          if (SPAN_6_COMPONENTS.includes(a.name)) return -1
+          else if (SPAN_6_COMPONENTS.includes(b.name)) return 1
+          else return a.name.localeCompare(b.name)
+        })
+        .map(component => {
+          const span = SPAN_6_COMPONENTS.includes(component.name) ? 6 : 4
+          return (
+            <GridItem span={span} key={component.name}>
+              <Card isFullHeight>
+                <CardHeader>
+                  <Title headingLevel='h3'>{humanizeLabels(component.name!)}</Title>
+                </CardHeader>
+                <CardBody style={{ overflow: 'auto' }}>
+                  <Flex>
+                    <FlexItem>
+                      <HealthStatusIcon status={component.status} />
+                    </FlexItem>
+                    <FlexItem>Status: {component.status}</FlexItem>
+                    {component.details &&
+                      (component.name === 'diskSpace' ? (
+                        <DiskComponentDetails componentDetails={component.details} />
+                      ) : (
+                        <ComponentDetails componentDetails={component.details} />
+                      ))}
+                  </Flex>
+                </CardBody>
+              </Card>
+            </GridItem>
+          )
+        })}
+    </Grid>
   )
 }

@@ -175,7 +175,6 @@ export const Triggers: React.FunctionComponent = () => {
 
   return (
     <Panel>
-      {' '}
       <PanelMain>
         <PanelMainBody>
           {tableToolbar}
