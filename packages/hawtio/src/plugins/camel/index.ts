@@ -27,5 +27,7 @@ export const camel: HawtioPlugin = () => {
   helpRegistry.add('camel', 'Camel', help, order)
   preferencesRegistry.add('camel', 'Camel', CamelPreferences, order)
 
-  log.info('Using Camel versions:', getCamelVersions())
+  getCamelVersions().then(versions => {
+    log.info('Using Camel versions:', versions)
+  })
 }
