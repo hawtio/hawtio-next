@@ -23,8 +23,12 @@ export function isJmxDomains(value: unknown): value is OptimisedJmxDomains {
 
 export type OptimisedJmxDomain = Record<string, OptimisedMBeanInfo>
 
+function isMBeanInfoOrError(value: unknown): boolean {
+  return isMBeanInfo(value) || isMBeanInfoError(value)
+}
+
 export function isJmxDomain(value: unknown): value is OptimisedJmxDomain {
-  return is(value, record(string(), define('MBeanInfo', isMBeanInfo)))
+  return is(value, record(string(), define('MBeanInfo', isMBeanInfoOrError)))
 }
 
 export interface OptimisedMBeanInfo extends Omit<MBeanInfo, 'attr' | 'op'> {
@@ -45,6 +49,14 @@ export function isMBeanInfo(value: unknown): value is OptimisedMBeanInfo {
       notif: optional(record(string(), object())),
     }),
   )
+}
+
+export interface ErrorMBeanInfo {
+  error: string
+}
+
+export function isMBeanInfoError(value: unknown): value is ErrorMBeanInfo {
+  return is(value, type({ error: string() }))
 }
 
 export interface OptimisedMBeanAttribute extends MBeanAttribute {
