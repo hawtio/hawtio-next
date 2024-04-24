@@ -94,4 +94,23 @@ describe('JolokiaService', () => {
     expect(options.maxDepth).toEqual(3)
     expect(options.maxCollectionSize).toEqual(10000)
   })
+
+  test('problematic JSON response from case hawtio/hawtio#3401', async () => {
+    const response = {
+      value: {
+        'java.util.logging': {
+          'type=Logging': {
+            class: 'sun.management.ManagementFactoryHelper$PlatformLoggingImpl',
+            desc: 'Information on the management interface of the MBean',
+          },
+        },
+        'my-domain-with-vanishing-mbeans': {
+          'type=Bean1': {
+            error: 'javax.management.InstanceNotFoundException: Bean1',
+          },
+        },
+      },
+    }
+    jolokiaService.unwindListResponse(response.value)
+  })
 })
