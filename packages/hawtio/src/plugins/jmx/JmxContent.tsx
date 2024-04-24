@@ -80,29 +80,28 @@ export const JmxContent: React.FunctionComponent = () => {
   ))
 
   return (
-    <React.Fragment>
-      <PageGroup>
-        <PageSection id='jmx-content-header' variant={PageSectionVariants.light}>
-          <Title headingLevel='h1'>{selectedNode.name}</Title>
-          <Text component='small'>{selectedNode.objectName}</Text>
-        </PageSection>
-        <Divider />
-        <PageSection type='tabs' variant={PageSectionVariants.light} hasShadowBottom>
-          {mbeanNav}
-        </PageSection>
-        <Divider />
-      </PageGroup>
+    <PageGroup id='jmx-content'>
+      <PageSection id='jmx-content-header' variant={PageSectionVariants.light}>
+        <Title headingLevel='h1'>{selectedNode.name}</Title>
+        <Text component='small'>{selectedNode.objectName}</Text>
+      </PageSection>
+      <Divider />
+      <PageSection type='tabs' variant={PageSectionVariants.light} hasShadowBottom>
+        {mbeanNav}
+      </PageSection>
+      <Divider />
       <PageSection
         id='jmx-content-main'
         variant={pathname.includes('chart') ? PageSectionVariants.default : PageSectionVariants.light}
         padding={{ default: pathname.includes('chart') ? 'padding' : 'noPadding' }}
         hasOverflowScroll
+        aria-label='jmx-content-main'
       >
         <Routes>
           {mbeanRoutes}
           <Route key='root' path='/' element={<Navigate to={navItems[0]?.id ?? ''} />} />
         </Routes>
       </PageSection>
-    </React.Fragment>
+    </PageGroup>
   )
 }

@@ -81,24 +81,29 @@ export const QuartzContent: React.FunctionComponent = () => {
   const routes = navItems.map(nav => <Route key={nav.id} path={nav.id} element={React.createElement(nav.component)} />)
 
   return (
-    <React.Fragment>
-      <PageGroup>
-        <PageSection id='quartz-content-header' variant={PageSectionVariants.light}>
-          <Title headingLevel='h1'>{selectedNode.name}</Title>
-          <Text component='small'>{selectedNode.objectName}</Text>
-        </PageSection>
-        <Divider />
-        <PageSection type='tabs' hasShadowBottom>
-          {nav}
-        </PageSection>
-        <Divider />
-      </PageGroup>
-      <PageSection variant='light' id='quartz-content-main' padding={{ default: 'noPadding' }}>
+    <PageGroup id='quartz-content'>
+      <PageSection id='quartz-content-header' variant={PageSectionVariants.light}>
+        <Title headingLevel='h1'>{selectedNode.name}</Title>
+        <Text component='small'>{selectedNode.objectName}</Text>
+      </PageSection>
+      <Divider />
+      <PageSection type='tabs' hasShadowBottom>
+        {nav}
+      </PageSection>
+      <Divider />
+
+      <PageSection
+        variant='light'
+        id='quartz-content-main'
+        padding={{ default: 'noPadding' }}
+        hasOverflowScroll
+        aria-label='quartz-content-main'
+      >
         <Routes>
           {routes}
           <Route key='root' path='/' element={<Navigate to={navItems[0]?.id ?? ''} />} />
         </Routes>
       </PageSection>
-    </React.Fragment>
+    </PageGroup>
   )
 }
