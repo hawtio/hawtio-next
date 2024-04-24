@@ -13,27 +13,25 @@ export const Info: React.FunctionComponent = () => {
   }, [])
 
   return (
-    <React.Fragment>
-      <FormGroup>
-        <TableComposable aria-label='Message Table' variant='compact' height='80vh' isStriped isStickyHeader>
-          <Thead>
-            <Tr>
-              <Th data-testid={'name-header'}>Property Name</Th>
-              <Th data-testid={'value-header'}>Property Value</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {systemProperties.map((prop, index) => {
-              return (
-                <Tr key={'row' + index} data-testid={'row' + index}>
-                  <Td style={{ width: '20%' }}>{prop.key}</Td>
-                  <Td style={{ flex: 3 }}>{prop.value}</Td>
-                </Tr>
-              )
-            })}
-          </Tbody>
-        </TableComposable>
-      </FormGroup>
-    </React.Fragment>
+    <FormGroup>
+      <TableComposable aria-label='Message Table' variant='compact' height='80vh' isStriped isStickyHeader>
+        <Thead>
+          <Tr>
+            <Th data-testid={'name-header'}>Property Name</Th>
+            <Th data-testid={'value-header'}>Property Value</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {systemProperties.map((prop, index) => {
+            return (
+              <Tr key={'row' + index} data-testid={'row' + index}>
+                <Td style={{ width: '20%' }}>{prop.key}</Td>
+                <Td style={{ flex: 3 }}>{prop.value}</Td>
+              </Tr>
+            )
+          })}
+        </Tbody>
+      </TableComposable>
+    </FormGroup>
   )
 }
