@@ -543,7 +543,7 @@ class JolokiaService implements IJolokiaService {
    * @param response response value from Jolokia LIST
    * @param path optional path information to restore the response to {@link OptimisedJmxDomains}
    */
-  private unwindListResponse(response: unknown, path?: string[]): OptimisedJmxDomains {
+  unwindListResponse(response: unknown, path?: string[]): OptimisedJmxDomains {
     if (isOptimisedListResponse(response)) {
       // Post process cached MBean info
       const { cache, domains } = response
