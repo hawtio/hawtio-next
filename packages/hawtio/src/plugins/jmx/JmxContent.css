@@ -1,3 +1,6 @@
 #jmx-content-main > article {
   overflow: auto;
 }
+#jmx-content {
+  height: 100%;
+}
