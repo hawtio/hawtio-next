@@ -322,9 +322,10 @@ export function hasProperties(node: MBeanNode): boolean {
   return isRouteNode(node) || isRouteXmlNode(node)
 }
 
-export function getCamelVersions(): string[] {
-  // TODO: Should be generated from yarn.lock
-  return ['4.0.4', '4.4.0']
+export async function getCamelVersions(): Promise<string[]> {
+  const { version: camel4_0Version } = await import('@hawtio/camel-model-v4_0/package.json')
+  const { version: camel4_4Version } = await import('@hawtio/camel-model-v4_4/package.json')
+  return [camel4_0Version, camel4_4Version]
 }
 
 /**
