@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { Card, CardBody, Text } from '@patternfly/react-core'
+import { Card, CardBody, Panel, Text } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
 import { OnRowClick, Table, TableBody, TableHeader, TableProps } from '@patternfly/react-table'
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
@@ -36,11 +36,11 @@ export const JmxContentMBeans: React.FunctionComponent = () => {
   }
 
   return (
-    <Card isFullHeight>
+    <Panel>
       <Table aria-label='MBeans' variant='compact' cells={columns} rows={rows}>
         <TableHeader />
         <TableBody onRowClick={selectChild} className={'jmx-table-body'} />
       </Table>
-    </Card>
+    </Panel>
   )
 }
