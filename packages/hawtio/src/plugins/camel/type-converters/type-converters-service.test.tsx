@@ -71,10 +71,10 @@ describe('type-converters-service', () => {
     await userService.fetchUser()
 
     tree = await workspace.getTree()
-    camelTreeProcessor(tree)
+    await camelTreeProcessor(tree)
   })
 
-  beforeEach(async () => {
+  beforeEach(() => {
     canDisplayTypeConvertersStatistics = false
     // xchgs = [] // reset xchgs to empty
   })

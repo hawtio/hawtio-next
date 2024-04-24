@@ -1,5 +1,3 @@
-import * as camel4_0 from '@hawtio/camel-model-v4_0'
-import * as camel4_4 from '@hawtio/camel-model-v4_4'
 import { eventService } from '@hawtiosrc/core'
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
@@ -325,24 +323,28 @@ export function hasProperties(node: MBeanNode): boolean {
 }
 
 export function getCamelVersions(): string[] {
-  return [camel4_0.apacheCamelModelVersion, camel4_4.apacheCamelModelVersion]
+  // TODO: Should be generated from yarn.lock
+  return ['4.0.4', '4.4.0']
 }
 
 /**
  * Returns the corresponding version of Camel model based on the Camel version of
  * the given node.
  */
-export function getCamelModel(node: MBeanNode): CamelModel {
+export async function getCamelModel(node: MBeanNode): Promise<CamelModel> {
   // 4.4 ~     => 4.4.x
   // 4.0 ~ 4.3 => 4.0.x
   if (isCamelVersionEQGT(node, 4, 4)) {
-    return camel4_4 as unknown as CamelModel
+    const camel4_4 = (await import('@hawtio/camel-model-v4_4')) as unknown as CamelModel
+    return camel4_4
   }
   if (isCamelVersionEQGT(node, 4, 0)) {
-    return camel4_0 as unknown as CamelModel
+    const camel4_0 = (await import('@hawtio/camel-model-v4_0')) as unknown as CamelModel
+    return camel4_0
   }
   // Fallback to 4.0.x model
-  return camel4_0 as unknown as CamelModel
+  const camel4_0 = (await import('@hawtio/camel-model-v4_0')) as unknown as CamelModel
+  return camel4_0
 }
 
 /**

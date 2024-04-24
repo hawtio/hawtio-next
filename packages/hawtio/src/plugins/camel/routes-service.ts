@@ -53,13 +53,17 @@ export const ROUTE_OPERATIONS = {
 
 // TODO: This service should be named more properly like RoutesXmlService, RouteStatisticsService, etc.
 class RoutesService {
-  getIcon(node: MBeanNode, nodeSettingsOrXmlNode: Record<string, unknown> | Element, size?: number): ReactNode {
+  async getIcon(
+    node: MBeanNode,
+    nodeSettingsOrXmlNode: Record<string, unknown> | Element,
+    size?: number,
+  ): Promise<ReactNode> {
     let nodeSettings: Record<string, unknown> | null = null
 
     if (nodeSettingsOrXmlNode instanceof Element) {
       const nodeName = nodeSettingsOrXmlNode.localName
       if (nodeName) {
-        nodeSettings = schemaService.getSchema(node, nodeName)
+        nodeSettings = await schemaService.getSchema(node, nodeName)
       }
     } else {
       nodeSettings = nodeSettingsOrXmlNode
@@ -89,8 +93,8 @@ class RoutesService {
   /**
    * Populates a route step node with the given XML.
    */
-  private populateStepNode(parent: MBeanNode, stepXml: Element) {
-    const nodeSettings = schemaService.getSchema(parent, stepXml.localName)
+  private async populateStepNode(parent: MBeanNode, stepXml: Element) {
+    const nodeSettings = await schemaService.getSchema(parent, stepXml.localName)
     if (!nodeSettings) {
       return
     }
@@ -106,7 +110,7 @@ class RoutesService {
     const node = new MBeanNode(null, nodeName, false)
     node.setType(routeXmlNodeType)
     camelService.setDomain(node)
-    node.setIcons(this.getIcon(parent, nodeSettings))
+    node.setIcons(await this.getIcon(parent, nodeSettings))
 
     // TODO - tooltips to be implemented
     // updateRouteNodeLabelAndTooltip(node, route, nodeSettings)
@@ -116,21 +120,21 @@ class RoutesService {
     parent.adopt(node)
 
     // Cascade XML loading to the child steps
-    this.loadStepXml(node, stepXml)
+    await this.loadStepXml(node, stepXml)
   }
 
   /**
    * Adds the XML to the given step node, and populates its child nodes with the
    * inner steps of the XML.
    */
-  private loadStepXml(stepNode: MBeanNode, stepXml: Element) {
+  private async loadStepXml(stepNode: MBeanNode, stepXml: Element) {
     stepNode.addMetadata('xml', stepXml.outerHTML)
     // Preserve the xml local name for use by views
     stepNode.addMetadata(xmlNodeLocalName, stepXml.localName)
 
     // Populate child nodes
-    for (const childXml of stepXml.children) {
-      this.populateStepNode(stepNode, childXml)
+    for (const childXml of Array.from(stepXml.children)) {
+      await this.populateStepNode(stepNode, childXml)
     }
   }
 
@@ -138,7 +142,7 @@ class RoutesService {
    * Adds the route XML to the route node, and populates its child nodes with the
    * route steps of the XML.
    */
-  loadRouteXml(routeNode: MBeanNode, routeXml: Element) {
+  async loadRouteXml(routeNode: MBeanNode, routeXml: Element) {
     routeNode.addMetadata('xml', '    ' + routeXml.outerHTML) // Indent route XML for better readability
     // Preserve the xml local name for use by views
     routeNode.addMetadata(xmlNodeLocalName, routeXml.localName)
@@ -148,8 +152,8 @@ class RoutesService {
     if (routeGroup) routeNode.addMetadata('group', routeGroup)
 
     // Populate child nodes
-    for (const stepXml of routeXml.children) {
-      this.populateStepNode(routeNode, stepXml)
+    for (const stepXml of Array.from(routeXml.children)) {
+      await this.populateStepNode(routeNode, stepXml)
     }
   }
 
@@ -193,14 +197,14 @@ class RoutesService {
     try {
       const xml = await this.fetchRoutesXml(contextNode)
       routesNode.addMetadata('xml', xml)
-      routesNode.getChildren().forEach(routeNode => {
+      for (const routeNode of routesNode.getChildren()) {
         try {
           const routeXml = this.processRouteXml(xml, routeNode)
-          this.loadRouteXml(routeNode, routeXml)
+          await this.loadRouteXml(routeNode, routeXml)
         } catch (error) {
           log.error(`Failed to process route xml for '${routeNode.name}':`, error)
         }
-      })
+      }
     } catch (error) {
       log.error(`Failed to load routes xml for '${contextNode.name}':`, error)
     }

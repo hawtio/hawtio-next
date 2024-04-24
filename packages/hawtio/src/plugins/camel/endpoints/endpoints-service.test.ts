@@ -41,7 +41,7 @@ describe('endpoints-service', () => {
     await userService.fetchUser()
 
     tree = await workspace.getTree()
-    camelTreeProcessor(tree)
+    await camelTreeProcessor(tree)
   })
 
   test('getEndpoints', async () => {
@@ -62,7 +62,7 @@ describe('endpoints-service', () => {
     const contextNode = tree.navigate(jmxDomain, camelContexts, 'SampleCamel') as MBeanNode
     expect(contextNode).not.toBeNull()
 
-    const timerSchema = es.loadEndpointSchema(contextNode, 'timer') as Record<string, unknown>
+    const timerSchema = (await es.loadEndpointSchema(contextNode, 'timer')) as Record<string, unknown>
     expect(timerSchema).not.toBeNull()
     expect(timerSchema.type).toBe('object')
     expect(timerSchema.title).toBe('Timer')

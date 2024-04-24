@@ -13,9 +13,9 @@ describe('visualization-service', () => {
   const sampleRoutesStatsXml = fs.readFileSync(routesStatsXmlPath, { encoding: 'utf8', flag: 'r' })
 
   describe('loadRouteXmlNodes', () => {
-    test('nodes and edges were correctly loaded from the file', () => {
+    test('nodes and edges were correctly loaded from the file', async () => {
       const node = new MBeanNode(null, 'test', true)
-      const { camelNodes, edges } = visualizationService.loadRouteXmlNodes(node, sampleRoutesXml)
+      const { camelNodes, edges } = await visualizationService.loadRouteXmlNodes(node, sampleRoutesXml)
       expect(camelNodes.length).toBe(11)
       expect(camelNodes[1]?.data.cid).toBe('choice1')
       expect(camelNodes[1]?.data.label).toBe('Choice')
@@ -38,9 +38,9 @@ describe('visualization-service', () => {
     })
   })
   describe('updateStats', () => {
-    test('processor stats were updates on the nodes', () => {
+    test('processor stats were updates on the nodes', async () => {
       const node = new MBeanNode(null, 'test', true)
-      const { camelNodes } = visualizationService.loadRouteXmlNodes(node, sampleRoutesXml)
+      const { camelNodes } = await visualizationService.loadRouteXmlNodes(node, sampleRoutesXml)
       const nodesWithStats = visualizationService.updateStats(sampleRoutesStatsXml, camelNodes)
 
       const to2 = nodesWithStats.find(n => n.data.cid === 'to2')
@@ -68,9 +68,9 @@ describe('visualization-service', () => {
       expect(stats?.lastExchangeFailureTimestamp).toEqual('13')
       expect(stats?.lastExchangeFailureExchangeId).toEqual('14')
     })
-    test('route stats were updates on the from node', () => {
+    test('route stats were updates on the from node', async () => {
       const node = new MBeanNode(null, 'test', true)
-      const { camelNodes } = visualizationService.loadRouteXmlNodes(node, sampleRoutesXml)
+      const { camelNodes } = await visualizationService.loadRouteXmlNodes(node, sampleRoutesXml)
       const nodesWithStats = visualizationService.updateStats(sampleRoutesStatsXml, camelNodes)
 
       const from = nodesWithStats.find(n => n.data.type === 'from')

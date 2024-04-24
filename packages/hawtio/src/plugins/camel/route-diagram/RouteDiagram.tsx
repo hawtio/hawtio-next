@@ -38,27 +38,27 @@ export const RouteDiagram: React.FunctionComponent = () => {
       return
     }
 
-    const { camelNodes, edges } = visualizationService.loadRouteXmlNodes(selectedNode, xml)
+    visualizationService.loadRouteXmlNodes(selectedNode, xml).then(({ camelNodes, edges }) => {
+      setGraphNodeData(camelNodes.map(camelNode => camelNode.data))
 
-    setGraphNodeData(camelNodes.map(camelNode => camelNode.data))
+      if (statsXml) {
+        visualizationService.updateStats(statsXml, camelNodes)
+      }
+      const { layoutedNodes, layoutedEdges } = visualizationService.getLayoutedElements(camelNodes, edges)
 
-    if (statsXml) {
-      visualizationService.updateStats(statsXml, camelNodes)
-    }
-    const { layoutedNodes, layoutedEdges } = visualizationService.getLayoutedElements(camelNodes, edges)
+      layoutedNodes.forEach(node => {
+        node.selected = graphSelection === node.data.cid
+      })
 
-    layoutedNodes.forEach(node => {
-      node.selected = graphSelection === node.data.cid
+      setEdges([...layoutedEdges])
+
+      if (statsXml) {
+        const nodesWithStats = visualizationService.updateStats(statsXml, layoutedNodes)
+        setNodes(nodesWithStats)
+      } else {
+        setNodes([...layoutedNodes])
+      }
     })
-
-    setEdges([...layoutedEdges])
-
-    if (statsXml) {
-      const nodesWithStats = visualizationService.updateStats(statsXml, layoutedNodes)
-      setNodes(nodesWithStats)
-    } else {
-      setNodes([...layoutedNodes])
-    }
   }, [selectedNode, setEdges, setNodes, statsXml, setGraphNodeData, graphSelection])
 
   useEffect(() => {
