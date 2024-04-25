@@ -3,7 +3,7 @@ name: E2E Test
 on:
   pull_request_target:
     branches:
-      - main
+      - 1.0.x
     paths-ignore:
       - '**.md'
     types:
@@ -13,7 +13,7 @@ on:
       - edited
   push:
     branches:
-      - main
+      - 1.0.x
     paths-ignore:
       - '**.md'
 
