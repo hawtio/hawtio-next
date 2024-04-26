@@ -95,7 +95,7 @@ describe('JolokiaService', () => {
     expect(options.maxCollectionSize).toEqual(10000)
   })
 
-  test('problematic JSON response from case hawtio/hawtio#3401', async () => {
+  test('problematic JSON response from case hawtio/hawtio-next#902', () => {
     const response = {
       value: {
         'java.util.logging': {
@@ -111,6 +111,6 @@ describe('JolokiaService', () => {
         },
       },
     }
-    jolokiaService.unwindListResponse(response.value)
+    expect(() => jolokiaService.unwindListResponse(response.value)).not.toThrow()
   })
 })
