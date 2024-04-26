@@ -5,6 +5,7 @@ import { TreeViewDataItem } from '@patternfly/react-core'
 import { CubeIcon, FolderIcon, FolderOpenIcon, LockIcon } from '@patternfly/react-icons'
 import { MBeanAttribute, MBeanInfo, MBeanOperation } from 'jolokia.js'
 import React from 'react'
+import { define, is, object, optional, record, string, type } from 'superstruct'
 import { log } from './globals'
 
 export const Icons = {
@@ -16,13 +17,34 @@ export const Icons = {
 
 export type OptimisedJmxDomains = Record<string, OptimisedJmxDomain>
 
+export function isJmxDomains(value: unknown): value is OptimisedJmxDomains {
+  return is(value, record(string(), define('JmxDomain', isJmxDomain)))
+}
+
 export type OptimisedJmxDomain = Record<string, OptimisedMBeanInfo>
+
+export function isJmxDomain(value: unknown): value is OptimisedJmxDomain {
+  return is(value, record(string(), define('MBeanInfo', isMBeanInfo)))
+}
 
 export interface OptimisedMBeanInfo extends Omit<MBeanInfo, 'attr' | 'op'> {
   attr?: Record<string, OptimisedMBeanAttribute>
   op?: OptimisedMBeanOperations
   opByString?: Record<string, OptimisedMBeanOperation>
   canInvoke?: boolean
+}
+
+export function isMBeanInfo(value: unknown): value is OptimisedMBeanInfo {
+  return is(
+    value,
+    type({
+      desc: string(),
+      class: optional(string()),
+      attr: optional(record(string(), object())),
+      op: optional(record(string(), object())),
+      notif: optional(record(string(), object())),
+    }),
+  )
 }
 
 export interface OptimisedMBeanAttribute extends MBeanAttribute {
