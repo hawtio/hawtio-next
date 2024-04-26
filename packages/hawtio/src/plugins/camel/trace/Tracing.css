@@ -2,8 +2,25 @@
   margin-bottom: 0.5em;
 }
 
+#trace-content {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+
 #route-message-table {
-  margin-top: 0.5em;
+  height: 100%;
+  flex: 1;
+}
+
+#route-message-table-body {
+  height: 100%;
+  max-height: 60vh;
+  overflow: auto;
+}
+
+#route-diagram-tracing-view {
+  flex: 1;
 }
 
 #trace-header-container {

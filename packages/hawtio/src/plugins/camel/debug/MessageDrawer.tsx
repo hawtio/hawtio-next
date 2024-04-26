@@ -118,11 +118,11 @@ export const MessageDrawer: React.FunctionComponent<MessageDrawerProps> = (props
   }
 
   const panelContent = (
-    <DrawerPanelContent>
+    <DrawerPanelContent minSize={'50%'}>
       <DrawerHead>
         <div tabIndex={props.expanded ? 0 : -1} ref={panelRef}>
           <Text>
-            <em>{props.messages && props.messages.length > 0 ? props.messages[0]?.uid : ''}</em>
+            <em>UID: {props.messages && props.messages.length > 0 ? props.messages[0]?.uid : ''}</em>
           </Text>
           <Nav
             onSelect={onSelectTab}
@@ -138,16 +138,20 @@ export const MessageDrawer: React.FunctionComponent<MessageDrawerProps> = (props
           <DrawerCloseButton onClick={onPanelCloseClick} />
         </DrawerActions>
       </DrawerHead>
-      <Panel isScrollable>
+      <Panel>
         <PanelMain>
-          <PanelMainBody>{drawerPanels().map(panel => activePanelTab === panel.id && panel.panelFn())}</PanelMainBody>
+          <PanelMainBody>
+            <div style={{ height: '100%', overflow: 'auto' }}>
+              {drawerPanels().map(panel => activePanelTab === panel.id && panel.panelFn())}
+            </div>
+          </PanelMainBody>
         </PanelMain>
       </Panel>
     </DrawerPanelContent>
   )
 
   return (
-    <Drawer isExpanded={props.expanded} onExpand={onPanelExpand} position='left'>
+    <Drawer isExpanded={props.expanded} onExpand={onPanelExpand} position='right'>
       <DrawerContent panelContent={panelContent}>
         <DrawerContentBody>{props.children}</DrawerContentBody>
       </DrawerContent>
