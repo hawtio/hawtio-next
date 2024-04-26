@@ -1,16 +1,6 @@
 import { HawtioEmptyCard, HawtioLoadingCard, MBeanNode } from '@hawtiosrc/plugins/shared'
 import { childText, parseXML } from '@hawtiosrc/util/xml'
-import {
-  Button,
-  CardBody,
-  Divider,
-  Panel,
-  PanelHeader,
-  PanelMain,
-  PanelMainBody,
-  Text,
-  Title,
-} from '@patternfly/react-core'
+import { Button, Divider, Panel, PanelHeader, PanelMain, PanelMainBody, Text, Title } from '@patternfly/react-core'
 import { BanIcon, PlayIcon } from '@patternfly/react-icons'
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import { Response } from 'jolokia.js'
@@ -199,84 +189,85 @@ export const Trace: React.FunctionComponent = () => {
           {!isTracing ? 'Start Tracing' : 'Stop Tracing'}
         </Button>
       </PanelHeader>
-      <CardBody>
-        {!isTracing && (
-          <React.Fragment>
-            <Text className='noTracing' data-testid='no-tracing' component='p'>
-              Tracing allows you to send messages to a route and then step through and see the messages flow through a
-              route to aid debugging and to help diagnose issues.
-            </Text>
-            <Text className='noTracing' data-testid='no-tracing' component='p'>
-              Once you start tracing, you can send messages to the input endpoints, then come back to this page and see
-              the flow of messages through your route.
-            </Text>
-            <Text className='noTracing' data-testid='no-tracing' component='p'>
-              As you click on the message table, you can see which node in the flow it came through; moving the
-              selection up and down in the message table lets you see the flow of the message through the diagram.
-            </Text>
-          </React.Fragment>
-        )}
-        {isTracing && (
-          <React.Fragment>
-            <Panel id='route-diagram-tracing-view' isScrollable>
-              <PanelMain>
-                <PanelMainBody>
-                  <RouteDiagramContext.Provider
-                    value={{
-                      graphNodeData,
-                      setGraphNodeData,
-                      graphSelection,
-                      setGraphSelection,
-                      setShowStatistics,
-                    }}
-                  >
-                    <RouteDiagram />
-                  </RouteDiagramContext.Provider>
-                </PanelMainBody>
-              </PanelMain>
-            </Panel>
-
+      <PanelMain>
+        <PanelMainBody>
+          {!isTracing && (
+            <React.Fragment>
+              <Text className='noTracing' data-testid='no-tracing' component='p'>
+                Tracing allows you to send messages to a route and then step through and see the messages flow through a
+                route to aid debugging and to help diagnose issues.
+              </Text>
+              <Text className='noTracing' data-testid='no-tracing2' component='p'>
+                Once you start tracing, you can send messages to the input endpoints, then come back to this page and
+                see the flow of messages through your route.
+              </Text>
+              <Text className='noTracing' data-testid='no-tracing3' component='p'>
+                As you click on the message table, you can see which node in the flow it came through; moving the
+                selection up and down in the message table lets you see the flow of the message through the diagram.
+              </Text>
+            </React.Fragment>
+          )}
+          {isTracing && (
             <MessageDrawer
               messages={message ? [message] : []}
               expanded={msgPanelExpanded}
               setExpanded={setMsgPanelExpanded}
             >
-              <Panel id='route-message-table' isScrollable variant='raised'>
-                <PanelHeader>Messages</PanelHeader>
-                <Divider />
-                <PanelMain>
-                  <PanelMainBody>
-                    <TableComposable aria-label='message table' variant='compact' isStriped>
-                      <Thead>
-                        <Tr>
-                          <Th>ID</Th>
-                          <Th>To Node</Th>
-                        </Tr>
-                      </Thead>
-                      <Tbody isOddStriped>
-                        {messages.current.map(message => (
-                          <Tr
-                            key={message.uid}
-                            onRowClick={() => onRowSelected(message)}
-                            isRowSelected={isRowSelected(message)}
-                          >
-                            <Td dataLabel='ID'>
-                              <Button variant='link' isDisabled={!message} onClick={onMessagePanelToggle}>
-                                {message.headers.breadcrumbId ? message.headers.breadcrumbId : message.uid}
-                              </Button>
-                            </Td>
-                            <Td dataLabel='ToNode'>{message.toNode}</Td>
+              <div id='trace-content'>
+                <Panel id='route-diagram-tracing-view'>
+                  <PanelMain>
+                    <PanelMainBody>
+                      <RouteDiagramContext.Provider
+                        value={{
+                          graphNodeData,
+                          setGraphNodeData,
+                          graphSelection,
+                          setGraphSelection,
+                          setShowStatistics,
+                        }}
+                      >
+                        <RouteDiagram />
+                      </RouteDiagramContext.Provider>
+                    </PanelMainBody>
+                  </PanelMain>
+                </Panel>
+                <Panel id='route-message-table'>
+                  <PanelHeader>Messages</PanelHeader>
+                  <Divider />
+                  <PanelMain>
+                    <PanelMainBody id='route-message-table-body'>
+                      <TableComposable aria-label='message table' variant='compact' isStriped>
+                        <Thead>
+                          <Tr>
+                            <Th>ID</Th>
+                            <Th>To Node</Th>
                           </Tr>
-                        ))}
-                      </Tbody>
-                    </TableComposable>
-                  </PanelMainBody>
-                </PanelMain>
-              </Panel>
+                        </Thead>
+                        <Tbody isOddStriped>
+                          {messages.current.map(message => (
+                            <Tr
+                              key={message.uid}
+                              onRowClick={() => onRowSelected(message)}
+                              isRowSelected={isRowSelected(message)}
+                            >
+                              <Td dataLabel='ID'>
+                                <Button variant='link' isDisabled={!message} onClick={onMessagePanelToggle}>
+                                  {message.headers.breadcrumbId ? message.headers.breadcrumbId : message.uid}
+                                </Button>
+                              </Td>
+                              <Td dataLabel='ToNode'>{message.toNode}</Td>
+                            </Tr>
+                          ))}
+                        </Tbody>
+                      </TableComposable>
+                    </PanelMainBody>
+                  </PanelMain>
+                </Panel>
+              </div>
             </MessageDrawer>
-          </React.Fragment>
-        )}
-      </CardBody>
+          )}
+        </PanelMainBody>
+      </PanelMain>
     </Panel>
   )
 }
