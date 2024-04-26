@@ -29,10 +29,10 @@ import Jolokia, {
 } from 'jolokia.js'
 import 'jolokia.js/simple'
 import $ from 'jquery'
-import { define, func, is, object, optional, record, string, type } from 'superstruct'
+import { func, is, object, type } from 'superstruct'
 import { PARAM_KEY_CONNECTION, PARAM_KEY_REDIRECT, connectService } from '../shared/connect-service'
 import { log } from './globals'
-import { OptimisedJmxDomain, OptimisedJmxDomains, OptimisedMBeanInfo } from './tree'
+import { OptimisedJmxDomains, OptimisedMBeanInfo, isJmxDomain, isJmxDomains, isMBeanInfo } from './tree'
 
 export const DEFAULT_MAX_DEPTH = 7
 export const DEFAULT_MAX_COLLECTION_SIZE = 50000
@@ -70,6 +70,9 @@ const JOLOKIA_LIST_MAX_DEPTH = 9
 export type OptimisedListResponse = {
   cache: OptimisedMBeanInfoCache
   domains: CacheableOptimisedJmxDomains
+}
+function isOptimisedListResponse(value: unknown): value is OptimisedListResponse {
+  return is(value, object({ cache: object(), domains: object() }))
 }
 export type OptimisedMBeanInfoCache = Record<string, OptimisedMBeanInfo>
 export type CacheableOptimisedJmxDomains = Record<string, CacheableOptimisedJmxDomain>
@@ -366,7 +369,7 @@ class JolokiaService implements IJolokiaService {
       const successFn: NonNullable<ListRequestOptions['success']> = (value: ListResponse) => {
         // check if the MBean exists by testing whether the returned value has
         // the 'op' property
-        if (isObject(value?.op)) {
+        if (isMBeanInfo(value) && isObject(value.op)) {
           this.config.method = JolokiaListMethod.OPTIMISED
         } else {
           // we could get 403 error, mark the method as special case,
@@ -541,24 +544,6 @@ class JolokiaService implements IJolokiaService {
    * @param path optional path information to restore the response to {@link OptimisedJmxDomains}
    */
   private unwindListResponse(response: unknown, path?: string[]): OptimisedJmxDomains {
-    const isOptimisedListResponse = (value: unknown): value is OptimisedListResponse =>
-      is(value, object({ cache: object(), domains: object() }))
-    const isMBeanInfo = (value: unknown): value is OptimisedMBeanInfo =>
-      is(
-        value,
-        type({
-          desc: string(),
-          class: optional(string()),
-          attr: optional(record(string(), object())),
-          op: optional(record(string(), object())),
-          notif: optional(record(string(), object())),
-        }),
-      )
-    const isJmxDomain = (value: unknown): value is OptimisedJmxDomain =>
-      is(value, record(string(), define('MBeanInfo', isMBeanInfo)))
-    const isJmxDomains = (value: unknown): value is OptimisedJmxDomains =>
-      is(value, record(string(), define('JmxDomain', isJmxDomain)))
-
     if (isOptimisedListResponse(response)) {
       // Post process cached MBean info
       const { cache, domains } = response
