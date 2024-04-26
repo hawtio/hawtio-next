@@ -3,7 +3,7 @@ import { isEmpty } from '@hawtiosrc/util/objects'
 import { matchWithWildcard, stringSorter, trimQuotes } from '@hawtiosrc/util/strings'
 import { TreeViewDataItem } from '@patternfly/react-core'
 import { CubeIcon, FolderIcon, FolderOpenIcon, LockIcon } from '@patternfly/react-icons'
-import { MBeanAttribute, MBeanInfo, MBeanOperation } from 'jolokia.js'
+import { MBeanAttribute, MBeanInfo, MBeanInfoError, MBeanOperation } from 'jolokia.js'
 import React from 'react'
 import { define, is, object, optional, record, string, type } from 'superstruct'
 import { log } from './globals'
@@ -23,11 +23,8 @@ export function isJmxDomains(value: unknown): value is OptimisedJmxDomains {
 
 export type OptimisedJmxDomain = Record<string, OptimisedMBeanInfo>
 
-function isMBeanInfoOrError(value: unknown): boolean {
-  return isMBeanInfo(value) || isMBeanInfoError(value)
-}
-
 export function isJmxDomain(value: unknown): value is OptimisedJmxDomain {
+  const isMBeanInfoOrError = (value: unknown) => isMBeanInfo(value) || isMBeanInfoError(value)
   return is(value, record(string(), define('MBeanInfo', isMBeanInfoOrError)))
 }
 
@@ -51,11 +48,7 @@ export function isMBeanInfo(value: unknown): value is OptimisedMBeanInfo {
   )
 }
 
-export interface ErrorMBeanInfo {
-  error: string
-}
-
-export function isMBeanInfoError(value: unknown): value is ErrorMBeanInfo {
+export function isMBeanInfoError(value: unknown): value is MBeanInfoError {
   return is(value, type({ error: string() }))
 }
 
