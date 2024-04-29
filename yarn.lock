@@ -796,7 +796,7 @@ __metadata:
     "@patternfly/react-table": "npm:~4.113.7"
     "@simbathesailor/use-what-changed": "npm:^2.0.0"
     "@testing-library/jest-dom": "npm:^6.4.2"
-    "@testing-library/react": "npm:^15.0.2"
+    "@testing-library/react": "npm:^15.0.5"
     "@testing-library/user-event": "npm:^14.5.2"
     "@thumbmarkjs/thumbmarkjs": "npm:^0.14.7"
     "@types/dagre": "npm:^0.7.52"
@@ -1810,9 +1810,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/react@npm:^15.0.2":
-  version: 15.0.2
-  resolution: "@testing-library/react@npm:15.0.2"
+"@testing-library/react@npm:^15.0.5":
+  version: 15.0.5
+  resolution: "@testing-library/react@npm:15.0.5"
   dependencies:
     "@babel/runtime": "npm:^7.12.5"
     "@testing-library/dom": "npm:^10.0.0"
@@ -1820,7 +1820,7 @@ __metadata:
   peerDependencies:
     react: ^18.0.0
     react-dom: ^18.0.0
-  checksum: 10/6327e465733cec9455792acee7781d1437f7494ddbb976ca72e07446daaf8e7fe5dadd27d05690f09e8d4adce651984ed9aeca4ede9b87bf69b172f450085ede
+  checksum: 10/27b938ddcdd6b4a98d4564460899f36ae3f69ad749e25389424c1c1d0adf40adeb1387dd29303c0f83b33e2f7ce7133253e0491c4b22af8cb340f631901dbe62
   languageName: node
   linkType: hard
 
