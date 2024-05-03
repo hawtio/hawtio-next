@@ -1,10 +1,11 @@
 import {
+  Divider,
   Nav,
   NavItem,
   NavList,
   PageGroup,
-  PageNavigation,
   PageSection,
+  PageSectionVariants,
   Popover,
   Text,
   TextContent,
@@ -53,9 +54,13 @@ export const Connect: React.FunctionComponent = () => {
             Connect <ConnectHint />
           </Title>
         </PageSection>
-        <PageNavigation>{nav}</PageNavigation>
+        <Divider />
+        <PageSection type='tabs' variant={PageSectionVariants.light} hasShadowBottom>
+          {nav}
+        </PageSection>
+        <Divider />
       </PageGroup>
-      <PageSection id='connect-main'>
+      <PageSection id='connect-main' variant={PageSectionVariants.light}>
         <Routes>
           {routes}
           {/* connect/login should be hidden to nav */}
