@@ -16,5 +16,9 @@ export const Source: React.FunctionComponent = () => {
     }
   }, [selectedNode])
 
-  return <CodeEditor isReadOnly code={xmlSource} language={Language.xml} height='500px' />
+  return (
+    <div style={{ height: '100%' }}>
+      <CodeEditor isReadOnly code={xmlSource} language={Language.xml} height={'75vh'} />
+    </div>
+  )
 }
