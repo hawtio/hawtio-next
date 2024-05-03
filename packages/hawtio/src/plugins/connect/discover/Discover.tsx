@@ -194,7 +194,9 @@ export const Discover: React.FunctionComponent = () => {
 
   return (
     <React.Fragment>
-      <Card style={{ marginBottom: '1rem' }}>{toolbar}</Card>
+      <Card style={{ marginBottom: '1rem' }} isFlat>
+        {toolbar}
+      </Card>
       <Gallery hasGutter minWidths={{ default: '400px' }}>
         {label === 'Agent' &&
           filteredAgents.map((agent, index) => (
