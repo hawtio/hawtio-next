@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.2.4](https://github.com/hawtio/hawtio-next/compare/v1.2.3...v1.2.4) (2024-05-07)
+
+
+### Bug Fixes
+
+* **#900:** Add missing aria-labels ([caac9a3](https://github.com/hawtio/hawtio-next/commit/caac9a37493ca42ba6bfabf5eba97ac12dc94b76)), closes [#900](https://github.com/hawtio/hawtio-next/issues/900)
+* **util/crypto:** type fingerprint to string ([3b29e54](https://github.com/hawtio/hawtio-next/commit/3b29e54801591dcb8aca9d3a2768043e1f10e878))
+
 ## [1.2.3](https://github.com/hawtio/hawtio-next/compare/v1.2.2...v1.2.3) (2024-04-23)
 
 
