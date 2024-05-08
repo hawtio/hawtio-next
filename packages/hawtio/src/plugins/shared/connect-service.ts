@@ -29,7 +29,7 @@ export type Connection = {
 export const INITIAL_CONNECTION: Connection = {
   id: '',
   name: '',
-  scheme: 'http',
+  scheme: 'https',
   host: 'localhost',
   port: 8080,
   path: '/hawtio/jolokia',
