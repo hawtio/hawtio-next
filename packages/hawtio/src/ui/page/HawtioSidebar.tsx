@@ -17,11 +17,13 @@ export const HawtioSidebar: React.FunctionComponent = () => {
   const pageNav = (
     <Nav theme='dark'>
       <NavList>
-        {plugins.map(plugin => (
-          <NavItem key={plugin.id} isActive={pathMatch(pathname, plugin.path)}>
-            <NavLink to={plugin.path}>{plugin.title}</NavLink>
-          </NavItem>
-        ))}
+        {plugins
+          .filter(plugin => plugin.path != null)
+          .map(plugin => (
+            <NavItem key={plugin.id} isActive={pathMatch(pathname, plugin.path!)}>
+              <NavLink to={plugin.path!}>{plugin.title}</NavLink>
+            </NavItem>
+          ))}
       </NavList>
     </Nav>
   )

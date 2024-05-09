@@ -18,14 +18,14 @@ describe('isActive', () => {
 
   test('/proxy/enabled returns not false & connection name is not set', async () => {
     fetchMock.mockResponse('true')
-    connectService.getCurrentConnectionName = jest.fn(() => null)
+    connectService.getCurrentConnectionId = jest.fn(() => null)
 
     await expect(isActive()).resolves.toEqual(true)
   })
 
   test('/proxy/enabled returns not false & connection name is set', async () => {
     fetchMock.mockResponse('')
-    connectService.getCurrentConnectionName = jest.fn(() => 'test-connection')
+    connectService.getCurrentConnectionId = jest.fn(() => 'test-connection')
 
     await expect(isActive()).resolves.toEqual(false)
   })

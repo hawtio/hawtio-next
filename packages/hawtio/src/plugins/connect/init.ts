@@ -10,7 +10,18 @@ export async function isActive(): Promise<boolean> {
 
   // The connect login path is exceptionally allowlisted to provide login form for
   // remote Jolokia endpoints requiring authentication.
-  return connectService.getCurrentConnectionName() === null || isConnectLogin()
+  return connectService.getCurrentConnectionId() === null || isConnectLogin()
+}
+
+export async function isConnectionStatusActive(): Promise<boolean> {
+  const proxyEnabled = await isProxyEnabled()
+  if (!proxyEnabled) {
+    return false
+  }
+
+  // for "main" hawtio page, where this plugin is fully active, we don't have to show the connection status
+  // but for actually connected tab, we want the status in the header
+  return connectService.getCurrentConnectionId() !== null
 }
 
 async function isProxyEnabled(): Promise<boolean> {

@@ -42,9 +42,20 @@ export function isUniversalHeaderItem(item: HeaderItem): item is UniversalHeader
  * Internal representation of a Hawtio plugin.
  */
 export interface Plugin {
+  /**
+   * Mandatory, unique plugin identifier
+   */
   id: string
-  title: string
-  path: string
+
+  /**
+   * Title to be displayed in left PageSidebar
+   */
+  title?: string
+
+  /**
+   * Path for plugin's main component. Optional if the plugin only contributes header elements for example
+   */
+  path?: string
 
   /**
    * The order to be shown in the Hawtio sidebar.
@@ -62,8 +73,11 @@ export interface Plugin {
    */
   isLogin?: boolean
 
+  /**
+   * Plugins main component to be displayed
+   */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  component: React.ComponentType<any>
+  component?: React.ComponentType<any>
 
   headerItems?: HeaderItem[]
 

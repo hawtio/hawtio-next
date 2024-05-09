@@ -6,10 +6,12 @@ import Jolokia from 'jolokia.js'
 import { log } from './globals'
 
 export type Connections = {
+  // key is ID, not name, so we can alter the name
   [key: string]: Connection
 }
 
 export type Connection = {
+  id: string
   name: string
   scheme: 'http' | 'https'
   host: string
@@ -25,6 +27,7 @@ export type Connection = {
 }
 
 export const INITIAL_CONNECTION: Connection = {
+  id: '',
   name: '',
   scheme: 'http',
   host: 'localhost',
@@ -89,7 +92,13 @@ class ConnectService implements IConnectService {
     log.debug('Checking search params:', searchParams.toString())
     let conn = searchParams.get(PARAM_KEY_CONNECTION)
     if (conn) {
+      searchParams.delete(PARAM_KEY_CONNECTION, conn)
       sessionStorage.setItem(SESSION_KEY_CURRENT_CONNECTION, JSON.stringify(conn))
+      // clear "con" parameter
+      url.search = searchParams.toString()
+      // can't replace the state now, because it breaks scenario where you have to log-in
+      // window.history.replaceState(null, '', url)
+
       return conn
     }
 
@@ -98,8 +107,17 @@ class ConnectService implements IConnectService {
     return conn ? JSON.parse(conn) : null
   }
 
-  getCurrentConnectionName(): string | null {
+  getCurrentConnectionId(): string | null {
     return this.currentConnection
+  }
+
+  getCurrentConnectionName(): string | null {
+    const id = this.currentConnection
+    const connections = this.loadConnections()
+    if (!id || !connections[id!]) {
+      return null
+    }
+    return connections[id!]!.name ?? null
   }
 
   async getCurrentConnection(): Promise<Connection | null> {
@@ -154,12 +172,16 @@ class ConnectService implements IConnectService {
     }
     const conns: Connections = JSON.parse(item)
 
-    // Make sure scheme is not compromised for each connection
     Object.values(conns).forEach(conn => {
+      // Make sure scheme is not compromised for each connection
       if (conn.scheme !== 'http' && conn.scheme !== 'https') {
         log.warn('Invalid scheme for connection:', conn)
         // Force resetting to 'http' for any invalid scheme
         conn.scheme = 'http'
+      }
+      // Make sure there's an ID for each connection
+      if (!conn.id) {
+        connectService.generateId(conn, conns)
       }
     })
 
@@ -168,6 +190,30 @@ class ConnectService implements IConnectService {
 
   saveConnections(connections: Connections) {
     localStorage.setItem(STORAGE_KEY_CONNECTIONS, JSON.stringify(connections))
+  }
+
+  generateId(connection: Connection, connections: Connections) {
+    for (;;) {
+      if (!connection.id) {
+        // first, generate only for new connection and keep for imported connection
+        connection.id = '' + Math.floor(Math.random() * 1000000)
+        connection.id = 'c' + connection.id.padStart(6, '0') + '-' + Date.now()
+      }
+      let exists = false
+      for (const c in connections) {
+        if (c === connection.id) {
+          exists = true
+        }
+        if (exists) {
+          // we've imported a connection and there's already a connection with given ID
+          // so we have to re-generate id for the imported connection
+          connection.id = ''
+        }
+      }
+      if (!exists) {
+        break
+      }
+    }
   }
 
   getConnection(name: string): Connection | null {
@@ -236,9 +282,10 @@ class ConnectService implements IConnectService {
   connect(connection: Connection) {
     log.debug('Connecting with options:', toString(connection))
     const basepath = hawtio.getBasePath() ?? ''
-    const url = `${basepath}/?${PARAM_KEY_CONNECTION}=${connection.name}`
+    const url = `${basepath}/?${PARAM_KEY_CONNECTION}=${connection.id}`
     log.debug('Opening URL:', url)
-    window.open(url)
+    // let's open the same connection in the same tab (2nd parameter)
+    window.open(url, connection.id)
   }
 
   /**

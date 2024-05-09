@@ -210,7 +210,7 @@ class ConfigManager {
   async filterEnabledPlugins(plugins: Plugin[]): Promise<Plugin[]> {
     const enabledPlugins: Plugin[] = []
     for (const plugin of plugins) {
-      if (await this.isRouteEnabled(plugin.path)) {
+      if ((plugin.path == null && (await plugin.isActive())) || (await this.isRouteEnabled(plugin.path!))) {
         enabledPlugins.push(plugin)
       } else {
         log.debug(`Plugin "${plugin.id}" disabled by hawtconfig.json`)
