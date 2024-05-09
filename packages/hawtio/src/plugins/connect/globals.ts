@@ -1,6 +1,7 @@
 import { Logger } from '@hawtiosrc/core/logging'
 
 export const pluginId = 'connect'
+export const statusPluginId = 'connectStatus'
 export const pluginTitle = 'Connect'
 export const pluginPath = '/connect'
 export const pluginName = 'hawtio-connect'

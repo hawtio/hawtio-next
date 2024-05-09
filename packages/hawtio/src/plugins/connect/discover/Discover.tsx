@@ -143,8 +143,8 @@ export const Discover: React.FunctionComponent = () => {
     log.debug('Discover - connect to:', conn)
 
     // Save the connection before connecting
-    if (connections[conn.name]) {
-      dispatch({ type: UPDATE, name: conn.name, connection: conn })
+    if (connections[conn.id]) {
+      dispatch({ type: UPDATE, id: conn.id, connection: conn })
     } else {
       dispatch({ type: ADD, connection: conn })
     }

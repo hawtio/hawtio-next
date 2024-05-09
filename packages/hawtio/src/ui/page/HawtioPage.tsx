@@ -64,9 +64,11 @@ export const HawtioPage: React.FunctionComponent = () => {
         <PluginNodeSelectionContext.Provider value={{ selectedNode, setSelectedNode }}>
           <Routes>
             {/* plugins */}
-            {plugins.map(plugin => (
-              <Route key={plugin.id} path={`${plugin.path}/*`} element={React.createElement(plugin.component)} />
-            ))}
+            {plugins
+              .filter(plugin => plugin.path != null && plugin.component != null)
+              .map(plugin => (
+                <Route key={plugin.id} path={`${plugin.path}/*`} element={React.createElement(plugin.component!)} />
+              ))}
             <Route key='help' path='help/*' element={<HawtioHelp />} />
             <Route key='preferences' path='preferences/*' element={<HawtioPreferences />} />
 

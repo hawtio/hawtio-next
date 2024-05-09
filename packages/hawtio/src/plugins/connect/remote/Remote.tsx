@@ -34,8 +34,8 @@ export const Remote: React.FunctionComponent = () => {
     <React.Fragment>
       <RemoteToolbar />
       <DataList id='connection-list' aria-label='connection list' isCompact>
-        {Object.entries(connections).map(([name, connection]) => (
-          <ConnectionItem key={name} name={name} connection={connection} />
+        {Object.entries(connections).map(([id, connection]) => (
+          <ConnectionItem key={id} id={id} connection={connection} />
         ))}
       </DataList>
     </React.Fragment>
@@ -94,9 +94,9 @@ const RemoteToolbar: React.FunctionComponent = () => {
 }
 
 const ConnectionItem: React.FunctionComponent<{
-  name: string
+  id: string
   connection: Connection
-}> = ({ name, connection }) => {
+}> = ({ id, connection }) => {
   const { dispatch } = useContext(ConnectContext)
   const [reachable, setReachable] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -134,7 +134,7 @@ const ConnectionItem: React.FunctionComponent<{
   }
 
   const deleteConnection = () => {
-    dispatch({ type: DELETE, name })
+    dispatch({ type: DELETE, id })
     handleConfirmDeleteToggle()
   }
 
@@ -154,33 +154,33 @@ const ConnectionItem: React.FunctionComponent<{
         </Button>,
       ]}
     >
-      You are about to delete the <b>{name}</b> connection.
+      You are about to delete the <b>{connection.name}</b> connection.
     </Modal>
   )
 
   return (
-    <DataListItem key={`connection-${name}`} aria-labelledby={`connection ${name}`}>
+    <DataListItem key={`connection-${id}`} aria-labelledby={`connection ${connection.name}`}>
       <DataListItemRow>
         <DataListItemCells
           dataListCells={[
-            <DataListCell key={`connection-cell-icon-${name}`} isIcon>
+            <DataListCell key={`connection-cell-icon-${id}`} isIcon>
               {reachable ? <PluggedIcon color='green' /> : <UnpluggedIcon color='red' />}
             </DataListCell>,
-            <DataListCell key={`connection-cell-name-${name}`}>
-              <b>{name}</b>
+            <DataListCell key={`connection-cell-name-${id}`}>
+              <b>{connection.name}</b>
             </DataListCell>,
-            <DataListCell key={`connection-cell-url-${name}`} width={3}>
+            <DataListCell key={`connection-cell-url-${id}`} width={3}>
               {connectService.connectionToUrl(connection)}
             </DataListCell>,
           ]}
         />
         <DataListAction
-          id={`connection-actions-${name}`}
-          aria-label={`connection actions ${name}`}
-          aria-labelledby={`${name} connection-actions-${name}`}
+          id={`connection-actions-${id}`}
+          aria-label={`connection actions ${connection.name}`}
+          aria-labelledby={`${connection.name} connection-actions-${id}`}
         >
           <Button
-            key={`connection-action-connect-${name}`}
+            key={`connection-action-connect-${id}`}
             variant='primary'
             onClick={connect}
             isDisabled={!reachable}
@@ -189,16 +189,16 @@ const ConnectionItem: React.FunctionComponent<{
             Connect
           </Button>
           <Dropdown
-            key={`connection-action-dropdown-${name}`}
+            key={`connection-action-dropdown-${id}`}
             isPlain
             position={DropdownPosition.right}
             isOpen={isDropdownOpen}
             toggle={<KebabToggle onToggle={handleDropdownToggle} />}
             dropdownItems={[
-              <DropdownItem key={`connection-action-edit-${name}`} onClick={handleEditToggle}>
+              <DropdownItem key={`connection-action-edit-${id}`} onClick={handleEditToggle}>
                 Edit
               </DropdownItem>,
-              <DropdownItem key={`connection-action-delete-${name}`} onClick={handleConfirmDeleteToggle}>
+              <DropdownItem key={`connection-action-delete-${id}`} onClick={handleConfirmDeleteToggle}>
                 Delete
               </DropdownItem>,
             ]}

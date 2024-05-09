@@ -59,7 +59,7 @@ export const ConnectionModal: React.FunctionComponent<{
 
   const validate = () => {
     const result = { ...emptyResult }
-    const { name, host, port } = connection
+    const { id: cid, name, host, port } = connection
     let valid = true
 
     // Name
@@ -69,12 +69,17 @@ export const ConnectionModal: React.FunctionComponent<{
         validated: 'error',
       }
       valid = false
-    } else if (name !== input.name && connections[name]) {
-      result.name = {
-        text: `Connection name '${connection.name.trim()}' is already in use`,
-        validated: 'error',
+    } else if (name !== input.name) {
+      for (const id in connections) {
+        if (id !== cid && connections[id]?.name === name) {
+          result.name = {
+            text: `Connection name '${connection.name.trim()}' is already in use`,
+            validated: 'error',
+          }
+          valid = false
+          break
+        }
       }
-      valid = false
     }
 
     // Host
@@ -86,6 +91,7 @@ export const ConnectionModal: React.FunctionComponent<{
       valid = false
     } else if (host.indexOf(':') !== -1) {
       result.host = {
+        // TODO: IPv6
         text: "Invalid character ':'",
         validated: 'error',
       }
@@ -115,12 +121,15 @@ export const ConnectionModal: React.FunctionComponent<{
     switch (mode) {
       case 'add':
         dispatch({ type: ADD, connection })
+        setConnection(input)
         break
       case 'edit':
-        dispatch({ type: UPDATE, name: input.name, connection })
+        dispatch({ type: UPDATE, id: input.id, connection })
+        setConnection(connection)
         break
     }
-    clear()
+    setValidations(emptyResult)
+    onClose()
   }
 
   const clear = () => {

@@ -3,7 +3,7 @@ import { isBlank } from '@hawtiosrc/util/strings'
 import { log } from '../globals'
 
 /**
- * @see https://jolokia.org/reference/html/mbeans.html#mbean-discovery
+ * @see https://jolokia.org/reference/html/manual/jolokia_mbeans.html#mbean-discovery
  */
 export type Agent = {
   // Properties from Jolokia API
@@ -89,7 +89,11 @@ class DiscoverService {
   }
 
   agentToConnection(agent: Agent): Connection {
-    const conn = { ...INITIAL_CONNECTION, name: agent.agent_description ?? `discover-${agent.agent_id}` }
+    const conn = {
+      ...INITIAL_CONNECTION,
+      id: agent.agent_id ?? `discover-${agent.agent_id}`,
+      name: agent.agent_description ?? `discover-${agent.agent_id}`,
+    }
     if (!agent.url) {
       log.warn('No URL available to connect to agent:', agent)
       return conn

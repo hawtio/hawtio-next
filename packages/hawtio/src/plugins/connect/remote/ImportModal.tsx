@@ -43,10 +43,24 @@ export const ImportModal: React.FunctionComponent<{
   }
 
   const importConnections = () => {
-    const connections = JSON.parse(fileContent)
-    dispatch({ type: 'IMPORT', connections })
-    clearAndClose()
-    eventService.notify({ type: 'success', message: 'Connections imported successfully' })
+    try {
+      const connections = JSON.parse(fileContent)
+      if (Array.isArray(connections)) {
+        dispatch({ type: 'IMPORT', connections })
+        clearAndClose()
+        eventService.notify({ type: 'success', message: 'Connections imported successfully' })
+      } else {
+        clearAndClose()
+        eventService.notify({ type: 'danger', message: 'Unexpected connections data format' })
+      }
+    } catch (e) {
+      clearAndClose()
+      let msg = 'Invalid connections data format'
+      if (e instanceof Error) {
+        msg = (e as Error).message
+      }
+      eventService.notify({ type: 'danger', message: msg })
+    }
   }
 
   return (

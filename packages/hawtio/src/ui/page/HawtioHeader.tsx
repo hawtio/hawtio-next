@@ -124,7 +124,7 @@ const HawtioHeaderToolbar: React.FunctionComponent = () => {
       if (!plugin.headerItems || plugin.headerItems.length === 0) return // no header items in plugin
 
       // if plugin is currently visible in UI
-      if (path.startsWith(plugin.path)) {
+      if (plugin.path && path.startsWith(plugin.path)) {
         components.push(
           ...plugin.headerItems.map(headerItem =>
             isUniversalHeaderItem(headerItem) ? headerItem.component : headerItem,
