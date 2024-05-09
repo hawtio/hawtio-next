@@ -1,15 +1,5 @@
 import { helpRegistry } from '@hawtiosrc/help/registry'
-import {
-  Card,
-  Nav,
-  NavItem,
-  NavList,
-  PageGroup,
-  PageNavigation,
-  PageSection,
-  PageSectionVariants,
-  Title,
-} from '@patternfly/react-core'
+import { Divider, Nav, NavItem, NavList, PageSection, PageSectionVariants, Title } from '@patternfly/react-core'
 import React from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import help from './help.md'
@@ -28,28 +18,26 @@ export const HawtioPreferences: React.FunctionComponent = () => {
       <PageSection variant={PageSectionVariants.light}>
         <Title headingLevel='h1'>Preferences</Title>
       </PageSection>
-      <PageGroup>
-        <PageNavigation>
-          <Nav aria-label='Nav' variant='tertiary'>
-            <NavList>
-              {preferencesRegistry.getPreferences().map(prefs => (
-                <NavItem key={prefs.id} isActive={location.pathname === `/preferences/${prefs.id}`}>
-                  <NavLink to={prefs.id}>{prefs.title}</NavLink>
-                </NavItem>
-              ))}
-            </NavList>
-          </Nav>
-        </PageNavigation>
-      </PageGroup>
-      <PageSection>
-        <Card isFullHeight>
-          <Routes>
+      <Divider />
+      <PageSection type='tabs' hasShadowBottom>
+        <Nav aria-label='Nav' variant='tertiary'>
+          <NavList>
             {preferencesRegistry.getPreferences().map(prefs => (
-              <Route key={prefs.id} path={prefs.id} element={React.createElement(prefs.component)} />
+              <NavItem key={prefs.id} isActive={location.pathname === `/preferences/${prefs.id}`}>
+                <NavLink to={prefs.id}>{prefs.title}</NavLink>
+              </NavItem>
             ))}
-            <Route path='/' element={<Navigate to={'home'} />} />
-          </Routes>
-        </Card>
+          </NavList>
+        </Nav>
+      </PageSection>
+      <Divider />
+      <PageSection variant={PageSectionVariants.light}>
+        <Routes>
+          {preferencesRegistry.getPreferences().map(prefs => (
+            <Route key={prefs.id} path={prefs.id} element={React.createElement(prefs.component)} />
+          ))}
+          <Route path='/' element={<Navigate to={'home'} />} />
+        </Routes>
       </PageSection>
     </React.Fragment>
   )
