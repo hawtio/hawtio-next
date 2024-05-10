@@ -311,6 +311,7 @@ class JolokiaService implements IJolokiaService {
   private ajaxError(resolve?: AjaxErrorResolver): JQueryAjaxError {
     const errorThreshold = 2
     let errorCount = 0
+    let errorToastDisplayed = false
     return (xhr: JQueryXHR) => {
       switch (xhr.status) {
         case 401:
@@ -340,14 +341,21 @@ class JolokiaService implements IJolokiaService {
           errorCount++
           const updateRate = this.loadUpdateRate()
           const validityPeriod = updateRate * (errorThreshold + 1)
-          setTimeout(() => errorCount--, validityPeriod)
-          if (errorCount > errorThreshold) {
+          setTimeout(() => {
+            errorCount--
+            if (errorCount == 0) {
+              errorToastDisplayed = false
+            }
+            return errorCount
+          }, validityPeriod)
+          if (errorCount > errorThreshold && !errorToastDisplayed) {
             eventService.notify({
               type: 'danger',
-              message: 'Connection lost. Retrying...',
+              message: 'Connection lost. Will attempt reconnection...',
               // -100ms is to not overlap between update and notification
               duration: updateRate - 100,
             })
+            errorToastDisplayed = true
           }
         }
       }
