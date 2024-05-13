@@ -47,7 +47,7 @@
     "@types/dagre": "^0.7.52",
     "@types/dagre-layout": "^0.8.5",
     "@types/jest": "^29.5.12",
-    "@types/jquery": "^3.5.29",
+    "@types/jquery": "^3.5.30",
     "@types/node": "^18.19.32",
     "@types/react": "^18.2.23",
     "@types/react-dom": "^18.2.25",
