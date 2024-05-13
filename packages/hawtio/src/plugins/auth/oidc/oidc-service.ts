@@ -60,7 +60,11 @@ export class OidcService implements IOidcService {
   constructor() {
     this.config = fetchPath<OidcConfig | null>('auth/config', {
       success: (data: string) => {
-        return JSON.parse(data)
+        try {
+          return JSON.parse(data)
+        } catch {
+          return null
+        }
       },
       error: () => null,
     })
