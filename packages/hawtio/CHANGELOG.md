@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.2.5](https://github.com/hawtio/hawtio-next/compare/v1.2.4...v1.2.5) (2024-05-13)
+
+
+### Bug Fixes
+
+* **#905:** Polish the Trace view of the camel plugin ([5fa875f](https://github.com/hawtio/hawtio-next/commit/5fa875f4f5079c746d315f9e8b2762a90e91d49e)), closes [#905](https://github.com/hawtio/hawtio-next/issues/905)
+* **Source:** Use dynamic height instead of fixed height in pixels ([5d68ad2](https://github.com/hawtio/hawtio-next/commit/5d68ad2d7491ec50015eabb869676e19eda903a0))
+
 ## [1.2.4](https://github.com/hawtio/hawtio-next/compare/v1.2.3...v1.2.4) (2024-05-07)
 
 
