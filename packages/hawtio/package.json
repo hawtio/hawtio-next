@@ -40,7 +40,7 @@
     "@patternfly/react-code-editor": "~4.82.122",
     "@patternfly/react-core": "~4.278.1",
     "@patternfly/react-table": "~4.113.7",
-    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/jest-dom": "^6.4.5",
     "@testing-library/react": "^15.0.7",
     "@testing-library/user-event": "^14.5.2",
     "@thumbmarkjs/thumbmarkjs": "^0.14.7",
