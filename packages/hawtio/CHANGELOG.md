@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.2.6](https://github.com/hawtio/hawtio-next/compare/v1.2.5...v1.2.6) (2024-05-15)
+
+
+### Bug Fixes
+
+* auth/config response should never cause errors ([8faf1cb](https://github.com/hawtio/hawtio-next/commit/8faf1cb76514a6565689989034faf17443e16d41))
+
 ## [1.2.5](https://github.com/hawtio/hawtio-next/compare/v1.2.4...v1.2.5) (2024-05-13)
 
 
