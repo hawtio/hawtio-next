@@ -53,8 +53,12 @@ export const ConnectionModal: React.FunctionComponent<{
       return
     }
 
-    const result = await connectService.testConnection(connection)
-    setValidations({ ...emptyResult, test: result })
+    try {
+      const result = await connectService.testConnection(connection)
+      setValidations({ ...emptyResult, test: result })
+    } catch (error) {
+      setValidations({ ...emptyResult, test: { status: 'not-reachable', message: '' + error } })
+    }
   }
 
   const validate = () => {
@@ -142,7 +146,7 @@ export const ConnectionModal: React.FunctionComponent<{
 
   return (
     <Modal
-      variant={ModalVariant.small}
+      variant={ModalVariant.medium}
       title={modalTitle}
       isOpen={isOpen}
       onClose={clear}
@@ -232,7 +236,7 @@ export const ConnectionModal: React.FunctionComponent<{
           </Button>
           {validations.test ? (
             <HelperText>
-              <HelperTextItem variant={validations.test.ok ? 'success' : 'error'} hasIcon>
+              <HelperTextItem variant={validations.test.status === 'reachable' ? 'success' : 'error'} hasIcon>
                 {validations.test.message}
               </HelperTextItem>
             </HelperText>

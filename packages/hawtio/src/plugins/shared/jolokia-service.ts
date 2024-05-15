@@ -30,7 +30,12 @@ import Jolokia, {
 import 'jolokia.js/simple'
 import $ from 'jquery'
 import { func, is, object, type } from 'superstruct'
-import { PARAM_KEY_CONNECTION, PARAM_KEY_REDIRECT, connectService } from '../shared/connect-service'
+import {
+  PARAM_KEY_CONNECTION,
+  PARAM_KEY_REDIRECT,
+  connectService,
+  SESSION_KEY_CURRENT_CONNECTION,
+} from '../shared/connect-service'
 import { log } from './globals'
 import { OptimisedJmxDomains, OptimisedMBeanInfo, isJmxDomain, isJmxDomains, isMBeanInfo } from './tree'
 
@@ -208,6 +213,10 @@ class JolokiaService implements IJolokiaService {
   }
 
   private async tryProbeJolokiaPath(path: string): Promise<string> {
+    // in normal scenario, when user is authenticated, there should be server-side session created.
+    // thus there's no need to attach "Authorization" header to xhr request (both manually or via native
+    // browser popup)
+    // TOCHECK: scenarios when there's no server side session (Keycloak, OIDC)
     return new Promise<string>((resolve, reject) => {
       $.ajax(path)
         .done((data: string, textStatus: string, xhr: JQueryXHR) => {
@@ -219,7 +228,7 @@ class JolokiaService implements IJolokiaService {
           try {
             const resp = JSON.parse(data)
             if ('value' in resp && 'agent' in resp.value) {
-              log.debug('Found jolokia agent at:', path, 'version:', resp.value.agent)
+              log.debug('Found jolokia agent at:', path, ', version:', resp.value.agent)
               resolve(path)
               return
             }
@@ -264,6 +273,12 @@ class JolokiaService implements IJolokiaService {
 
     const jolokia = new Jolokia(options)
     jolokia.stop()
+
+    // https://github.com/hawtio/hawtio-next/issues/832
+    // at this stage we didn't call Jolokia yet and first attempt, when the server returns 401/403, we may
+    // get native browser popup to enter Basic Auth credentials.
+    // ideally we should prevent this dialog, but it's not possible with xhr. only with Fetch API with
+    // "credentials:'omit'". for now let's leave as is
 
     // let's check if we can call faster jolokia.list()
     await this.checkListOptimisation(jolokia)
@@ -318,7 +333,19 @@ class JolokiaService implements IJolokiaService {
         case 403: {
           const url = new URL(window.location.href)
           // If window was opened to connect to remote Jolokia endpoint
-          if (url.searchParams.has(PARAM_KEY_CONNECTION)) {
+          if (url.searchParams.has(PARAM_KEY_CONNECTION) || sessionStorage.getItem(SESSION_KEY_CURRENT_CONNECTION)) {
+            // we're in connected tab/window and Jolokia access attempt ended with 401/403
+            // because xhr was used we _should_ have seen native browser popup to enter credentials and later
+            // to store them in browser's password manager. If user closes this dialog and doesn't enter any valid
+            // credentials we should display connect/login page with React dialog which accepts and stores the
+            // credentials in sessionStorage using encryption.
+            // but this is NOT possible in insecure context where we can't use window.crypto.subtle object
+            if (!window.isSecureContext) {
+              // this won't work if user manually browses to URL with con=connection-id.
+              // there will be "Scripts may not close windows that were not opened by script." warning in console
+              window.close()
+              return
+            }
             const loginPath = connectService.getLoginPath()
             if (url.pathname !== loginPath) {
               // ... and not showing the login modal
@@ -326,6 +353,7 @@ class JolokiaService implements IJolokiaService {
               const redirectUrl = window.location.href
               url.pathname = loginPath
               url.searchParams.append(PARAM_KEY_REDIRECT, redirectUrl)
+              // full browser refresh
               window.location.href = url.href
             }
           } else {

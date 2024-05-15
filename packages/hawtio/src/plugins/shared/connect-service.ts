@@ -36,7 +36,7 @@ export const INITIAL_CONNECTION: Connection = {
 } as const
 
 export type ConnectionTestResult = {
-  ok: boolean
+  status: ConnectStatus
   message: string
 }
 
@@ -47,12 +47,17 @@ export type ConnectionCredentials = {
 
 export type LoginResult = { type: 'success' } | { type: 'failure' } | { type: 'throttled'; retryAfter: number }
 
+/**
+ * Remote connection status. "not-reachable-securely" is for connections that can't be used in insecure contexts.
+ */
+export type ConnectStatus = 'not-reachable' | 'reachable' | 'not-reachable-securely'
+
 const STORAGE_KEY_CONNECTIONS = 'connect.connections'
 
-const SESSION_KEY_CURRENT_CONNECTION = 'connect.currentConnection'
 const SESSION_KEY_SALT = 'connect.salt'
 const SESSION_KEY_CREDENTIALS = 'connect.credentials' // Encrypted
 
+export const SESSION_KEY_CURRENT_CONNECTION = 'connect.currentConnection'
 export const PARAM_KEY_CONNECTION = 'con'
 export const PARAM_KEY_REDIRECT = 'redirect'
 
@@ -66,7 +71,7 @@ export interface IConnectService {
   saveConnections(connections: Connections): void
   getConnection(name: string): Connection | null
   connectionToUrl(connection: Connection): string
-  checkReachable(connection: Connection): Promise<boolean>
+  checkReachable(connection: Connection): Promise<ConnectStatus>
   testConnection(connection: Connection): Promise<ConnectionTestResult>
   connect(connection: Connection): void
   login(username: string, password: string): Promise<LoginResult>
@@ -79,7 +84,7 @@ export interface IConnectService {
 }
 
 class ConnectService implements IConnectService {
-  private currentConnection: string | null
+  private readonly currentConnection: string | null
 
   constructor() {
     this.currentConnection = this.initCurrentConnection()
@@ -94,14 +99,14 @@ class ConnectService implements IConnectService {
     if (conn) {
       searchParams.delete(PARAM_KEY_CONNECTION, conn)
       sessionStorage.setItem(SESSION_KEY_CURRENT_CONNECTION, JSON.stringify(conn))
-      // clear "con" parameter
+      // clear "con" parameter - will be available in session storage only
       url.search = searchParams.toString()
-      // can't replace the state now, because it breaks scenario where you have to log-in
-      // window.history.replaceState(null, '', url)
+      window.history.replaceState(null, '', url)
 
       return conn
     }
 
+    // Case when user may refresh the page after "con" parameter has already been cleared
     // Check remote connection from session storage
     conn = sessionStorage.getItem(SESSION_KEY_CURRENT_CONNECTION)
     return conn ? JSON.parse(conn) : null
@@ -143,6 +148,9 @@ class ConnectService implements IConnectService {
   }
 
   async getCurrentCredentials(): Promise<ConnectionCredentials | null> {
+    if (!window.isSecureContext) {
+      return null
+    }
     const saltItem = sessionStorage.getItem(SESSION_KEY_SALT)
     if (!saltItem) {
       return null
@@ -181,7 +189,7 @@ class ConnectService implements IConnectService {
       }
       // Make sure there's an ID for each connection
       if (!conn.id) {
-        connectService.generateId(conn, conns)
+        this.generateId(conn, conns)
       }
     })
 
@@ -230,39 +238,62 @@ class ConnectService implements IConnectService {
     return url
   }
 
-  async checkReachable(connection: Connection): Promise<boolean> {
-    const result = await this.testConnection(connection)
-    return result.ok
+  async checkReachable(connection: Connection): Promise<ConnectStatus> {
+    try {
+      const result = await this.testConnection(connection)
+      return result.status
+    } catch (error) {
+      return 'not-reachable'
+    }
   }
 
   testConnection(connection: Connection): Promise<ConnectionTestResult> {
     log.debug('Testing connection:', toString(connection))
+    // test the connection without credentials, so 401 or 403 are treated as "reachable", but actual
+    // connection will require authentication
+    // we can't prevent showing native popup dialog with xhr, but fetch + "credentials:'omit'" works
     return new Promise<ConnectionTestResult>((resolve, reject) => {
       try {
-        this.createJolokia(connection).request(
-          { type: 'version' },
-          {
-            success: () => {
-              resolve({ ok: true, message: 'Connection successful' })
-            },
-            ajaxError: (response: JQueryXHR) => {
-              switch (response.status) {
-                case 401:
-                  resolve({ ok: true, message: 'Connection successful' })
-                  break
-                case 403:
-                  if (this.forbiddenReasonMatches(response, 'HOST_NOT_ALLOWED')) {
-                    resolve({ ok: false, message: 'Host not allowlisted' })
-                  } else {
-                    resolve({ ok: true, message: 'Connection successful' })
-                  }
-                  break
-                default:
-                  resolve({ ok: false, message: 'Connection failed' })
-              }
-            },
-          },
-        )
+        fetch(this.getJolokiaUrl(connection), {
+          method: 'post',
+          // with application/json, I'm getting "CanceledError: Request stream has been aborted" when running
+          // via hawtioMiddleware...
+          headers: { 'Content-Type': 'text/json' },
+          credentials: 'omit',
+          body: JSON.stringify({ type: 'version' }),
+        })
+          .then(response => {
+            if (response.ok) {
+              // 200-299
+              resolve({ status: 'reachable', message: 'Connection successful' })
+            } else if (response.status === 401) {
+              resolve({
+                status: window.isSecureContext ? 'reachable' : 'not-reachable-securely',
+                message: window.isSecureContext
+                  ? 'Connection successful (auth needed)'
+                  : 'Connection failed (insecure context)',
+              })
+            } else if (response.status === 403) {
+              this.forbiddenReasonMatches(response, 'HOST_NOT_ALLOWED').then(matches => {
+                if (matches) {
+                  resolve({ status: 'not-reachable', message: 'Host not allowlisted' })
+                } else {
+                  resolve({
+                    status: window.isSecureContext ? 'reachable' : 'not-reachable-securely',
+                    message: window.isSecureContext
+                      ? 'Connection successful (auth failed)'
+                      : 'Connection failed (insecure context)',
+                  })
+                }
+              })
+            } else {
+              resolve({ status: 'not-reachable', message: 'Connection failed' })
+            }
+          })
+          .catch(error => {
+            log.error('Exception', error)
+            reject(error)
+          })
       } catch (error) {
         log.error(error)
         reject(error)
@@ -270,13 +301,19 @@ class ConnectService implements IConnectService {
     })
   }
 
-  private forbiddenReasonMatches(response: JQueryXHR, reason: string): boolean {
+  private async forbiddenReasonMatches(response: Response, reason: string): Promise<boolean> {
     // Preserve compatibility with versions of Hawtio 2.x that return JSON on 403 responses
-    if (response.responseJSON && response.responseJSON['reason']) {
-      return response.responseJSON['reason'] === reason
-    }
-    // Otherwise expect a response header containing a forbidden reason
-    return response.getResponseHeader('Hawtio-Forbidden-Reason') === reason
+    return response
+      .text()
+      .then(txt => {
+        const json = JSON.parse(txt)
+        // exception will propagate to .catch()
+        return json['reason'] === reason
+      })
+      .catch(_ => {
+        // Otherwise expect a response header containing a forbidden reason
+        return response.headers.get('Hawtio-Forbidden-Reason') === reason
+      })
   }
 
   connect(connection: Connection) {
@@ -324,7 +361,9 @@ class ConnectService implements IConnectService {
     }
 
     // Persist credentials to session storage
-    await this.setCurrentCredentials({ username, password })
+    if (window.isSecureContext) {
+      await this.setCurrentCredentials({ username, password })
+    }
     this.clearCredentialsOnLogout()
 
     return result
@@ -340,7 +379,10 @@ class ConnectService implements IConnectService {
 
     try {
       const { hostname, port, protocol, searchParams } = new URL(redirect)
-      const connectionKey = searchParams.get(PARAM_KEY_CONNECTION) ?? ''
+      let connectionKey = searchParams.get(PARAM_KEY_CONNECTION) ?? ''
+      if (connectionKey === '') {
+        connectionKey = sessionStorage.getItem(SESSION_KEY_CURRENT_CONNECTION) ?? ''
+      }
       safeRedirect =
         hostname === url.hostname &&
         port === url.port &&
