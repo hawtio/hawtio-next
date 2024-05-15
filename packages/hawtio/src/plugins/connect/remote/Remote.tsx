@@ -1,4 +1,9 @@
-import { Connection, connectService, INITIAL_CONNECTION } from '@hawtiosrc/plugins/shared/connect-service'
+import {
+  Connection,
+  connectService,
+  ConnectStatus,
+  INITIAL_CONNECTION,
+} from '@hawtiosrc/plugins/shared/connect-service'
 import {
   Button,
   ButtonVariant,
@@ -98,7 +103,7 @@ const ConnectionItem: React.FunctionComponent<{
   connection: Connection
 }> = ({ id, connection }) => {
   const { dispatch } = useContext(ConnectContext)
-  const [reachable, setReachable] = useState(false)
+  const [reachable, setReachable] = useState<ConnectStatus>('not-reachable')
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false)
@@ -125,7 +130,7 @@ const ConnectionItem: React.FunctionComponent<{
   }
 
   const connect = () => {
-    if (!reachable) {
+    if (reachable !== 'reachable') {
       return
     }
 
@@ -158,13 +163,26 @@ const ConnectionItem: React.FunctionComponent<{
     </Modal>
   )
 
+  let icon = null
+  switch (reachable) {
+    case 'reachable':
+      icon = <PluggedIcon color='green' />
+      break
+    case 'not-reachable':
+      icon = <UnpluggedIcon color='red' />
+      break
+    case 'not-reachable-securely':
+      icon = <UnpluggedIcon style={{ color: 'var(--pf-global--warning-color--100)' }} />
+      break
+  }
+
   return (
     <DataListItem key={`connection-${id}`} aria-labelledby={`connection ${connection.name}`}>
       <DataListItemRow>
         <DataListItemCells
           dataListCells={[
             <DataListCell key={`connection-cell-icon-${id}`} isIcon>
-              {reachable ? <PluggedIcon color='green' /> : <UnpluggedIcon color='red' />}
+              {icon}
             </DataListCell>,
             <DataListCell key={`connection-cell-name-${id}`}>
               <b>{connection.name}</b>
@@ -183,7 +201,7 @@ const ConnectionItem: React.FunctionComponent<{
             key={`connection-action-connect-${id}`}
             variant='primary'
             onClick={connect}
-            isDisabled={!reachable}
+            isDisabled={reachable !== 'reachable'}
             isSmall
           >
             Connect

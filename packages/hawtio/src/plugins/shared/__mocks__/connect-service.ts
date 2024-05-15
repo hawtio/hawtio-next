@@ -6,6 +6,7 @@ import {
   Connections,
   IConnectService,
   LoginResult,
+  ConnectStatus,
 } from '../connect-service'
 
 class MockConnectService implements IConnectService {
@@ -42,12 +43,12 @@ class MockConnectService implements IConnectService {
     return ''
   }
 
-  async checkReachable(connection: Connection): Promise<boolean> {
-    return false
+  async checkReachable(connection: Connection): Promise<ConnectStatus> {
+    return 'not-reachable'
   }
 
   async testConnection(connection: Connection): Promise<ConnectionTestResult> {
-    return { ok: false, message: '' }
+    return { status: 'not-reachable', message: '' }
   }
 
   connect(connection: Connection) {
