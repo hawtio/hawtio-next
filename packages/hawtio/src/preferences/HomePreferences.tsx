@@ -4,7 +4,10 @@ import {
   CardBody,
   Form,
   FormGroup,
+  FormHelperText,
   FormSection,
+  HelperText,
+  HelperTextItem,
   Modal,
   ModalVariant,
   Switch,
@@ -40,7 +43,7 @@ const UIForm: React.FunctionComponent = () => {
         label='Show vertical navigation'
         labelOff='Hide vertical navigation'
         isChecked={showVerticalNav}
-        onChange={handleShowVerticalNavChange}
+        onChange={(_event, value: boolean) => handleShowVerticalNavChange(value)}
       />
     </FormGroup>
   )
@@ -84,14 +87,17 @@ const ResetForm: React.FunctionComponent = () => {
 
   return (
     <React.Fragment>
-      <FormGroup
-        label='Reset settings'
-        fieldId='reset-form-reset'
-        helperText="Clear all custom settings stored in your browser's local storage and reset to defaults."
-      >
+      <FormGroup label='Reset settings' fieldId='reset-form-reset'>
         <Button variant='danger' onClick={confirmReset}>
           Reset
         </Button>
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>
+              Clear all custom settings stored in your browser `&apos;`s local storage and reset to defaults.
+            </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
         <ConfirmResetModal />
       </FormGroup>
       {resetSuccess && <Alert variant='success' isInline title='Settings reset successfully!' />}

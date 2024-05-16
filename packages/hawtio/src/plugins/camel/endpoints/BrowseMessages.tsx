@@ -25,9 +25,10 @@ import {
   ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
+  EmptyStateHeader,
 } from '@patternfly/react-core'
 import { SearchIcon } from '@patternfly/react-icons'
-import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { Table /* data-codemods */, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useState } from 'react'
 import { Position } from 'reactflow'
 import { CamelContext } from '../context'
@@ -241,7 +242,7 @@ export const BrowseMessages: React.FunctionComponent = () => {
 
           {filteredMessages.length > 0 && (
             <FormGroup>
-              <TableComposable aria-label='Message Table' variant='compact' height='80vh'>
+              <Table aria-label='Message Table' variant='compact' height='80vh'>
                 <Thead>
                   <Tr>
                     <Th
@@ -285,13 +286,13 @@ export const BrowseMessages: React.FunctionComponent = () => {
                     )
                   })}
                 </Tbody>
-              </TableComposable>
+              </Table>
             </FormGroup>
           )}
           {filteredMessages.length === 0 && (
             <Bullseye>
               <EmptyState>
-                <EmptyStateIcon icon={SearchIcon} />
+                <EmptyStateHeader icon={<EmptyStateIcon icon={SearchIcon} />} />
                 <EmptyStateBody>No results found.</EmptyStateBody>
               </EmptyState>
             </Bullseye>
@@ -439,7 +440,7 @@ const MessageDetails: React.FunctionComponent<{
         </FormGroup>
         <br />
         <FormGroup label='Headers'>
-          <TableComposable variant='compact'>
+          <Table variant='compact'>
             <Thead aria-label='headers-table-header'>
               <Tr>
                 <Td label='Key'>Key</Td>
@@ -458,7 +459,7 @@ const MessageDetails: React.FunctionComponent<{
                 )
               })}
             </Tbody>
-          </TableComposable>
+          </Table>
         </FormGroup>
       </Modal>
     </React.Fragment>

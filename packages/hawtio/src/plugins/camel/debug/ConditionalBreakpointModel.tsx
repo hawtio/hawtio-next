@@ -54,7 +54,7 @@ export const ConditionalBreakpointModal: React.FunctionComponent<CondBkpsProps> 
     <Modal
       variant={ModalVariant.small}
       title='Add Conditional Breakpoint'
-      titleIconVariant='default'
+      titleIconVariant='custom'
       isOpen={props.isConditionalBreakpointOpen}
       onClose={props.onAddConditionalBreakpointToggle}
       actions={[
@@ -83,7 +83,7 @@ export const ConditionalBreakpointModal: React.FunctionComponent<CondBkpsProps> 
               onChange={() => setLanguage('simple')}
             />
             <Popover bodyContent={helpLanguageChoice('simple')}>
-              <Button className='cond-bkp-form-lang-radio-help' variant='plain' isSmall icon={<HelpIcon />} />
+              <Button className='cond-bkp-form-lang-radio-help' variant='plain' size='sm' icon={<HelpIcon />} />
             </Popover>
           </div>
           <div>
@@ -97,7 +97,7 @@ export const ConditionalBreakpointModal: React.FunctionComponent<CondBkpsProps> 
               onChange={() => setLanguage('xpath')}
             />
             <Popover bodyContent={helpLanguageChoice('xpath')}>
-              <Button className='cond-bkp-form-lang-radio-help' variant='plain' isSmall icon={<HelpIcon />} />
+              <Button className='cond-bkp-form-lang-radio-help' variant='plain' size='sm' icon={<HelpIcon />} />
             </Popover>
           </div>
         </FormGroup>
@@ -108,7 +108,7 @@ export const ConditionalBreakpointModal: React.FunctionComponent<CondBkpsProps> 
             isDisabled={!language || language.length === 0}
             type='text'
             value={predicate}
-            onChange={value => setPredicate(value)}
+            onChange={(_event, value) => setPredicate(value)}
           />
         </FormGroup>
         {error && (

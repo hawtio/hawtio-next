@@ -85,11 +85,11 @@ export const HawtioLoginForm: React.FunctionComponent = () => {
       helperTextIcon={<ExclamationCircleIcon />}
       usernameLabel='Username'
       usernameValue={username}
-      onChangeUsername={setUsername}
+      onChangeUsername={(_event, val) => setUsername(val)}
       isValidUsername={isValidUsername}
       passwordLabel='Password'
       passwordValue={password}
-      onChangePassword={setPassword}
+      onChangePassword={(_event, val) => setPassword(val)}
       isValidPassword={isValidPassword}
       rememberMeLabel={rememberMeLabel}
       isRememberMeChecked={rememberMe}

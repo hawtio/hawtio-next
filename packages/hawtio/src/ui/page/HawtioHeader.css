@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  color: var(--pf-global--Color--light-200);
+  color: var(--pf-v5-global--Color--light-200);
 }
 
 #hawtio-header-brand .pf-c-brand {

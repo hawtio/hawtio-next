@@ -6,9 +6,6 @@ import { HawtioAbout } from '@hawtiosrc/ui/about'
 import {
   Avatar,
   Brand,
-  Dropdown,
-  DropdownItem,
-  DropdownToggle,
   Masthead,
   MastheadBrand,
   MastheadContent,
@@ -21,6 +18,7 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core'
+import { Dropdown, DropdownItem, DropdownToggle } from '@patternfly/react-core/deprecated'
 import { BarsIcon, HelpIcon } from '@patternfly/react-icons'
 import React, { useContext, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
@@ -38,8 +36,8 @@ export const HawtioHeader: React.FunctionComponent = () => {
         <PageToggleButton
           variant='plain'
           aria-label='Global navigation'
-          isNavOpen={navOpen}
-          onNavToggle={onNavToggle}
+          isSidebarOpen={navOpen}
+          onSidebarToggle={onNavToggle}
           id='vertical-nav-toggle'
         >
           <BarsIcon />
@@ -165,7 +163,7 @@ const HawtioHeaderToolbar: React.FunctionComponent = () => {
               position='right'
               onSelect={onHelpSelect}
               toggle={
-                <DropdownToggle toggleIndicator={null} onToggle={setHelpOpen}>
+                <DropdownToggle toggleIndicator={null} onToggle={(_event, val) => setHelpOpen(val)}>
                   <HelpIcon />
                 </DropdownToggle>
               }
@@ -184,7 +182,7 @@ const HawtioHeaderToolbar: React.FunctionComponent = () => {
               toggle={
                 <DropdownToggle
                   id='hawtio-header-user-dropdown-toggle'
-                  onToggle={setUserOpen}
+                  onToggle={(_event, val) => setUserOpen(val)}
                   icon={<Avatar src={userAvatar} alt='user' />}
                 >
                   {isPublic ? '' : username}

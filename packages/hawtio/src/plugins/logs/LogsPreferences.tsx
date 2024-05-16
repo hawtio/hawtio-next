@@ -1,13 +1,28 @@
 import { TooltipHelpIcon } from '@hawtiosrc/ui/icons'
-import { CardBody, Checkbox, Form, FormGroup, FormGroupProps, FormSection, TextInput } from '@patternfly/react-core'
+import {
+  CardBody,
+  Checkbox,
+  Form,
+  FormGroup,
+  FormHelperText,
+  FormSection,
+  HelperText,
+  HelperTextItem,
+  TextInput,
+} from '@patternfly/react-core'
 import React, { useState } from 'react'
 import { LogsOptions, logsService } from './logs-service'
+import { ExclamationCircleIcon } from '@patternfly/react-icons'
 
 export const LogsPreferences: React.FunctionComponent = () => {
   const [options, setOptions] = useState(logsService.loadOptions())
-  const [logCacheSizeValidated, setLogCacheSizeValidated] = useState<FormGroupProps['validated']>('default')
+  const [logCacheSizeValidated, setLogCacheSizeValidated] = useState<'success' | 'warning' | 'error' | 'default'>(
+    'default',
+  )
   const [logCacheSizeInvalidText, setLogCacheSizeInvalidText] = useState('')
-  const [logBatchSizeValidated, setLogBatchSizeValidated] = useState<FormGroupProps['validated']>('default')
+  const [logBatchSizeValidated, setLogBatchSizeValidated] = useState<'success' | 'warning' | 'error' | 'default'>(
+    'default',
+  )
   const [logBatchSizeInvalidText, setLogBatchSizeInvalidText] = useState('')
 
   const updateOptions = (updated: Partial<LogsOptions>) => {
@@ -54,7 +69,7 @@ export const LogsPreferences: React.FunctionComponent = () => {
     }
 
     updateOptions({ batchSize: intValue })
-    setLogCacheSizeValidated('success')
+    setLogBatchSizeValidated('success')
   }
 
   return (
@@ -69,7 +84,7 @@ export const LogsPreferences: React.FunctionComponent = () => {
             <Checkbox
               id='logs-form-sort-ascending-input'
               isChecked={options.sortAscending}
-              onChange={onSortAscendingChanged}
+              onChange={(_event, sortAscending: boolean) => onSortAscendingChanged(sortAscending)}
             />
           </FormGroup>
           <FormGroup
@@ -77,13 +92,15 @@ export const LogsPreferences: React.FunctionComponent = () => {
             fieldId='logs-form-auto-scroll'
             labelIcon={<TooltipHelpIcon tooltip='Automatically scroll when new log entries are added' />}
           >
-            <Checkbox id='logs-form-auto-scroll-input' isChecked={options.autoScroll} onChange={onAutoScrollChanged} />
+            <Checkbox
+              id='logs-form-auto-scroll-input'
+              isChecked={options.autoScroll}
+              onChange={(_event, autoScroll: boolean) => onAutoScrollChanged(autoScroll)}
+            />
           </FormGroup>
           <FormGroup
             label='Log cache size'
             fieldId='logs-form-log-cache-size'
-            validated={logCacheSizeValidated}
-            helperTextInvalid={logCacheSizeInvalidText}
             labelIcon={<TooltipHelpIcon tooltip='The number of log messages to keep in the browser' />}
           >
             <TextInput
@@ -91,14 +108,22 @@ export const LogsPreferences: React.FunctionComponent = () => {
               type='number'
               value={options.cacheSize}
               validated={logCacheSizeValidated}
-              onChange={onLogCacheSizeChanged}
+              onChange={(_event, cacheSize: string) => onLogCacheSizeChanged(cacheSize)}
             />
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem
+                  variant={logCacheSizeValidated}
+                  {...(logCacheSizeValidated === 'error' && { icon: <ExclamationCircleIcon /> })}
+                >
+                  {logCacheSizeValidated === 'error' && logCacheSizeInvalidText}
+                </HelperTextItem>
+              </HelperText>
+            </FormHelperText>
           </FormGroup>
           <FormGroup
             label='Log batch size'
             fieldId='logs-form-log-batch-size'
-            validated={logBatchSizeValidated}
-            helperTextInvalid={logBatchSizeInvalidText}
             labelIcon={
               <TooltipHelpIcon tooltip='The maximum number of log messages to retrieve when loading new log lines' />
             }
@@ -108,8 +133,18 @@ export const LogsPreferences: React.FunctionComponent = () => {
               type='number'
               value={options.batchSize}
               validated={logBatchSizeValidated}
-              onChange={onLogBatchSizeChanged}
+              onChange={(_event, batchSize: string) => onLogBatchSizeChanged(batchSize)}
             />
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem
+                  variant={logBatchSizeValidated}
+                  {...(logBatchSizeValidated === 'error' && { icon: <ExclamationCircleIcon /> })}
+                >
+                  {logBatchSizeValidated === 'error' && logBatchSizeInvalidText}
+                </HelperTextItem>
+              </HelperText>
+            </FormHelperText>
           </FormGroup>
         </FormSection>
       </Form>

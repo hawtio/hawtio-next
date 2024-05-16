@@ -5,7 +5,7 @@ import {
   PageSection,
   PageSectionVariants,
   Spinner,
-  Title,
+  EmptyStateHeader,
 } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons'
 import React from 'react'
@@ -21,7 +21,7 @@ export const Jmx: React.FunctionComponent = () => {
   if (!loaded) {
     return (
       <PageSection>
-        <Spinner isSVG aria-label='Loading MBean tree' />
+        <Spinner aria-label='Loading MBean tree' />
       </PageSection>
     )
   }
@@ -30,10 +30,7 @@ export const Jmx: React.FunctionComponent = () => {
     return (
       <PageSection variant={PageSectionVariants.light}>
         <EmptyState variant={EmptyStateVariant.full}>
-          <EmptyStateIcon icon={CubesIcon} />
-          <Title headingLevel='h1' size='lg'>
-            No MBeans found
-          </Title>
+          <EmptyStateHeader titleText='No MBeans found' icon={<EmptyStateIcon icon={CubesIcon} />} headingLevel='h1' />
         </EmptyState>
       </PageSection>
     )

@@ -3,7 +3,7 @@ import { JmxContentMBeans } from '@hawtiosrc/plugins/shared/JmxContentMBeans'
 import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { humanizeLabels } from '@hawtiosrc/util/strings'
 import { Panel } from '@patternfly/react-core'
-import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { Table /* data-codemods */, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import { Response } from 'jolokia.js'
 import React, { useContext, useEffect, useState } from 'react'
 import { HawtioEmptyCard } from '../HawtioEmptyCard'
@@ -107,7 +107,7 @@ export const AttributeTable: React.FunctionComponent = () => {
 
   return (
     <Panel>
-      <TableComposable aria-label='MBeans' variant='compact'>
+      <Table aria-label='MBeans' variant='compact'>
         <Thead>
           <Tr>
             {labels.map(label => (
@@ -124,7 +124,7 @@ export const AttributeTable: React.FunctionComponent = () => {
             </Tr>
           ))}
         </Tbody>
-      </TableComposable>
+      </Table>
     </Panel>
   )
 }

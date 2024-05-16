@@ -1,19 +1,10 @@
 import { eventService } from '@hawtiosrc/core'
 import { HawtioEmptyCard, HawtioLoadingCard, workspace } from '@hawtiosrc/plugins/shared'
 import { objectSorter } from '@hawtiosrc/util/objects'
-import {
-  Button,
-  Dropdown,
-  DropdownItem,
-  KebabToggle,
-  Label,
-  Modal,
-  Toolbar,
-  ToolbarContent,
-  ToolbarItem,
-} from '@patternfly/react-core'
+import { Button, Label, Modal, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core'
+import { Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core/deprecated'
 import { AsleepIcon, PlayIcon, Remove2Icon } from '@patternfly/react-icons'
-import { TableComposable, Tbody, Td, Th, ThProps, Thead, Tr } from '@patternfly/react-table'
+import { Table /* data-codemods */, Tbody, Td, Th, ThProps, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useState } from 'react'
 import { CamelContext } from '../context'
 import { CamelRoute } from './route'
@@ -166,12 +157,7 @@ export const CamelRoutes: React.FunctionComponent = () => {
         selectedRoutes={selected}
         handleConfirmDeleteToggle={handleConfirmDeleteToggle}
       />
-      <TableComposable
-        id='camel-routes-table'
-        data-testid='camel-routes-table'
-        aria-label='Camel routes table'
-        variant='compact'
-      >
+      <Table id='camel-routes-table' data-testid='camel-routes-table' aria-label='Camel routes table' variant='compact'>
         <Thead noWrap>
           <Tr>
             <Th
@@ -237,7 +223,7 @@ export const CamelRoutes: React.FunctionComponent = () => {
             )
           })}
         </Tbody>
-      </TableComposable>
+      </Table>
       <ConfirmDeleteModal />
     </React.Fragment>
   )
@@ -336,7 +322,7 @@ const CamelRoutesToolbar: React.FunctionComponent<{
       <ToolbarItem>
         <Button
           variant='primary'
-          isSmall={true}
+          size='sm'
           isDisabled={!routesService.canStartRoute(firstRoute.node) || !isSuspendEnabled('Stopped')}
           icon={<PlayIcon />}
           onClick={startRoutes}
@@ -347,7 +333,7 @@ const CamelRoutesToolbar: React.FunctionComponent<{
       <ToolbarItem>
         <Button
           variant='danger'
-          isSmall={true}
+          size='sm'
           isDisabled={!routesService.canStopRoute(firstRoute.node) || !isSuspendEnabled('Started')}
           icon={<AsleepIcon />}
           onClick={stopRoutes}
@@ -379,7 +365,12 @@ const CamelRoutesToolbar: React.FunctionComponent<{
         {toolbarButtons}
         <ToolbarItem id='camel-routes-toolbar-item-dropdown'>
           <Dropdown
-            toggle={<KebabToggle id='camel-routes-toolbar-item-dropdown-toggle' onToggle={onDropdownToggle} />}
+            toggle={
+              <KebabToggle
+                id='camel-routes-toolbar-item-dropdown-toggle'
+                onToggle={(_event, isOpen: boolean) => onDropdownToggle(isOpen)}
+              />
+            }
             isOpen={isDropdownOpen}
             dropdownItems={dropdownItems}
             isPlain

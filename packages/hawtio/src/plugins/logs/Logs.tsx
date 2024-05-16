@@ -21,9 +21,6 @@ import {
   PaginationProps,
   Panel,
   SearchInput,
-  Select,
-  SelectOption,
-  SelectOptionObject,
   Skeleton,
   Title,
   Toolbar,
@@ -31,9 +28,12 @@ import {
   ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
+  EmptyStateHeader,
+  EmptyStateFooter,
 } from '@patternfly/react-core'
+import { Select, SelectOption, SelectOptionObject } from '@patternfly/react-core/deprecated'
 import { SearchIcon } from '@patternfly/react-icons'
-import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { Table /* data-codemods */, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import React, { useEffect, useRef, useState } from 'react'
 import { log } from './globals'
 import { LogEntry, LogFilter } from './log-entry'
@@ -178,7 +178,7 @@ const LogsTable: React.FunctionComponent = () => {
       onSetPage={handleSetPage}
       onPerPageSelect={handlePerPageSelect}
       variant={variant}
-      titles={{ paginationTitle: `${variant} pagination` }}
+      titles={{ paginationAriaLabel: `${variant} pagination` }}
     />
   )
 
@@ -277,7 +277,7 @@ const LogsTable: React.FunctionComponent = () => {
   return (
     <Panel>
       {tableToolbar}
-      <TableComposable variant='compact' aria-label='Logs Table' isStriped isStickyHeader>
+      <Table variant='compact' aria-label='Logs Table' isStriped isStickyHeader>
         <Thead>
           <Tr>
             <Th>Timestamp</Th>
@@ -301,22 +301,25 @@ const LogsTable: React.FunctionComponent = () => {
             <Tr>
               <Td colSpan={4}>
                 <Bullseye>
-                  <EmptyState variant='small'>
-                    <EmptyStateIcon icon={SearchIcon} />
-                    <Title headingLevel='h2' size='lg'>
-                      No results found
-                    </Title>
+                  <EmptyState variant='sm'>
+                    <EmptyStateHeader
+                      titleText='No results found'
+                      icon={<EmptyStateIcon icon={SearchIcon} />}
+                      headingLevel='h2'
+                    />
                     <EmptyStateBody>Clear all filters and try again.</EmptyStateBody>
-                    <Button variant='link' onClick={clearAllFilters}>
-                      Clear all filters
-                    </Button>
+                    <EmptyStateFooter>
+                      <Button variant='link' onClick={clearAllFilters}>
+                        Clear all filters
+                      </Button>
+                    </EmptyStateFooter>
                   </EmptyState>
                 </Bullseye>
               </Td>
             </Tr>
           )}
         </Tbody>
-      </TableComposable>
+      </Table>
       {renderPagination('bottom', false)}
       <LogModal isOpen={isModalOpen} onClose={handleModalToggle} log={selected} />
     </Panel>

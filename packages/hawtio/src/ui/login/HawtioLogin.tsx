@@ -58,7 +58,7 @@ export const HawtioLogin: React.FunctionComponent = () => {
 
   return (
     <LoginPage
-      backgroundImgSrc={backgroundImages}
+      backgroundImgSrc={backgroundImages.lg as string}
       brandImgSrc={appLogo}
       brandImgAlt={appName}
       loginTitle={title}

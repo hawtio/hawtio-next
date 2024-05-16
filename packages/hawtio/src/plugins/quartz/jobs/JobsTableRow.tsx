@@ -1,5 +1,5 @@
 import { Button, Modal } from '@patternfly/react-core'
-import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { Table /* data-codemods */, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import React, { useState } from 'react'
 import { Job } from '../quartz-service'
 
@@ -45,7 +45,7 @@ const JobDetailModal: React.FunctionComponent<{
         </Button>,
       ]}
     >
-      <TableComposable id='quartz-jobs-detail-table' variant='compact' aria-label='Job Detail Table' isStriped>
+      <Table id='quartz-jobs-detail-table' variant='compact' aria-label='Job Detail Table' isStriped>
         <Thead>
           <Tr>
             <Th>Key</Th>
@@ -60,7 +60,7 @@ const JobDetailModal: React.FunctionComponent<{
             </Tr>
           ))}
         </Tbody>
-      </TableComposable>
+      </Table>
     </Modal>
   )
 }

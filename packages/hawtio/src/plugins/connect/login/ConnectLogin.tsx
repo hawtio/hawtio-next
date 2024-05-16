@@ -83,7 +83,7 @@ export const ConnectLogin: React.FunctionComponent = () => {
             id='connect-login-form-username'
             name='connect-login-form-username'
             value={username}
-            onChange={value => setUsername(value)}
+            onChange={(_event, value) => setUsername(value)}
             autoFocus={true}
           />
         </FormGroup>
@@ -94,7 +94,7 @@ export const ConnectLogin: React.FunctionComponent = () => {
             name='connect-login-form-password'
             type='password'
             value={password}
-            onChange={value => setPassword(value)}
+            onChange={(_event, value) => setPassword(value)}
           />
         </FormGroup>
       </Form>

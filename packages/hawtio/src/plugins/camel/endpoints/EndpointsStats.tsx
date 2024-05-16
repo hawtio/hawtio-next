@@ -4,9 +4,6 @@ import { EndpointStatistics, getEndpointStatistics } from '@hawtiosrc/plugins/ca
 import {
   Bullseye,
   Button,
-  Dropdown,
-  DropdownItem,
-  DropdownToggle,
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
@@ -18,8 +15,10 @@ import {
   ToolbarContent,
   ToolbarFilter,
   ToolbarGroup,
+  EmptyStateHeader,
 } from '@patternfly/react-core'
-import { TableComposable, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
+import { Dropdown, DropdownItem, DropdownToggle } from '@patternfly/react-core/deprecated'
+import { Table, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
 import { SearchIcon } from '@patternfly/react-icons'
 import { objectSorter } from '@hawtiosrc/util/objects'
 
@@ -139,7 +138,11 @@ export const EndpointStats: React.FunctionComponent = () => {
               onSelect={() => setIsDropdownOpen(false)}
               defaultValue='url'
               toggle={
-                <DropdownToggle data-testid='attribute-select-toggle' id='toggle-basic' onToggle={setIsDropdownOpen}>
+                <DropdownToggle
+                  data-testid='attribute-select-toggle'
+                  id='toggle-basic'
+                  onToggle={(_event, val) => setIsDropdownOpen(val)}
+                >
                   {attributes.find(att => att.key === attributeMenuItem)?.value}
                 </DropdownToggle>
               }
@@ -172,7 +175,7 @@ export const EndpointStats: React.FunctionComponent = () => {
 
       {sortStatistics().length > 0 ? (
         <FormGroup>
-          <TableComposable aria-label='Endpoints Table' variant='compact' height='80vh'>
+          <Table aria-label='Endpoints Table' variant='compact' height='80vh'>
             <Thead noWrap>
               <Tr>
                 <Th data-testid={'url-header'} sort={getSortParams(0)}>
@@ -209,12 +212,12 @@ export const EndpointStats: React.FunctionComponent = () => {
                 )
               })}
             </Tbody>
-          </TableComposable>
+          </Table>
         </FormGroup>
       ) : (
         <Bullseye>
           <EmptyState>
-            <EmptyStateIcon icon={SearchIcon} />
+            <EmptyStateHeader icon={<EmptyStateIcon icon={SearchIcon} />} />
             <EmptyStateBody>No results found.</EmptyStateBody>
           </EmptyState>
         </Bullseye>

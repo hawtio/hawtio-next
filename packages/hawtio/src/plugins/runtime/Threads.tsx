@@ -3,9 +3,6 @@ import {
   Button,
   CodeBlock,
   CodeBlockCode,
-  Dropdown,
-  DropdownItem,
-  DropdownToggle,
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
@@ -22,13 +19,15 @@ import {
   ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
+  EmptyStateHeader,
 } from '@patternfly/react-core'
+import { Dropdown, DropdownItem, DropdownToggle } from '@patternfly/react-core/deprecated'
 import React, { useEffect, useState } from 'react'
 
 import { Thread } from './types'
 import { objectSorter } from '@hawtiosrc/util/objects'
 import { SearchIcon } from '@patternfly/react-icons'
-import { TableComposable, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
+import { Table /* data-codemods */, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
 import { runtimeService } from './runtime-service'
 import { ThreadInfoModal, ThreadState } from './ThreadInfoModal'
 
@@ -237,7 +236,11 @@ export const Threads: React.FunctionComponent = () => {
             }}
             defaultValue='Name'
             toggle={
-              <DropdownToggle data-testid='attribute-select-toggle' id='toggle-basic' onToggle={setIsDropdownOpen}>
+              <DropdownToggle
+                data-testid='attribute-select-toggle'
+                id='toggle-basic'
+                onToggle={(_event, val) => setIsDropdownOpen(val)}
+              >
                 {tableColumns.find(att => att.value === attributeMenuItem)?.value}
               </DropdownToggle>
             }
@@ -264,12 +267,12 @@ export const Threads: React.FunctionComponent = () => {
 
         <ToolbarGroup>
           <ToolbarItem>
-            <Button variant='primary' onClick={handleConnectionThreadMonitoring} isSmall>
+            <Button variant='primary' onClick={handleConnectionThreadMonitoring} size='sm'>
               {threadConnectionMonitoring ? 'Disable' : 'Enable'} connection thread monitoring
             </Button>
           </ToolbarItem>
           <ToolbarItem>
-            <Button variant='secondary' onClick={onThreadDumpClick} isSmall>
+            <Button variant='secondary' onClick={onThreadDumpClick} size='sm'>
               Thread dump
             </Button>
           </ToolbarItem>
@@ -291,7 +294,7 @@ export const Threads: React.FunctionComponent = () => {
         <PanelMainBody>
           {sortThreads().length > 0 && (
             <FormGroup>
-              <TableComposable aria-label='Message Table' variant='compact' height='80vh' isStriped isStickyHeader>
+              <Table aria-label='Message Table' variant='compact' height='80vh' isStriped isStickyHeader>
                 <Thead>
                   <Tr>
                     {tableColumns.map((att, index) => (
@@ -321,7 +324,7 @@ export const Threads: React.FunctionComponent = () => {
                               setIsThreadDetailsOpen(true)
                               setCurrentThread(thread)
                             }}
-                            isSmall
+                            size='sm'
                             variant='link'
                           >
                             Details
@@ -331,13 +334,13 @@ export const Threads: React.FunctionComponent = () => {
                     )
                   })}
                 </Tbody>
-              </TableComposable>
+              </Table>
             </FormGroup>
           )}
           {filteredThreads.length === 0 && (
             <Bullseye>
               <EmptyState>
-                <EmptyStateIcon icon={SearchIcon} />
+                <EmptyStateHeader icon={<EmptyStateIcon icon={SearchIcon} />} />
                 <EmptyStateBody>No results found.</EmptyStateBody>
               </EmptyState>
             </Bullseye>

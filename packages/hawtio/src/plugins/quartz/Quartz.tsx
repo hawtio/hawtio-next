@@ -12,7 +12,7 @@ export const Quartz: React.FunctionComponent = () => {
   if (!loaded) {
     return (
       <PageSection>
-        <Spinner isSVG aria-label='Loading Quartz schedulers' />
+        <Spinner aria-label='Loading Quartz schedulers' />
       </PageSection>
     )
   }

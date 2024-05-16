@@ -1,7 +1,7 @@
 import { CamelContext } from '@hawtiosrc/plugins/camel/context'
 import { HawtioEmptyCard, HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
 import { Panel, PanelHeader, PanelMain, PanelMainBody, Title } from '@patternfly/react-core'
-import { TableComposable, Tbody, Th, Td, Thead, Tr } from '@patternfly/react-table'
+import { Table /* data-codemods */, Tbody, Th, Td, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useState } from 'react'
 import * as exs from './exchanges-service'
 
@@ -61,7 +61,7 @@ export const InflightExchanges: React.FunctionComponent = () => {
       </PanelHeader>
       <PanelMain>
         <PanelMainBody>
-          <TableComposable data-testid='exchange-table' aria-label='Inflight Exchanges' variant='compact'>
+          <Table data-testid='exchange-table' aria-label='Inflight Exchanges' variant='compact'>
             <Thead>
               <Tr>
                 <Th modifier='wrap'>Exchange ID</Th>
@@ -82,7 +82,7 @@ export const InflightExchanges: React.FunctionComponent = () => {
                 </Tr>
               ))}
             </Tbody>
-          </TableComposable>
+          </Table>
         </PanelMainBody>
       </PanelMain>
     </Panel>

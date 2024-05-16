@@ -94,11 +94,11 @@ export const TriggersTableRow: React.FunctionComponent<{
         <Td dataLabel='finalFire'>{trigger.finalFireTime?.toString()}</Td>
         <Td dataLabel='resume/pause' modifier='fitContent'>
           {normalState ? (
-            <Button variant='danger' isSmall onClick={pauseTrigger} isDisabled={!canPauseTrigger()}>
+            <Button variant='danger' size='sm' onClick={pauseTrigger} isDisabled={!canPauseTrigger()}>
               Pause
             </Button>
           ) : (
-            <Button variant='primary' isSmall onClick={resumeTrigger} isDisabled={!canResumeTrigger()}>
+            <Button variant='primary' size='sm' onClick={resumeTrigger} isDisabled={!canResumeTrigger()}>
               Resume
             </Button>
           )}

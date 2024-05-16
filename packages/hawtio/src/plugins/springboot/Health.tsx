@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { Card, CardBody, CardHeader, Flex, FlexItem, Grid, GridItem, Title } from '@patternfly/react-core'
+import { Card, CardBody, CardHeader, Flex, FlexItem, Grid, GridItem, Icon, Title } from '@patternfly/react-core'
 import { springbootService } from './springboot-service'
 import { HealthComponentDetail, HealthData } from './types'
-import { TableComposable, Tbody, Td, Tr } from '@patternfly/react-table'
+import { Table /* data-codemods */, Tbody, Td, Tr } from '@patternfly/react-table'
 import { humanizeLabels } from '@hawtiosrc/util/strings'
 import { ChartDonutUtilization } from '@patternfly/react-charts'
 import {
@@ -19,7 +19,7 @@ const ComponentDetails: React.FunctionComponent<{ componentDetails: HealthCompon
   componentDetails,
 }) => {
   return (
-    <TableComposable variant='compact' borders={false}>
+    <Table variant='compact' borders={false}>
       <Tbody style={{ fontSize: 'xx-small' }}>
         {componentDetails.map((detail, index) => {
           return (
@@ -32,21 +32,41 @@ const ComponentDetails: React.FunctionComponent<{ componentDetails: HealthCompon
           )
         })}
       </Tbody>
-    </TableComposable>
+    </Table>
   )
 }
 const HealthStatusIcon: React.FunctionComponent<{ status: string }> = ({ status }) => {
   switch (status) {
     case 'UP':
-      return <CheckCircleIcon color={'green'} />
+      return (
+        <Icon color={'green'}>
+          <CheckCircleIcon />
+        </Icon>
+      )
     case 'DOWN':
-      return <ExclamationCircleIcon color={'red'} />
+      return (
+        <Icon color={'red'}>
+          <ExclamationCircleIcon />
+        </Icon>
+      )
     case 'OUT_OF_SERVICE':
-      return <ExclamationTriangleIcon color={'orange'} />
+      return (
+        <Icon color={'orange'}>
+          <ExclamationTriangleIcon />
+        </Icon>
+      )
     case 'UNKNOWN':
-      return <QuestionCircleIcon />
+      return (
+        <Icon>
+          <QuestionCircleIcon />
+        </Icon>
+      )
     default:
-      return <InfoCircleIcon color={'blue'} />
+      return (
+        <Icon color={'blue'}>
+          <InfoCircleIcon />
+        </Icon>
+      )
   }
 }
 

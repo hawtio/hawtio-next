@@ -1,4 +1,13 @@
-import { Button, Form, FormGroup, Modal, TextArea } from '@patternfly/react-core'
+import {
+  Button,
+  Form,
+  FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  Modal,
+  TextArea,
+} from '@patternfly/react-core'
 import React, { useContext, useState } from 'react'
 import { QuartzContext } from '../context'
 import { log } from '../globals'
@@ -55,18 +64,21 @@ export const TriggersManualModal: React.FunctionComponent<{
         <FormGroup label='Group' fieldId='quartz-triggers-manual-modal-form-group'>
           {group}
         </FormGroup>
-        <FormGroup
-          label='Parameters'
-          fieldId='quartz-triggers-manual-modal-form-parameters'
-          helperText={['Parameters if any (', <code key={1}>java.util.Map</code>, ' in JSON syntax)']}
-        >
+        <FormGroup label='Parameters' fieldId='quartz-triggers-manual-modal-form-parameters'>
           <TextArea
             id='quartz-triggers-manual-modal-form-parameters-input'
             aria-label='quartz triggers manual modal form parameters'
             resizeOrientation='vertical'
             value={parameters}
-            onChange={value => setParameters(value)}
+            onChange={(_event, value) => setParameters(value)}
           />
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem>
+                {['Parameters if any (', <code key={1}>java.util.Map</code>, ' in JSON syntax)']}
+              </HelperTextItem>
+            </HelperText>
+          </FormHelperText>
         </FormGroup>
       </Form>
     </Modal>

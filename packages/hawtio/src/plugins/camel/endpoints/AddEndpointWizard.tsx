@@ -3,14 +3,19 @@ import {
   Button,
   Form,
   FormGroup,
+  FormHelperText,
   FormSection,
+  HelperText,
+  HelperTextItem,
+  TextInput,
+} from '@patternfly/react-core'
+import {
   Select,
   SelectDirection,
   SelectOption,
   SelectOptionObject,
   SelectVariant,
-  TextInput,
-} from '@patternfly/react-core'
+} from '@patternfly/react-core/deprecated'
 import { ExclamationCircleIcon } from '@patternfly/react-icons'
 import React, { ChangeEvent, MouseEvent, useContext, useEffect, useRef, useState } from 'react'
 import { CamelContext } from '../context'
@@ -91,7 +96,7 @@ export const AddEndpointWizard: React.FunctionComponent = () => {
           toggleRef={() => toggleRef}
           variant={SelectVariant.single}
           aria-label={placeholder}
-          onToggle={onToggle}
+          onToggle={(_event, isOpen: boolean) => onToggle(isOpen)}
           onSelect={onSelect}
           selections={ctx.componentName}
           isOpen={isOpen}
@@ -103,21 +108,25 @@ export const AddEndpointWizard: React.FunctionComponent = () => {
       </FormGroup>
       {ctx.componentName && (
         <React.Fragment>
-          <FormGroup
-            label='Endpoint Path'
-            fieldId='endpoint-path'
-            validated={endpointValidated}
-            helperTextInvalid={endpointInvalidMessage()}
-            helperTextInvalidIcon={<ExclamationCircleIcon />}
-          >
+          <FormGroup label='Endpoint Path' fieldId='endpoint-path'>
             <TextInput
               id='endpoint-path-input'
               type='text'
               value={ctx.endpointPath}
               isRequired={true}
-              onChange={onEndpointPathChanged}
+              onChange={(_event, value: string) => onEndpointPathChanged(value)}
               validated={endpointValidated}
             />
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem
+                  variant={endpointValidated}
+                  {...(endpointValidated === 'error' && { icon: <ExclamationCircleIcon /> })}
+                >
+                  {endpointInvalidMessage()}
+                </HelperTextItem>
+              </HelperText>
+            </FormHelperText>
           </FormGroup>
           {ctx.componentSchema && (
             <FormSection title='Endpoint Parameters'>

@@ -25,7 +25,7 @@ import {
   PlusIcon,
   TimesCircleIcon,
 } from '@patternfly/react-icons'
-import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { Table /* data-codemods */, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import { Response } from 'jolokia.js'
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import * as camelService from '../camel-service'
@@ -372,7 +372,7 @@ export const Debug: React.FunctionComponent = () => {
    * Extra panel to add to the drawer slide-in
    */
   const debugPanelBreakpointsTab = () => (
-    <TableComposable key='breakpoints' aria-label='Breakpoints table' variant='compact'>
+    <Table key='breakpoints' aria-label='Breakpoints table' variant='compact'>
       <Thead>
         <Tr>
           <Th>Breakpoint</Th>
@@ -386,7 +386,7 @@ export const Debug: React.FunctionComponent = () => {
             <Td dataLabel='Remove'>
               <Button
                 variant='plain'
-                isSmall
+                size='sm'
                 icon={<TimesCircleIcon />}
                 onClick={() => handleRemoveBreakpoint(selectedNode, breakpoint)}
               ></Button>
@@ -394,7 +394,7 @@ export const Debug: React.FunctionComponent = () => {
           </Tr>
         ))}
       </Tbody>
-    </TableComposable>
+    </Table>
   )
 
   const toolbarButtons = (
@@ -403,7 +403,7 @@ export const Debug: React.FunctionComponent = () => {
         <ToolbarItem spacer={{ default: 'spacerSm' }} title='Remove the breakpoint on the selected node'>
           <Button
             variant='secondary'
-            isSmall
+            size='sm'
             icon={<MinusIcon />}
             isDisabled={!graphSelection}
             onClick={onRemoveBreakpoint}
@@ -417,7 +417,7 @@ export const Debug: React.FunctionComponent = () => {
           <ToolbarItem spacer={{ default: 'spacerSm' }} title='Add a breakpoint on the selected node'>
             <Button
               variant='secondary'
-              isSmall
+              size='sm'
               icon={<PlusIcon />}
               isDisabled={shouldDisableAddBreakpoint()}
               onClick={onAddBreakpoint}
@@ -428,7 +428,7 @@ export const Debug: React.FunctionComponent = () => {
           <ToolbarItem spacer={{ default: 'spacerSm' }} title='Add a conditional breakpoint on the selected node'>
             <Button
               variant='secondary'
-              isSmall
+              size='sm'
               icon={<PlusCircleIcon />}
               isDisabled={shouldDisableAddBreakpoint()}
               onClick={onAddConditionalBreakpointToggle}
@@ -442,7 +442,7 @@ export const Debug: React.FunctionComponent = () => {
       <ToolbarItem spacer={{ default: 'spacerSm' }} title='Step into the next node'>
         <Button
           variant='secondary'
-          isSmall
+          size='sm'
           icon={<LongArrowAltDownIcon />}
           isDisabled={suspendedBreakpoints.length === 0}
           onClick={onStep}
@@ -453,7 +453,7 @@ export const Debug: React.FunctionComponent = () => {
       <ToolbarItem spacer={{ default: 'spacerSm' }} title='Resume running'>
         <Button
           variant='secondary'
-          isSmall
+          size='sm'
           icon={<PlayIcon />}
           isDisabled={suspendedBreakpoints.length === 0}
           onClick={onResume}
@@ -467,7 +467,7 @@ export const Debug: React.FunctionComponent = () => {
           <ToolbarItem spacer={{ default: 'spacerSm' }} title='Show Debug Panel'>
             <Button
               variant='secondary'
-              isSmall
+              size='sm'
               icon={<BarsIcon />}
               isDisabled={suspendedBreakpoints.length === 0}
               onClick={onDebugPanelToggle}
@@ -486,7 +486,7 @@ export const Debug: React.FunctionComponent = () => {
         <Title headingLevel='h3'>Debug</Title>
         <Button
           variant='primary'
-          isSmall
+          size='sm'
           icon={!isDebugging ? React.createElement(PlayIcon) : React.createElement(BanIcon)}
           onClick={onDebugging}
           isDisabled={!camelService.canGetBreakpoints(selectedNode)}

@@ -1,4 +1,4 @@
-import { Nav, NavItem, NavList, PageSidebar } from '@patternfly/react-core'
+import { Nav, NavItem, NavList, PageSidebar, PageSidebarBody } from '@patternfly/react-core'
 import React, { useContext } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { PageContext } from './context'
@@ -28,5 +28,9 @@ export const HawtioSidebar: React.FunctionComponent = () => {
     </Nav>
   )
 
-  return <PageSidebar nav={pageNav} theme='dark' />
+  return (
+    <PageSidebar theme='dark'>
+      <PageSidebarBody>{pageNav}</PageSidebarBody>
+    </PageSidebar>
+  )
 }

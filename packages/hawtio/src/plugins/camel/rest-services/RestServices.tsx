@@ -4,18 +4,20 @@ import {
   PanelMain,
   PanelMainBody,
   SearchInput,
-  Select,
-  SelectDirection,
-  SelectOption,
-  SelectOptionObject,
-  SelectVariant,
   Toolbar,
   ToolbarContent,
   ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core'
-import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import {
+  Select,
+  SelectDirection,
+  SelectOption,
+  SelectOptionObject,
+  SelectVariant,
+} from '@patternfly/react-core/deprecated'
+import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import { Response } from 'jolokia.js'
 import React, { ChangeEvent, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { CamelContext } from '../context'
@@ -200,7 +202,7 @@ export const RestServices: React.FunctionComponent = () => {
                     variant={SelectVariant.single}
                     id='select-filter-type'
                     aria-label='select-filter-type'
-                    onToggle={onSelectFilterTypeToggle}
+                    onToggle={(_event, isOpen: boolean) => onSelectFilterTypeToggle(isOpen)}
                     onSelect={onSelectFilterType}
                     selections={filterType}
                     isOpen={isFilterTypeOpen}
@@ -231,7 +233,7 @@ export const RestServices: React.FunctionComponent = () => {
               </ToolbarGroup>
             </ToolbarContent>
           </Toolbar>
-          <TableComposable aria-label='message table' variant='compact' isStriped>
+          <Table aria-label='message table' variant='compact' isStriped>
             <Thead>
               <Tr>
                 {headers.map(header => (
@@ -250,7 +252,7 @@ export const RestServices: React.FunctionComponent = () => {
                 </Tr>
               ))}
             </Tbody>
-          </TableComposable>
+          </Table>
         </PanelMainBody>
       </PanelMain>
     </Panel>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { FormGroup } from '@patternfly/react-core'
 import { springbootService } from './springboot-service'
-import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { Table /* data-codemods */, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 
 export const Info: React.FunctionComponent = () => {
   const [systemProperties, setSystemProperties] = useState<{ key: string; value: string }[]>([])
@@ -14,7 +14,7 @@ export const Info: React.FunctionComponent = () => {
 
   return (
     <FormGroup>
-      <TableComposable aria-label='Message Table' variant='compact' height='80vh' isStriped isStickyHeader>
+      <Table aria-label='Message Table' variant='compact' height='80vh' isStriped isStickyHeader>
         <Thead>
           <Tr>
             <Th data-testid={'name-header'}>Property Name</Th>
@@ -31,7 +31,7 @@ export const Info: React.FunctionComponent = () => {
             )
           })}
         </Tbody>
-      </TableComposable>
+      </Table>
     </FormGroup>
   )
 }

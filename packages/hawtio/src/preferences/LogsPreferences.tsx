@@ -8,9 +8,6 @@ import {
   DataListItem,
   DataListItemCells,
   DataListItemRow,
-  Dropdown,
-  DropdownItem,
-  DropdownToggle,
   Form,
   FormGroup,
   FormSection,
@@ -19,6 +16,7 @@ import {
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core'
+import { Dropdown, DropdownItem, DropdownToggle } from '@patternfly/react-core/deprecated'
 import { PlusIcon, TrashIcon } from '@patternfly/react-icons'
 import React, { useContext, useState } from 'react'
 import { LogsContext, useChildLoggers } from './context'
@@ -72,7 +70,7 @@ const GlobalForms: React.FunctionComponent = () => {
           value={LOG_LEVEL_OPTIONS.findIndex(level => level === logLevel)}
           max={LOG_LEVEL_OPTIONS.length - 1}
           customSteps={LOG_LEVEL_OPTIONS.map((level, index) => ({ value: index, label: level }))}
-          onChange={(value: number) => handleLogLevelChange(LOG_LEVEL_OPTIONS[value])}
+          onChange={(_event, value: number) => handleLogLevelChange(LOG_LEVEL_OPTIONS[value])}
         />
       </FormGroup>
     </React.Fragment>
@@ -159,7 +157,7 @@ const ChildLoggerItem: React.FunctionComponent<ChildLoggerItemProps> = props => 
                 value={LOG_LEVEL_OPTIONS.findIndex(level => level === logger.filterLevel.name)}
                 max={LOG_LEVEL_OPTIONS.length - 1}
                 customSteps={LOG_LEVEL_OPTIONS.map((level, index) => ({ value: index, label: level }))}
-                onChange={(value: number) => onLogLevelChange(LOG_LEVEL_OPTIONS[value])}
+                onChange={(_event, value: number) => onLogLevelChange(LOG_LEVEL_OPTIONS[value])}
               />
             </DataListCell>,
           ]}

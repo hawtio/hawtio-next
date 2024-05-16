@@ -1,6 +1,6 @@
 import { HawtioEmptyCard, HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
 import { Panel, PanelHeader, PanelMain, PanelMainBody, Title } from '@patternfly/react-core'
-import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { Table /* data-codemods */, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import { Response } from 'jolokia.js'
 import React, { useContext, useEffect, useState } from 'react'
 import { CamelContext } from '../context'
@@ -58,7 +58,7 @@ export const Profile: React.FunctionComponent = () => {
       </PanelHeader>
       <PanelMain>
         <PanelMainBody>
-          <TableComposable aria-label='message table' variant='compact' isStriped>
+          <Table aria-label='message table' variant='compact' isStriped>
             <Thead>
               <Tr>
                 <Th>ID</Th>
@@ -87,7 +87,7 @@ export const Profile: React.FunctionComponent = () => {
                 </Tr>
               ))}
             </Tbody>
-          </TableComposable>
+          </Table>
         </PanelMainBody>
       </PanelMain>
     </Panel>

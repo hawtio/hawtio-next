@@ -103,7 +103,7 @@ export const TypeConvertersStatistics: React.FunctionComponent = () => {
           <ToolbarItem>
             <Button
               variant='secondary'
-              isSmall={true}
+              size='sm'
               icon={React.createElement(TrendUpIcon)}
               onClick={onModeStatisticsClicked}
             >
@@ -113,7 +113,7 @@ export const TypeConvertersStatistics: React.FunctionComponent = () => {
           <ToolbarItem>
             <Button
               variant='secondary'
-              isSmall={true}
+              size='sm'
               isDisabled={!statisticsEnabled}
               icon={React.createElement(RedoIcon)}
               onClick={onResetStatisticsClicked}

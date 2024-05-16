@@ -4,9 +4,6 @@ import {
   Button,
   CodeBlock,
   CodeBlockCode,
-  Dropdown,
-  DropdownItem,
-  DropdownToggle,
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
@@ -22,14 +19,22 @@ import {
   ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
+  EmptyStateHeader,
+  Icon,
 } from '@patternfly/react-core'
-import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { Dropdown, DropdownItem, DropdownToggle } from '@patternfly/react-core/deprecated'
+import { Table /* data-codemods */, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import { CheckCircleIcon, ExclamationCircleIcon, SearchIcon } from '@patternfly/react-icons'
 import { Trace } from './types'
 import { springbootService } from './springboot-service'
 
 const HttpStatusIcon: React.FunctionComponent<{ code: number }> = ({ code }) => {
-  if (code < 400) return <CheckCircleIcon color='#3E8635' />
+  if (code < 400)
+    return (
+      <Icon color='#3E8635'>
+        <CheckCircleIcon />
+      </Icon>
+    )
   else return <ExclamationCircleIcon color='#C9190B' />
 }
 
@@ -195,7 +200,7 @@ export const TraceView: React.FunctionComponent = () => {
               <DropdownToggle
                 data-testid='http-method-select-toggle'
                 id='http-method-toggle'
-                onToggle={setIsHttpMethodFilterDropdownOpen}
+                onToggle={(_event, val) => setIsHttpMethodFilterDropdownOpen(val)}
               >
                 <HttpMethodLabel method={httpMethodFilter} />
               </DropdownToggle>
@@ -213,7 +218,7 @@ export const TraceView: React.FunctionComponent = () => {
               <DropdownToggle
                 data-testid='attribute-select-toggle'
                 id='toggle-basic'
-                onToggle={setIsFilterDropdownOpen}
+                onToggle={(_event, val) => setIsFilterDropdownOpen(val)}
               >
                 {tableColumns.find(att => att.value === currentTraceFilter)?.value}
               </DropdownToggle>
@@ -239,7 +244,7 @@ export const TraceView: React.FunctionComponent = () => {
             />
           </ToolbarFilter>
           <ToolbarItem>
-            <Button id='add-filter-button' variant='secondary' onClick={addToFilters} isSmall>
+            <Button id='add-filter-button' variant='secondary' onClick={addToFilters} size='sm'>
               Add Filter
             </Button>
           </ToolbarItem>
@@ -258,7 +263,7 @@ export const TraceView: React.FunctionComponent = () => {
       {TableToolbar}
       {getTablePage().length > 0 && (
         <FormGroup>
-          <TableComposable aria-label='Message Table' variant='compact' height='80vh' isStriped isStickyHeader>
+          <Table aria-label='Message Table' variant='compact' height='80vh' isStriped isStickyHeader>
             <Thead>
               <Tr>
                 {tableColumns.map((att, index) => (
@@ -291,7 +296,7 @@ export const TraceView: React.FunctionComponent = () => {
                           setIsTraceDetailsOpen(true)
                           setTraceDetails(trace.info)
                         }}
-                        isSmall
+                        size='sm'
                       >
                         Show
                       </Button>
@@ -300,13 +305,13 @@ export const TraceView: React.FunctionComponent = () => {
                 )
               })}
             </Tbody>
-          </TableComposable>
+          </Table>
         </FormGroup>
       )}
       {filteredTraces.length === 0 && (
         <Bullseye>
           <EmptyState>
-            <EmptyStateIcon icon={SearchIcon} />
+            <EmptyStateHeader icon={<EmptyStateIcon icon={SearchIcon} />} />
             <EmptyStateBody>No results found.</EmptyStateBody>
           </EmptyState>
         </Bullseye>

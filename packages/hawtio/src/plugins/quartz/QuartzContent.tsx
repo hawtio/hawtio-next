@@ -12,6 +12,8 @@ import {
   PageSectionVariants,
   Text,
   Title,
+  EmptyStateHeader,
+  EmptyStateFooter,
 } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons'
 import React, { useContext } from 'react'
@@ -31,10 +33,11 @@ export const QuartzContent: React.FunctionComponent = () => {
     return (
       <PageSection variant='light'>
         <EmptyState variant='full'>
-          <EmptyStateIcon icon={CubesIcon} />
-          <Title headingLevel='h1' size='lg'>
-            No Quartz schedulers found
-          </Title>
+          <EmptyStateHeader
+            titleText='No Quartz schedulers found'
+            icon={<EmptyStateIcon icon={CubesIcon} />}
+            headingLevel='h1'
+          />
         </EmptyState>
       </PageSection>
     )
@@ -44,15 +47,18 @@ export const QuartzContent: React.FunctionComponent = () => {
     return (
       <PageSection variant='light'>
         <EmptyState variant='full'>
-          <EmptyStateIcon icon={CubesIcon} />
-          <Title headingLevel='h1' size='lg'>
-            No scheduler selected
-          </Title>
+          <EmptyStateHeader
+            titleText='No scheduler selected'
+            icon={<EmptyStateIcon icon={CubesIcon} />}
+            headingLevel='h1'
+          />
           <EmptyStateBody>
             The Quartz plugin allows you to see details about running Quartz Schedulers, and their associated triggers
             and jobs.
           </EmptyStateBody>
-          <EmptyStateBody>Select a Quartz Scheduler in the tree to continue.</EmptyStateBody>
+          <EmptyStateFooter>
+            <EmptyStateBody>Select a Quartz Scheduler in the tree to continue.</EmptyStateBody>
+          </EmptyStateFooter>
         </EmptyState>
       </PageSection>
     )

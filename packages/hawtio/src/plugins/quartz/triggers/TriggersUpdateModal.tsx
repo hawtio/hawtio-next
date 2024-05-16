@@ -1,4 +1,15 @@
-import { Button, Form, FormGroup, FormSelect, FormSelectOption, Modal, TextInput } from '@patternfly/react-core'
+import {
+  Button,
+  Form,
+  FormGroup,
+  FormHelperText,
+  FormSelect,
+  FormSelectOption,
+  HelperText,
+  HelperTextItem,
+  Modal,
+  TextInput,
+} from '@patternfly/react-core'
 import React, { useContext, useState } from 'react'
 import { QuartzContext } from '../context'
 import { log } from '../globals'
@@ -53,71 +64,71 @@ export const TriggersUpdateModal: React.FunctionComponent<{
     >
       <Form id='quartz-triggers-update-modal-form' isHorizontal>
         {isCron && (
-          <FormGroup
-            label='Cron expression'
-            isRequired
-            fieldId='quartz-triggers-update-modal-form-cron'
-            helperText='Specify a cron expression for the trigger'
-          >
+          <FormGroup label='Cron expression' isRequired fieldId='quartz-triggers-update-modal-form-cron'>
             <TextInput
               id='quartz-triggers-update-modal-form-cron'
               name='quartz-triggers-update-modal-form-cron'
               isRequired
               value={trigger.expression}
-              onChange={value => setTrigger({ ...trigger, expression: value })}
+              onChange={(_event, value) => setTrigger({ ...trigger, expression: value })}
             />
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem>Specify a cron expression for the trigger</HelperTextItem>
+              </HelperText>
+            </FormHelperText>
           </FormGroup>
         )}
         {isSimple && (
           <React.Fragment>
-            <FormGroup
-              label='Repeat count'
-              isRequired
-              fieldId='quartz-triggers-update-modal-form-repeat-count'
-              helperText='Number of times to repeat. Use -1 for forever'
-            >
+            <FormGroup label='Repeat count' isRequired fieldId='quartz-triggers-update-modal-form-repeat-count'>
               <TextInput
                 id='quartz-triggers-update-modal-form-repeat-count'
                 name='quartz-triggers-update-modal-form-repeat-count'
                 isRequired
                 type='number'
                 value={trigger.repeatCount}
-                onChange={value => setTrigger({ ...trigger, repeatCount: parseInt(value) })}
+                onChange={(_event, value) => setTrigger({ ...trigger, repeatCount: parseInt(value) })}
               />
+              <FormHelperText>
+                <HelperText>
+                  <HelperTextItem>Number of times to repeat. Use -1 for forever</HelperTextItem>
+                </HelperText>
+              </FormHelperText>
             </FormGroup>
-            <FormGroup
-              label='Repeat interval'
-              isRequired
-              fieldId='quartz-triggers-update-modal-form-repeat-interval'
-              helperText='Elapsed time in millis between triggering'
-            >
+            <FormGroup label='Repeat interval' isRequired fieldId='quartz-triggers-update-modal-form-repeat-interval'>
               <TextInput
                 id='quartz-triggers-update-modal-form-repeat-interval'
                 name='quartz-triggers-update-modal-form-repeat-interval'
                 isRequired
                 type='number'
                 value={trigger.repeatInterval}
-                onChange={value => setTrigger({ ...trigger, repeatInterval: parseInt(value) })}
+                onChange={(_event, value) => setTrigger({ ...trigger, repeatInterval: parseInt(value) })}
               />
+              <FormHelperText>
+                <HelperText>
+                  <HelperTextItem>Elapsed time in millis between triggering</HelperTextItem>
+                </HelperText>
+              </FormHelperText>
             </FormGroup>
           </React.Fragment>
         )}
-        <FormGroup
-          label='Misfire Instruction'
-          isRequired
-          fieldId='quartz-triggers-update-modal-form-misfire'
-          helperText='What to do when misfiring happens'
-        >
+        <FormGroup label='Misfire Instruction' isRequired fieldId='quartz-triggers-update-modal-form-misfire'>
           <FormSelect
             id='quartz-triggers-update-modal-form-misfire-select'
             aria-label='Select Misfire Instruction'
             value={trigger.misfireInstruction}
-            onChange={value => setTrigger({ ...trigger, misfireInstruction: parseInt(value) })}
+            onChange={(_event, value) => setTrigger({ ...trigger, misfireInstruction: parseInt(value) })}
           >
             {misfireInstructions.map(({ value, label }, index) => (
               <FormSelectOption key={index} value={value} label={label} />
             ))}
           </FormSelect>
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem>What to do when misfiring happens</HelperTextItem>
+            </HelperText>
+          </FormHelperText>
         </FormGroup>
       </Form>
     </Modal>

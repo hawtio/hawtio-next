@@ -4,7 +4,8 @@ import { HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
 import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { Card, CardBody, Text } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
-import { TableComposable, TableProps, Tbody, Td, Th, Thead, Tr, wrappable } from '@patternfly/react-table'
+import { Table, Tbody, Td, Th, Thead, Tr, wrappable } from '@patternfly/react-table'
+import { TableProps } from '@patternfly/react-table/deprecated'
 import { Response } from 'jolokia.js'
 import React, { useContext, useEffect, useState } from 'react'
 import { log } from '../globals'
@@ -130,7 +131,7 @@ export const Contexts: React.FunctionComponent = () => {
         contexts={contexts.filter(c => selectedCtx.includes(c.node.name))}
         deleteCallback={handleDeletedContexts}
       />
-      <TableComposable aria-label='Contexts' variant='compact'>
+      <Table aria-label='Contexts' variant='compact'>
         <Thead>
           <Tr>
             <Th
@@ -158,7 +159,7 @@ export const Contexts: React.FunctionComponent = () => {
             </Tr>
           ))}
         </Tbody>
-      </TableComposable>
+      </Table>
     </React.Fragment>
   )
 }

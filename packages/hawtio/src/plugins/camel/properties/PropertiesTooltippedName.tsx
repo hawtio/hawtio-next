@@ -18,9 +18,8 @@ export const PropertiesTooltippedName: React.FunctionComponent<{
       </span>
       <Tooltip
         id={`camel-properties-${property.id}-tooltip`}
-        reference={tooltipRef}
+        triggerRef={tooltipRef}
         content={<div>{property.description}</div>}
-        removeFindDomNode
       />
     </React.Fragment>
   )
