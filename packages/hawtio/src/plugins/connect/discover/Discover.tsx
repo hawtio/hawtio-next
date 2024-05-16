@@ -6,7 +6,6 @@ import {
   Alert,
   Button,
   Card,
-  CardActions,
   CardBody,
   CardFooter,
   CardHeader,
@@ -18,15 +17,13 @@ import {
   Gallery,
   Label,
   SearchInput,
-  Select,
-  SelectOption,
-  SelectProps,
   Text,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core'
+import { Select, SelectOption, SelectProps } from '@patternfly/react-core/deprecated'
 import React, { useContext, useEffect, useState } from 'react'
 import { ADD, UPDATE } from '../connections'
 import { ConnectContext } from '../context'
@@ -185,7 +182,7 @@ export const Discover: React.FunctionComponent = () => {
         </ToolbarGroup>
         <ToolbarItem variant='separator' />
         <ToolbarItem>
-          <Button variant='secondary' onClick={() => refresh(true)} isSmall>
+          <Button variant='secondary' onClick={() => refresh(true)} size='sm'>
             Refresh
           </Button>
         </ToolbarItem>
@@ -234,12 +231,19 @@ export const AgentCard: React.FunctionComponent<{
 
   return (
     <Card isCompact id={`connect-discover-agent-card-${agent.agent_id}`}>
-      <CardHeader>
+      <CardHeader
+        actions={{
+          actions: (
+            <>
+              <Label color='blue'>Agent</Label>
+            </>
+          ),
+          hasNoOffset: false,
+          className: undefined,
+        }}
+      >
         <img src={productLogo(agent)} alt={agent.server_product} style={{ maxWidth: '30px', paddingRight: '0.5rem' }} />
         <CardTitle style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{title}</CardTitle>
-        <CardActions>
-          <Label color='blue'>Agent</Label>
-        </CardActions>
       </CardHeader>
       <CardBody>
         <DescriptionList isCompact isHorizontal>
@@ -284,12 +288,10 @@ export const AgentCard: React.FunctionComponent<{
         </DescriptionList>
       </CardBody>
       <CardFooter>
-        <Button
-          variant='primary'
-          onClick={() => connect(discoverService.agentToConnection(agent))}
-          isSmall
-          isDisabled={!window.isSecureContext && agent.secured}
-        >
+        <Button variant='primary'
+                onClick={() => connect(discoverService.agentToConnection(agent))}
+                size='sm'
+                isDisabled={!window.isSecureContext && agent.secured}>
           Connect
         </Button>
       </CardFooter>
@@ -314,14 +316,21 @@ export const JvmCard: React.FunctionComponent<{
 
   return (
     <Card isCompact id={`connect-discover-jvm-card-${jvm.id}`}>
-      <CardHeader>
+      <CardHeader
+        actions={{
+          actions: (
+            <>
+              <Label color='green'>JVM</Label>
+            </>
+          ),
+          hasNoOffset: false,
+          className: undefined,
+        }}
+      >
         <img src={PRODUCT_LOGO.generic} alt={jvm.alias} style={{ maxWidth: '30px', paddingRight: '0.5rem' }} />
         <CardTitle style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {jvm.alias}
         </CardTitle>
-        <CardActions>
-          <Label color='green'>JVM</Label>
-        </CardActions>
       </CardHeader>
       <CardBody>
         <DescriptionList isCompact isHorizontal>
@@ -351,7 +360,7 @@ export const JvmCard: React.FunctionComponent<{
             <Button
               variant='primary'
               onClick={() => connect(discoverService.jvmToConnection(jvm))}
-              isSmall
+              size='sm'
               isDisabled={!discoverService.isConnectable(jvm)}
             >
               Connect
@@ -360,12 +369,12 @@ export const JvmCard: React.FunctionComponent<{
           {jvm.agentUrl && (
             <React.Fragment>
               <ActionListItem>
-                <Button variant='secondary' onClick={startAgent} isSmall>
+                <Button variant='secondary' onClick={startAgent} size='sm'>
                   Start agent
                 </Button>
               </ActionListItem>
               <ActionListItem>
-                <Button variant='danger' onClick={stopAgent} isSmall>
+                <Button variant='danger' onClick={stopAgent} size='sm'>
                   Stop agent
                 </Button>
               </ActionListItem>

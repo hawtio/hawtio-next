@@ -85,8 +85,8 @@ export const ImportModal: React.FunctionComponent<{
         filename={filename}
         filenamePlaceholder='Drag and drop or upload an exported JSON file'
         onFileInputChange={handleFileInputChange}
-        onDataChange={handleTextChange}
-        onTextChange={handleTextChange}
+        onDataChange={(_event, value: string) => handleTextChange(value)}
+        onTextChange={(_event, value: string) => handleTextChange(value)}
         onReadStarted={handleFileReadStarted}
         onReadFinished={handleFileReadFinished}
         onClearClick={handleClear}

@@ -1,4 +1,4 @@
-import { TableComposable, Tbody, Td, Tr } from '@patternfly/react-table'
+import { Table /* data-codemods */, Tbody, Td, Tr } from '@patternfly/react-table'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import ReactFlow, {
   Connection,
@@ -171,7 +171,7 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
           <div className={'node-tooltip'}>
             {!data.stats && data.label}
             {data.stats && !showFull && (
-              <TableComposable variant={'compact'}>
+              <Table variant={'compact'}>
                 <Tbody style={{ fontSize: 'xx-small' }}>
                   <Tr>
                     <Td>ID</Td>
@@ -202,12 +202,12 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
                     <Td>{data.stats?.maxProcessingTime} (ms)</Td>
                   </Tr>
                 </Tbody>
-              </TableComposable>
+              </Table>
             )}
 
             {data.stats && showFull && (
               //TODO finish full statistics
-              <TableComposable variant={'compact'}>
+              <Table variant={'compact'}>
                 <Tbody style={{ fontSize: 'xx-small' }}>
                   {Object.entries(data.stats).map(s => {
                     return (
@@ -218,7 +218,7 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
                     )
                   })}
                 </Tbody>
-              </TableComposable>
+              </Table>
             )}
           </div>
         </NodeToolbar>

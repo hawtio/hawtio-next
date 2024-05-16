@@ -1,17 +1,7 @@
 import { eventService } from '@hawtiosrc/core'
 import { workspace } from '@hawtiosrc/plugins/shared'
-import {
-  Button,
-  Dropdown,
-  DropdownItem,
-  KebabToggle,
-  Modal,
-  ModalVariant,
-  Skeleton,
-  Toolbar,
-  ToolbarContent,
-  ToolbarItem,
-} from '@patternfly/react-core'
+import { Button, Modal, ModalVariant, Skeleton, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core'
+import { Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core/deprecated'
 import { AsleepIcon, PlayIcon, Remove2Icon } from '@patternfly/react-icons'
 import React, { useState } from 'react'
 import {
@@ -147,7 +137,7 @@ export const ContextToolbar: React.FunctionComponent<{
       <ToolbarItem>
         <Button
           variant='primary'
-          isSmall={true}
+          size='sm'
           isDisabled={
             !(firstContext && firstContext.node.hasInvokeRights(CONTEXT_OPERATIONS.start)) || !isStartEnabled()
           }
@@ -160,7 +150,7 @@ export const ContextToolbar: React.FunctionComponent<{
       <ToolbarItem>
         <Button
           variant='danger'
-          isSmall={true}
+          size='sm'
           isDisabled={
             !(firstContext && firstContext.node.hasInvokeRights(CONTEXT_OPERATIONS.suspend)) || !isSuspendEnabled()
           }
@@ -218,7 +208,12 @@ export const ContextToolbar: React.FunctionComponent<{
           {toolbarButtons}
           <ToolbarItem id='camel-contexts-toolbar-item-dropdown'>
             <Dropdown
-              toggle={<KebabToggle id='camel-contexts-toolbar-item-dropdown-toggle' onToggle={onDropdownToggle} />}
+              toggle={
+                <KebabToggle
+                  id='camel-contexts-toolbar-item-dropdown-toggle'
+                  onToggle={(_event, isOpen: boolean) => onDropdownToggle(isOpen)}
+                />
+              }
               isOpen={isDropdownOpen}
               dropdownItems={dropdownItems}
               isPlain

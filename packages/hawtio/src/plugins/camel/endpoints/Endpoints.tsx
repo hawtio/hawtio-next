@@ -2,7 +2,7 @@ import { eventService } from '@hawtiosrc/core'
 import { HawtioEmptyCard, HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
 import { Button, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core'
 import { PlusIcon } from '@patternfly/react-icons'
-import { ISortBy, TableComposable, Tbody, Td, Th, ThProps, Thead, Tr } from '@patternfly/react-table'
+import { ISortBy, Table /* data-codemods */, Tbody, Td, Th, ThProps, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useState } from 'react'
 import { CamelContext } from '../context'
 import { AddEndpoint } from './AddEndpoint'
@@ -95,7 +95,7 @@ export const Endpoints: React.FunctionComponent = () => {
           <ToolbarItem id='camel-endpoints-toolbar-item-add'>
             <Button
               variant='secondary'
-              isSmall={true}
+              size='sm'
               isDisabled={!isAddEnabled()}
               icon={<PlusIcon />}
               onClick={onAddClicked}
@@ -105,7 +105,7 @@ export const Endpoints: React.FunctionComponent = () => {
           </ToolbarItem>
         </ToolbarContent>
       </Toolbar>
-      <TableComposable id='camel-endpoints-table' aria-label='Camel endpoints table' variant='compact'>
+      <Table id='camel-endpoints-table' aria-label='Camel endpoints table' variant='compact'>
         <Thead>
           <Tr>
             <Th sort={sortParams()}>URI</Th>
@@ -120,7 +120,7 @@ export const Endpoints: React.FunctionComponent = () => {
             </Tr>
           ))}
         </Tbody>
-      </TableComposable>
+      </Table>
     </React.Fragment>
   )
 }

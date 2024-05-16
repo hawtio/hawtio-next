@@ -2,17 +2,11 @@ import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
 import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import { isNumber } from '@hawtiosrc/util/objects'
-import {
-  ChartArea,
-  ChartAxis,
-  Chart as ChartDraw,
-  ChartVoronoiContainer,
-  getResizeObserver,
-} from '@patternfly/react-charts'
+import { ChartArea, ChartAxis, Chart as ChartDraw, ChartVoronoiContainer } from '@patternfly/react-charts'
+import { getResizeObserver } from '@patternfly/react-core'
 import {
   Button,
   Card,
-  CardActions,
   CardBody,
   CardHeader,
   Grid,
@@ -30,7 +24,7 @@ import { HawtioEmptyCard } from '../HawtioEmptyCard'
 import { HawtioLoadingCard } from '../HawtioLoadingCard'
 import { attributeService } from '../attributes/attribute-service'
 import { WatchableAttributesForm } from './WatchableAttributesForm'
-import { TableComposable, Tbody, Td, Tr } from '@patternfly/react-table'
+import { Table /* data-codemods */, Tbody, Td, Tr } from '@patternfly/react-table'
 
 type MBeanChartData = {
   [name: string]: { attributes: AttributeChartEntries }
@@ -69,7 +63,7 @@ const AttributeChart = ({
   }
 
   useEffect(() => {
-    const observer = getResizeObserver(containerRef.current!, handleResize)
+    const observer = getResizeObserver(containerRef.current!, handleResize, true)
     handleResize()
     return () => observer()
   }, [])
@@ -279,11 +273,17 @@ export const Chart: React.FunctionComponent = () => {
           onAttributesToWatchUpdate={newAttributes => (attributesToWatch.current = newAttributes)}
         />
         <Card>
-          <CardHeader>
-            <CardActions>
-              <Button onClick={() => setIsWatchableAttributesModalOpen(true)}>Edit watches</Button>
-            </CardActions>
-          </CardHeader>
+          <CardHeader
+            actions={{
+              actions: (
+                <>
+                  <Button onClick={() => setIsWatchableAttributesModalOpen(true)}>Edit watches</Button>
+                </>
+              ),
+              hasNoOffset: false,
+              className: undefined,
+            }}
+          ></CardHeader>
           <CardBody>
             <Text component='p'>
               <InfoCircleIcon /> There are currently no watches. Please click on the button to select any Chart
@@ -307,16 +307,23 @@ export const Chart: React.FunctionComponent = () => {
       <Grid hasGutter span={12} xl2={6}>
         <GridItem span={12}>
           <Card>
-            <CardHeader>
+            <CardHeader
+              actions={{
+                actions: (
+                  <>
+                    <Button onClick={() => setIsWatchableAttributesModalOpen(true)}>Edit watches</Button>
+                  </>
+                ),
+                hasNoOffset: false,
+                className: undefined,
+              }}
+            >
               <Switch
                 id='showConstants'
                 label='Show attributes with the constant value as a chart'
                 isChecked={showConstants}
-                onChange={checked => setShowConstants(checked)}
+                onChange={(_event, checked) => setShowConstants(checked)}
               />
-              <CardActions>
-                <Button onClick={() => setIsWatchableAttributesModalOpen(true)}>Edit watches</Button>
-              </CardActions>
             </CardHeader>
           </Card>
         </GridItem>
@@ -358,7 +365,7 @@ export const Chart: React.FunctionComponent = () => {
             <Card>
               <CardHeader>Attributes with the constant value:</CardHeader>
               <CardBody>
-                <TableComposable variant={'compact'}>
+                <Table variant={'compact'}>
                   <Tbody>
                     {Object.entries(chartData).map(([name, attributes]) =>
                       Object.entries(attributes.attributes).map(
@@ -373,7 +380,7 @@ export const Chart: React.FunctionComponent = () => {
                       ),
                     )}
                   </Tbody>
-                </TableComposable>
+                </Table>
               </CardBody>
             </Card>
           </GridItem>

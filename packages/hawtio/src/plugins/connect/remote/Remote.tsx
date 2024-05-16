@@ -13,16 +13,14 @@ import {
   DataListItem,
   DataListItemCells,
   DataListItemRow,
-  Dropdown,
-  DropdownItem,
-  DropdownPosition,
-  KebabToggle,
+  Icon,
   Modal,
   ModalVariant,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core'
+import { Dropdown, DropdownItem, DropdownPosition, KebabToggle } from '@patternfly/react-core/deprecated'
 import { PluggedIcon, PlusIcon, UnpluggedIcon } from '@patternfly/react-icons'
 import React, { useContext, useEffect, useState } from 'react'
 import { DELETE } from '../connections'
@@ -166,13 +164,19 @@ const ConnectionItem: React.FunctionComponent<{
   let icon = null
   switch (reachable) {
     case 'reachable':
-      icon = <PluggedIcon color='green' />
+      icon = <Icon color='green'>
+        <PluggedIcon />
+      </Icon>
       break
     case 'not-reachable':
-      icon = <UnpluggedIcon color='red' />
+      icon =  <Icon color='red'>
+        <UnpluggedIcon />
+      </Icon>
       break
     case 'not-reachable-securely':
-      icon = <PluggedIcon style={{ color: 'var(--pf-global--warning-color--100)' }} />
+      icon =  <Icon  style={{ color: 'var(--pf-v5-global--warning-color--100)' }}>
+        <PluggedIcon />
+      </Icon>
       break
   }
 
@@ -202,7 +206,7 @@ const ConnectionItem: React.FunctionComponent<{
             variant='primary'
             onClick={connect}
             isDisabled={reachable !== 'reachable'}
-            isSmall
+            size='sm'
           >
             Connect
           </Button>

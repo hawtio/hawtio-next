@@ -125,7 +125,7 @@ export const EndpointParametersForm: React.FunctionComponent = () => {
               key={index}
               value={ctx.endpointParameters[name]}
               isRequired={propertySpec.required}
-              onChange={value => onSetPropValue(name, value)}
+              onChange={(_event, value) => onSetPropValue(name, value)}
             />
             <HelperText id={name + '-helper-text'}>
               <HelperTextItem id={name + '-helper-text-item'} variant='indeterminate'>
@@ -146,7 +146,6 @@ export const EndpointParametersForm: React.FunctionComponent = () => {
               key={index}
               inputName={propertySpec.title}
               value={numberValue(ctx.endpointParameters[name] ?? '', propertySpec.defaultValue)}
-              allowEmptyInput
               onPlus={() => onPlus(name)}
               onMinus={() => onMinus(name)}
               onChange={value => onSetPropValue(name, value)}
@@ -168,7 +167,7 @@ export const EndpointParametersForm: React.FunctionComponent = () => {
             isChecked={parseBoolean(ctx.endpointParameters[name] ?? '')}
             isRequired={propertySpec.required}
             description={propertySpec.description}
-            onChange={value => onSetPropValue(name, value)}
+            onChange={(_event, value) => onSetPropValue(name, value)}
           />
         )
       case 'object':
@@ -194,7 +193,7 @@ export const EndpointParametersForm: React.FunctionComponent = () => {
                     name={enumVal}
                     text={enumVal}
                     isSelected={ctx.endpointParameters[name] === enumVal}
-                    onChange={isSelected => {
+                    onChange={(_event, isSelected) => {
                       if (isSelected) onSetPropValue(name, enumVal)
                     }}
                   />

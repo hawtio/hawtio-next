@@ -15,7 +15,7 @@ import {
   PanelMainBody,
   Text,
 } from '@patternfly/react-core'
-import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { Table /* data-codemods */, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import React from 'react'
 import { useRef, useState } from 'react'
 import { MessageData } from './debug-service'
@@ -58,7 +58,7 @@ export const MessageDrawer: React.FunctionComponent<MessageDrawerProps> = (props
     if (!message) return <em key='header-no-messages'>No Messages</em>
 
     return (
-      <TableComposable key={'header-' + message.uid} aria-label='Header table' variant='compact'>
+      <Table key={'header-' + message.uid} aria-label='Header table' variant='compact'>
         <Thead>
           <Tr>
             <Th>Key</Th>
@@ -73,7 +73,7 @@ export const MessageDrawer: React.FunctionComponent<MessageDrawerProps> = (props
             </Tr>
           ))}
         </Tbody>
-      </TableComposable>
+      </Table>
     )
   }
 
@@ -125,7 +125,7 @@ export const MessageDrawer: React.FunctionComponent<MessageDrawerProps> = (props
             <em>UID: {props.messages && props.messages.length > 0 ? props.messages[0]?.uid : ''}</em>
           </Text>
           <Nav
-            onSelect={onSelectTab}
+            onSelect={(_event, result: { itemId: number | string }) => onSelectTab(result)}
             variant='horizontal'
             theme='light'
             aria-label='Show Header or Body Debug Info Table'

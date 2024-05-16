@@ -2,9 +2,6 @@ import React, { useEffect, useState } from 'react'
 import {
   Bullseye,
   Button,
-  Dropdown,
-  DropdownItem,
-  DropdownToggle,
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
@@ -17,9 +14,11 @@ import {
   ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
+  EmptyStateHeader,
 } from '@patternfly/react-core'
+import { Dropdown, DropdownItem, DropdownToggle } from '@patternfly/react-core/deprecated'
 import { springbootService } from './springboot-service'
-import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import { SearchIcon } from '@patternfly/react-icons'
 import { Logger } from './types'
 
@@ -172,7 +171,7 @@ export const Loggers: React.FunctionComponent = () => {
               <DropdownToggle
                 data-testid='attribute-select-toggle'
                 id='toggle-basic'
-                onToggle={setIsLogLevelDropdownOpen}
+                onToggle={(_event, val) => setIsLogLevelDropdownOpen(val)}
               >
                 <LogLevel level={logLevel} />
               </DropdownToggle>
@@ -196,7 +195,7 @@ export const Loggers: React.FunctionComponent = () => {
               aria-label='Search input'
             />
           </ToolbarFilter>
-          <Button variant='secondary' onClick={addToFilters} isSmall>
+          <Button variant='secondary' onClick={addToFilters} size='sm'>
             Add Filter
           </Button>
         </ToolbarGroup>
@@ -213,7 +212,7 @@ export const Loggers: React.FunctionComponent = () => {
       {tableToolbar}
       {getCurrentPage().length > 0 && (
         <FormGroup>
-          <TableComposable aria-label='Message Table' variant='compact' height='80vh' isStriped isStickyHeader>
+          <Table aria-label='Message Table' variant='compact' height='80vh' isStriped isStickyHeader>
             <Thead>
               <Tr>
                 <Th data-testid={'log-level-header'}>Log Level</Th>
@@ -241,13 +240,13 @@ export const Loggers: React.FunctionComponent = () => {
                 )
               })}
             </Tbody>
-          </TableComposable>
+          </Table>
         </FormGroup>
       )}
       {filteredLoggers.length === 0 && (
         <Bullseye>
           <EmptyState>
-            <EmptyStateIcon icon={SearchIcon} />
+            <EmptyStateHeader icon={<EmptyStateIcon icon={SearchIcon} />} />
             <EmptyStateBody>No results found.</EmptyStateBody>
           </EmptyState>
         </Bullseye>

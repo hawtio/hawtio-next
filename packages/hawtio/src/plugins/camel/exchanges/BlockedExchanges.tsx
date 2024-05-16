@@ -1,7 +1,7 @@
 import { CamelContext } from '@hawtiosrc/plugins/camel/context'
 import { HawtioEmptyCard, HawtioLoadingCard, MBeanNode } from '@hawtiosrc/plugins/shared'
 import { Button, Modal, ModalVariant, Panel, PanelMainBody, Title } from '@patternfly/react-core'
-import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { Table /* data-codemods */, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import * as exs from './exchanges-service'
 import { PanelHeader } from '@patternfly/react-core'
@@ -99,7 +99,7 @@ export const BlockedExchanges: React.FunctionComponent = () => {
       </PanelHeader>
       <PanelMain>
         <PanelMainBody>
-          <TableComposable variant={'compact'} data-testid='exchange-table' aria-label='Blocked Exchanges'>
+          <Table variant={'compact'} data-testid='exchange-table' aria-label='Blocked Exchanges'>
             <Thead>
               <Tr>
                 <Th modifier='wrap'>Exchange ID</Th>
@@ -125,7 +125,7 @@ export const BlockedExchanges: React.FunctionComponent = () => {
                 </Tr>
               ))}
             </Tbody>
-          </TableComposable>
+          </Table>
           <ConfirmUnblockModal />
         </PanelMainBody>
       </PanelMain>

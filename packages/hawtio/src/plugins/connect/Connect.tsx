@@ -136,14 +136,7 @@ const ConnectHint: React.FunctionComponent = () => {
   )
 
   return (
-    <Popover
-      aria-label='Connect hint popover'
-      position='auto'
-      hasAutoWidth
-      maxWidth='60rem'
-      bodyContent={content}
-      removeFindDomNode
-    >
+    <Popover aria-label='Connect hint popover' position='auto' hasAutoWidth maxWidth='60rem' bodyContent={content}>
       <OutlinedQuestionCircleIcon />
     </Popover>
   )

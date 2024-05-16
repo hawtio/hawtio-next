@@ -5,7 +5,7 @@ import {
   PageSection,
   PageSectionVariants,
   Spinner,
-  Title,
+  EmptyStateHeader,
 } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons'
 import React from 'react'
@@ -21,7 +21,7 @@ export const Camel: React.FunctionComponent = () => {
   if (!loaded) {
     return (
       <PageSection>
-        <Spinner isSVG aria-label='Loading Camel Contexts tree' />
+        <Spinner aria-label='Loading Camel Contexts tree' />
       </PageSection>
     )
   }
@@ -30,10 +30,11 @@ export const Camel: React.FunctionComponent = () => {
     return (
       <PageSection variant={PageSectionVariants.light}>
         <EmptyState variant={EmptyStateVariant.full}>
-          <EmptyStateIcon icon={CubesIcon} />
-          <Title headingLevel='h1' size='lg'>
-            No Camel Contexts found
-          </Title>
+          <EmptyStateHeader
+            titleText='No Camel Contexts found'
+            icon={<EmptyStateIcon icon={CubesIcon} />}
+            headingLevel='h1'
+          />
         </EmptyState>
       </PageSection>
     )

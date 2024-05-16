@@ -1,9 +1,6 @@
 import { objectSorter } from '@hawtiosrc/util/objects'
 import {
   Bullseye,
-  Dropdown,
-  DropdownItem,
-  DropdownToggle,
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
@@ -19,9 +16,11 @@ import {
   ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
+  EmptyStateHeader,
 } from '@patternfly/react-core'
+import { Dropdown, DropdownItem, DropdownToggle } from '@patternfly/react-core/deprecated'
 import { SearchIcon } from '@patternfly/react-icons'
-import { TableComposable, Tbody, Td, Th, ThProps, Thead, Tr } from '@patternfly/react-table'
+import { Table /* data-codemods */, Tbody, Td, Th, ThProps, Thead, Tr } from '@patternfly/react-table'
 import React, { useEffect, useState } from 'react'
 import { runtimeService } from './runtime-service'
 import { SystemProperty } from './types'
@@ -158,7 +157,11 @@ export const SysProps: React.FunctionComponent = () => {
             }}
             defaultValue='name'
             toggle={
-              <DropdownToggle data-testid='attribute-select-toggle' id='toggle-basic' onToggle={setIsDropdownOpen}>
+              <DropdownToggle
+                data-testid='attribute-select-toggle'
+                id='toggle-basic'
+                onToggle={(_event, val) => setIsDropdownOpen(val)}
+              >
                 {attributes.find(att => att.key === filteredAttribute)?.value}
               </DropdownToggle>
             }
@@ -197,7 +200,7 @@ export const SysProps: React.FunctionComponent = () => {
         <PanelMainBody>
           {sortProperties().length > 0 && (
             <FormGroup>
-              <TableComposable aria-label='Message Table' variant='compact' height='80vh' isStriped isStickyHeader>
+              <Table aria-label='Message Table' variant='compact' height='80vh' isStriped isStickyHeader>
                 <Thead>
                   <Tr>
                     <Th data-testid={'name-header'} sort={getSortParams(0)}>
@@ -218,13 +221,13 @@ export const SysProps: React.FunctionComponent = () => {
                     )
                   })}
                 </Tbody>
-              </TableComposable>
+              </Table>
             </FormGroup>
           )}
           {filteredProperties.length === 0 && (
             <Bullseye>
               <EmptyState>
-                <EmptyStateIcon icon={SearchIcon} />
+                <EmptyStateHeader icon={<EmptyStateIcon icon={SearchIcon} />} />
                 <EmptyStateBody>No results found.</EmptyStateBody>
               </EmptyState>
             </Bullseye>

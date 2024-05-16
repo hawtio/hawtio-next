@@ -13,6 +13,7 @@ import {
   PageSectionVariants,
   Text,
   Title,
+  EmptyStateHeader,
 } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons'
 import { Response } from 'jolokia.js'
@@ -57,10 +58,11 @@ export const CamelContent: React.FunctionComponent = () => {
     return (
       <PageSection variant={PageSectionVariants.light} isFilled>
         <EmptyState variant={EmptyStateVariant.full}>
-          <EmptyStateIcon icon={CubesIcon} />
-          <Title headingLevel='h1' size='lg'>
-            Select Camel Node
-          </Title>
+          <EmptyStateHeader
+            titleText='Select Camel Node'
+            icon={<EmptyStateIcon icon={CubesIcon} />}
+            headingLevel='h1'
+          />
         </EmptyState>
       </PageSection>
     )

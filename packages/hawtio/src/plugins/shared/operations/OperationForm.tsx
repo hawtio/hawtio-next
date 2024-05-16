@@ -13,16 +13,16 @@ import {
   DataListItemCells,
   DataListItemRow,
   DataListToggle,
-  Dropdown,
-  DropdownItem,
-  DropdownPosition,
   Form,
   FormGroup,
-  KebabToggle,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
   Text,
   TextInput,
   Title,
 } from '@patternfly/react-core'
+import { Dropdown, DropdownItem, DropdownPosition, KebabToggle } from '@patternfly/react-core/deprecated'
 import { LockIcon } from '@patternfly/react-icons'
 import React, { createContext, useContext, useState } from 'react'
 import './OperationForm.css'
@@ -163,7 +163,6 @@ const OperationFormContents: React.FunctionComponent<{ isExpanded: boolean }> = 
         isExpanded
         isCode
         isReadOnly
-        removeFindDomNode
         className={isFailed ? 'jmx-operation-error' : ''}
       >
         {result}
@@ -266,7 +265,6 @@ const OperationExecuteForm: React.FunctionComponent<{
           key={`operation-${name}-form-${arg.name}-${index}`}
           label={arg.name}
           fieldId={`operation-${name}-form-${arg.name}-${index}`}
-          helperText={arg.helpText()}
         >
           <ArgFormInput
             key={`operation-${name}-arg-form-${arg.name}-${index}`}
@@ -277,6 +275,11 @@ const OperationExecuteForm: React.FunctionComponent<{
             argValues={argValues}
             updateArgValues={updateArgValues}
           />
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem>{arg.helpText()}</HelperTextItem>
+            </HelperText>
+          </FormHelperText>
         </FormGroup>
       ))}
       <ActionGroup>
@@ -284,7 +287,7 @@ const OperationExecuteForm: React.FunctionComponent<{
           key={`operation-action-execute-${name}`}
           variant='danger'
           onClick={execute}
-          isSmall
+          size='sm'
           isDisabled={!operation.canInvoke || isExecuting}
         >
           Execute

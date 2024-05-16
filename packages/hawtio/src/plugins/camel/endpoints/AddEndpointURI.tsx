@@ -35,7 +35,7 @@ export const AddEndpointURI: React.FunctionComponent = () => {
           id='uri-input-text'
           name='uri-input-text'
           value={componentURI}
-          onChange={handleURIChange}
+          onChange={(_event, uri: string) => handleURIChange(uri)}
         />
       </FormGroup>
       <ActionGroup>

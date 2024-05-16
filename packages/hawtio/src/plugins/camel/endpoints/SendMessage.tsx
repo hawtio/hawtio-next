@@ -11,13 +11,10 @@ import {
   PanelHeader,
   PanelMain,
   PanelMainBody,
-  Select,
-  SelectOption,
-  SelectOptionObject,
-  SelectVariant,
   TextInput,
   Title,
 } from '@patternfly/react-core'
+import { Select, SelectOption, SelectOptionObject, SelectVariant } from '@patternfly/react-core/deprecated'
 import { TrashIcon } from '@patternfly/react-icons'
 import * as monacoEditor from 'monaco-editor'
 import React, { FormEvent, useContext, useRef, useState } from 'react'
@@ -142,7 +139,7 @@ const MessageHeaders: React.FunctionComponent<{
                   name='value'
                   aria-label={'value-input-' + index}
                   value={header.value}
-                  onChange={(newValue, event) => handleInputChange(index, newValue, 'value')}
+                  onChange={(event, newValue) => handleInputChange(index, newValue, 'value')}
                 />
               </FlexItem>
               <FlexItem flex={{ default: 'flexNone', md: 'flex_1' }} span={4}>
@@ -229,7 +226,7 @@ const MessageBody: React.FunctionComponent<{
             </Select>
           </FlexItem>{' '}
           <FlexItem flex={{ default: 'flexNone', md: 'flex_1' }}>
-            <Button variant='secondary' isSmall onClick={handleAutoFormat}>
+            <Button variant='secondary' size='sm' onClick={handleAutoFormat}>
               Format
             </Button>
           </FlexItem>

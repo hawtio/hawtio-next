@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { connectService, ConnectStatus } from '@hawtiosrc/plugins/shared/connect-service'
 import { PluggedIcon, UnpluggedIcon } from '@patternfly/react-icons'
+import { Icon } from '@patternfly/react-core'
 
 /**
  * Component to be displayed in HawtioHeaderToolbar for remote connection tabs
@@ -35,13 +36,19 @@ export const ConnectionStatus: React.FunctionComponent = () => {
   let icon = null
   switch (reachable) {
     case 'reachable':
-      icon = <PluggedIcon color='green' />
+      icon = <Icon color='green'>
+        <PluggedIcon />
+      </Icon>
       break
     case 'not-reachable':
-      icon = <UnpluggedIcon color='red' />
+      icon = <Icon color='red'>
+        <UnpluggedIcon />
+      </Icon>
       break
     case 'not-reachable-securely':
-      icon = <PluggedIcon style={{ color: 'var(--pf-global--warning-color--100)' }} />
+      icon =<Icon style={{ color: 'var(--pf-v5-global--warning-color--100)' }}>
+        <PluggedIcon />
+      </Icon>
       break
   }
 

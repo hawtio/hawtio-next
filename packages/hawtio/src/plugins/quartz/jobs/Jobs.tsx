@@ -9,17 +9,16 @@ import {
   PanelMain,
   PanelMainBody,
   SearchInput,
-  Select,
-  SelectOption,
-  SelectOptionObject,
-  Title,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
+  EmptyStateHeader,
+  EmptyStateFooter,
 } from '@patternfly/react-core'
+import { Select, SelectOption, SelectOptionObject } from '@patternfly/react-core/deprecated'
 import { SearchIcon } from '@patternfly/react-icons'
-import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { Table /* data-codemods */, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { QuartzContext } from '../context'
 import { Job, JobFilter, quartzService } from '../quartz-service'
@@ -164,15 +163,14 @@ export const Jobs: React.FunctionComponent = () => {
 
   const emptyResult = (
     <Bullseye>
-      <EmptyState variant='small'>
-        <EmptyStateIcon icon={SearchIcon} />
-        <Title headingLevel='h2' size='lg'>
-          No results found
-        </Title>
+      <EmptyState variant='sm'>
+        <EmptyStateHeader titleText='No results found' icon={<EmptyStateIcon icon={SearchIcon} />} headingLevel='h2' />
         <EmptyStateBody>Clear all filters and try again.</EmptyStateBody>
-        <Button variant='link' onClick={clearAllFilters}>
-          Clear all filters
-        </Button>
+        <EmptyStateFooter>
+          <Button variant='link' onClick={clearAllFilters}>
+            Clear all filters
+          </Button>
+        </EmptyStateFooter>
       </EmptyState>
     </Bullseye>
   )
@@ -182,7 +180,7 @@ export const Jobs: React.FunctionComponent = () => {
       <PanelMain>
         <PanelMainBody>
           {tableToolbar}
-          <TableComposable id='quartz-jobs-table' variant='compact' aria-label='Jobs Table' isStriped isStickyHeader>
+          <Table id='quartz-jobs-table' variant='compact' aria-label='Jobs Table' isStriped isStickyHeader>
             <Thead noWrap>
               <Tr>
                 <Th>Group</Th>
@@ -203,7 +201,7 @@ export const Jobs: React.FunctionComponent = () => {
                 </Tr>
               )}
             </Tbody>
-          </TableComposable>
+          </Table>
         </PanelMainBody>
       </PanelMain>
     </Panel>

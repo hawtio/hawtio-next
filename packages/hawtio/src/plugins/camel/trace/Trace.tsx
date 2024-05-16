@@ -2,7 +2,7 @@ import { HawtioEmptyCard, HawtioLoadingCard, MBeanNode } from '@hawtiosrc/plugin
 import { childText, parseXML } from '@hawtiosrc/util/xml'
 import { Button, Divider, Panel, PanelHeader, PanelMain, PanelMainBody, Text, Title } from '@patternfly/react-core'
 import { BanIcon, PlayIcon } from '@patternfly/react-icons'
-import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { Table /* data-codemods */, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import { Response } from 'jolokia.js'
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import * as camelService from '../camel-service'
@@ -181,7 +181,7 @@ export const Trace: React.FunctionComponent = () => {
         <Title headingLevel='h3'>Tracing</Title>
         <Button
           variant='primary'
-          isSmall={true}
+          size='sm'
           icon={!isTracing ? React.createElement(PlayIcon) : React.createElement(BanIcon)}
           onClick={onTracing}
           isDisabled={!camelService.canTrace(selectedNode)}
@@ -236,7 +236,7 @@ export const Trace: React.FunctionComponent = () => {
                   <Divider />
                   <PanelMain>
                     <PanelMainBody id='route-message-table-body'>
-                      <TableComposable aria-label='message table' variant='compact' isStriped>
+                      <Table aria-label='message table' variant='compact' isStriped>
                         <Thead>
                           <Tr>
                             <Th>ID</Th>
@@ -259,7 +259,7 @@ export const Trace: React.FunctionComponent = () => {
                             </Tr>
                           ))}
                         </Tbody>
-                      </TableComposable>
+                      </Table>
                     </PanelMainBody>
                   </PanelMain>
                 </Panel>

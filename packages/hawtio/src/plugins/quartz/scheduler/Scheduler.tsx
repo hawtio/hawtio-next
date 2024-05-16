@@ -2,10 +2,8 @@ import { AttributeValues, HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
 import { attributeService } from '@hawtiosrc/plugins/shared/attributes/attribute-service'
 import {
   Card,
-  CardActions,
   CardBody,
   CardHeader,
-  CardHeaderMain,
   CardTitle,
   DescriptionList,
   DescriptionListDescription,
@@ -114,30 +112,40 @@ export const Scheduler: React.FunctionComponent = () => {
   return (
     <Stack id='quartz-scheduler' hasGutter>
       <Card id='quartz-scheduler-main'>
-        <CardHeader>
-          <CardHeaderMain>
-            {scheduler.started ? (
-              <Icon status='success'>
-                <CheckCircleIcon />
-              </Icon>
-            ) : (
-              <Icon>
-                <PauseCircleIcon />
-              </Icon>
-            )}
-          </CardHeaderMain>
+        <CardHeader
+          actions={{
+            actions: (
+              <>
+                <Switch
+                  id='quartz-scheduler-main-switch'
+                  label='Started'
+                  labelOff='Paused'
+                  isChecked={scheduler.started}
+                  isDisabled={!canStartPauseScheduler()}
+                  onChange={(_event, start: boolean) => handleSchedulerSwitchChange(start)}
+                  isReversed
+                />
+              </>
+            ),
+            hasNoOffset: false,
+            className: undefined,
+          }}
+        >
+          actions=
+          {
+            <>
+              {scheduler.started ? (
+                <Icon status='success'>
+                  <CheckCircleIcon />
+                </Icon>
+              ) : (
+                <Icon>
+                  <PauseCircleIcon />
+                </Icon>
+              )}
+            </>
+          }
           <CardTitle>Scheduler</CardTitle>
-          <CardActions>
-            <Switch
-              id='quartz-scheduler-main-switch'
-              label='Started'
-              labelOff='Paused'
-              isChecked={scheduler.started}
-              isDisabled={!canStartPauseScheduler()}
-              onChange={handleSchedulerSwitchChange}
-              isReversed
-            />
-          </CardActions>
         </CardHeader>
         <CardBody>
           <DescriptionList isCompact isHorizontal>
@@ -169,30 +177,40 @@ export const Scheduler: React.FunctionComponent = () => {
         </CardBody>
       </Card>
       <Card id='quartz-scheduler-statistics'>
-        <CardHeader>
-          <CardHeaderMain>
-            {scheduler.sampledStatisticsEnabled ? (
-              <Icon status='success'>
-                <CheckCircleIcon />
-              </Icon>
-            ) : (
-              <Icon>
-                <PauseCircleIcon />
-              </Icon>
-            )}
-          </CardHeaderMain>
+        <CardHeader
+          actions={{
+            actions: (
+              <>
+                <Switch
+                  id='quartz-scheduler-statistics-switch'
+                  label='Enabled'
+                  labelOff='Disabled'
+                  isChecked={scheduler.sampledStatisticsEnabled}
+                  isDisabled={!canUpdateSampleStatisticsEnabled()}
+                  onChange={(_event, value: boolean) => handleSampledStatisticsSwitchChange(value)}
+                  isReversed
+                />
+              </>
+            ),
+            hasNoOffset: false,
+            className: undefined,
+          }}
+        >
+          actions=
+          {
+            <>
+              {scheduler.sampledStatisticsEnabled ? (
+                <Icon status='success'>
+                  <CheckCircleIcon />
+                </Icon>
+              ) : (
+                <Icon>
+                  <PauseCircleIcon />
+                </Icon>
+              )}
+            </>
+          }
           <CardTitle>Sampled Statistics (Most Recent Samples)</CardTitle>
-          <CardActions>
-            <Switch
-              id='quartz-scheduler-statistics-switch'
-              label='Enabled'
-              labelOff='Disabled'
-              isChecked={scheduler.sampledStatisticsEnabled}
-              isDisabled={!canUpdateSampleStatisticsEnabled()}
-              onChange={handleSampledStatisticsSwitchChange}
-              isReversed
-            />
-          </CardActions>
         </CardHeader>
         <CardBody>
           <DescriptionList isCompact isHorizontal>

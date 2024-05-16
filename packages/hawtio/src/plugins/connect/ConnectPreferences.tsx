@@ -7,8 +7,10 @@ import {
   Checkbox,
   Form,
   FormGroup,
-  FormGroupProps,
+  FormHelperText,
   FormSection,
+  HelperText,
+  HelperTextItem,
   Modal,
   ModalVariant,
   TextInput,
@@ -18,6 +20,7 @@ import { useNavigate } from 'react-router-dom'
 import { RESET } from './connections'
 import { useConnections } from './context'
 import { log } from './globals'
+import { ExclamationCircleIcon } from '@patternfly/react-icons'
 
 export const ConnectPreferences: React.FunctionComponent = () => (
   <CardBody>
@@ -27,19 +30,33 @@ export const ConnectPreferences: React.FunctionComponent = () => (
     </Form>
   </CardBody>
 )
-
+const ValidatedHelperText: React.FunctionComponent<{
+  validated: 'default' | 'error' | 'success' | 'warning' | 'indeterminate' | undefined
+  errorText: string
+}> = ({ validated, errorText }) => {
+  return (
+    <FormHelperText>
+      <HelperText>
+        <HelperTextItem variant={validated} {...(validated === 'error' && { icon: <ExclamationCircleIcon /> })}>
+          {validated === 'error' && errorText}
+        </HelperTextItem>
+      </HelperText>
+    </FormHelperText>
+  )
+}
+type ValidatedType = 'default' | 'error' | 'success' | 'warning' | undefined
 const JolokiaForm: React.FunctionComponent = () => {
   const navigate = useNavigate()
 
   const jolokiaStoredOptions = jolokiaService.loadJolokiaStoredOptions()
   const [updateRate, setUpdateRate] = useState(jolokiaService.loadUpdateRate())
-  const [updateRateValidated, setUpdateRateValidated] = useState<FormGroupProps['validated']>('default')
+  const [updateRateValidated, setUpdateRateValidated] = useState<ValidatedType>('default')
   const [updateRateInvalidText, setUpdateRateInvalidText] = useState('')
   const [maxDepth, setMaxDepth] = useState(jolokiaStoredOptions.maxDepth)
-  const [maxDepthValidated, setMaxDepthValidated] = useState<FormGroupProps['validated']>('default')
+  const [maxDepthValidated, setMaxDepthValidated] = useState<ValidatedType>('default')
   const [maxDepthInvalidText, setMaxDepthInvalidText] = useState('')
   const [maxCollectionSize, setMaxCollectionSize] = useState(jolokiaStoredOptions.maxCollectionSize)
-  const [maxCollectionSizeValidated, setMaxCollectionSizeValidated] = useState<FormGroupProps['validated']>('default')
+  const [maxCollectionSizeValidated, setMaxCollectionSizeValidated] = useState<ValidatedType>('default')
   const [maxCollectionSizeInvalidText, setMaxCollectionSizeInvalidText] = useState('')
   const [autoRefresh, setAutoRefresh] = useState(jolokiaService.loadAutoRefresh())
 
@@ -112,8 +129,6 @@ const JolokiaForm: React.FunctionComponent = () => {
       <FormGroup
         label='Update rate'
         fieldId='jolokia-form-update-rate'
-        validated={updateRateValidated}
-        helperTextInvalid={updateRateInvalidText}
         labelIcon={<TooltipHelpIcon tooltip='The period between polls to jolokia to fetch JMX data' />}
       >
         <TextInput
@@ -121,14 +136,13 @@ const JolokiaForm: React.FunctionComponent = () => {
           type='number'
           value={updateRate}
           validated={updateRateValidated}
-          onChange={onUpdateRateChanged}
+          onChange={(_event, updateRate: string) => onUpdateRateChanged(updateRate)}
         />
+        <ValidatedHelperText validated={updateRateValidated} errorText={updateRateInvalidText} />
       </FormGroup>
       <FormGroup
         label='Max depth'
         fieldId='jolokia-form-max-depth'
-        validated={maxDepthValidated}
-        helperTextInvalid={maxDepthInvalidText}
         labelIcon={
           <TooltipHelpIcon tooltip='The number of levels jolokia will marshal an object to json on the server side before returning' />
         }
@@ -138,14 +152,13 @@ const JolokiaForm: React.FunctionComponent = () => {
           type='number'
           value={maxDepth}
           validated={maxDepthValidated}
-          onChange={onMaxDepthChanged}
+          onChange={(_event, maxDepth: string) => onMaxDepthChanged(maxDepth)}
         />
+        <ValidatedHelperText validated={maxDepthValidated} errorText={maxDepthInvalidText} />
       </FormGroup>
       <FormGroup
         label='Max collection size'
         fieldId='jolokia-form-max-collection-size'
-        validated={maxCollectionSizeValidated}
-        helperTextInvalid={maxCollectionSizeInvalidText}
         labelIcon={
           <TooltipHelpIcon tooltip='The maximum number of elements in an array that jolokia will marshal in a response' />
         }
@@ -155,8 +168,9 @@ const JolokiaForm: React.FunctionComponent = () => {
           type='number'
           value={maxCollectionSize}
           validated={maxCollectionSizeValidated}
-          onChange={onMaxCollectionSizeChanged}
+          onChange={(_event, maxCollectionSize: string) => onMaxCollectionSizeChanged(maxCollectionSize)}
         />
+        <ValidatedHelperText validated={maxCollectionSizeValidated} errorText={maxCollectionSizeInvalidText} />
       </FormGroup>
       <FormGroup
         label='Auto refresh'
@@ -165,10 +179,19 @@ const JolokiaForm: React.FunctionComponent = () => {
           <TooltipHelpIcon tooltip='Whether the page should refresh whenever it detects an update on a plugin' />
         }
       >
-        <Checkbox id='jolokia-form-auto-refresh-input' isChecked={autoRefresh} onChange={onAutoRefreshChanged} />
+        <Checkbox
+          id='jolokia-form-auto-refresh-input'
+          isChecked={autoRefresh}
+          onChange={(_event, autoRefresh: boolean) => onAutoRefreshChanged(autoRefresh)}
+        />
       </FormGroup>
-      <FormGroup fieldId='jolokia-form-apply' helperText='Restart Hawtio with the new values in effect.'>
+      <FormGroup fieldId='jolokia-form-apply'>
         <Button onClick={applyJolokia}>Apply</Button>
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>Restart Hawtio with the new values in effect.</HelperTextItem>
+          </HelperText>
+        </FormHelperText>
       </FormGroup>
     </FormSection>
   )
@@ -212,15 +235,16 @@ const ResetForm: React.FunctionComponent = () => {
 
   return (
     <FormSection title='Reset' titleElement='h2'>
-      <FormGroup
-        label='Clear saved connections'
-        fieldId='reset-form-clear'
-        helperText='Clear all saved connection settings stored in your browser local storage.'
-      >
+      <FormGroup label='Clear saved connections' fieldId='reset-form-clear'>
         <Button variant='danger' onClick={confirmClear}>
           Clear
         </Button>
         <ConfirmClearModal />
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>Clear all saved connection settings stored in your browser local storage.</HelperTextItem>
+          </HelperText>
+        </FormHelperText>
       </FormGroup>
       {isClearSuccess && <Alert variant='success' isInline title='Connections cleared successfully!' />}
     </FormSection>

@@ -2,7 +2,8 @@ import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
 import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { isObject, objectSorter } from '@hawtiosrc/util/objects'
 import { Drawer, DrawerContent, DrawerContentBody, Panel } from '@patternfly/react-core'
-import { TableComposable, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
+import { Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
+import { Table } from '@patternfly/react-table/deprecated'
 import React, { useContext, useEffect, useState } from 'react'
 import { HawtioEmptyCard } from '../HawtioEmptyCard'
 import { HawtioLoadingCard } from '../HawtioLoadingCard'
@@ -102,7 +103,7 @@ export const Attributes: React.FunctionComponent = () => {
 
   const attributesTable = (
     <div id='attribute-table-with-panel'>
-      <TableComposable aria-label='Attributes' variant='compact'>
+      <Table aria-label='Attributes' variant='compact'>
         <Thead>
           <Tr>
             <Th sort={getSortParams()}>Attribute</Th>
@@ -115,7 +116,7 @@ export const Attributes: React.FunctionComponent = () => {
             .map((att, index) => (
               <Tr
                 key={att.name + '-' + index}
-                isHoverable
+                isClickable
                 isRowSelected={selected.name === att.name}
                 onRowClick={() => selectAttribute(att)}
               >
@@ -124,7 +125,7 @@ export const Attributes: React.FunctionComponent = () => {
               </Tr>
             ))}
         </Tbody>
-      </TableComposable>
+      </Table>
     </div>
   )
   return (
