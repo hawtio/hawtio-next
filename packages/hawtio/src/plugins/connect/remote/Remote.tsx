@@ -172,7 +172,7 @@ const ConnectionItem: React.FunctionComponent<{
       icon = <UnpluggedIcon color='red' />
       break
     case 'not-reachable-securely':
-      icon = <UnpluggedIcon style={{ color: 'var(--pf-global--warning-color--100)' }} />
+      icon = <PluggedIcon style={{ color: 'var(--pf-global--warning-color--100)' }} />
       break
   }
 

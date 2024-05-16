@@ -3,6 +3,7 @@ import { formatTimestamp } from '@hawtiosrc/util/dates'
 import {
   ActionList,
   ActionListItem,
+  Alert,
   Button,
   Card,
   CardActions,
@@ -270,10 +271,25 @@ export const AgentCard: React.FunctionComponent<{
               </DescriptionListDescription>
             </DescriptionListGroup>
           )}
+          {!window.isSecureContext && agent.secured ? (
+            <Alert
+              variant='danger'
+              isInline
+              isPlain
+              title="Can't connect to secured agent in non-secure browsing context"
+            />
+          ) : (
+            ''
+          )}
         </DescriptionList>
       </CardBody>
       <CardFooter>
-        <Button variant='primary' onClick={() => connect(discoverService.agentToConnection(agent))} isSmall>
+        <Button
+          variant='primary'
+          onClick={() => connect(discoverService.agentToConnection(agent))}
+          isSmall
+          isDisabled={!window.isSecureContext && agent.secured}
+        >
           Connect
         </Button>
       </CardFooter>
