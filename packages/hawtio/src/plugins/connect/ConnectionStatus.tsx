@@ -8,9 +8,17 @@ import { PluggedIcon, UnpluggedIcon } from '@patternfly/react-icons'
  */
 export const ConnectionStatus: React.FunctionComponent = () => {
   const [reachable, setReachable] = useState<ConnectStatus>('not-reachable')
+  const [username, setUsername] = useState('')
 
   const connectionId = connectService.getCurrentConnectionId()
   const connectionName = connectService.getCurrentConnectionName()
+
+  useEffect(() => {
+    connectService.getCurrentCredentials().then(credentials => {
+      const username = credentials ? credentials.username : ''
+      setUsername(username)
+    })
+  }, [])
 
   useEffect(() => {
     const check = async () => {
@@ -41,6 +49,7 @@ export const ConnectionStatus: React.FunctionComponent = () => {
     <>
       {icon}
       {connectionName ? connectionName : ''}
+      {username ? ' (' + username + ')' : ''}
     </>
   )
 }

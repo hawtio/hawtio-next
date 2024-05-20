@@ -58,14 +58,8 @@ function isConnectLogin(): boolean {
 export function registerUserHooks() {
   const credPromise = connectService.getCurrentCredentials()
 
-  userService.addFetchUserHook('connect', async resolve => {
-    const credentials = await credPromise
-    if (!credentials) {
-      return false
-    }
-    resolve({ username: credentials.username, isLogin: true })
-    return true
-  })
+  // no fetchUserHook - remote Jolokia credentials are not Hawtio credentials
+
   userService.addLogoutHook('connect', async () => {
     const credentials = await credPromise
     if (!credentials) {
