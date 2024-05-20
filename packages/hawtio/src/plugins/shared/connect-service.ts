@@ -45,7 +45,11 @@ export type ConnectionCredentials = {
   password: string
 }
 
-export type LoginResult = { type: 'success' } | { type: 'failure' } | { type: 'throttled'; retryAfter: number }
+export type LoginResult =
+  | { type: 'success' }
+  | { type: 'failure' }
+  | { type: 'throttled'; retryAfter: number }
+  | { type: 'session-expired' }
 
 /**
  * Remote connection status. "not-reachable-securely" is for connections that can't be used in insecure contexts.
@@ -251,7 +255,13 @@ class ConnectService implements IConnectService {
     log.debug('Testing connection:', toString(connection))
     // test the connection without credentials, so 401 or 403 are treated as "reachable", but actual
     // connection will require authentication
-    // we can't prevent showing native popup dialog with xhr, but fetch + "credentials:'omit'" works
+    // When server returns "WWW-Authenticate: Basic xxx", we can't prevent showing native popup dialog with xhr,
+    // but we can do that with fetch + "credentials:'omit'"
+    // However we have to include the credentials, because it's not only about "Authorization" header (which may
+    // be created using data stored in browser's password manager) - it's also about cookies. When testing
+    // reachability of remote Jolokia agent, we have to send JSESSIONID, because /proxy/* is protected. However
+    // we prevent native browser dialog because Hawtio proxy translates "WWW-Authenticate: Basic xxx", so it
+    // doesn't include "Basic" scheme. This is enough for the browser to skip the dialog. Even with xhr.
     return new Promise<ConnectionTestResult>((resolve, reject) => {
       try {
         fetch(this.getJolokiaUrl(connection), {
@@ -259,7 +269,7 @@ class ConnectService implements IConnectService {
           // with application/json, I'm getting "CanceledError: Request stream has been aborted" when running
           // via hawtioMiddleware...
           headers: { 'Content-Type': 'text/json' },
-          credentials: 'omit',
+          credentials: 'same-origin',
           body: JSON.stringify({ type: 'version' }),
         })
           .then(response => {
@@ -349,6 +359,10 @@ class ConnectService implements IConnectService {
               // Login throttled
               const retryAfter = parseInt(xhr.getResponseHeader('Retry-After') ?? '0')
               resolve({ type: 'throttled', retryAfter })
+              return
+            }
+            if (xhr.status === 403 && 'SESSION_EXPIRED' === xhr.getResponseHeader('Hawtio-Forbidden-Reason')) {
+              resolve({ type: 'session-expired' })
               return
             }
             resolve({ type: 'failure' })

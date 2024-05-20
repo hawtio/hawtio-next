@@ -35,6 +35,10 @@ export const ConnectLogin: React.FunctionComponent = () => {
           setLoginFailed(true)
           setLoginFailedMessage('Incorrect username or password')
           break
+        case 'session-expired':
+          setLoginFailed(true)
+          setLoginFailedMessage('Session expired. Re-login in main window.')
+          break
         case 'throttled': {
           const { retryAfter } = result
           setLoginFailed(true)
