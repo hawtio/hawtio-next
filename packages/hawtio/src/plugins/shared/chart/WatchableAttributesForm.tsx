@@ -68,6 +68,7 @@ export const WatchableAttributesForm = ({
           }))}
         onListChange={
           ((
+            _event: React.MouseEvent<HTMLElement, MouseEvent>,
             newWatchedAttributes: DualListSelectorTreeItemData[],
             newUnwatchedAttributes: DualListSelectorTreeItemData[],
           ) => {
@@ -86,7 +87,11 @@ export const WatchableAttributesForm = ({
 
             onAttributesToWatchUpdate(newWatches)
             setModalAttributesToWatch({ ...newWatches })
-          }) as unknown as (newAvailableOptions: ReactNode[], newChosenOptions: ReactNode[]) => void
+          }) as unknown as (
+            _event: React.MouseEvent<HTMLElement, MouseEvent>,
+            newAvailableOptions: ReactNode[],
+            newChosenOptions: ReactNode[],
+          ) => void
         }
       />
     </Modal>

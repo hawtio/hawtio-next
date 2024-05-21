@@ -1,5 +1,5 @@
 import { eventService } from '@hawtiosrc/core'
-import { Button, FileUpload, Modal, ModalVariant } from '@patternfly/react-core'
+import { Button, DropEvent, FileUpload, Modal, ModalVariant } from '@patternfly/react-core'
 import { useContext, useState } from 'react'
 import { ConnectContext } from '../context'
 
@@ -13,10 +13,7 @@ export const ImportModal: React.FunctionComponent<{
   const [filename, setFilename] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleFileInputChange = (
-    _event: React.ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLElement>,
-    file: File,
-  ) => {
+  const handleFileInputChange = (_event: DropEvent, file: File) => {
     setFilename(file.name)
   }
 

@@ -39,7 +39,7 @@ export const CamelPreferences: React.FunctionComponent = () => {
               id='camel-form-maximum-label-width-input'
               type='number'
               value={options.maximumLabelWidth}
-              onChange={updateNumberValueFor('maximumLabelWidth')}
+              onChange={() => updateNumberValueFor('maximumLabelWidth')}
             />
           </FormGroup>
           <FormGroup
@@ -53,7 +53,7 @@ export const CamelPreferences: React.FunctionComponent = () => {
             <Checkbox
               id='camel-form-ignore-id-for-label-input'
               isChecked={options.ignoreIdForLabel}
-              onChange={updateCheckboxValueFor('ignoreIdForLabel')}
+              onChange={() => updateCheckboxValueFor('ignoreIdForLabel')}
             />
           </FormGroup>
           <FormGroup
@@ -65,7 +65,7 @@ export const CamelPreferences: React.FunctionComponent = () => {
             <Checkbox
               id='camel-show-inflight-counter-input'
               isChecked={options.showInflightCounter}
-              onChange={updateCheckboxValueFor('showInflightCounter')}
+              onChange={() => updateCheckboxValueFor('showInflightCounter')}
             />
           </FormGroup>
         </FormSection>
@@ -81,7 +81,7 @@ export const CamelPreferences: React.FunctionComponent = () => {
             <Checkbox
               id='camel-form-include-streams-input'
               isChecked={options.traceOrDebugIncludeStreams}
-              onChange={updateCheckboxValueFor('traceOrDebugIncludeStreams')}
+              onChange={() => updateCheckboxValueFor('traceOrDebugIncludeStreams')}
             />
           </FormGroup>
           <FormGroup
@@ -96,7 +96,7 @@ export const CamelPreferences: React.FunctionComponent = () => {
               id='camel-form-maximum-body-length-input'
               type='number'
               value={options.maximumTraceOrDebugBodyLength}
-              onChange={updateNumberValueFor('maximumTraceOrDebugBodyLength')}
+              onChange={() => updateNumberValueFor('maximumTraceOrDebugBodyLength')}
             />
           </FormGroup>
         </FormSection>
