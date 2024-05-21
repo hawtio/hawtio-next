@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Dropdown, DropdownItem, DropdownSeparator, DropdownToggle, Modal } from '@patternfly/react-core'
+import { Button, Dropdown, DropdownItem, Divider, MenuToggleElement, MenuToggle, Modal } from '@patternfly/react-core'
 
 export const Example3HeaderItem1: React.FunctionComponent = () => {
   const [isModalOpen, setIsModalOpen] = React.useState(false)
@@ -10,7 +10,7 @@ export const Example3HeaderItem1: React.FunctionComponent = () => {
 
   return (
     <React.Fragment>
-      <Button id='example3-header-item1-button' variant='primary' isSmall onClick={handleModalToggle}>
+      <Button id='example3-header-item1-button' variant='primary' onClick={handleModalToggle}>
         Click Me!
       </Button>
 
@@ -37,8 +37,8 @@ export const Example3HeaderItem1: React.FunctionComponent = () => {
 export const Example3HeaderItem2: React.FunctionComponent = () => {
   const [isOpen, setIsOpen] = React.useState(false)
 
-  const onToggle = (isOpen: boolean) => {
-    setIsOpen(isOpen)
+  const onToggle = () => {
+    setIsOpen(!isOpen)
   }
 
   const onFocus = () => {
@@ -50,37 +50,42 @@ export const Example3HeaderItem2: React.FunctionComponent = () => {
     setIsOpen(false)
     onFocus()
   }
-
-  const dropdownItems = [
-    <DropdownItem key='link'>Link</DropdownItem>,
-    <DropdownItem key='action' component='button'>
-      Action
-    </DropdownItem>,
-    <DropdownItem key='disabled link' isDisabled href='www.google.com'>
-      Disabled link
-    </DropdownItem>,
-    <DropdownItem key='disabled action' isAriaDisabled component='button' tooltipProps={{ position: 'top' }}>
-      Disabled action
-    </DropdownItem>,
-    <DropdownSeparator key='separator' />,
-    <DropdownItem key='separated link'>Separated link</DropdownItem>,
-    <DropdownItem key='separated action' component='button'>
-      Separated action
-    </DropdownItem>,
-  ]
-
   return (
     <Dropdown
       id='example3-header-item2-dropdown'
       onSelect={onSelect}
-      toggle={
-        <DropdownToggle id='example3-header-item2-dropdown-toggle' onToggle={onToggle}>
+      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+        <MenuToggle id='example3-header-item2-dropdown-toggle' ref={toggleRef} onClick={onToggle}>
           Example 3
-        </DropdownToggle>
-      }
+        </MenuToggle>
+      )}
       isOpen={isOpen}
-      dropdownItems={dropdownItems}
       isPlain
-    />
+    >
+      {' '}
+      <DropdownItem key='link'>Link</DropdownItem>,
+      <DropdownItem key='action' component='button'>
+        Action
+      </DropdownItem>
+      ,
+      <DropdownItem key='disabled link' isDisabled href='www.google.com'>
+        Disabled link
+      </DropdownItem>
+      ,
+      <DropdownItem
+        key='disabled action'
+        isAriaDisabled
+        component='button'
+        tooltipProps={{ content: '  Disabled action', position: 'top' }}
+      >
+        Disabled action
+      </DropdownItem>
+      ,
+      <Divider key='separator' />,<DropdownItem key='separated link'>Separated link</DropdownItem>,
+      <DropdownItem key='separated action' component='button'>
+        Separated action
+      </DropdownItem>
+      ,
+    </Dropdown>
   )
 }
