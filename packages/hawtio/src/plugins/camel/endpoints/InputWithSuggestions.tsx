@@ -68,7 +68,9 @@ export const InputWithSuggestions: React.FunctionComponent<{
     <div style={{ position: 'relative' }}>
       <TextInput
         value={value}
-        onChange={onChange}
+        onChange={(_event, newVal) => {
+          onChange(newVal)
+        }}
         onFocus={() => setMenuIsOpen(true)}
         placeholder=''
         aria-label='Search input'

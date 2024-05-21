@@ -310,7 +310,9 @@ const ArgFormInput: React.FunctionComponent<{
   switch (arg.type) {
     case 'boolean':
     case 'java.lang.Boolean':
-      return <Checkbox id={id} isChecked={Boolean(value)} onChange={updateArgValues(index)} isDisabled={!canInvoke} />
+      return (
+        <Checkbox id={id} isChecked={Boolean(value)} onChange={() => updateArgValues(index)} isDisabled={!canInvoke} />
+      )
     case 'int':
     case 'long':
     case 'java.lang.Integer':
@@ -320,7 +322,7 @@ const ArgFormInput: React.FunctionComponent<{
           id={id}
           type='number'
           value={Number(value)}
-          onChange={updateArgValues(index)}
+          onChange={() => updateArgValues(index)}
           isDisabled={!canInvoke}
         />
       )
@@ -331,7 +333,7 @@ const ArgFormInput: React.FunctionComponent<{
           id={id}
           type='text'
           value={String(value)}
-          onChange={updateArgValues(index)}
+          onChange={() => updateArgValues(index)}
           isDisabled={!canInvoke}
         />
       )
