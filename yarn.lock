@@ -795,8 +795,8 @@ __metadata:
     "@patternfly/react-core": "npm:~4.278.1"
     "@patternfly/react-table": "npm:~4.113.7"
     "@simbathesailor/use-what-changed": "npm:^2.0.0"
-    "@testing-library/jest-dom": "npm:^6.4.5"
-    "@testing-library/react": "npm:^15.0.7"
+    "@testing-library/jest-dom": "npm:^6.4.2"
+    "@testing-library/react": "npm:^15.0.6"
     "@testing-library/user-event": "npm:^14.5.2"
     "@thumbmarkjs/thumbmarkjs": "npm:^0.14.8"
     "@types/dagre": "npm:^0.7.52"
@@ -1777,7 +1777,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/jest-dom@npm:^6.4.5":
+"@testing-library/jest-dom@npm:^6.4.2":
   version: 6.4.5
   resolution: "@testing-library/jest-dom@npm:6.4.5"
   dependencies:
@@ -1810,7 +1810,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/react@npm:^15.0.7":
+"@testing-library/react@npm:^15.0.6":
   version: 15.0.7
   resolution: "@testing-library/react@npm:15.0.7"
   dependencies:
