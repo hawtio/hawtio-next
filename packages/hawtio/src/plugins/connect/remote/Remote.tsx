@@ -164,19 +164,25 @@ const ConnectionItem: React.FunctionComponent<{
   let icon = null
   switch (reachable) {
     case 'reachable':
-      icon = <Icon color='green'>
-        <PluggedIcon />
-      </Icon>
+      icon = (
+        <Icon size='md' style={{ color: 'var(--pf-v5-global--success-color--100)' }}>
+          <PluggedIcon />
+        </Icon>
+      )
       break
     case 'not-reachable':
-      icon =  <Icon color='red'>
-        <UnpluggedIcon />
-      </Icon>
+      icon = (
+        <Icon size='md' style={{ color: 'var(--pf-v5-global--danger-color--100)' }}>
+          <UnpluggedIcon />
+        </Icon>
+      )
       break
     case 'not-reachable-securely':
-      icon =  <Icon  style={{ color: 'var(--pf-v5-global--warning-color--100)' }}>
-        <PluggedIcon />
-      </Icon>
+      icon = (
+        <Icon size='md' style={{ color: 'var(--pf-v5-global--warning-color--100)' }}>
+          <PluggedIcon />
+        </Icon>
+      )
       break
   }
 

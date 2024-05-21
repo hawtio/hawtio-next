@@ -288,10 +288,12 @@ export const AgentCard: React.FunctionComponent<{
         </DescriptionList>
       </CardBody>
       <CardFooter>
-        <Button variant='primary'
-                onClick={() => connect(discoverService.agentToConnection(agent))}
-                size='sm'
-                isDisabled={!window.isSecureContext && agent.secured}>
+        <Button
+          variant='primary'
+          onClick={() => connect(discoverService.agentToConnection(agent))}
+          size='sm'
+          isDisabled={!window.isSecureContext && agent.secured}
+        >
           Connect
         </Button>
       </CardFooter>
