@@ -208,7 +208,7 @@ const OperationExecuteForm: React.FunctionComponent<{
 
   const [argValues, setArgValues] = useState<unknown[]>(operation.args.map(arg => defaultValue(arg.type)))
 
-  const updateArgValues = (index: number) => (value: boolean | string) => {
+  const updateArgValues = (index: number) => (_event: React.FormEvent<HTMLInputElement>, value: boolean | string) => {
     const values = [...argValues]
     values[index] = value
     setArgValues(values)
@@ -303,16 +303,14 @@ const ArgFormInput: React.FunctionComponent<{
   index: number
   canInvoke: boolean
   argValues: unknown[]
-  updateArgValues: (index: number) => (value: boolean | string) => void
+  updateArgValues: (index: number) => (event: React.FormEvent<HTMLInputElement>, value: boolean | string) => void
 }> = ({ opName, arg, index, canInvoke, argValues, updateArgValues }) => {
   const id = `operation-${opName}-arg-form-input-${arg.name}-${index}`
   const value = argValues[index]
   switch (arg.type) {
     case 'boolean':
     case 'java.lang.Boolean':
-      return (
-        <Checkbox id={id} isChecked={Boolean(value)} onChange={() => updateArgValues(index)} isDisabled={!canInvoke} />
-      )
+      return <Checkbox id={id} isChecked={Boolean(value)} onChange={updateArgValues(index)} isDisabled={!canInvoke} />
     case 'int':
     case 'long':
     case 'java.lang.Integer':
@@ -322,7 +320,7 @@ const ArgFormInput: React.FunctionComponent<{
           id={id}
           type='number'
           value={Number(value)}
-          onChange={() => updateArgValues(index)}
+          onChange={updateArgValues(index)}
           isDisabled={!canInvoke}
         />
       )
@@ -333,7 +331,7 @@ const ArgFormInput: React.FunctionComponent<{
           id={id}
           type='text'
           value={String(value)}
-          onChange={() => updateArgValues(index)}
+          onChange={updateArgValues(index)}
           isDisabled={!canInvoke}
         />
       )

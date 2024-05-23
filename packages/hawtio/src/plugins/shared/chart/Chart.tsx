@@ -24,7 +24,7 @@ import { HawtioEmptyCard } from '../HawtioEmptyCard'
 import { HawtioLoadingCard } from '../HawtioLoadingCard'
 import { attributeService } from '../attributes/attribute-service'
 import { WatchableAttributesForm } from './WatchableAttributesForm'
-import { Table /* data-codemods */, Tbody, Td, Tr } from '@patternfly/react-table'
+import { Table, Tbody, Td, Tr } from '@patternfly/react-table'
 
 type MBeanChartData = {
   [name: string]: { attributes: AttributeChartEntries }
@@ -275,13 +275,8 @@ export const Chart: React.FunctionComponent = () => {
         <Card>
           <CardHeader
             actions={{
-              actions: (
-                <>
-                  <Button onClick={() => setIsWatchableAttributesModalOpen(true)}>Edit watches</Button>
-                </>
-              ),
+              actions: <Button onClick={() => setIsWatchableAttributesModalOpen(true)}>Edit watches</Button>,
               hasNoOffset: false,
-              className: undefined,
             }}
           ></CardHeader>
           <CardBody>
@@ -309,13 +304,8 @@ export const Chart: React.FunctionComponent = () => {
           <Card>
             <CardHeader
               actions={{
-                actions: (
-                  <>
-                    <Button onClick={() => setIsWatchableAttributesModalOpen(true)}>Edit watches</Button>
-                  </>
-                ),
+                actions: <Button onClick={() => setIsWatchableAttributesModalOpen(true)}>Edit watches</Button>,
                 hasNoOffset: false,
-                className: undefined,
               }}
             >
               <Switch

@@ -1,4 +1,4 @@
-import { Table /* data-codemods */, Tbody, Td, Tr } from '@patternfly/react-table'
+import { Table, Tbody, Td, Tr } from '@patternfly/react-table'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import ReactFlow, {
   Connection,

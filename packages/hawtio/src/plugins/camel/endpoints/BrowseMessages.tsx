@@ -28,7 +28,7 @@ import {
   EmptyStateHeader,
 } from '@patternfly/react-core'
 import { SearchIcon } from '@patternfly/react-icons'
-import { Table /* data-codemods */, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useState } from 'react'
 import { Position } from 'reactflow'
 import { CamelContext } from '../context'

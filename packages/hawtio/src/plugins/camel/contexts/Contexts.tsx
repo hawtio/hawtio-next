@@ -4,8 +4,7 @@ import { HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
 import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { Card, CardBody, Text } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
-import { Table, Tbody, Td, Th, Thead, Tr, wrappable } from '@patternfly/react-table'
-import { TableProps } from '@patternfly/react-table/deprecated'
+import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import { Response } from 'jolokia.js'
 import React, { useContext, useEffect, useState } from 'react'
 import { log } from '../globals'
@@ -87,24 +86,7 @@ export const Contexts: React.FunctionComponent = () => {
     return <HawtioLoadingCard />
   }
 
-  /*
-   * Populate the column headers and data using the positions
-   * of the headers in the array to ensure the correct locations
-   * of the data
-   */
-  const columns: TableProps['cells'] = []
-  columns.push({ title: 'Context', transforms: [wrappable] })
-  columns.push({ title: 'State', transforms: [wrappable] })
-
-  const rows: TableProps['rows'] = []
-  for (const ctx of contexts) {
-    rows.push({
-      cells: [ctx.node.name, ctx.state],
-      selected: isContextSelected(ctx),
-    })
-  }
-
-  if (rows.length === 0) {
+  if (contexts.length === 0) {
     return (
       <Card>
         <CardBody>

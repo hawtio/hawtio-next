@@ -1,7 +1,7 @@
 import { CamelContext } from '@hawtiosrc/plugins/camel/context'
 import { HawtioEmptyCard, HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
 import { Panel, PanelHeader, PanelMain, PanelMainBody, Title } from '@patternfly/react-core'
-import { Table /* data-codemods */, Tbody, Th, Td, Thead, Tr } from '@patternfly/react-table'
+import { Table, Tbody, Th, Td, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useState } from 'react'
 import * as exs from './exchanges-service'
 

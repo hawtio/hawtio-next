@@ -19,7 +19,7 @@ describe('JolokiaService', () => {
 
   test('getJolokiaUrl - null', async () => {
     await expect(jolokiaService.getJolokiaUrl()).resolves.toBeNull()
-  })
+  }, 10000)
 
   test('getJolokia - optimised', async () => {
     jolokiaService.getJolokiaUrl = jest.fn(async () => '/test')

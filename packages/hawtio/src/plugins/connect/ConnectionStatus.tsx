@@ -37,21 +37,21 @@ export const ConnectionStatus: React.FunctionComponent = () => {
   switch (reachable) {
     case 'reachable':
       icon = (
-        <Icon style={{ color: 'var(--pf-v5-global--success-color--100)' }}>
+        <Icon status='success'>
           <PluggedIcon />
         </Icon>
       )
       break
     case 'not-reachable':
       icon = (
-        <Icon style={{ color: 'var(--pf-v5-global--danger-color--100)' }}>
+        <Icon status='danger'>
           <UnpluggedIcon />
         </Icon>
       )
       break
     case 'not-reachable-securely':
       icon = (
-        <Icon style={{ color: 'var(--pf-v5-global--warning-color--100)' }}>
+        <Icon status='warning'>
           <PluggedIcon />
         </Icon>
       )

@@ -23,7 +23,7 @@ import {
   Icon,
 } from '@patternfly/react-core'
 import { Dropdown, DropdownItem, DropdownToggle } from '@patternfly/react-core/deprecated'
-import { Table /* data-codemods */, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import { CheckCircleIcon, ExclamationCircleIcon, SearchIcon } from '@patternfly/react-icons'
 import { Trace } from './types'
 import { springbootService } from './springboot-service'
@@ -31,11 +31,16 @@ import { springbootService } from './springboot-service'
 const HttpStatusIcon: React.FunctionComponent<{ code: number }> = ({ code }) => {
   if (code < 400)
     return (
-      <Icon color='#3E8635'>
+      <Icon status='success'>
         <CheckCircleIcon />
       </Icon>
     )
-  else return <ExclamationCircleIcon color='#C9190B' />
+  else
+    return (
+      <Icon status='danger'>
+        <ExclamationCircleIcon />
+      </Icon>
+    )
 }
 
 const HttpMethodLabel: React.FunctionComponent<{ method: string }> = ({ method }) => {

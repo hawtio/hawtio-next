@@ -62,16 +62,13 @@ export const Example3HeaderItem2: React.FunctionComponent = () => {
       isOpen={isOpen}
       isPlain
     >
-      {' '}
-      <DropdownItem key='link'>Link</DropdownItem>,
+      <DropdownItem key='link'>Link</DropdownItem>
       <DropdownItem key='action' component='button'>
         Action
       </DropdownItem>
-      ,
       <DropdownItem key='disabled link' isDisabled href='www.google.com'>
         Disabled link
       </DropdownItem>
-      ,
       <DropdownItem
         key='disabled action'
         isAriaDisabled
@@ -80,12 +77,11 @@ export const Example3HeaderItem2: React.FunctionComponent = () => {
       >
         Disabled action
       </DropdownItem>
-      ,
-      <Divider key='separator' />,<DropdownItem key='separated link'>Separated link</DropdownItem>,
+      <Divider key='separator' />
+      <DropdownItem key='separated link'>Separated link</DropdownItem>
       <DropdownItem key='separated action' component='button'>
         Separated action
       </DropdownItem>
-      ,
     </Dropdown>
   )
 }

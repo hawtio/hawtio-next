@@ -67,11 +67,11 @@ export const Connect: React.FunctionComponent = () => {
                     rel='noreferrer'
                   >
                     secure browsing contexts
-                  </a>{' '}
+                  </a>
                   it is possible to store credentials in secure manner using{' '}
                   <a href='https://developer.mozilla.org/en-US/docs/Web/API/Crypto' target='_blank' rel='noreferrer'>
                     Crypto API
-                  </a>{' '}
+                  </a>
                   and send them securely.
                 </p>
                 <p>

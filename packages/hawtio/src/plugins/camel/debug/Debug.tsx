@@ -25,7 +25,7 @@ import {
   PlusIcon,
   TimesCircleIcon,
 } from '@patternfly/react-icons'
-import { Table /* data-codemods */, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import { Response } from 'jolokia.js'
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import * as camelService from '../camel-service'
