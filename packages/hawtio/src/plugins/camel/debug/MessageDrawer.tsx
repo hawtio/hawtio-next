@@ -15,7 +15,7 @@ import {
   PanelMainBody,
   Text,
 } from '@patternfly/react-core'
-import { Table /* data-codemods */, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import React from 'react'
 import { useRef, useState } from 'react'
 import { MessageData } from './debug-service'

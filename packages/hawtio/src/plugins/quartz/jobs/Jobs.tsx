@@ -18,7 +18,7 @@ import {
 } from '@patternfly/react-core'
 import { Select, SelectOption, SelectOptionObject } from '@patternfly/react-core/deprecated'
 import { SearchIcon } from '@patternfly/react-icons'
-import { Table /* data-codemods */, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { QuartzContext } from '../context'
 import { Job, JobFilter, quartzService } from '../quartz-service'

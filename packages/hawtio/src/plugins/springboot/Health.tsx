@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Card, CardBody, CardHeader, Flex, FlexItem, Grid, GridItem, Icon, Title } from '@patternfly/react-core'
 import { springbootService } from './springboot-service'
 import { HealthComponentDetail, HealthData } from './types'
-import { Table /* data-codemods */, Tbody, Td, Tr } from '@patternfly/react-table'
+import { Table, Tbody, Td, Tr } from '@patternfly/react-table'
 import { humanizeLabels } from '@hawtiosrc/util/strings'
 import { ChartDonutUtilization } from '@patternfly/react-charts'
 import {
@@ -39,19 +39,19 @@ const HealthStatusIcon: React.FunctionComponent<{ status: string }> = ({ status 
   switch (status) {
     case 'UP':
       return (
-        <Icon color={'green'}>
+        <Icon status='success'>
           <CheckCircleIcon />
         </Icon>
       )
     case 'DOWN':
       return (
-        <Icon color={'red'}>
+        <Icon status='danger'>
           <ExclamationCircleIcon />
         </Icon>
       )
     case 'OUT_OF_SERVICE':
       return (
-        <Icon color={'orange'}>
+        <Icon status='warning'>
           <ExclamationTriangleIcon />
         </Icon>
       )
@@ -63,7 +63,7 @@ const HealthStatusIcon: React.FunctionComponent<{ status: string }> = ({ status 
       )
     default:
       return (
-        <Icon color={'blue'}>
+        <Icon status='info'>
           <InfoCircleIcon />
         </Icon>
       )

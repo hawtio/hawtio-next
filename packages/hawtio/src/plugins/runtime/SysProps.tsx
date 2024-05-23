@@ -20,7 +20,7 @@ import {
 } from '@patternfly/react-core'
 import { Dropdown, DropdownItem, DropdownToggle } from '@patternfly/react-core/deprecated'
 import { SearchIcon } from '@patternfly/react-icons'
-import { Table /* data-codemods */, Tbody, Td, Th, ThProps, Thead, Tr } from '@patternfly/react-table'
+import { Table, Tbody, Td, Th, ThProps, Thead, Tr } from '@patternfly/react-table'
 import React, { useEffect, useState } from 'react'
 import { runtimeService } from './runtime-service'
 import { SystemProperty } from './types'

@@ -33,7 +33,7 @@ import {
 } from '@patternfly/react-core'
 import { Select, SelectOption, SelectOptionObject } from '@patternfly/react-core/deprecated'
 import { SearchIcon } from '@patternfly/react-icons'
-import { Table /* data-codemods */, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import React, { useEffect, useRef, useState } from 'react'
 import { log } from './globals'
 import { LogEntry, LogFilter } from './log-entry'

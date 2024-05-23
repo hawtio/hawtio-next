@@ -16,7 +16,7 @@ export const JmxContentMBeans: React.FunctionComponent = () => {
 
   const rows: { name: string; objectName: string }[] = (selectedNode.children || []).map(node => ({
     name: node.name,
-    objectName: node.objectName || '-',
+    objectName: node.objectName ?? '-',
   }))
 
   if (rows.length === 0) {

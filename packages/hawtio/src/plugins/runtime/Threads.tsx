@@ -27,7 +27,7 @@ import React, { useEffect, useState } from 'react'
 import { Thread } from './types'
 import { objectSorter } from '@hawtiosrc/util/objects'
 import { SearchIcon } from '@patternfly/react-icons'
-import { Table /* data-codemods */, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
+import { Table, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
 import { runtimeService } from './runtime-service'
 import { ThreadInfoModal, ThreadState } from './ThreadInfoModal'
 

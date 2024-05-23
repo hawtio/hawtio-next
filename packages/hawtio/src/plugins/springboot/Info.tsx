@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { FormGroup } from '@patternfly/react-core'
 import { springbootService } from './springboot-service'
-import { Table /* data-codemods */, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 
 export const Info: React.FunctionComponent = () => {
   const [systemProperties, setSystemProperties] = useState<{ key: string; value: string }[]>([])

@@ -1,7 +1,7 @@
 import { useUser } from '@hawtiosrc/auth/hooks'
 import { usePlugins } from '@hawtiosrc/core'
 import { HawtioHelp } from '@hawtiosrc/help/HawtioHelp'
-import { backgroundImages } from '@hawtiosrc/img'
+import { background } from '@hawtiosrc/img'
 import { PluginNodeSelectionContext, usePluginNodeSelected } from '@hawtiosrc/plugins'
 import { HawtioPreferences } from '@hawtiosrc/preferences/HawtioPreferences'
 import { preferencesService } from '@hawtiosrc/preferences/preferences-service'
@@ -58,7 +58,7 @@ export const HawtioPage: React.FunctionComponent = () => {
 
   return (
     <PageContext.Provider value={{ username, plugins }}>
-      <BackgroundImage src={backgroundImages.lg} />
+      <BackgroundImage src={background} />
       <Page
         id='hawtio-main-page'
         header={<HawtioHeader />}

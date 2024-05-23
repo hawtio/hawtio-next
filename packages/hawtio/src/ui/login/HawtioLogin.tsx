@@ -1,6 +1,6 @@
 import { useUser } from '@hawtiosrc/auth/hooks'
 import { DEFAULT_APP_NAME, DEFAULT_LOGIN_TITLE, useHawtconfig, usePlugins } from '@hawtiosrc/core'
-import { backgroundImages, hawtioLogo } from '@hawtiosrc/img'
+import { hawtioLogo, background } from '@hawtiosrc/img'
 import { ListItem, ListVariant, LoginFooterItem, LoginPage } from '@patternfly/react-core'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -58,7 +58,7 @@ export const HawtioLogin: React.FunctionComponent = () => {
 
   return (
     <LoginPage
-      backgroundImgSrc={backgroundImages.lg as string}
+      backgroundImgSrc={background}
       brandImgSrc={appLogo}
       brandImgAlt={appName}
       loginTitle={title}

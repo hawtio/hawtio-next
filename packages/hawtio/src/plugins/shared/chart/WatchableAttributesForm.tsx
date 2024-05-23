@@ -2,17 +2,19 @@ import { Button, DualListSelector, DualListSelectorTreeItemData, Modal, ModalVar
 import { AttributesToWatch } from './Chart'
 import { ReactNode, useState } from 'react'
 
+export type WatchableAttributesFormProps = {
+  isOpen: boolean
+  onClose: (isOpen: boolean) => void
+  attributesToWatch: AttributesToWatch
+  onAttributesToWatchUpdate: (attributesToWatch: AttributesToWatch) => void
+}
+
 export const WatchableAttributesForm = ({
   isOpen,
   onClose,
   attributesToWatch,
   onAttributesToWatchUpdate,
-}: {
-  isOpen: boolean
-  onClose: (isClosed: boolean) => void
-  attributesToWatch: AttributesToWatch
-  onAttributesToWatchUpdate: (newAttributes: AttributesToWatch) => void
-}) => {
+}: WatchableAttributesFormProps) => {
   const [modalAttributesToWatch, setModalAttributesToWatch] = useState<AttributesToWatch>(attributesToWatch)
   // Take care when switching the text prop. As right now it's used to identify the key in attributes to watch prop.
   // Because the key needs to be unique across all trees (or else there is a bug where the check selection applies to
