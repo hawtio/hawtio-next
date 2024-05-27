@@ -35,7 +35,7 @@
   "dependencies": {
     "@hawtio/camel-model-v4_0": "npm:@hawtio/camel-model@~4.0.5",
     "@hawtio/camel-model-v4_4": "npm:@hawtio/camel-model@~4.4.2",
-    "@module-federation/utilities": "^3.0.18",
+    "@module-federation/utilities": "^3.0.20",
     "@patternfly/react-charts": "~6.94.21",
     "@patternfly/react-code-editor": "~4.82.122",
     "@patternfly/react-core": "~4.278.1",
