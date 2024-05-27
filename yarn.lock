@@ -819,7 +819,7 @@ __metadata:
     js-logger: "npm:^1.6.1"
     jwt-decode: "npm:^4.0.0"
     keycloak-js: "npm:^23.0.7"
-    monaco-editor: "npm:^0.48.0"
+    monaco-editor: "npm:^0.49.0"
     oauth4webapi: "npm:^2.10.4"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.3.1"
@@ -9905,10 +9905,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor@npm:^0.48.0":
-  version: 0.48.0
-  resolution: "monaco-editor@npm:0.48.0"
-  checksum: 10/19de201705a60695c42cca65157654da3881ed24882e6d5dce33e063c6c9505c9fa6bd42be4d6807d5b1c5d3ad18e2d019c4f7f6adbe66ce8a9428a78d74b3f6
+"monaco-editor@npm:^0.49.0":
+  version: 0.49.0
+  resolution: "monaco-editor@npm:0.49.0"
+  checksum: 10/7b39c4bcc98a18ad178b70bc9e950e015a7a4124b85125da59d14a41e88f2909339708ea09366b6532360c58e1ec812c1c7c6f9df6c9786204a46133042c3263
   languageName: node
   linkType: hard
 
