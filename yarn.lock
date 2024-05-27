@@ -739,7 +739,7 @@ __metadata:
     "@types/express": "npm:^4.17.14"
     "@types/jest": "npm:^29.5.12"
     "@types/node": "npm:^18.19.33"
-    axios: "npm:^1.7.1"
+    axios: "npm:^1.7.2"
     commit-and-tag-version: "npm:^12.4.1"
     concurrently: "npm:^8.2.2"
     express: "npm:^4.18.1"
@@ -3635,14 +3635,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.7.1":
-  version: 1.7.1
-  resolution: "axios@npm:1.7.1"
+"axios@npm:^1.7.2":
+  version: 1.7.2
+  resolution: "axios@npm:1.7.2"
   dependencies:
     follow-redirects: "npm:^1.15.6"
     form-data: "npm:^4.0.0"
     proxy-from-env: "npm:^1.1.0"
-  checksum: 10/38de04929014eca46c04fddb916f8f8cfdf3b62f05f85f87a181898587a8e23478737bc6e9ba211fb8fe137a494032e4575741bb598bec9049159de6a5ad8edf
+  checksum: 10/6ae80dda9736bb4762ce717f1a26ff997d94672d3a5799ad9941c24d4fb019c1dff45be8272f08d1975d7950bac281f3ba24aff5ecd49ef5a04d872ec428782f
   languageName: node
   linkType: hard
 
