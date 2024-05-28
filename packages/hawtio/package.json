@@ -58,7 +58,7 @@
     "jquery": "^3.7.1",
     "js-logger": "^1.6.1",
     "jwt-decode": "^4.0.0",
-    "keycloak-js": "^23.0.7",
+    "keycloak-js": "^24.0.4",
     "monaco-editor": "^0.49.0",
     "oauth4webapi": "^2.10.4",
     "react": "^18.2.0",
