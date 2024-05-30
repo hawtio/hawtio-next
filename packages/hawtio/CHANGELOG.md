@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.3.0-dev.0](https://github.com/hawtio/hawtio-next/compare/v1.2.2...v1.3.0-dev.0) (2024-05-30)
+
+
+### Features
+
+* **connect:** Display "connection lost" toast only once. Fixes ([#705](https://github.com/hawtio/hawtio-next/issues/705)) ([#936](https://github.com/hawtio/hawtio-next/issues/936)) ([a25eeba](https://github.com/hawtio/hawtio-next/commit/a25eeba8458957f215d2a874efe69289a9b9416c))
+* **connect:** Handle improved session management for proxy connections (hawtio/hawtio[#3178](https://github.com/hawtio/hawtio-next/issues/3178)) ([#948](https://github.com/hawtio/hawtio-next/issues/948)) ([e9b2628](https://github.com/hawtio/hawtio-next/commit/e9b26285a6f2554ae48703cb95cd28b94f3e3b8e))
+* **connect:** Improve remote connections handling (closes [#906](https://github.com/hawtio/hawtio-next/issues/906)) ([#932](https://github.com/hawtio/hawtio-next/issues/932)) ([e8ad5b3](https://github.com/hawtio/hawtio-next/commit/e8ad5b3b379f91d1a6a79cbeeb5b225bb4ed7098))
+* **pf5-upgrade:** update class names in the CSS files and some icons ([ed02d6a](https://github.com/hawtio/hawtio-next/commit/ed02d6a1f58b6651b5de67365cb876e96a28cc54))
+* **pf5-upgrade:** Update onChange function signatures ([755212d](https://github.com/hawtio/hawtio-next/commit/755212d4f2aaa83cbc6972d035d61d3c0d7a3226))
+* Upgrade to Patternfly5 ([0a51cd5](https://github.com/hawtio/hawtio-next/commit/0a51cd565d5cdc761bef606ea4c95484b8bad07b))
+
+
+### Bug Fixes
+
+* **#900:** Add missing aria-labels ([4f57205](https://github.com/hawtio/hawtio-next/commit/4f57205a76b5f3f5d3f5288d7ada6aab53fe07d5)), closes [#900](https://github.com/hawtio/hawtio-next/issues/900)
+* **#905:** Polish the Trace view of the camel plugin ([fd7a488](https://github.com/hawtio/hawtio-next/commit/fd7a48846157baafb3a674f37dda25bc2dde7739)), closes [#905](https://github.com/hawtio/hawtio-next/issues/905)
+* auth/config response should never cause errors ([3fa9053](https://github.com/hawtio/hawtio-next/commit/3fa9053ea638fbf84a49b519ce6bb4c2ab62f886))
+* **camel:** getCamelVersions() to return correct camel model versions ([f7c0698](https://github.com/hawtio/hawtio-next/commit/f7c0698e99e00272fced681e1707abd894ede2f9))
+* **connect:** add space after icon in connection status ([c92c87f](https://github.com/hawtio/hawtio-next/commit/c92c87f1760736d4c3e7259c343eba71a25eb342))
+* **connect:** Disable "Connect" button in Discovery when in insecure context ([#947](https://github.com/hawtio/hawtio-next/issues/947)) ([45e32ec](https://github.com/hawtio/hawtio-next/commit/45e32ec0119c2ea7b39f8356da093494e4a8c9a0))
+* **connect:** HAWNG-487 apply authentication throttling to connect login ([4203663](https://github.com/hawtio/hawtio-next/commit/4203663b1629f089895dc641858ce3703e7c7036))
+* **connect:** Manage connections depending on "secure browsing context" (fixes [#832](https://github.com/hawtio/hawtio-next/issues/832)) ([#946](https://github.com/hawtio/hawtio-next/issues/946)) ([8c42118](https://github.com/hawtio/hawtio-next/commit/8c42118d35f0ab8af95b8d4585ef977463354e52))
+* **jmx:** Handle MBeanInfo in Jolokia list() when there was error fetching the info (fixes [#902](https://github.com/hawtio/hawtio-next/issues/902)) ([4a4fcf5](https://github.com/hawtio/hawtio-next/commit/4a4fcf55b49a68a1d31e6bb607cc1a3395b3496d))
+* **pf5-upgrade-PR:** incporporate requested PR changes, as fixing function signatures in the OperationForm and CamelPreferences ([f7f3f8b](https://github.com/hawtio/hawtio-next/commit/f7f3f8bbf29b8e52a160879eafe060c71acdc74c))
+* **shared:** use MBeanInfoError from jolokia.js instead of custom error type ([de1c2f0](https://github.com/hawtio/hawtio-next/commit/de1c2f03aa6151ddc0e9c9b1a65d23fe5f82d358))
+* **Source:** Use dynamic height instead of fixed height in pixels ([f6a72f1](https://github.com/hawtio/hawtio-next/commit/f6a72f18bc1476024d70685b7f963be5fd452373))
+* **util/crypto:** type fingerprint to string ([062c784](https://github.com/hawtio/hawtio-next/commit/062c784bd080ca7d942da7625807cf3d7a780d1b))
+
 ## [1.2.2](https://github.com/hawtio/hawtio-next/compare/v1.2.1...v1.2.2) (2024-04-15)
 
 
