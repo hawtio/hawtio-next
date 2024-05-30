@@ -6,11 +6,16 @@ import { HawtioAbout } from '@hawtiosrc/ui/about'
 import {
   Avatar,
   Brand,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
   Masthead,
   MastheadBrand,
   MastheadContent,
   MastheadMain,
   MastheadToggle,
+  MenuToggle,
+  MenuToggleElement,
   PageToggleButton,
   Title,
   Toolbar,
@@ -18,7 +23,7 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core'
-import { Dropdown, DropdownItem, DropdownToggle } from '@patternfly/react-core/deprecated'
+
 import { BarsIcon, HelpIcon } from '@patternfly/react-icons'
 import React, { useContext, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
@@ -93,14 +98,18 @@ const HawtioHeaderToolbar: React.FunctionComponent = () => {
   const logout = () => userService.logout()
 
   const helpItems = [
-    <DropdownItem key='help' component={<Link to='/help'>Help</Link>} />,
+    <DropdownItem key='help'>
+      <Link to='/help'>Help</Link>{' '}
+    </DropdownItem>,
     <DropdownItem key='about' onClick={onAboutToggle}>
       About
     </DropdownItem>,
   ]
 
   const userItems = [
-    <DropdownItem key='preferences' component={<Link to='/preferences'>Preferences</Link>} />,
+    <DropdownItem key='preferences'>
+      <Link to='/preferences'>Preferences</Link>
+    </DropdownItem>,
     <DropdownItem key='logout' onClick={logout}>
       Log out
     </DropdownItem>,
@@ -159,37 +168,45 @@ const HawtioHeaderToolbar: React.FunctionComponent = () => {
         <ToolbarGroup>
           <ToolbarItem>
             <Dropdown
-              isPlain
-              position='right'
               onSelect={onHelpSelect}
-              toggle={
-                <DropdownToggle toggleIndicator={null} onToggle={(_event, val) => setHelpOpen(val)}>
+              onOpenChange={setHelpOpen}
+              toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                <MenuToggle
+                  variant='plain'
+                  ref={toggleRef}
+                  onClick={() => setHelpOpen(!helpOpen)}
+                  isExpanded={helpOpen}
+                >
                   <HelpIcon />
-                </DropdownToggle>
-              }
+                </MenuToggle>
+              )}
               isOpen={helpOpen}
-              dropdownItems={helpItems}
-            />
+            >
+              {helpItems}
+            </Dropdown>
           </ToolbarItem>
         </ToolbarGroup>
         <ToolbarGroup>
           <ToolbarItem>
             <Dropdown
-              isPlain
-              position='right'
               onSelect={onUserSelect}
               isOpen={userOpen}
-              toggle={
-                <DropdownToggle
+              onOpenChange={setUserOpen}
+              toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                <MenuToggle
+                  ref={toggleRef}
                   id='hawtio-header-user-dropdown-toggle'
-                  onToggle={(_event, val) => setUserOpen(val)}
+                  onClick={() => setUserOpen(!userOpen)}
                   icon={<Avatar src={userAvatar} alt='user' />}
+                  isExpanded={userOpen}
+                  isFullHeight
                 >
                   {isPublic ? '' : username}
-                </DropdownToggle>
-              }
-              dropdownItems={userItems}
-            />
+                </MenuToggle>
+              )}
+            >
+              <DropdownList>{userItems}</DropdownList>
+            </Dropdown>
           </ToolbarItem>
         </ToolbarGroup>
       </ToolbarContent>

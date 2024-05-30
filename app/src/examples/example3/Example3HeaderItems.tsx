@@ -54,8 +54,9 @@ export const Example3HeaderItem2: React.FunctionComponent = () => {
     <Dropdown
       id='example3-header-item2-dropdown'
       onSelect={onSelect}
+      onOpenChange={setIsOpen}
       toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-        <MenuToggle id='example3-header-item2-dropdown-toggle' ref={toggleRef} onClick={onToggle}>
+        <MenuToggle variant='plain' id='example3-header-item2-dropdown-toggle' ref={toggleRef} onClick={onToggle}>
           Example 3
         </MenuToggle>
       )}

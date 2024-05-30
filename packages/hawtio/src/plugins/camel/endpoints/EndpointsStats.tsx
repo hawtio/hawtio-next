@@ -16,8 +16,13 @@ import {
   ToolbarFilter,
   ToolbarGroup,
   EmptyStateHeader,
+  DropdownItem,
+  Dropdown,
+  MenuToggle,
+  MenuToggleElement,
+  DropdownList,
 } from '@patternfly/react-core'
-import { Dropdown, DropdownItem, DropdownToggle } from '@patternfly/react-core/deprecated'
+
 import { Table, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
 import { SearchIcon } from '@patternfly/react-icons'
 import { objectSorter } from '@hawtiosrc/util/objects'
@@ -137,18 +142,21 @@ export const EndpointStats: React.FunctionComponent = () => {
               data-testid='attribute-select'
               onSelect={() => setIsDropdownOpen(false)}
               defaultValue='url'
-              toggle={
-                <DropdownToggle
+              onOpenChange={setIsDropdownOpen}
+              toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                <MenuToggle
+                  ref={toggleRef}
                   data-testid='attribute-select-toggle'
                   id='toggle-basic'
-                  onToggle={(_event, val) => setIsDropdownOpen(val)}
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 >
                   {attributes.find(att => att.key === attributeMenuItem)?.value}
-                </DropdownToggle>
-              }
+                </MenuToggle>
+              )}
               isOpen={isDropdownOpen}
-              dropdownItems={dropdownItems}
-            />
+            >
+              <DropdownList>{dropdownItems}</DropdownList>
+            </Dropdown>
 
             <ToolbarFilter
               chips={filters}

@@ -8,15 +8,19 @@ import {
   DataListItem,
   DataListItemCells,
   DataListItemRow,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
   Form,
   FormGroup,
   FormSection,
+  MenuToggle,
+  MenuToggleElement,
   Slider,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core'
-import { Dropdown, DropdownItem, DropdownToggle } from '@patternfly/react-core/deprecated'
 import { PlusIcon, TrashIcon } from '@patternfly/react-icons'
 import React, { useContext, useState } from 'react'
 import { LogsContext, useChildLoggers } from './context'
@@ -102,18 +106,21 @@ const ChildLoggerToolbar: React.FunctionComponent = () => {
         <ToolbarItem>
           <Dropdown
             onSelect={handleAddToggle}
-            toggle={
-              <DropdownToggle
+            onOpenChange={setIsAddOpen}
+            toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+              <MenuToggle
+                ref={toggleRef}
                 id='logs-child-logger-toolbar-dropdown-toggle'
-                toggleVariant='secondary'
-                onToggle={handleAddToggle}
+                variant='secondary'
+                onClick={handleAddToggle}
               >
                 <PlusIcon /> Add
-              </DropdownToggle>
-            }
+              </MenuToggle>
+            )}
             isOpen={isAddOpen}
-            dropdownItems={availableChildLoggerItems}
-          />
+          >
+            <DropdownList>{availableChildLoggerItems}</DropdownList>
+          </Dropdown>
         </ToolbarItem>
       </ToolbarContent>
     </Toolbar>

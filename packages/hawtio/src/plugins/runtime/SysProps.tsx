@@ -1,6 +1,8 @@
 import { objectSorter } from '@hawtiosrc/util/objects'
 import {
   Bullseye,
+  Dropdown,
+  DropdownItem,
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
@@ -17,8 +19,10 @@ import {
   ToolbarGroup,
   ToolbarItem,
   EmptyStateHeader,
+  MenuToggleElement,
+  MenuToggle,
+  DropdownList,
 } from '@patternfly/react-core'
-import { Dropdown, DropdownItem, DropdownToggle } from '@patternfly/react-core/deprecated'
 import { SearchIcon } from '@patternfly/react-icons'
 import { Table, Tbody, Td, Th, ThProps, Thead, Tr } from '@patternfly/react-table'
 import React, { useEffect, useState } from 'react'
@@ -156,18 +160,23 @@ export const SysProps: React.FunctionComponent = () => {
               addToFilters()
             }}
             defaultValue='name'
-            toggle={
-              <DropdownToggle
+            onOpenChange={setIsDropdownOpen}
+            toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+              <MenuToggle
+                ref={toggleRef}
                 data-testid='attribute-select-toggle'
                 id='toggle-basic'
-                onToggle={(_event, val) => setIsDropdownOpen(val)}
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                isExpanded={isDropdownOpen}
               >
                 {attributes.find(att => att.key === filteredAttribute)?.value}
-              </DropdownToggle>
-            }
+              </MenuToggle>
+            )}
+            shouldFocusToggleOnSelect
             isOpen={isDropdownOpen}
-            dropdownItems={dropdownItems}
-          />
+          >
+            <DropdownList>{dropdownItems}</DropdownList>
+          </Dropdown>
           <ToolbarFilter
             chips={searchTerm !== '' ? [...filters, `${filteredAttribute}:${searchTerm}`] : filters}
             deleteChip={(_e, filter) => onDeleteFilter(filter as string)}

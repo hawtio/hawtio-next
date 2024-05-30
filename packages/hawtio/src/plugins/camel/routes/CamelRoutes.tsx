@@ -1,14 +1,26 @@
 import { eventService } from '@hawtiosrc/core'
 import { HawtioEmptyCard, HawtioLoadingCard, workspace } from '@hawtiosrc/plugins/shared'
 import { objectSorter } from '@hawtiosrc/util/objects'
-import { Button, Label, Modal, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core'
-import { Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core/deprecated'
+import {
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  Label,
+  MenuToggle,
+  MenuToggleElement,
+  Modal,
+  Toolbar,
+  ToolbarContent,
+  ToolbarItem,
+} from '@patternfly/react-core'
 import { AsleepIcon, PlayIcon, Remove2Icon } from '@patternfly/react-icons'
 import { Table, Tbody, Td, Th, ThProps, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useState } from 'react'
 import { CamelContext } from '../context'
 import { CamelRoute } from './route'
 import { routesService } from './routes-service'
+import EllipsisVIcon from '@patternfly/react-icons/dist/js/icons/ellipsis-v-icon'
 
 const ROUTES_REFRESH_INTERVAL = 10000 // milliseconds
 
@@ -347,16 +359,11 @@ const CamelRoutesToolbar: React.FunctionComponent<{
   const dropdownItems = [
     <DropdownItem
       key='action'
-      component={
-        <Button
-          variant='plain'
-          isDisabled={!routesService.canDeleteRoute(firstRoute.node) || !isSuspendEnabled('Stopped')}
-          onClick={onDeleteClicked}
-        >
-          <Remove2Icon /> Delete
-        </Button>
-      }
-    />,
+      isDisabled={!routesService.canDeleteRoute(firstRoute.node) || !isSuspendEnabled('Stopped')}
+      onClick={onDeleteClicked}
+    >
+      <Remove2Icon /> Delete
+    </DropdownItem>,
   ]
 
   return (
@@ -365,16 +372,22 @@ const CamelRoutesToolbar: React.FunctionComponent<{
         {toolbarButtons}
         <ToolbarItem id='camel-routes-toolbar-item-dropdown'>
           <Dropdown
-            toggle={
-              <KebabToggle
+            onSelect={() => onDropdownToggle(!isDropdownOpen)}
+            onOpenChange={setIsDropdownOpen}
+            toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+              <MenuToggle
+                ref={toggleRef}
+                variant='plain'
                 id='camel-routes-toolbar-item-dropdown-toggle'
-                onToggle={(_event, isOpen: boolean) => onDropdownToggle(isOpen)}
-              />
-            }
+                onClick={() => onDropdownToggle(!isDropdownOpen)}
+              >
+                <EllipsisVIcon />
+              </MenuToggle>
+            )}
             isOpen={isDropdownOpen}
-            dropdownItems={dropdownItems}
-            isPlain
-          />
+          >
+            <DropdownList>{dropdownItems}</DropdownList>
+          </Dropdown>
         </ToolbarItem>
       </ToolbarContent>
     </Toolbar>

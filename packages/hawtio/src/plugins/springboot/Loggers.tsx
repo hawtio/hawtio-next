@@ -15,8 +15,12 @@ import {
   ToolbarGroup,
   ToolbarItem,
   EmptyStateHeader,
+  DropdownItem,
+  Dropdown,
+  MenuToggleElement,
+  MenuToggle,
+  DropdownList,
 } from '@patternfly/react-core'
-import { Dropdown, DropdownItem, DropdownToggle } from '@patternfly/react-core/deprecated'
 import { springbootService } from './springboot-service'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import { SearchIcon } from '@patternfly/react-icons'
@@ -44,20 +48,22 @@ const SetLogDropdown: React.FunctionComponent<{
 
   return (
     <Dropdown
-      isPlain
       onSelect={() => setIsDropdownOpen(null)}
+      onOpenChange={() => setIsDropdownOpen(null)}
       defaultValue={currentLevel}
-      toggle={
-        <DropdownToggle
+      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+        <MenuToggle
+          ref={toggleRef}
           id={`toggle-basic-${loggerName}`}
-          onToggle={() => setIsDropdownOpen(prevState => (prevState === loggerName ? null : loggerName))}
+          onClick={() => setIsDropdownOpen(prevState => (prevState === loggerName ? null : loggerName))}
         >
           <LogLevel level={currentLevel} />
-        </DropdownToggle>
-      }
+        </MenuToggle>
+      )}
       isOpen={isDropdownOpen === loggerName}
-      dropdownItems={items}
-    />
+    >
+      <DropdownList>{items}</DropdownList>
+    </Dropdown>
   )
 }
 const LogLevel: React.FunctionComponent<{ level: string }> = ({ level }) => {
@@ -166,19 +172,22 @@ export const Loggers: React.FunctionComponent = () => {
           <Dropdown
             data-testid='attribute-select'
             onSelect={() => setIsLogLevelDropdownOpen(false)}
+            onOpenChange={setIsLogLevelDropdownOpen}
             defaultValue='INFO'
-            toggle={
-              <DropdownToggle
+            toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+              <MenuToggle
+                ref={toggleRef}
                 data-testid='attribute-select-toggle'
                 id='toggle-basic'
-                onToggle={(_event, val) => setIsLogLevelDropdownOpen(val)}
+                onClick={() => setIsLogLevelDropdownOpen(!isLogLevelDropdownOpen)}
               >
                 <LogLevel level={logLevel} />
-              </DropdownToggle>
-            }
+              </MenuToggle>
+            )}
             isOpen={isLogLevelDropdownOpen}
-            dropdownItems={dropdownItems}
-          />
+          >
+            <DropdownList>{dropdownItems}</DropdownList>
+          </Dropdown>
           <ToolbarFilter
             chips={filters}
             deleteChip={(_e, filter) => onDeleteFilter(filter as string)}

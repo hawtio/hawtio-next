@@ -13,21 +13,26 @@ import {
   DataListItemCells,
   DataListItemRow,
   DataListToggle,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
   Form,
   FormGroup,
   FormHelperText,
   HelperText,
   HelperTextItem,
+  MenuToggle,
+  MenuToggleElement,
   Text,
   TextInput,
   Title,
 } from '@patternfly/react-core'
-import { Dropdown, DropdownItem, DropdownPosition, KebabToggle } from '@patternfly/react-core/deprecated'
 import { LockIcon } from '@patternfly/react-icons'
 import React, { createContext, useContext, useState } from 'react'
 import './OperationForm.css'
 import { Operation, OperationArgument } from './operation'
 import { operationService } from './operation-service'
+import EllipsisVIcon from '@patternfly/react-icons/dist/js/icons/ellipsis-v-icon'
 
 export const OperationContext = createContext<{
   name: string
@@ -124,19 +129,23 @@ const OperationActions: React.FunctionComponent = () => {
     >
       <Dropdown
         key={`operation-action-dropdown-${name}`}
-        isPlain
-        position={DropdownPosition.right}
         isOpen={isDropdownOpen}
-        toggle={<KebabToggle onToggle={handleDropdownToggle} />}
-        dropdownItems={[
+        onOpenChange={setIsDropdownOpen}
+        toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+          <MenuToggle variant='plain' ref={toggleRef} onClick={handleDropdownToggle}>
+            <EllipsisVIcon />
+          </MenuToggle>
+        )}
+      >
+        <DropdownList>
           <DropdownItem key={`operation-action-copy-method-name-${name}`} onClick={copyMethodName}>
             Copy method name
-          </DropdownItem>,
+          </DropdownItem>
           <DropdownItem key={`operation-action-copy-jolokia-url-${name}`} onClick={copyJolokiaURL}>
             Copy Jolokia URL
-          </DropdownItem>,
-        ]}
-      />
+          </DropdownItem>
+        </DropdownList>
+      </Dropdown>
     </DataListAction>
   )
 }

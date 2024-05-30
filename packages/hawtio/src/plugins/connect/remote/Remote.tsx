@@ -13,14 +13,18 @@ import {
   DataListItem,
   DataListItemCells,
   DataListItemRow,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
   Icon,
+  MenuToggle,
+  MenuToggleElement,
   Modal,
   ModalVariant,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core'
-import { Dropdown, DropdownItem, DropdownPosition, KebabToggle } from '@patternfly/react-core/deprecated'
 import { PluggedIcon, PlusIcon, UnpluggedIcon } from '@patternfly/react-icons'
 import React, { useContext, useEffect, useState } from 'react'
 import { DELETE } from '../connections'
@@ -28,6 +32,7 @@ import { ConnectContext } from '../context'
 import { log } from '../globals'
 import { ConnectionModal } from './ConnectionModal'
 import { ImportModal } from './ImportModal'
+import EllipsisVIcon from '@patternfly/react-icons/dist/js/icons/ellipsis-v-icon'
 
 export const Remote: React.FunctionComponent = () => {
   const { connections } = useContext(ConnectContext)
@@ -76,18 +81,21 @@ const RemoteToolbar: React.FunctionComponent = () => {
         <ToolbarItem>
           <Dropdown
             key='connect-toolbar-dropdown'
-            isPlain
             isOpen={isDropdownOpen}
-            toggle={<KebabToggle onToggle={() => setIsDropdownOpen(!isDropdownOpen)} />}
-            dropdownItems={[
+            onOpenChange={setIsDropdownOpen}
+            toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+              <MenuToggle ref={toggleRef} onClick={() => setIsDropdownOpen(!isDropdownOpen)}></MenuToggle>
+            )}
+          >
+            <DropdownList>
               <DropdownItem key='connect-toolbar-dropdown-import' onClick={handleImportModalToggle}>
                 Import connections
-              </DropdownItem>,
+              </DropdownItem>
               <DropdownItem key='connect-toolbar-dropdown-export' onClick={exportConnections}>
                 Export connections
-              </DropdownItem>,
-            ]}
-          />
+              </DropdownItem>
+            </DropdownList>
+          </Dropdown>
         </ToolbarItem>
       </ToolbarContent>
       <ConnectionModal mode='add' isOpen={isAddOpen} onClose={handleAddToggle} input={initialConnection} />
@@ -218,19 +226,23 @@ const ConnectionItem: React.FunctionComponent<{
           </Button>
           <Dropdown
             key={`connection-action-dropdown-${id}`}
-            isPlain
-            position={DropdownPosition.right}
             isOpen={isDropdownOpen}
-            toggle={<KebabToggle onToggle={handleDropdownToggle} />}
-            dropdownItems={[
+            onOpenChange={setIsDropdownOpen}
+            toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+              <MenuToggle variant='plain' ref={toggleRef} onClick={handleDropdownToggle}>
+                <EllipsisVIcon />
+              </MenuToggle>
+            )}
+          >
+            <DropdownList>
               <DropdownItem key={`connection-action-edit-${id}`} onClick={handleEditToggle}>
                 Edit
-              </DropdownItem>,
+              </DropdownItem>
               <DropdownItem key={`connection-action-delete-${id}`} onClick={handleConfirmDeleteToggle}>
                 Delete
-              </DropdownItem>,
-            ]}
-          />
+              </DropdownItem>
+            </DropdownList>
+          </Dropdown>
           <ConfirmDeleteModal />
         </DataListAction>
       </DataListItemRow>

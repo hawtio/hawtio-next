@@ -1,8 +1,21 @@
 import { eventService } from '@hawtiosrc/core'
 import { workspace } from '@hawtiosrc/plugins/shared'
-import { Button, Modal, ModalVariant, Skeleton, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core'
-import { Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core/deprecated'
+import {
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  MenuToggle,
+  MenuToggleElement,
+  Modal,
+  ModalVariant,
+  Skeleton,
+  Toolbar,
+  ToolbarContent,
+  ToolbarItem,
+} from '@patternfly/react-core'
 import { AsleepIcon, PlayIcon, Remove2Icon } from '@patternfly/react-icons'
+import EllipsisVIcon from '@patternfly/react-icons/dist/js/icons/ellipsis-v-icon'
 import React, { useState } from 'react'
 import {
   CONTEXT_OPERATIONS,
@@ -90,8 +103,10 @@ export const ContextToolbar: React.FunctionComponent<{
   }
 
   const onDeleteClicked = () => {
-    setIsDropdownOpen(false)
-    handleConfirmDeleteToggle()
+    if (isDeleteEnabled()) {
+      setIsDropdownOpen(false)
+      handleConfirmDeleteToggle()
+    }
   }
 
   const onDeleteConfirmClicked = () => {
@@ -187,18 +202,11 @@ export const ContextToolbar: React.FunctionComponent<{
   const dropdownItems = [
     <DropdownItem
       key='delete'
-      component={
-        <Button
-          variant='plain'
-          isDisabled={
-            !(firstContext && firstContext.node.hasInvokeRights(CONTEXT_OPERATIONS.stop)) || !isDeleteEnabled()
-          }
-          onClick={onDeleteClicked}
-        >
-          <Remove2Icon /> Delete
-        </Button>
-      }
-    />,
+      isDisabled={!(firstContext && firstContext.node.hasInvokeRights(CONTEXT_OPERATIONS.stop)) || !isDeleteEnabled()}
+      onClick={onDeleteClicked}
+    >
+      <Remove2Icon /> Delete
+    </DropdownItem>,
   ]
 
   return (
@@ -208,16 +216,22 @@ export const ContextToolbar: React.FunctionComponent<{
           {toolbarButtons}
           <ToolbarItem id='camel-contexts-toolbar-item-dropdown'>
             <Dropdown
-              toggle={
-                <KebabToggle
+              onSelect={() => onDropdownToggle(!isDropdownOpen)}
+              onOpenChange={onDropdownToggle}
+              toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                <MenuToggle
+                  ref={toggleRef}
+                  variant='plain'
                   id='camel-contexts-toolbar-item-dropdown-toggle'
-                  onToggle={(_event, isOpen: boolean) => onDropdownToggle(isOpen)}
-                />
-              }
+                  onClick={() => onDropdownToggle(!isDropdownOpen)}
+                >
+                  <EllipsisVIcon />
+                </MenuToggle>
+              )}
               isOpen={isDropdownOpen}
-              dropdownItems={dropdownItems}
-              isPlain
-            />
+            >
+              <DropdownList>{dropdownItems}</DropdownList>
+            </Dropdown>
           </ToolbarItem>
         </ToolbarContent>
       </Toolbar>
