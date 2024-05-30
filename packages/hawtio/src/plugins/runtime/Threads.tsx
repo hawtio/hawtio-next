@@ -20,8 +20,12 @@ import {
   ToolbarGroup,
   ToolbarItem,
   EmptyStateHeader,
+  DropdownItem,
+  MenuToggle,
+  MenuToggleElement,
+  Dropdown,
+  DropdownList,
 } from '@patternfly/react-core'
-import { Dropdown, DropdownItem, DropdownToggle } from '@patternfly/react-core/deprecated'
 import React, { useEffect, useState } from 'react'
 
 import { Thread } from './types'
@@ -234,19 +238,22 @@ export const Threads: React.FunctionComponent = () => {
               setIsDropdownOpen(false)
               addToFilters()
             }}
+            onOpenChange={setIsDropdownOpen}
             defaultValue='Name'
-            toggle={
-              <DropdownToggle
+            toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+              <MenuToggle
+                ref={toggleRef}
                 data-testid='attribute-select-toggle'
                 id='toggle-basic'
-                onToggle={(_event, val) => setIsDropdownOpen(val)}
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
                 {tableColumns.find(att => att.value === attributeMenuItem)?.value}
-              </DropdownToggle>
-            }
+              </MenuToggle>
+            )}
             isOpen={isDropdownOpen}
-            dropdownItems={dropdownItems}
-          />
+          >
+            <DropdownList>{dropdownItems}</DropdownList>
+          </Dropdown>
           <ToolbarFilter
             chips={searchTerm !== '' ? [...filters, `${attributeMenuItem}:${searchTerm}`] : filters}
             deleteChip={(_e, filter) => onDeleteFilter(filter as string)}

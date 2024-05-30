@@ -21,8 +21,12 @@ import {
   ToolbarItem,
   EmptyStateHeader,
   Icon,
+  Dropdown,
+  DropdownItem,
+  MenuToggle,
+  MenuToggleElement,
+  DropdownList,
 } from '@patternfly/react-core'
-import { Dropdown, DropdownItem, DropdownToggle } from '@patternfly/react-core/deprecated'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import { CheckCircleIcon, ExclamationCircleIcon, SearchIcon } from '@patternfly/react-icons'
 import { Trace } from './types'
@@ -201,36 +205,42 @@ export const TraceView: React.FunctionComponent = () => {
             data-testid='http-method-select'
             id='http-dropdown'
             onSelect={() => setIsHttpMethodFilterDropdownOpen(false)}
-            toggle={
-              <DropdownToggle
+            onOpenChange={setIsHttpMethodFilterDropdownOpen}
+            toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+              <MenuToggle
+                ref={toggleRef}
                 data-testid='http-method-select-toggle'
                 id='http-method-toggle'
-                onToggle={(_event, val) => setIsHttpMethodFilterDropdownOpen(val)}
+                onClick={() => setIsHttpMethodFilterDropdownOpen(!isHttpMethodFilterDropdownOpen)}
               >
                 <HttpMethodLabel method={httpMethodFilter} />
-              </DropdownToggle>
-            }
+              </MenuToggle>
+            )}
             isOpen={isHttpMethodFilterDropdownOpen}
-            dropdownItems={httpMethodsDropdownItems}
-          />
+          >
+            <DropdownList>{httpMethodsDropdownItems}</DropdownList>
+          </Dropdown>
         </ToolbarItem>
         <ToolbarGroup>
           <Dropdown
             data-testid='attribute-select'
             onSelect={() => setIsFilterDropdownOpen(false)}
+            onOpenChange={setIsFilterDropdownOpen}
             defaultValue='HTTP Method'
-            toggle={
-              <DropdownToggle
+            toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+              <MenuToggle
+                ref={toggleRef}
                 data-testid='attribute-select-toggle'
                 id='toggle-basic'
-                onToggle={(_event, val) => setIsFilterDropdownOpen(val)}
+                onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
               >
                 {tableColumns.find(att => att.value === currentTraceFilter)?.value}
-              </DropdownToggle>
-            }
+              </MenuToggle>
+            )}
             isOpen={isFilterDropdownOpen}
-            dropdownItems={dropdownItems}
-          />
+          >
+            <DropdownList>{dropdownItems}</DropdownList>
+          </Dropdown>
           <ToolbarFilter
             chips={filters}
             deleteChip={(_e, filter) => onDeleteFilter(filter as string)}
