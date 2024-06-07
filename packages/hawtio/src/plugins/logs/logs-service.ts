@@ -48,7 +48,7 @@ export interface ILogsService {
   filter(logs: LogEntry[], filter: LogFilter): LogEntry[]
 
   loadOptions(): LogsOptions
-  saveOptions(value: Partial<LogsOptions>): void
+  saveOptions(options: Partial<LogsOptions>): void
 }
 
 class LogsService implements ILogsService {

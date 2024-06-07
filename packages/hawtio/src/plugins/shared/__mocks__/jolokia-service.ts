@@ -1,7 +1,7 @@
 import Jolokia, { ListRequestOptions, Request, Response } from 'jolokia.js'
 import { AttributeValues, IJolokiaService, JolokiaListMethod, JolokiaStoredOptions } from '../jolokia-service'
-import jmxCamelResponse from './jmx-camel-tree.json'
 import { OptimisedJmxDomains } from '../tree'
+import jmxCamelResponse from './jmx-camel-tree.json'
 
 class MockJolokiaService implements IJolokiaService {
   constructor() {
@@ -42,6 +42,10 @@ class MockJolokiaService implements IJolokiaService {
   }
 
   async readAttribute(mbean: string, attribute: string): Promise<unknown> {
+    return null
+  }
+
+  async writeAttribute(mbean: string, attribute: string, value: unknown): Promise<unknown> {
     return null
   }
 
