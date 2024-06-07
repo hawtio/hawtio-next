@@ -15,7 +15,9 @@ import { parseBoolean } from '@hawtiosrc/util/strings'
 import Jolokia, {
   AttributeRequestOptions,
   BaseRequestOptions,
+  BulkRequestOptions,
   ErrorResponse,
+  ExecuteRequestOptions,
   ListRequestOptions,
   ListResponse,
   NotificationMode,
@@ -33,8 +35,8 @@ import { func, is, object, type } from 'superstruct'
 import {
   PARAM_KEY_CONNECTION,
   PARAM_KEY_REDIRECT,
-  connectService,
   SESSION_KEY_CURRENT_CONNECTION,
+  connectService,
 } from '../shared/connect-service'
 import { log } from './globals'
 import { OptimisedJmxDomains, OptimisedMBeanInfo, isJmxDomain, isJmxDomains, isMBeanInfo } from './tree'
@@ -111,11 +113,12 @@ export interface IJolokiaService {
   getFullJolokiaUrl(): Promise<string>
   list(options?: ListRequestOptions): Promise<OptimisedJmxDomains>
   sublist(paths: string | string[], options?: ListRequestOptions): Promise<OptimisedJmxDomains>
-  readAttributes(mbean: string): Promise<AttributeValues>
-  readAttribute(mbean: string, attribute: string): Promise<unknown>
-  execute(mbean: string, operation: string, args?: unknown[]): Promise<unknown>
+  readAttributes(mbean: string, options?: RequestOptions): Promise<AttributeValues>
+  readAttribute(mbean: string, attribute: string, options?: RequestOptions): Promise<unknown>
+  writeAttribute(mbean: string, attribute: string, value: unknown, options?: RequestOptions): Promise<unknown>
+  execute(mbean: string, operation: string, args?: unknown[], options?: ExecuteRequestOptions): Promise<unknown>
   search(mbeanPattern: string): Promise<string[]>
-  bulkRequest(requests: Request[]): Promise<Response[]>
+  bulkRequest(requests: Request[], options?: BulkRequestOptions): Promise<Response[]>
   register(request: Request, callback: (response: Response | ErrorResponse) => void): Promise<number>
   unregister(handle: number): void
   loadUpdateRate(): number
@@ -651,7 +654,8 @@ class JolokiaService implements IJolokiaService {
       requests,
       onBulkSuccessAndError(
         response => {
-          bulkResponse.push(response)
+          // Response can never be string in Hawtio's setup of Jolokia
+          bulkResponse.push(response as Response)
           // Resolve only when all the responses from the bulk request are collected
           if (bulkResponse.length === requests.length) {
             mergeResponses()
@@ -686,55 +690,72 @@ class JolokiaService implements IJolokiaService {
     return target
   }
 
-  async readAttributes(mbean: string): Promise<AttributeValues> {
+  async readAttributes(mbean: string, options?: RequestOptions): Promise<AttributeValues> {
     const jolokia = await this.getJolokia()
     return new Promise(resolve => {
       jolokia.request(
         { type: 'read', mbean },
         onSuccessAndError(
-          response => resolve(response.value as AttributeValues),
+          response => {
+            // Response can never be string in Hawtio's setup of Jolokia
+            resolve((response as Response).value as AttributeValues)
+          },
           error => {
             log.error('Error during readAttributes:', error)
             resolve({})
           },
+          options,
         ),
       )
     })
   }
 
-  async readAttribute(mbean: string, attribute: string): Promise<unknown> {
+  async readAttribute(mbean: string, attribute: string, options?: RequestOptions): Promise<unknown> {
     const jolokia = await this.getJolokia()
     return new Promise(resolve => {
       jolokia.request(
         { type: 'read', mbean, attribute },
         onSuccessAndError(
-          response => resolve(response.value as unknown),
+          response => {
+            // Response can never be string in Hawtio's setup of Jolokia
+            resolve((response as Response).value as unknown)
+          },
           error => {
             log.error('Error during readAttribute:', error)
             resolve(null)
           },
+          options,
         ),
       )
     })
   }
 
-  async writeAttribute(mbean: string, attribute: string, value: unknown): Promise<unknown> {
+  async writeAttribute(mbean: string, attribute: string, value: unknown, options?: RequestOptions): Promise<unknown> {
     const jolokia = await this.getJolokia()
     return new Promise(resolve => {
       jolokia.request(
         { type: 'write', mbean, attribute, value },
         onSuccessAndError(
-          response => resolve(response.value as unknown),
+          response => {
+            // Response can never be string in Hawtio's setup of Jolokia
+            resolve((response as Response).value as unknown)
+          },
           error => {
             log.error('Error during writeAttribute:', error)
             resolve(null)
           },
+          options,
         ),
       )
     })
   }
 
-  async execute(mbean: string, operation: string, args: unknown[] = []): Promise<unknown> {
+  async execute(
+    mbean: string,
+    operation: string,
+    args: unknown[] = [],
+    options?: ExecuteRequestOptions,
+  ): Promise<unknown> {
     const jolokia = await this.getJolokia()
     return new Promise((resolve, reject) => {
       jolokia.execute(
@@ -744,6 +765,7 @@ class JolokiaService implements IJolokiaService {
         onExecuteSuccessAndError(
           response => resolve(response),
           error => reject(error.stacktrace || error.error),
+          options,
         ),
       )
     })
@@ -765,7 +787,7 @@ class JolokiaService implements IJolokiaService {
     })
   }
 
-  async bulkRequest(requests: Request[]): Promise<Response[]> {
+  async bulkRequest(requests: Request[], options?: BulkRequestOptions): Promise<Response[]> {
     const jolokia = await this.getJolokia()
     return new Promise(resolve => {
       const bulkResponse: Response[] = []
@@ -773,7 +795,8 @@ class JolokiaService implements IJolokiaService {
         requests,
         onBulkSuccessAndError(
           response => {
-            bulkResponse.push(response)
+            // Response can never be string in Hawtio's setup of Jolokia
+            bulkResponse.push(response as Response)
             // Resolve only when all the responses from the bulk request are collected
             if (bulkResponse.length === requests.length) {
               resolve(bulkResponse)
@@ -787,6 +810,7 @@ class JolokiaService implements IJolokiaService {
               resolve(bulkResponse)
             }
           },
+          options,
         ),
       )
     })

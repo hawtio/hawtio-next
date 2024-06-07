@@ -1,24 +1,38 @@
+import { eventService } from '@hawtiosrc/core'
+import { rbacService } from '@hawtiosrc/plugins/rbac/rbac-service'
 import { AttributeValues, jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { escapeMBean } from '@hawtiosrc/util/jolokia'
-import { Request, Response } from 'jolokia.js'
+import { Request, RequestOptions, Response } from 'jolokia.js'
 import { log } from '../globals'
-import { rbacService } from '@hawtiosrc/plugins/rbac/rbac-service'
-import { eventService } from '@hawtiosrc/core'
+import { jmxPreferencesService } from '../jmx-preferences-service'
 
 class AttributeService {
   private handles: number[] = []
 
+  private requestOptions(): RequestOptions {
+    const { serializeLong } = jmxPreferencesService.loadOptions()
+    return serializeLong ? { serializeLong: 'string' } : {}
+  }
+
+  private setupConfig(request: Request): Request {
+    const { serializeLong } = jmxPreferencesService.loadOptions()
+    if (serializeLong) {
+      request.config = { ...request.config, serializeLong: 'string' }
+    }
+    return request
+  }
+
   async read(mbean: string): Promise<AttributeValues> {
-    return await jolokiaService.readAttributes(mbean)
+    return await jolokiaService.readAttributes(mbean, this.requestOptions())
   }
 
   async readWithCallback(mbean: string, callback: (attrs: AttributeValues) => void): Promise<void> {
-    const attrs = await jolokiaService.readAttributes(mbean)
+    const attrs = await jolokiaService.readAttributes(mbean, this.requestOptions())
     callback(attrs)
   }
 
   async register(request: Request, callback: (response: Response) => void) {
-    const handle = await jolokiaService.register(request, callback)
+    const handle = await jolokiaService.register(this.setupConfig(request), callback)
     log.debug('Register handle:', handle)
     this.handles.push(handle)
   }
@@ -47,12 +61,12 @@ class AttributeService {
   }
 
   async update(mbeanName: string, attribute: string, value: unknown) {
-    await jolokiaService.writeAttribute(mbeanName, attribute, value)
+    await jolokiaService.writeAttribute(mbeanName, attribute, value, this.requestOptions())
     eventService.notify({ type: 'success', message: `Updated attribute: ${attribute}` })
   }
 
   async bulkRequest(requests: Request[]) {
-    return jolokiaService.bulkRequest(requests)
+    return jolokiaService.bulkRequest(requests.map(this.setupConfig))
   }
 }
 
