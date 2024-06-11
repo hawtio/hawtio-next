@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.3.0-dev.1](https://github.com/hawtio/hawtio-next/compare/v1.3.0-dev.0...v1.3.0-dev.1) (2024-06-11)
+
+
+### Features
+
+* **shared,jmx:** support serialising long to string in JSON response from Jolokia ([83c71a1](https://github.com/hawtio/hawtio-next/commit/83c71a1c1077f2e74ffaa7e0a300059f4818a916)), closes [#292](https://github.com/hawtio/hawtio-next/issues/292)
+
 ## [1.3.0-dev.0](https://github.com/hawtio/hawtio-next/compare/v1.2.2...v1.3.0-dev.0) (2024-05-30)
 
 
