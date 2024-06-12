@@ -246,6 +246,7 @@ export const BrowseMessages: React.FunctionComponent = () => {
                 <Thead>
                   <Tr>
                     <Th
+                      aria-label='select-message-header'
                       select={{
                         onSelect: (_event, isSelecting) => onSelectAll(isSelecting),
                         isSelected: isAllSelected(),

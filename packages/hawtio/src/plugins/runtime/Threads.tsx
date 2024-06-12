@@ -309,7 +309,7 @@ export const Threads: React.FunctionComponent = () => {
                         {att.value}
                       </Th>
                     ))}
-                    <Th></Th>
+                    <Th aria-label='details-head' />
                   </Tr>
                 </Thead>
                 <Tbody>

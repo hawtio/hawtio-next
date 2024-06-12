@@ -117,13 +117,14 @@ export const Contexts: React.FunctionComponent = () => {
         <Thead>
           <Tr>
             <Th
+              aria-label='select-header'
               select={{
                 onSelect: (_event, isSelecting) => selectAllContexts(isSelecting),
                 isSelected: contexts.length === selectedCtx.length,
               }}
             />
             <Th key='context-header'>Context</Th>
-            <Th key={'state-header'}>State</Th>
+            <Th key='state-header'>State</Th>
           </Tr>
         </Thead>
         <Tbody>

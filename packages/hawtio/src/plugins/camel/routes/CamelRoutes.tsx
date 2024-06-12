@@ -173,6 +173,7 @@ export const CamelRoutes: React.FunctionComponent = () => {
         <Thead noWrap>
           <Tr>
             <Th
+              aria-label='select-route-header'
               select={{
                 onSelect: (_event, isSelecting) => onSelectAll(isSelecting),
                 isSelected: isAllSelected(),
