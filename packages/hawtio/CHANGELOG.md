@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.0.8](https://github.com/hawtio/hawtio-next/compare/v1.0.7...v1.0.8) (2024-06-12)
+
+
+### Bug Fixes
+
+* **jmx:** Handle MBeanInfo in Jolokia list() when there was error fetching the info (fixes [#902](https://github.com/hawtio/hawtio-next/issues/902)) ([5d47a45](https://github.com/hawtio/hawtio-next/commit/5d47a45a3f002bf9ee831a41b2578c30b67dd755))
+* **shared:** use MBeanInfoError from jolokia.js instead of custom error type ([f474031](https://github.com/hawtio/hawtio-next/commit/f474031de894428129d3d396dcc81c7811922ce6))
+
 ## [1.0.7](https://github.com/hawtio/hawtio-next/compare/v1.0.6...v1.0.7) (2024-02-21)
 
 
