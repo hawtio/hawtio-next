@@ -1,22 +1,21 @@
 import { HawtioEmptyCard, HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
 import {
+  MenuToggle,
+  MenuToggleElement,
   Panel,
   PanelMain,
   PanelMainBody,
   SearchInput,
+  Select,
+  SelectList,
+  SelectOption,
   Toolbar,
   ToolbarContent,
   ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core'
-import {
-  Select,
-  SelectDirection,
-  SelectOption,
-  SelectOptionObject,
-  SelectVariant,
-} from '@patternfly/react-core/deprecated'
+
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import { Response } from 'jolokia.js'
 import React, { ChangeEvent, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from 'react'
@@ -163,12 +162,8 @@ export const RestServices: React.FunctionComponent = () => {
     filterRestSvcData(restSvcData, removed)
   }
 
-  const onSelectFilterType = (
-    event: ChangeEvent<Element> | MouseEvent<Element>,
-    value: string | SelectOptionObject,
-    isPlaceholder?: boolean,
-  ) => {
-    if (isPlaceholder || !value) return
+  const onSelectFilterType = (event?: ChangeEvent<Element> | MouseEvent<Element>, value?: string | number) => {
+    if (!value) return
 
     setFilterType(value as string)
     setFilterInputPlaceholder('Filter by ' + value + ' ...')
@@ -198,19 +193,29 @@ export const RestServices: React.FunctionComponent = () => {
               <ToolbarGroup variant='filter-group'>
                 <ToolbarItem>
                   <Select
-                    toggleRef={() => filterTypeToggleRef}
-                    variant={SelectVariant.single}
+                    onOpenChange={setIsFilterTypeOpen}
                     id='select-filter-type'
                     aria-label='select-filter-type'
-                    onToggle={(_event, isOpen: boolean) => onSelectFilterTypeToggle(isOpen)}
+                    toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                      <MenuToggle
+                        role='menu'
+                        ref={toggleRef}
+                        onClick={() => onSelectFilterTypeToggle(!isFilterTypeOpen)}
+                      >
+                        {filterType}
+                      </MenuToggle>
+                    )}
                     onSelect={onSelectFilterType}
-                    selections={filterType}
+                    selected={filterType}
                     isOpen={isFilterTypeOpen}
-                    direction={SelectDirection.down}
                   >
-                    {headers.map((name, index) => (
-                      <SelectOption key={name + '-' + index} value={name} />
-                    ))}
+                    <SelectList>
+                      {headers.map((name, index) => (
+                        <SelectOption key={name + '-' + index} value={name}>
+                          {name}
+                        </SelectOption>
+                      ))}
+                    </SelectList>
                   </Select>
                 </ToolbarItem>
                 <ToolbarFilter

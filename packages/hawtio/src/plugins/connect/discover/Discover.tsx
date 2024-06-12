@@ -16,14 +16,18 @@ import {
   DescriptionListTerm,
   Gallery,
   Label,
+  MenuToggle,
+  MenuToggleElement,
   SearchInput,
+  Select,
+  SelectList,
+  SelectOption,
   Text,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core'
-import { Select, SelectOption, SelectProps } from '@patternfly/react-core/deprecated'
 import React, { useContext, useEffect, useState } from 'react'
 import { ADD, UPDATE } from '../connections'
 import { ConnectContext } from '../context'
@@ -96,7 +100,7 @@ export const Discover: React.FunctionComponent = () => {
     return <HawtioLoadingCard message='Please wait, discovering agents...' />
   }
 
-  const selectLabel: SelectProps['onSelect'] = (_, value) => {
+  const selectLabel = (event?: React.MouseEvent<Element, MouseEvent>, value?: string | number) => {
     setLabel(value as typeof label)
     setIsSelectLabelOpen(!isSelectLabelOpen)
   }
@@ -157,15 +161,25 @@ export const Discover: React.FunctionComponent = () => {
           <ToolbarItem id='connect-discover-toolbar-label'>
             <Select
               id='connect-discover-toolbar-label-select'
-              variant='single'
               aria-label='Filter Label'
-              selections={label}
+              selected={label}
               isOpen={isSelectLabelOpen}
-              onToggle={() => setIsSelectLabelOpen(!isSelectLabelOpen)}
+              onOpenChange={setIsSelectLabelOpen}
+              toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                <MenuToggle ref={toggleRef} onClick={() => setIsSelectLabelOpen(!isSelectLabelOpen)}>
+                  {label}
+                </MenuToggle>
+              )}
               onSelect={selectLabel}
             >
-              <SelectOption key='agent' value='Agent' isDisabled={!agentDiscoverable} />
-              <SelectOption key='jvm' value='JVM' isDisabled={!jvmListable} />
+              <SelectList>
+                <SelectOption key='agent' value='Agent' isDisabled={!agentDiscoverable}>
+                  Agent
+                </SelectOption>
+                <SelectOption key='jvm' value='JVM' isDisabled={!jvmListable}>
+                  JVM
+                </SelectOption>
+              </SelectList>
             </Select>
           </ToolbarItem>
           <ToolbarItem id='connect-discover-toolbar-filter'>
