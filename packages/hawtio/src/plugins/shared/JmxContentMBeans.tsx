@@ -1,7 +1,6 @@
 import { useContext } from 'react'
 import { Card, CardBody, Panel, TextVariants, Text } from '@patternfly/react-core'
-import { Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
-import { Table } from '@patternfly/react-table/deprecated'
+import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
 import './JmxContentMBeans.css'

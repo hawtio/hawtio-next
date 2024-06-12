@@ -30,8 +30,12 @@ import {
   ToolbarItem,
   EmptyStateHeader,
   EmptyStateFooter,
+  MenuToggle,
+  MenuToggleElement,
+  SelectOption,
+  Select,
+  SelectList,
 } from '@patternfly/react-core'
-import { Select, SelectOption, SelectOptionObject } from '@patternfly/react-core/deprecated'
 import { SearchIcon } from '@patternfly/react-icons'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import React, { useEffect, useRef, useState } from 'react'
@@ -128,8 +132,9 @@ const LogsTable: React.FunctionComponent = () => {
     }
   }
 
-  const onLevelSelect = (event: React.MouseEvent | React.ChangeEvent, value: string | SelectOptionObject) => {
-    const checked = (event.target as HTMLInputElement).checked
+  const onLevelSelect = (event?: React.MouseEvent<Element, MouseEvent>, value?: string | number) => {
+    const checked = (event?.target as HTMLInputElement).checked
+
     setFilters(prev => {
       const prevLevels = prev.level
       const newLevels = checked ? [...prevLevels, value as string] : prevLevels.filter(l => l !== value)
@@ -202,17 +207,24 @@ const LogsTable: React.FunctionComponent = () => {
           >
             <Select
               id='logs-table-toolbar-level-select'
-              variant='checkbox'
               aria-label='Filter Level'
-              placeholderText='Level'
-              selections={filters.level}
+              selected={filters.level}
               isOpen={isSelectLevelOpen}
-              onToggle={() => setIsSelectLevelOpen(!isSelectLevelOpen)}
+              onOpenChange={setIsSelectLevelOpen}
+              toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                <MenuToggle role='menu' ref={toggleRef} onClick={() => setIsSelectLevelOpen(!isSelectLevelOpen)}>
+                  Level
+                </MenuToggle>
+              )}
               onSelect={onLevelSelect}
             >
-              {logLevels.map((level, index) => (
-                <SelectOption key={index} value={level} />
-              ))}
+              <SelectList>
+                {logLevels.map((level, index) => (
+                  <SelectOption hasCheckbox key={index} value={level} isSelected={filters.level.includes(level)}>
+                    <LogLevel level={level} />
+                  </SelectOption>
+                ))}
+              </SelectList>
             </Select>
           </ToolbarFilter>
           <ToolbarItem id='logs-table-toolbar-logger'>

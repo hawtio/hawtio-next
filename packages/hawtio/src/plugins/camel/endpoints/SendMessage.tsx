@@ -7,14 +7,19 @@ import {
   FlexItem,
   Form,
   FormGroup,
+  MenuToggle,
+  MenuToggleElement,
   Panel,
   PanelHeader,
   PanelMain,
   PanelMainBody,
+  Select,
+  SelectList,
+  SelectOption,
   TextInput,
   Title,
 } from '@patternfly/react-core'
-import { Select, SelectOption, SelectOptionObject, SelectVariant } from '@patternfly/react-core/deprecated'
+
 import { TrashIcon } from '@patternfly/react-icons'
 import * as monacoEditor from 'monaco-editor'
 import React, { FormEvent, useContext, useRef, useState } from 'react'
@@ -189,10 +194,8 @@ const MessageBody: React.FunctionComponent<{
     setMessageBody(body)
     onBodyChange(body)
   }
-  const handleToggle = () => {
-    setDropdownOpen(!isDropdownOpen)
-  }
-  const handleFormatChange = (event: React.MouseEvent | React.ChangeEvent, value: string | SelectOptionObject) => {
+
+  const handleFormatChange = (_event?: React.MouseEvent<Element, MouseEvent>, value?: string | number) => {
     setSelectedFormat(value as Language)
     setDropdownOpen(false)
   }
@@ -211,20 +214,31 @@ const MessageBody: React.FunctionComponent<{
       <FormGroup>
         <Flex>
           <FlexItem flex={{ default: 'flexNone', md: 'flex_2' }}>
-            {' '}
             <Select
-              variant={SelectVariant.single}
               aria-label='Select Format'
-              onToggle={handleToggle}
+              toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                <MenuToggle aria-label='options-menu' ref={toggleRef} onClick={() => setDropdownOpen(!isDropdownOpen)}>
+                  {selectedFormat}
+                </MenuToggle>
+              )}
+              onOpenChange={setDropdownOpen}
               onSelect={handleFormatChange}
-              selections={selectedFormat}
+              selected={selectedFormat}
               isOpen={isDropdownOpen}
             >
-              <SelectOption label='xml' value={Language.xml} />
-              <SelectOption label='json' value={Language.json} />
-              <SelectOption label='plaintext' value={Language.plaintext} />
+              <SelectList>
+                <SelectOption label='xml' value={Language.xml}>
+                  {Language.xml}
+                </SelectOption>
+                <SelectOption label='json' value={Language.json}>
+                  {Language.json}
+                </SelectOption>
+                <SelectOption label='plaintext' value={Language.plaintext}>
+                  {Language.plaintext}
+                </SelectOption>
+              </SelectList>
             </Select>
-          </FlexItem>{' '}
+          </FlexItem>
           <FlexItem flex={{ default: 'flexNone', md: 'flex_1' }}>
             <Button variant='secondary' size='sm' onClick={handleAutoFormat}>
               Format

@@ -15,8 +15,12 @@ import {
   ToolbarItem,
   EmptyStateHeader,
   EmptyStateFooter,
+  SelectOption,
+  Select,
+  SelectList,
+  MenuToggle,
+  MenuToggleElement,
 } from '@patternfly/react-core'
-import { Select, SelectOption, SelectOptionObject } from '@patternfly/react-core/deprecated'
 import { SearchIcon } from '@patternfly/react-icons'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useRef, useState } from 'react'
@@ -100,12 +104,8 @@ export const Triggers: React.FunctionComponent = () => {
     }
   }
 
-  const onStateSelect = (
-    _event: React.MouseEvent | React.ChangeEvent,
-    value: string | SelectOptionObject,
-    isPlaceHolder?: boolean,
-  ) => {
-    setFilters(prev => ({ ...prev, state: isPlaceHolder ? '' : (value as string) }))
+  const onStateSelect = (event?: React.MouseEvent | React.ChangeEvent, value?: string | number | undefined) => {
+    setFilters(prev => ({ ...prev, state: value == 'State' ? '' : (value as string) }))
   }
 
   const applyFilters = () => {
@@ -126,17 +126,27 @@ export const Triggers: React.FunctionComponent = () => {
           <ToolbarItem id='quartz-triggers-table-toolbar-state'>
             <Select
               id='quartz-triggers-table-toolbar-state-select'
-              variant='single'
+              selected={filters.state}
               aria-label='Filter State'
-              selections={filters.state}
               isOpen={isSelectStateOpen}
-              onToggle={() => setIsSelectStateOpen(!isSelectStateOpen)}
+              onOpenChange={setIsSelectStateOpen}
+              toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                <MenuToggle ref={toggleRef} onClick={() => setIsSelectStateOpen(!isSelectStateOpen)}>
+                  State
+                </MenuToggle>
+              )}
               onSelect={onStateSelect}
             >
-              {[
-                <SelectOption key={0} value='State' isPlaceholder />,
-                ...triggerStates.map((state, index) => <SelectOption key={index + 1} value={state} />),
-              ]}
+              <SelectList>
+                <SelectOption key={0} value='State'>
+                  State
+                </SelectOption>
+                {triggerStates.map((state, index) => (
+                  <SelectOption key={index + 1} value={state}>
+                    {state}
+                  </SelectOption>
+                ))}
+              </SelectList>
             </Select>
           </ToolbarItem>
           {['group', 'name', 'type'].map(key => (

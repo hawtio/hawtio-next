@@ -7,17 +7,16 @@ import {
   FormSection,
   HelperText,
   HelperTextItem,
+  MenuToggle,
+  MenuToggleElement,
+  Select,
+  SelectList,
+  SelectOption,
   TextInput,
 } from '@patternfly/react-core'
-import {
-  Select,
-  SelectDirection,
-  SelectOption,
-  SelectOptionObject,
-  SelectVariant,
-} from '@patternfly/react-core/deprecated'
+
 import { ExclamationCircleIcon } from '@patternfly/react-icons'
-import React, { ChangeEvent, MouseEvent, useContext, useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { CamelContext } from '../context'
 import { EndpointParametersForm } from './EndpointParametersForm'
 import { AddEndpointContext } from './context'
@@ -28,7 +27,6 @@ const placeholder = 'Select Component Name'
 export const AddEndpointWizard: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
   const ctx = useContext(AddEndpointContext)
-  const toggleRef = useRef<HTMLButtonElement | null>()
   const [isOpen, setIsOpen] = useState(false)
   const [endpointValidated, setEndpointValidated] = useState<'success' | 'error' | 'default'>('default')
 
@@ -55,16 +53,11 @@ export const AddEndpointWizard: React.FunctionComponent = () => {
     setIsOpen(isOpen)
   }
 
-  const onSelect = (
-    event: ChangeEvent<Element> | MouseEvent<Element>,
-    value: string | SelectOptionObject,
-    isPlaceholder?: boolean | undefined,
-  ) => {
+  const onSelect = (_event: React.MouseEvent<Element, MouseEvent> | undefined, value: string | number | undefined) => {
     if (placeholder === value) return
 
     ctx.setComponentName(value as string)
     setIsOpen(false)
-    toggleRef?.current?.focus()
   }
 
   const onEndpointPathChanged = (value: string) => {
@@ -93,17 +86,24 @@ export const AddEndpointWizard: React.FunctionComponent = () => {
     <Form isHorizontal>
       <FormGroup label='Component' isRequired fieldId='form-component-name'>
         <Select
-          toggleRef={() => toggleRef}
-          variant={SelectVariant.single}
           aria-label={placeholder}
-          onToggle={(_event, isOpen: boolean) => onToggle(isOpen)}
+          toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+            <MenuToggle ref={toggleRef} onClick={() => onToggle(!isOpen)}>
+              {placeholder}
+            </MenuToggle>
+          )}
           onSelect={onSelect}
-          selections={ctx.componentName}
+          onOpenChange={setIsOpen}
+          selected={ctx.componentName}
           isOpen={isOpen}
-          direction={SelectDirection.down}
-          placeholderText={placeholder}
         >
-          {ctx.componentNames?.map((name, index) => <SelectOption key={index} value={name} />) ?? []}
+          <SelectList>
+            {ctx.componentNames?.map((name, index) => (
+              <SelectOption key={index} value={name}>
+                {name}
+              </SelectOption>
+            )) ?? []}
+          </SelectList>
         </Select>
       </FormGroup>
       {ctx.componentName && (

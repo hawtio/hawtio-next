@@ -15,8 +15,13 @@ import {
   ToolbarItem,
   EmptyStateHeader,
   EmptyStateFooter,
+  Select,
+  SelectOption,
+  SelectList,
+  MenuToggleElement,
+  MenuToggle,
 } from '@patternfly/react-core'
-import { Select, SelectOption, SelectOptionObject } from '@patternfly/react-core/deprecated'
+
 import { SearchIcon } from '@patternfly/react-icons'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useRef, useState } from 'react'
@@ -87,11 +92,9 @@ export const Jobs: React.FunctionComponent = () => {
     }
   }
 
-  const onSelect =
-    (target: string) =>
-    (_event: React.MouseEvent | React.ChangeEvent, value: string | SelectOptionObject, isPlaceHolder?: boolean) => {
-      setFilters(prev => ({ ...prev, [target]: isPlaceHolder ? '' : value }))
-    }
+  const onSelect = (target: string) => (_event?: React.MouseEvent<Element, MouseEvent>, value?: string | number) => {
+    setFilters(prev => ({ ...prev, [target]: value === 'placeholder' ? '' : value }))
+  }
 
   const applyFilters = () => {
     setFilters(prev => ({ ...prev, ...tempFilters.current }))
@@ -124,33 +127,55 @@ export const Jobs: React.FunctionComponent = () => {
           <ToolbarItem id='quartz-jobs-table-toolbar-durable'>
             <Select
               id='quartz-jobs-table-toolbar-durable-select'
-              variant='single'
               aria-label='Filter Durable'
-              selections={filters.durability}
+              selected={filters.durability}
+              onOpenChange={setIsSelectDurableOpen}
               isOpen={isSelectDurableOpen}
-              onToggle={() => setIsSelectDurableOpen(!isSelectDurableOpen)}
+              toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                <MenuToggle ref={toggleRef} onClick={() => setIsSelectDurableOpen(!isSelectDurableOpen)}>
+                  Durable
+                </MenuToggle>
+              )}
               onSelect={onSelect('durability')}
             >
-              {[
-                <SelectOption key={0} value='Durable' isPlaceholder />,
-                ...['true', 'false'].map((state, index) => <SelectOption key={index + 1} value={state} />),
-              ]}
+              <SelectList>
+                <SelectOption key={0} value='placeholder'>
+                  Durable
+                </SelectOption>
+                <SelectOption key={1} value={'true'}>
+                  true
+                </SelectOption>
+                <SelectOption key={2} value={'false'}>
+                  false
+                </SelectOption>
+              </SelectList>
             </Select>
           </ToolbarItem>
           <ToolbarItem id='quartz-jobs-table-toolbar-recover'>
             <Select
               id='quartz-jobs-table-toolbar-recover-select'
-              variant='single'
               aria-label='Filter Recover'
-              selections={filters.shouldRecover}
+              selected={filters.shouldRecover}
+              onOpenChange={setIsSelectRecoverOpen}
               isOpen={isSelectRecoverOpen}
-              onToggle={() => setIsSelectRecoverOpen(!isSelectRecoverOpen)}
+              toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                <MenuToggle ref={toggleRef} onClick={() => setIsSelectRecoverOpen(!isSelectRecoverOpen)}>
+                  Recover
+                </MenuToggle>
+              )}
               onSelect={onSelect('shouldRecover')}
             >
-              {[
-                <SelectOption key={0} value='Recover' isPlaceholder />,
-                ...['true', 'false'].map((state, index) => <SelectOption key={index + 1} value={state} />),
-              ]}
+              <SelectList>
+                <SelectOption key={0} value='placeholder'>
+                  Recover
+                </SelectOption>
+                <SelectOption key={1} value={'true'}>
+                  true
+                </SelectOption>
+                <SelectOption key={2} value={'false'}>
+                  false
+                </SelectOption>
+              </SelectList>
             </Select>
           </ToolbarItem>
         </ToolbarGroup>
