@@ -117,8 +117,22 @@ class RuntimeService {
         const loadAverage = osMetrics.SystemLoadAverage
         const memFree = this.formatBytes(osMetrics.FreePhysicalMemorySize)
         const memTotal = this.formatBytes(osMetrics.TotalPhysicalMemorySize)
+        const chartUnit = memTotal[1] as string
+        const chartMemFree = this.formatBytes(osMetrics.FreePhysicalMemorySize, chartUnit)
+        const chartMemAvail = this.formatBytes(osMetrics.TotalPhysicalMemorySize, chartUnit)
+
         callback({ type: 'System', name: 'Available Processors', value: String(osMetrics.AvailableProcessors) })
-        callback({ type: 'System', name: 'CPU Load', value: String(cpuLoad), unit: '%', available: 100, chart: true })
+        callback({
+          type: 'System',
+          name: 'CPU Load',
+          value: String(cpuLoad),
+          unit: '%',
+          available: 100,
+          chart: true,
+          chartUnit: '%',
+          chartValue: String(cpuLoad),
+          chartAvailable: 100,
+        })
         callback({ type: 'System', name: 'Load Average', value: String(loadAverage) })
         callback({
           type: 'System',
@@ -126,6 +140,9 @@ class RuntimeService {
           value: memFree[0] as number,
           unit: memFree[1] as string,
           available: memTotal[0] as string,
+          availableUnit: memTotal[1] as string,
+          chartValue: chartMemFree[0] as number,
+          chartAvailable: chartMemAvail[0] as number,
           chart: true,
         })
 
@@ -184,14 +201,19 @@ class RuntimeService {
     return metrics
   }
 
-  formatBytes(bytes: number): (number | string)[] {
+  formatBytes(bytes: number, convertTo?: string): (number | string)[] {
     if (bytes === 0) {
       return [0, 'Bytes']
     }
     const kilobytes = 1024
     const decimalPlaces = 2
     const units = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-    const i = Math.floor(Math.log(bytes) / Math.log(kilobytes))
+    let i: number
+    if (convertTo && units.includes(convertTo)) {
+      i = units.indexOf(convertTo)
+    } else {
+      i = Math.floor(Math.log(bytes) / Math.log(kilobytes))
+    }
     const value = parseFloat((bytes / Math.pow(kilobytes, i)).toFixed(decimalPlaces))
     const unit = units[i]
     return [value, unit ?? '']

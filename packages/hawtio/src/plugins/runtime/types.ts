@@ -8,7 +8,11 @@ export type Metric = {
   name: string
   value: string | number
   unit?: string
+  availableUnit?: string
   available?: string | number
+  chartValue?: string | number
+  chartAvailable?: string | number
+  chartUnit?: string
   chart?: boolean
 }
 export type Thread = {

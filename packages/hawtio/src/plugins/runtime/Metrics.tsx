@@ -44,17 +44,20 @@ export const Metrics: React.FunctionComponent = () => {
                     {metric.name} :
                     <span>
                       {metric.value} {metric.unit ?? ''}
-                      {metric.available && ' of ' + metric.available + ' ' + (metric.unit ?? '')}
+                      {metric.available &&
+                        ' of ' + metric.available + ' ' + (metric.availableUnit ?? metric.unit ?? '')}
                     </span>
                     {metric.chart && (
                       <ChartBullet
-                        ariaDesc={metric.unit}
-                        ariaTitle={metric.value + ' ' + metric.unit}
-                        comparativeWarningMeasureData={[{ name: 'Warning', y: 0.9 * (metric.available as number) }]}
+                        ariaDesc={metric.chartUnit}
+                        ariaTitle={metric.chartValue + ' ' + metric.chartUnit}
+                        comparativeWarningMeasureData={[
+                          { name: 'Warning', y: 0.9 * (metric.chartAvailable as number) },
+                        ]}
                         constrainToVisibleArea
-                        maxDomain={{ y: metric.available as number }}
+                        maxDomain={{ y: metric.chartAvailable as number }}
                         name={metric.name}
-                        primarySegmentedMeasureData={[{ name: metric.unit, y: metric.value }]}
+                        primarySegmentedMeasureData={[{ name: metric.chartUnit, y: metric.chartValue }]}
                         width={600}
                       />
                     )}
@@ -79,7 +82,7 @@ export const Metrics: React.FunctionComponent = () => {
                     {metric.name} :
                     <span>
                       {metric.value} {metric.unit ?? ''}
-                      {metric.available && 'of' + metric.available + ' ' + (metric.unit ?? '')}
+                      {metric.available && 'of' + metric.available + ' ' + (metric.availableUnit ?? metric.unit ?? '')}
                     </span>
                   </div>
                 )
