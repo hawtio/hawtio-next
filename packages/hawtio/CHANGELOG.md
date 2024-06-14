@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.3.0-dev.2](https://github.com/hawtio/hawtio-next/compare/v1.3.0-dev.1...v1.3.0-dev.2) (2024-06-14)
+
+
+### Bug Fixes
+
+* **CamelIcon:** remove defaultProps ([d28acf4](https://github.com/hawtio/hawtio-next/commit/d28acf47705e55a91b4796ca87aaa9c8ed410536))
+* **TableHeaders:** add aria-label to non-text table headers to avoid warnings ([c3140c1](https://github.com/hawtio/hawtio-next/commit/c3140c1fb2bf88c12244a747495554f53a05db97))
+
 ## [1.3.0-dev.1](https://github.com/hawtio/hawtio-next/compare/v1.3.0-dev.0...v1.3.0-dev.1) (2024-06-11)
 
 
