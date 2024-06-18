@@ -181,7 +181,14 @@ const MessageBody: React.FunctionComponent<{
       if (model) {
         if (selectedFormat === Language.xml) {
           // monaco doesn't have built in xml formatter
-          updateMessageBody(xmlFormat(messageBody))
+          try {
+            updateMessageBody(xmlFormat(messageBody))
+          } catch (e) {
+            eventService.notify({
+              type: 'danger',
+              message: 'Failed to format XML',
+            })
+          }
         } else {
           const range = model.getFullModelRange()
           editorRef.current.trigger('', 'editor.action.formatDocument', { range })
