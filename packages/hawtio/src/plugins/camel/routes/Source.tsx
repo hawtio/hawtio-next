@@ -1,24 +1,81 @@
 import { CamelContext } from '@hawtiosrc/plugins/camel/context'
-import { CodeEditor, Language } from '@patternfly/react-code-editor'
+import { CodeEditor, CodeEditorControl, Language } from '@patternfly/react-code-editor'
 import React, { useContext, useEffect, useState } from 'react'
 import { log } from '../globals'
+import { CheckCircleIcon, SaveIcon } from '@patternfly/react-icons'
+import { isRouteNode, isRoutesFolder } from '@hawtiosrc/plugins/camel/camel-service'
+import { routesService } from './routes-service'
+import { eventService } from '@hawtiosrc/core'
 
 export const Source: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
   const [xmlSource, setXmlSource] = useState('')
+  const [isUpdateEnabled, setIsUpdateEnabled] = useState(false)
+  const [codeChanged, setCodeChanged] = useState(false)
+  const isRoute: boolean = isRouteNode(selectedNode!) && !isRoutesFolder(selectedNode!)
 
   useEffect(() => {
-    const xml = selectedNode?.getMetadata('xml')
+    if (!selectedNode) return
+
+    const xml = selectedNode.getMetadata('xml')
+
+    if (isRoute) {
+      routesService.isRouteUpdateEnabled(selectedNode).then(enabled => {
+        setIsUpdateEnabled(enabled)
+      })
+    }
+
     if (xml) {
       setXmlSource(xml)
     } else {
       log.warn('Source - Unable to fetch XML from', selectedNode)
     }
-  }, [selectedNode])
+  }, [isRoute, selectedNode])
+
+  //SelectedNode should be always selected when this view is routed
+  if (!selectedNode) {
+    return
+  }
+
+  const onCodeChange = (code: string) => {
+    setCodeChanged(code !== xmlSource)
+  }
+
+  const onSaveClick = (code: string) => {
+    if (isRoute && code !== xmlSource) {
+      try {
+        routesService.saveRoute(selectedNode, code)
+        setCodeChanged(false)
+        eventService.notify({
+          type: 'success',
+          message: 'Route was updated',
+        })
+      } catch (e) {
+        eventService.notify({ type: 'danger', message: 'Failed to save route' })
+      }
+    }
+  }
+
+  const saveButton = (
+    <CodeEditorControl
+      icon={codeChanged ? <SaveIcon /> : <CheckCircleIcon color={'green'} />}
+      isVisible={isUpdateEnabled}
+      aria-label='Execute code'
+      tooltipProps={{ content: codeChanged ? 'Save source' : 'Saved' }}
+      onClick={onSaveClick}
+    />
+  )
 
   return (
     <div style={{ height: '100%' }}>
-      <CodeEditor isReadOnly code={xmlSource} language={Language.xml} height={'75vh'} />
+      <CodeEditor
+        isReadOnly={!isUpdateEnabled}
+        customControls={saveButton}
+        code={xmlSource}
+        language={Language.xml}
+        height={'75vh'}
+        onCodeChange={onCodeChange}
+      />
     </div>
   )
 }

@@ -7,6 +7,8 @@ export const ROUTE_OPERATIONS = {
   start: 'start()',
   stop: 'stop()',
   remove: 'remove()',
+  isUpdateEnabled: 'isUpdateRouteEnabled()',
+  updateRoute: 'updateRouteFromXml',
 } as const
 
 interface IRoutesService {
@@ -89,11 +91,25 @@ class RoutesService implements IRoutesService {
     return node.hasInvokeRights(ROUTE_OPERATIONS.remove)
   }
 
+  async isRouteUpdateEnabled(node: MBeanNode): Promise<boolean> {
+    const { objectName } = node
+    if (!objectName) return false
+
+    return (await jolokiaService.execute(objectName, ROUTE_OPERATIONS.isUpdateEnabled)) as boolean
+  }
+
   async deleteRoute(node: MBeanNode) {
     const { objectName } = node
     if (!objectName) return
 
     await jolokiaService.execute(objectName, ROUTE_OPERATIONS.remove)
+  }
+
+  saveRoute(node: MBeanNode, code: string) {
+    const { objectName } = node
+    if (!objectName) return
+
+    jolokiaService.execute(objectName, ROUTE_OPERATIONS.updateRoute, [code])
   }
 }
 
