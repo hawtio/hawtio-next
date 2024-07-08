@@ -753,7 +753,7 @@ __metadata:
     express: "npm:^4.18.1"
     jest: "npm:^29.7.0"
     js-logger: "npm:^1.6.1"
-    ts-jest: "npm:^29.1.5"
+    ts-jest: "npm:^29.2.0"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.4.5"
   languageName: unknown
@@ -840,7 +840,7 @@ __metadata:
     replace: "npm:^1.2.2"
     superstruct: "npm:^1.0.4"
     timezone-mock: "npm:^1.3.6"
-    ts-jest: "npm:^29.1.5"
+    ts-jest: "npm:^29.2.0"
     ts-node: "npm:^10.9.2"
     tsup: "npm:^8.1.0"
     typescript: "npm:^5.4.5"
@@ -12607,9 +12607,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-jest@npm:^29.1.5":
-  version: 29.1.5
-  resolution: "ts-jest@npm:29.1.5"
+"ts-jest@npm:^29.2.0":
+  version: 29.2.0
+  resolution: "ts-jest@npm:29.2.0"
   dependencies:
     bs-logger: "npm:0.x"
     fast-json-stable-stringify: "npm:2.x"
@@ -12639,7 +12639,7 @@ __metadata:
       optional: true
   bin:
     ts-jest: cli.js
-  checksum: 10/11a29a49130f1c9bef5aebe8007f6be3e630af6c2dea6b00ff5a86d649321854a43966b4990a43960d77a3f98d7a753b9b7e19c20c42a2d38341d6e67a3e48d1
+  checksum: 10/a94725c313f7e019281835e32c9b2791d3f5fb9a4e6a19e6c51cbf8939cd17a0426e667c19849fed608149d1ec5198da9fd55fefe74c6ed4cff2172442b8288c
   languageName: node
   linkType: hard
 
