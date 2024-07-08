@@ -84,7 +84,9 @@ const RemoteToolbar: React.FunctionComponent = () => {
             isOpen={isDropdownOpen}
             onOpenChange={setIsDropdownOpen}
             toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-              <MenuToggle ref={toggleRef} onClick={() => setIsDropdownOpen(!isDropdownOpen)}></MenuToggle>
+              <MenuToggle ref={toggleRef} variant='plain' onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                <EllipsisVIcon aria-hidden='true' />
+              </MenuToggle>
             )}
           >
             <DropdownList>
