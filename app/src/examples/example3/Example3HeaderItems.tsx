@@ -61,7 +61,6 @@ export const Example3HeaderItem2: React.FunctionComponent = () => {
         </MenuToggle>
       )}
       isOpen={isOpen}
-      isPlain
     >
       <DropdownItem key='link'>Link</DropdownItem>
       <DropdownItem key='action' component='button'>
