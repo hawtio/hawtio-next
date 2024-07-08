@@ -2,15 +2,17 @@ import { CamelContext } from '@hawtiosrc/plugins/camel/context'
 import { CodeEditor, CodeEditorControl, Language } from '@patternfly/react-code-editor'
 import React, { useContext, useEffect, useState } from 'react'
 import { log } from '../globals'
-import { CheckCircleIcon, SaveIcon } from '@patternfly/react-icons'
+import { SaveIcon } from '@patternfly/react-icons'
 import { isRouteNode, isRoutesFolder } from '@hawtiosrc/plugins/camel/camel-service'
 import { routesService } from './routes-service'
 import { eventService } from '@hawtiosrc/core'
+import { Alert, AlertActionCloseButton, AlertVariant } from '@patternfly/react-core'
 
 export const Source: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
   const [xmlSource, setXmlSource] = useState('')
   const [isUpdateEnabled, setIsUpdateEnabled] = useState(false)
+  const [isWarningVisible, setIsWarningVisible] = useState(isUpdateEnabled)
   const [codeChanged, setCodeChanged] = useState(false)
   const isRoute: boolean = isRouteNode(selectedNode!) && !isRoutesFolder(selectedNode!)
 
@@ -22,6 +24,7 @@ export const Source: React.FunctionComponent = () => {
     if (isRoute) {
       routesService.isRouteUpdateEnabled(selectedNode).then(enabled => {
         setIsUpdateEnabled(enabled)
+        setIsWarningVisible(enabled)
       })
     }
 
@@ -58,16 +61,26 @@ export const Source: React.FunctionComponent = () => {
 
   const saveButton = (
     <CodeEditorControl
-      icon={codeChanged ? <SaveIcon /> : <CheckCircleIcon color={'green'} />}
+      icon={<SaveIcon />}
       isVisible={isUpdateEnabled}
-      aria-label='Execute code'
-      tooltipProps={{ content: codeChanged ? 'Save source' : 'Saved' }}
+      aria-label='Save the changes'
+      tooltipProps={{ content: codeChanged ? 'Save the changes' : 'Saved' }}
+      isDisabled={!codeChanged}
       onClick={onSaveClick}
     />
   )
 
   return (
     <div style={{ height: '100%' }}>
+      {isUpdateEnabled && isWarningVisible && (
+        <Alert
+          isInline
+          variant={AlertVariant['warning']}
+          title={'The source update of the route is enabled'}
+          actionClose={<AlertActionCloseButton title={'Close warning'} onClose={() => setIsWarningVisible(false)} />}
+        />
+      )}
+
       <CodeEditor
         isReadOnly={!isUpdateEnabled}
         customControls={saveButton}
