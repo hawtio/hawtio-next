@@ -156,7 +156,7 @@ const HawtioHeaderToolbar: React.FunctionComponent = () => {
   const headerComponents: React.ComponentType<any>[] = collectHeaderItems()
 
   return (
-    <Toolbar id='hawtio-header-toolbar'>
+    <Toolbar id='hawtio-header-toolbar' isFullHeight>
       <ToolbarContent>
         <ToolbarGroup>
           {headerComponents.map((component, index) => (
