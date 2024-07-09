@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.3.0](https://github.com/hawtio/hawtio-next/compare/v1.3.0-dev.2...v1.3.0) (2024-07-09)
+
+
+### Features
+
+* **camel-source:** Make Source editor editable when it's enabled in the CamelContext ([363c651](https://github.com/hawtio/hawtio-next/commit/363c6518ed99b487dff7b98be062ebb8263435b3))
+* **Source:** Add warning about the route being editable ([75a6917](https://github.com/hawtio/hawtio-next/commit/75a6917636072f2dba5231ddb7fe9c014aab63e8))
+
+
+### Bug Fixes
+
+* **camel-plugin:** Catch the exception when formatting the message and throw error notification ([10a0599](https://github.com/hawtio/hawtio-next/commit/10a0599fef4aa2e752174c80d8f3a9ebd742367c))
+* **charts:** fix incorrect memory conversions ([45e2117](https://github.com/hawtio/hawtio-next/commit/45e2117eaeec6b61470e30414da33fe5066719b5))
+* **HawtioHeader:** Make header toolbar to be fullHeight to look better ([64bc183](https://github.com/hawtio/hawtio-next/commit/64bc183d00813c8eac7cd2d90d75f0ff7e984cb5))
+* **Remote:** switch to Kebab style dropdown for remote connection as it was before PF5 upgrade. ([494ce95](https://github.com/hawtio/hawtio-next/commit/494ce9544b49bf229bbf8e3ab6e55cfd9fca63df))
+* **tests:** Add @testing-library/dom dependency ([1a38317](https://github.com/hawtio/hawtio-next/commit/1a3831706ae2aa64c3357b315b252e23440c0691))
+
 ## [1.3.0-dev.2](https://github.com/hawtio/hawtio-next/compare/v1.3.0-dev.1...v1.3.0-dev.2) (2024-06-14)
 
 
