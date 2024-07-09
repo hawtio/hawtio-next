@@ -69,7 +69,7 @@
     "react-router-dom": "^6.24.1",
     "react-split": "^2.0.14",
     "reactflow": "^11.11.4",
-    "superstruct": "^2.0.2",
+    "superstruct": "^1.0.4",
     "typescript": "^5.4.5",
     "xml-formatter": "^3.6.3"
   },
