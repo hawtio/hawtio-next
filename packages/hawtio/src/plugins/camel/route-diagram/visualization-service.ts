@@ -22,6 +22,7 @@ export type CamelNodeData = {
   type: string
   uri: string
   routeId: string
+  isParallel: boolean
   stats?: Statistics
 
   nodeClicked?: (node: Node) => void
@@ -157,18 +158,18 @@ class VisualizationService {
   ): Promise<number[]> {
     let rid = parent.getAttribute('id')
     let siblingNodes: number[] = []
-    const parenNodeName: string = parent.localName
+    const parentNodeName: string = parent.localName
 
     /*
      * Whereas the id is unique across all routes in the xml, the
      * routeIdx defines an id for each node in the route so
      */
     let routeIdx = -1
-    for (const route of Array.from(parent.children)) {
+    for (const routeElement of Array.from(parent.children)) {
       const id: string = nodeDatas.length + ''
       routeIdx++
       // from acts as a parent even though its a previous sibling :)
-      const nodeId = route.localName
+      const nodeId = routeElement.localName
       if (nodeId === 'from' && parentId !== '-1') {
         parentId = id
       }
@@ -176,7 +177,7 @@ class VisualizationService {
       let nodeData: CamelNodeData | null = null
       if (nodeSettings) {
         let label: string = (nodeSettings['title'] as string) || (nodeId as string)
-        const uri = this.getRouteNodeUri(route)
+        const uri = this.getRouteNodeUri(routeElement)
         if (uri) {
           label += ` ${uri.split('?')[0]}`
         }
@@ -185,10 +186,10 @@ class VisualizationService {
           tooltip += ' ' + uri
         }
         const { ignoreIdForLabel, maximumLabelWidth } = camelPreferencesService.loadOptions()
-        const elementID = route.getAttribute('id')
+        const elementID = routeElement.getAttribute('id')
         let labelSummary = label
         if (elementID) {
-          const customId = route.getAttribute('customId')
+          const customId = routeElement.getAttribute('customId')
           if (ignoreIdForLabel || !customId || customId === 'false') {
             labelSummary = 'id: ' + elementID
           } else {
@@ -216,7 +217,8 @@ class VisualizationService {
           }
         }
 
-        let cid = route.getAttribute('_cid') || route.getAttribute('id')
+        let cid = routeElement.getAttribute('_cid') || routeElement.getAttribute('id')
+        const parallelProcessing: boolean = routeElement.getAttribute('parallelProcessing')?.toLowerCase() === 'true'
         nodeData = {
           id: id,
           routeIdx: routeIdx,
@@ -231,7 +233,9 @@ class VisualizationService {
           type: nodeId,
           uri: uri ?? '',
           routeId: routeId,
+          isParallel: parallelProcessing,
         }
+
         if (rid) {
           nodeData.cid = rid
         }
@@ -244,13 +248,18 @@ class VisualizationService {
         // only use the route id on the first from node
         rid = null
         nodeDatas.push(nodeData)
+        const isParallelMulticastParent = (parentNodeName === 'multicast' && parentNode?.isParallel) || false
         if (parentId !== null && parentId !== id) {
-          if (siblingNodes.length === 0 || parenNodeName === 'choice') {
+          if (siblingNodes.length === 0 || parentNodeName === 'choice' || isParallelMulticastParent) {
             links.push({ id: parentId + '-' + id, source: parentId + '', target: id })
+            if (isParallelMulticastParent) {
+              siblingNodes.push(parseInt(id))
+            }
           } else {
             siblingNodes.forEach(function (nodeId) {
               links.push({ id: nodeId + '-' + id, source: nodeId + '', target: id })
             })
+
             siblingNodes.length = 0
           }
         }
@@ -260,19 +269,20 @@ class VisualizationService {
         if (langSettings && parentNode) {
           // lets add the language kind
           const name = langSettings['name'] || nodeId
-          const text = route.textContent
+          const text = routeElement.textContent
 
           if (text) {
             parentNode.tooltip = parentNode.label + ' ' + name + ' ' + text
-            parentNode.label += ': ' + this.appendLabel(route, text, true)
+            parentNode.label += ': ' + this.appendLabel(routeElement, text, true)
           } else {
-            parentNode.label += ': ' + this.appendLabel(route, name, false)
+            parentNode.label += ': ' + this.appendLabel(routeElement, name, false)
           }
         }
       }
 
-      const siblings = await this.addRouteXmlChildren(node, route, nodeDatas, links, routeId, id, nodeData)
-      if (parenNodeName === 'choice') {
+      const siblings = await this.addRouteXmlChildren(node, routeElement, nodeDatas, links, routeId, id, nodeData)
+
+      if (parentNodeName === 'choice' || (parentNodeName === 'multicast' && parentNode?.isParallel)) {
         siblingNodes = siblingNodes.concat(siblings)
       } else if (
         nodeId === 'aggregate' ||
