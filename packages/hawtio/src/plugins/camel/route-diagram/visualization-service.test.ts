@@ -1,4 +1,4 @@
-import { visualizationService } from './visualization-service'
+import { CamelNodeData, visualizationService } from './visualization-service'
 import path from 'path'
 import fs from 'fs'
 import { RouteStats } from '@hawtiosrc/plugins/camel/routes-service'
@@ -9,8 +9,15 @@ jest.mock('@hawtiosrc/plugins/shared/jolokia-service')
 describe('visualization-service', () => {
   const routesXmlPath = path.resolve(__dirname, '../testdata', 'camel-choice-route.xml')
   const sampleRoutesXml = fs.readFileSync(routesXmlPath, { encoding: 'utf8', flag: 'r' })
+
   const routesStatsXmlPath = path.resolve(__dirname, '../testdata', 'camel-routes-stats.xml')
   const sampleRoutesStatsXml = fs.readFileSync(routesStatsXmlPath, { encoding: 'utf8', flag: 'r' })
+
+  const multicastParallelRoutesXmlPath = path.resolve(__dirname, '../testdata', 'camel-multicast-parallel-route.xml')
+  const multicastParallelRouteXml = fs.readFileSync(multicastParallelRoutesXmlPath, { encoding: 'utf8', flag: 'r' })
+
+  const multicastRoutesXmlPath = path.resolve(__dirname, '../testdata', 'camel-multicast-route.xml')
+  const multicastRouteXml = fs.readFileSync(multicastRoutesXmlPath, { encoding: 'utf8', flag: 'r' })
 
   describe('loadRouteXmlNodes', () => {
     test('nodes and edges were correctly loaded from the file', async () => {
@@ -36,7 +43,36 @@ describe('visualization-service', () => {
       // check if label is parsed correctly
       expect(when2?.data.label).toBe(`When: \${body} == 'Hello Camel! - simple'`)
     })
+
+    test('should correctly link child nodes for multicast', async () => {
+      const node = new MBeanNode(null, 'test', true)
+      const { camelNodes, edges } = await visualizationService.loadRouteXmlNodes(node, multicastRouteXml)
+      expect(camelNodes.length).toBe(5)
+      expect(edges.length).toBe(4)
+
+      expect(edges[2]!.target).toEqual(camelNodes[3]!.id)
+      expect(edges[2]!.source).toEqual(camelNodes[2]!.id)
+
+      expect((camelNodes[2]!.data as CamelNodeData).uri).toEqual('direct:first')
+      expect((camelNodes[3]!.data as CamelNodeData).uri).toEqual('direct:second')
+
+      expect(edges[3]!.target).toEqual(camelNodes[4]!.id)
+      expect((camelNodes[4]!.data as CamelNodeData).uri).toEqual('direct:outside')
+    })
+
+    test('should correctly link child nodes in parallel for multicast', async () => {
+      const node = new MBeanNode(null, 'test', true)
+      const { camelNodes, edges } = await visualizationService.loadRouteXmlNodes(node, multicastParallelRouteXml)
+      expect(camelNodes.length).toBe(5)
+      expect(edges.length).toBe(5)
+
+      // check that both 'to' nodes are connected to direct:outsideNode
+      expect(edges[3]!.target).toEqual(camelNodes[4]!.id)
+      expect(edges[4]!.target).toEqual(camelNodes[4]!.id)
+      expect((camelNodes[4]!.data as CamelNodeData).uri).toEqual('direct:outside') // Each 'to' node inside multicast should have its own link
+    })
   })
+
   describe('updateStats', () => {
     test('processor stats were updates on the nodes', async () => {
       const node = new MBeanNode(null, 'test', true)

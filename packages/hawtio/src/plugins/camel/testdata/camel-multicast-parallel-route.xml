@@ -1,0 +1,10 @@
+<routes xmlns="http://camel.apache.org/schema/spring">
+  <route id="testRoute">
+    <from uri="direct:a"/>
+    <multicast parallelProcessing="true">
+      <to uri="direct:first"/>
+      <to uri="direct:second"/>
+    </multicast>
+    <to uri="direct:outside"/>
+  </route>
+</routes>
