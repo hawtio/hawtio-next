@@ -191,7 +191,7 @@ export const ConnectionModal: React.FunctionComponent<{
           <Switch
             id='connection-form-scheme'
             label='HTTPS'
-            labelOff='HTTP'
+            labelOff='HTTP (not encrypted)'
             isChecked={connection.scheme === 'https'}
             onChange={(_event, https) => setConnection({ ...connection, scheme: https ? 'https' : 'http' })}
           />
