@@ -50,5 +50,5 @@ export function getIcon(name: string, size?: number): JSX.Element {
     }
   }
 
-  return element ? element : elementMap.get(IconNames.GenericIcon) ?? svg.generic
+  return element ? element : (elementMap.get(IconNames.GenericIcon) ?? svg.generic)
 }

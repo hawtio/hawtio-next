@@ -217,7 +217,7 @@ class RoutesService {
 
     const mbeanName = routesNode.getMetadata(contextNodeType)
     const operationForMBean = mbeanName ? routesFolderOperation : routeNodeOperation
-    const mbeanToQuery = mbeanName ? mbeanName : routesNode.objectName ?? ''
+    const mbeanToQuery = mbeanName ? mbeanName : (routesNode.objectName ?? '')
 
     try {
       xml = await jolokiaService.execute(mbeanToQuery, operationForMBean, [true, true])
