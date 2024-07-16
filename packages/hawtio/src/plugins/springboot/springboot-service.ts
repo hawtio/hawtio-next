@@ -132,7 +132,7 @@ class SpringBootService {
 
     jmxTraces
       .filter(trace => {
-        const path = trace.info ? trace.info.path : trace.request?.uri ?? ''
+        const path = trace.info ? trace.info.path : (trace.request?.uri ?? '')
         // Avoid including our own jolokia requests in the results
         return /.*?\/jolokia\/?(?:\/.*(?=$))?$/.test(path) === false
       })
