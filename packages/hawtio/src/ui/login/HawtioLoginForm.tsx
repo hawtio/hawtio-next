@@ -10,14 +10,24 @@ import { loginService } from './login-service'
 export const HawtioLoginForm: React.FunctionComponent = () => {
   const navigate = useNavigate()
 
+  let loginFailedInitialMessage = ''
+  let loginFailedInitial = false
+  if (window.location.hash && window.location.hash.length > 0) {
+    const urlHash = new URLSearchParams(window.location.hash.substring(1))
+    if (urlHash?.has('noauth')) {
+      loginFailedInitialMessage = 'Invalid login credentials'
+      loginFailedInitial = true
+    }
+  }
+
   const { isLogin } = useUser()
   const [username, setUsername] = useState(loginService.getUser())
-  const [isValidUsername, setIsValidUsername] = useState(true)
+  const [isValidUsername, setIsValidUsername] = useState(!loginFailedInitial)
   const [password, setPassword] = useState('')
   const [isValidPassword, setIsValidPassword] = useState(true)
   const [rememberMe, setRememberMe] = useState(username !== '')
-  const [loginFailed, setLoginFailed] = useState(false)
-  const [loginFailedMessage, setLoginFailedMessage] = useState('')
+  const [loginFailed, setLoginFailed] = useState(loginFailedInitial)
+  const [loginFailedMessage, setLoginFailedMessage] = useState(loginFailedInitialMessage)
   const [isEnabled, setIsEnabled] = useState(true)
 
   log.debug('Login state: username =', username, 'isLogin =', isLogin)
