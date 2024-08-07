@@ -105,7 +105,8 @@ class RuntimeService {
       }
       case 'java.lang:type=OperatingSystem': {
         const osMetrics = response.value as {
-          SystemCpuLoad: number
+          CpuLoad?: number
+          SystemCpuLoad?: number
           SystemLoadAverage: number
           FreePhysicalMemorySize: number
           TotalPhysicalMemorySize: number
@@ -113,7 +114,7 @@ class RuntimeService {
           OpenFileDescriptorCount: number
           MaxFileDescriptorCount: number
         }
-        const cpuLoad = osMetrics.SystemCpuLoad * 100
+        const cpuLoad = (osMetrics.CpuLoad ?? osMetrics.SystemCpuLoad ?? 0) * 100
         const loadAverage = osMetrics.SystemLoadAverage
         const memFree = this.formatBytes(osMetrics.FreePhysicalMemorySize)
         const memTotal = this.formatBytes(osMetrics.TotalPhysicalMemorySize)
