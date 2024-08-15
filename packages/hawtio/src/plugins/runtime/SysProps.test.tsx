@@ -79,7 +79,7 @@ describe('SysProps.tsx', () => {
     await waitFor(() => {
       expect(screen.getByText('value1')).toBeInTheDocument()
     })
-    await changeOrder('name-header')
+    await changeOrder('key-header')
     testProperty(0, getMockedProperties()[2] as SystemProperty)
     testProperty(2, getMockedProperties()[0] as SystemProperty)
     await changeOrder('value-header')

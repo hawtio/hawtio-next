@@ -1,5 +1,4 @@
 import {
-  Bullseye,
   Button,
   Card,
   CardBody,
@@ -11,37 +10,23 @@ import {
   DescriptionListGroup,
   DescriptionListTerm,
   Divider,
-  EmptyState,
-  EmptyStateBody,
-  EmptyStateIcon,
   Label,
   Modal,
   PageSection,
-  Pagination,
-  PaginationProps,
-  Panel,
-  SearchInput,
   Skeleton,
   Title,
-  Toolbar,
-  ToolbarContent,
   ToolbarFilter,
-  ToolbarGroup,
-  ToolbarItem,
-  EmptyStateHeader,
-  EmptyStateFooter,
   MenuToggle,
   MenuToggleElement,
   SelectOption,
   Select,
   SelectList,
 } from '@patternfly/react-core'
-import { SearchIcon } from '@patternfly/react-icons'
-import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { log } from './globals'
 import { LogEntry, LogFilter } from './log-entry'
 import { LOGS_UPDATE_INTERVAL, logsService } from './logs-service'
+import { FilteredTable } from '@hawtiosrc/ui'
 
 export const Logs: React.FunctionComponent = () => {
   return (
@@ -57,6 +42,22 @@ export const Logs: React.FunctionComponent = () => {
   )
 }
 
+class LogRowData {
+  timestamp: string
+  level: string
+  logger: string
+  message: string
+  logEntry: LogEntry
+
+  constructor(entry: LogEntry) {
+    this.timestamp = entry.getTimestamp()
+    this.level = entry.event.level
+    this.logger = entry.event.logger
+    this.message = entry.event.message
+    this.logEntry = entry
+  }
+}
+
 const LogsTable: React.FunctionComponent = () => {
   const [logs, setLogs] = useState<LogEntry[]>([])
   const timestamp = useRef(0)
@@ -67,17 +68,15 @@ const LogsTable: React.FunctionComponent = () => {
   const [filters, setFilters] = useState(emptyFilters)
   // Temporal filter values holder until applying it
   const tempFilters = useRef<{ logger: string; message: string; properties: string }>(emptyFilters)
-  const [filteredLogs, setFilteredLogs] = useState<LogEntry[]>([])
   const [isSelectLevelOpen, setIsSelectLevelOpen] = useState(false)
-
-  // Pagination
-  const [page, setPage] = useState(1)
-  const [perPage, setPerPage] = useState(10)
-  const [paginatedLogs, setPaginatedLogs] = useState(filteredLogs.slice(0, perPage))
 
   // Modal
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selected, setSelected] = useState<LogEntry | null>(null)
+
+  const rows = useMemo(() => {
+    return logsService.filter(logs, filters).map(log => new LogRowData(log))
+  }, [logs, filters])
 
   useEffect(() => {
     const loadLogs = async () => {
@@ -110,16 +109,6 @@ const LogsTable: React.FunctionComponent = () => {
     return () => timeoutHandle && clearTimeout(timeoutHandle)
   }, [])
 
-  useEffect(() => {
-    const filteredLogs = logsService.filter(logs, filters)
-    setFilteredLogs(filteredLogs)
-  }, [logs, filters])
-
-  useEffect(() => {
-    setPaginatedLogs(filteredLogs.slice(0, perPage))
-    setPage(1)
-  }, [filteredLogs, perPage])
-
   if (!loaded) {
     return <Skeleton data-testid='loading-logs' screenreaderText='Loading...' />
   }
@@ -142,199 +131,92 @@ const LogsTable: React.FunctionComponent = () => {
     })
   }
 
-  const applyFilters = () => {
-    setFilters(prev => ({ ...prev, ...tempFilters.current }))
-  }
-
-  const clearAllFilters = () => {
-    setFilters(emptyFilters)
-    tempFilters.current = emptyFilters
-  }
-
-  const handleSetPage = (
-    _event: React.MouseEvent | React.KeyboardEvent | MouseEvent,
-    newPage: number,
-    _perPage?: number,
-    startIdx?: number,
-    endIdx?: number,
-  ) => {
-    setPaginatedLogs(filteredLogs.slice(startIdx, endIdx))
-    setPage(newPage)
-  }
-
-  const handlePerPageSelect = (
-    _event: React.MouseEvent | React.KeyboardEvent | MouseEvent,
-    newPerPage: number,
-    newPage: number,
-    startIdx?: number,
-    endIdx?: number,
-  ) => {
-    setPaginatedLogs(filteredLogs.slice(startIdx, endIdx))
-    setPage(newPage)
-    setPerPage(newPerPage)
-  }
-
-  const renderPagination = (variant: PaginationProps['variant'], isCompact: boolean) => (
-    <Pagination
-      isCompact={isCompact}
-      itemCount={filteredLogs.length}
-      page={page}
-      perPage={perPage}
-      onSetPage={handleSetPage}
-      onPerPageSelect={handlePerPageSelect}
-      variant={variant}
-      titles={{ paginationAriaLabel: `${variant} pagination` }}
-    />
-  )
-
   const logLevels = ['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR']
-
-  const tableToolbar = (
-    <Toolbar id='logs-table-toolbar' clearAllFilters={clearAllFilters} usePageInsets>
-      <ToolbarContent>
-        <ToolbarGroup id='logs-table-toolbar-filters'>
-          <ToolbarFilter
-            id='logs-table-toolbar-level'
-            chips={filters.level}
-            deleteChip={(_, chip) =>
-              handleFiltersChange(
-                'level',
-                filters.level.filter(l => l !== chip),
-              )
-            }
-            deleteChipGroup={() => handleFiltersChange('level', [])}
-            categoryName='Level'
-          >
-            <Select
-              id='logs-table-toolbar-level-select'
-              aria-label='Filter Level'
-              selected={filters.level}
-              isOpen={isSelectLevelOpen}
-              onOpenChange={setIsSelectLevelOpen}
-              toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-                <MenuToggle role='menu' ref={toggleRef} onClick={() => setIsSelectLevelOpen(!isSelectLevelOpen)}>
-                  Level
-                </MenuToggle>
-              )}
-              onSelect={onLevelSelect}
-            >
-              <SelectList>
-                {logLevels.map((level, index) => (
-                  <SelectOption hasCheckbox key={index} value={level} isSelected={filters.level.includes(level)}>
-                    <LogLevel level={level} />
-                  </SelectOption>
-                ))}
-              </SelectList>
-            </Select>
-          </ToolbarFilter>
-          <ToolbarItem id='logs-table-toolbar-logger'>
-            <SearchInput
-              id='logs-table-toolbar-logger-input'
-              aria-label='Filter Logger'
-              placeholder='Filter by logger'
-              value={filters.logger}
-              onChange={(_, value) => handleFiltersChange('logger', value)}
-              onSearch={() => applyFilters()}
-              onClear={() => handleFiltersChange('logger', '', true)}
-            />
-          </ToolbarItem>
-          <ToolbarItem id='logs-table-toolbar-message'>
-            <SearchInput
-              id='logs-table-toolbar-message-input'
-              aria-label='Filter Message'
-              placeholder='Filter by message'
-              value={filters.message}
-              onChange={(_, value) => handleFiltersChange('message', value)}
-              onSearch={() => applyFilters()}
-              onClear={() => handleFiltersChange('message', '', true)}
-            />
-          </ToolbarItem>
-          <ToolbarItem id='logs-table-toolbar-properties'>
-            <SearchInput
-              id='logs-table-toolbar-properties-input'
-              aria-label='Filter Properties'
-              placeholder='Filter by properties'
-              value={filters.properties}
-              onChange={(_, value) => handleFiltersChange('properties', value)}
-              onSearch={() => applyFilters()}
-              onClear={() => handleFiltersChange('properties', '', true)}
-            />
-          </ToolbarItem>
-        </ToolbarGroup>
-        <ToolbarItem variant='pagination'>{renderPagination('top', true)}</ToolbarItem>
-      </ToolbarContent>
-    </Toolbar>
-  )
-
-  const selectLog = (log: LogEntry) => {
-    setSelected(log)
-    handleModalToggle()
-  }
 
   const handleModalToggle = () => {
     setIsModalOpen(!isModalOpen)
   }
 
-  const highlightSearch = (text: string, search: string) => {
-    if (search === '') {
-      return text
-    }
-    const lowerCaseSearch = search.toLowerCase()
-    const res = text
-      .split(new RegExp(`(${search})`, 'gi'))
-      .map((s, i) => (s.toLowerCase() === lowerCaseSearch ? <mark key={i}>{s}</mark> : s))
-    return res
-  }
+  const levelToggles = (
+    <ToolbarFilter
+      id='logs-table-toolbar-level'
+      chips={filters.level}
+      deleteChip={(_, chip) =>
+        handleFiltersChange(
+          'level',
+          filters.level.filter(l => l !== chip),
+        )
+      }
+      deleteChipGroup={() => handleFiltersChange('level', [])}
+      categoryName='Level'
+    >
+      <Select
+        id='logs-table-toolbar-level-select'
+        aria-label='Filter Level'
+        selected={filters.level}
+        isOpen={isSelectLevelOpen}
+        onOpenChange={setIsSelectLevelOpen}
+        toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+          <MenuToggle role='menu' ref={toggleRef} onClick={() => setIsSelectLevelOpen(!isSelectLevelOpen)}>
+            Level
+          </MenuToggle>
+        )}
+        onSelect={onLevelSelect}
+      >
+        <SelectList>
+          {logLevels.map((level, index) => (
+            <SelectOption hasCheckbox key={index} value={level} isSelected={filters.level.includes(level)}>
+              <LogLevel level={level} />
+            </SelectOption>
+          ))}
+        </SelectList>
+      </Select>
+    </ToolbarFilter>
+  )
 
   return (
-    <Panel>
-      {tableToolbar}
-      <Table variant='compact' aria-label='Logs Table' isStriped isStickyHeader>
-        <Thead>
-          <Tr>
-            <Th>Timestamp</Th>
-            <Th>Level</Th>
-            <Th>Logger</Th>
-            <Th>Message</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {paginatedLogs.map((log, index) => (
-            <Tr key={index} onRowClick={() => selectLog(log)}>
-              <Td dataLabel='timestamp'>{log.getTimestamp()}</Td>
-              <Td dataLabel='level'>
-                <LogLevel level={log.event.level} />
-              </Td>
-              <Td dataLabel='logger'>{highlightSearch(log.event.logger, filters.logger)}</Td>
-              <Td dataLabel='message'>{highlightSearch(log.event.message, filters.message)}</Td>
-            </Tr>
-          ))}
-          {filteredLogs.length === 0 && (
-            <Tr>
-              <Td colSpan={4}>
-                <Bullseye>
-                  <EmptyState variant='sm'>
-                    <EmptyStateHeader
-                      titleText='No results found'
-                      icon={<EmptyStateIcon icon={SearchIcon} />}
-                      headingLevel='h2'
-                    />
-                    <EmptyStateBody>Clear all filters and try again.</EmptyStateBody>
-                    <EmptyStateFooter>
-                      <Button variant='link' onClick={clearAllFilters}>
-                        Clear all filters
-                      </Button>
-                    </EmptyStateFooter>
-                  </EmptyState>
-                </Bullseye>
-              </Td>
-            </Tr>
-          )}
-        </Tbody>
-      </Table>
-      {renderPagination('bottom', false)}
+    <>
       <LogModal isOpen={isModalOpen} onClose={handleModalToggle} log={selected} />
-    </Panel>
+      <FilteredTable
+        rows={rows}
+        highlightSearch={true}
+        tableColumns={[
+          {
+            name: 'Timestamp',
+            key: 'timestamp',
+          },
+          {
+            name: 'Level',
+            key: 'level',
+            renderer: val => <LogLevel level={val.level} />,
+          },
+          {
+            name: 'Logger',
+            key: 'logger',
+          },
+          {
+            name: 'Message',
+            key: 'message',
+          },
+        ]}
+        searchCategories={[
+          {
+            name: 'Logger',
+            key: 'logger',
+          },
+          {
+            name: 'Message',
+            key: 'message',
+          },
+        ]}
+        onClick={row => {
+          setSelected(row.logEntry)
+          setIsModalOpen(true)
+        }}
+        extraToolbar={levelToggles}
+        onClearAllFilters={() => handleFiltersChange('level', [])}
+      />
+    </>
   )
 }
 
