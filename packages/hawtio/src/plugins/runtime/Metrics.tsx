@@ -79,7 +79,7 @@ export const Metrics: React.FunctionComponent = () => {
               .map((metric, index) => {
                 return (
                   <div key={index}>
-                    {metric.name} :
+                    {metric.name}:&nbsp;
                     <span>
                       {metric.value} {metric.unit ?? ''}
                       {metric.available && 'of' + metric.available + ' ' + (metric.availableUnit ?? metric.unit ?? '')}
