@@ -128,11 +128,9 @@ export const Scheduler: React.FunctionComponent = () => {
               </>
             ),
             hasNoOffset: false,
-            className: undefined,
           }}
         >
-          actions=
-          {
+          <CardTitle>
             <>
               {scheduler.started ? (
                 <Icon status='success'>
@@ -144,8 +142,8 @@ export const Scheduler: React.FunctionComponent = () => {
                 </Icon>
               )}
             </>
-          }
-          <CardTitle>Scheduler</CardTitle>
+            Scheduler
+          </CardTitle>
         </CardHeader>
         <CardBody>
           <DescriptionList isCompact isHorizontal>
@@ -196,8 +194,7 @@ export const Scheduler: React.FunctionComponent = () => {
             className: undefined,
           }}
         >
-          actions=
-          {
+          <CardTitle>
             <>
               {scheduler.sampledStatisticsEnabled ? (
                 <Icon status='success'>
@@ -209,8 +206,8 @@ export const Scheduler: React.FunctionComponent = () => {
                 </Icon>
               )}
             </>
-          }
-          <CardTitle>Sampled Statistics (Most Recent Samples)</CardTitle>
+            Sampled Statistics (Most Recent Samples)
+          </CardTitle>
         </CardHeader>
         <CardBody>
           <DescriptionList isCompact isHorizontal>
