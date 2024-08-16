@@ -80,6 +80,12 @@ module.exports = (_, args) => {
     module: {
       rules: [
         {
+          test: /\.m?js$/,
+          resolve: {
+            fullySpecified: false,
+          },
+        },
+        {
           test: /\.tsx?$/,
           exclude: /node_modules/,
           use: {
@@ -96,6 +102,14 @@ module.exports = (_, args) => {
         {
           test: /\.css$/i,
           use: ['style-loader', 'css-loader'],
+        },
+        {
+          test: /\.scss$/i, // Add this rule
+          use: [
+            'style-loader', // Injects styles into DOM
+            'css-loader', // Translates CSS into CommonJS
+            'sass-loader', // Compiles Sass to CSS
+          ],
         },
         {
           test: /\.(png|svg|jpg|jpeg|gif)$/i,

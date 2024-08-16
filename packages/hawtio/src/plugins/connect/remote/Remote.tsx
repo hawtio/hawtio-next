@@ -33,20 +33,36 @@ import { log } from '../globals'
 import { ConnectionModal } from './ConnectionModal'
 import { ImportModal } from './ImportModal'
 import EllipsisVIcon from '@patternfly/react-icons/dist/js/icons/ellipsis-v-icon'
+import { RouteVisualization } from '@kaoto/kaoto/components'
+import { ReloadContext } from '@kaoto/kaoto'
 
 export const Remote: React.FunctionComponent = () => {
-  const { connections } = useContext(ConnectContext)
-  log.debug('Connections:', connections)
+  const code = `
+- route:
+    id: route-2520
+    from:
+      id: from-2091
+      uri: timer:template
+      parameters:
+        period: "1000"
+      steps:
+        - log:
+            id: log-3278
+            message: template message
+`
 
   return (
-    <React.Fragment>
-      <RemoteToolbar />
-      <DataList id='connection-list' aria-label='connection list' isCompact>
-        {Object.entries(connections).map(([id, connection]) => (
-          <ConnectionItem key={id} id={id} connection={connection} />
-        ))}
-      </DataList>
-    </React.Fragment>
+    <>
+      <ReloadContext.Provider value={{ reloadPage: () => console.log('reloading'), lastRender: -1 }}>
+        <RouteVisualization
+          catalogUrl='https://raw.githubusercontent.com/KaotoIO/catalogs/main/catalogs/index.json'
+          code={code}
+          codeChange={code => {
+            console.log(code)
+          }}
+        />
+      </ReloadContext.Provider>
+    </>
   )
 }
 
