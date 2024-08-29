@@ -11,16 +11,30 @@ import {
   TextContent,
   Title,
 } from '@patternfly/react-core'
-import React from 'react'
+import React, { useMemo } from 'react'
 import Markdown from 'react-markdown'
 import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import help from './help.md'
 import { helpRegistry } from './registry'
+import { hawtio, usePlugins } from '@hawtiosrc/core'
 
 helpRegistry.add('home', 'Home', help, 1)
 
 export const HawtioHelp: React.FunctionComponent = () => {
   const location = useLocation()
+  const { plugins } = usePlugins()
+
+  const helps = useMemo(() => {
+    const pluginIds = hawtio.getPlugins().map(p => p.id)
+    const activePlugins = plugins.map(p => p.id)
+    return helpRegistry.getHelps().filter(help => {
+      if (pluginIds.includes(help.id)) {
+        return activePlugins.includes(help.id)
+      }
+      return true
+    })
+  }, [plugins])
+
   return (
     <React.Fragment>
       <PageSection variant={PageSectionVariants.light}>
@@ -30,7 +44,7 @@ export const HawtioHelp: React.FunctionComponent = () => {
         <PageNavigation>
           <Nav aria-label='Nav' variant='tertiary'>
             <NavList>
-              {helpRegistry.getHelps().map(help => (
+              {helps.map(help => (
                 <NavItem key={help.id} isActive={location.pathname === `/help/${help.id}`}>
                   <NavLink to={help.id}>{help.title}</NavLink>
                 </NavItem>
