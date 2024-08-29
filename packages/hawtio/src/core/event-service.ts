@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3'
 import { Logger } from './logging'
+import React from 'react'
 
 const log = Logger.get('hawtio-core-event')
 
@@ -7,7 +8,7 @@ export type NotificationType = 'info' | 'success' | 'warning' | 'danger' | 'cust
 
 export type Notification = {
   type: NotificationType
-  message: string
+  message: React.ReactNode
   duration?: number
 }
 

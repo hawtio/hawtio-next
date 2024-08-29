@@ -14,7 +14,7 @@ export const HawtioNotification: React.FunctionComponent = () => {
     return overflow > 0 ? `View ${overflow} more alerts` : ''
   }
 
-  const addAlert = (title: string, variant: NotificationType, key: React.Key) => {
+  const addAlert = (title: React.ReactNode, variant: NotificationType, key: React.Key) => {
     const newAlerts = [...alerts, { title, variant, key }]
     setAlerts(newAlerts)
     setOverflowMessage(getOverflowMessage(newAlerts.length))

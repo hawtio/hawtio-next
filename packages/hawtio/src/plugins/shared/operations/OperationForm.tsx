@@ -2,6 +2,7 @@ import { eventService } from '@hawtiosrc/core'
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
 import {
   ActionGroup,
+  Alert,
   Button,
   Checkbox,
   ClipboardCopy,
@@ -93,6 +94,17 @@ export const OperationForm: React.FunctionComponent<{
   )
 }
 
+const insecureContextMsg =
+  'Because Hawtio is accessed through insecure context (http:), it is not possible to copy data into the clipboard.'
+
+const InsecureContextWarning: React.FunctionComponent = () => {
+  return (
+    <Alert title='Insecure context limits functionality' variant='warning'>
+      {insecureContextMsg}
+    </Alert>
+  )
+}
+
 const OperationActions: React.FunctionComponent = () => {
   const { name, operation, objectName } = useContext(OperationContext)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -108,9 +120,28 @@ const OperationActions: React.FunctionComponent = () => {
     })
   }
 
+  const notifyCopyFailure = (text: string) => {
+    eventService.notify({
+      type: 'warning',
+      message: (
+        <>
+          <p>{insecureContextMsg}</p>
+          <p>
+            You can copy the URL manually: <code>{text}</code>
+          </p>
+        </>
+      ),
+      duration: 10_000,
+    })
+  }
+
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-    notifySuccessfulCopy()
+    try {
+      navigator.clipboard.writeText(text)
+      notifySuccessfulCopy()
+    } catch (e) {
+      notifyCopyFailure(text)
+    }
   }
 
   const copyMethodName = () => {
@@ -129,6 +160,7 @@ const OperationActions: React.FunctionComponent = () => {
     >
       <Dropdown
         key={`operation-action-dropdown-${name}`}
+        popperProps={{ position: 'right' }}
         isOpen={isDropdownOpen}
         onOpenChange={setIsDropdownOpen}
         toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
@@ -138,6 +170,7 @@ const OperationActions: React.FunctionComponent = () => {
         )}
       >
         <DropdownList>
+          {!isSecureContext && <InsecureContextWarning />}
           <DropdownItem key={`operation-action-copy-method-name-${name}`} onClick={copyMethodName}>
             Copy method name
           </DropdownItem>
