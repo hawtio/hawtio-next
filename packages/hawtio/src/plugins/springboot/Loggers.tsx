@@ -166,7 +166,7 @@ export const Loggers: React.FunctionComponent = () => {
   ))
 
   const tableToolbar = (
-    <Toolbar>
+    <Toolbar clearAllFilters={clearFilters}>
       <ToolbarContent>
         <ToolbarGroup>
           <Dropdown
@@ -191,7 +191,6 @@ export const Loggers: React.FunctionComponent = () => {
           <ToolbarFilter
             chips={filters}
             deleteChip={(_e, filter) => onDeleteFilter(filter as string)}
-            deleteChipGroup={clearFilters}
             categoryName='Filters'
           >
             <SearchInput
