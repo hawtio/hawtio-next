@@ -198,7 +198,7 @@ export const TraceView: React.FunctionComponent = () => {
   )
 
   const TableToolbar = (
-    <Toolbar>
+    <Toolbar clearAllFilters={clearFilters}>
       <ToolbarContent>
         <ToolbarItem>
           <Dropdown
@@ -244,7 +244,6 @@ export const TraceView: React.FunctionComponent = () => {
           <ToolbarFilter
             chips={filters}
             deleteChip={(_e, filter) => onDeleteFilter(filter as string)}
-            deleteChipGroup={clearFilters}
             categoryName='Filters'
           >
             <SearchInput
