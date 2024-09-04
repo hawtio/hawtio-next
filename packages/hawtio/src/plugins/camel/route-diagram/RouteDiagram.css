@@ -66,9 +66,10 @@
 .camel-route-diagram {
   flex-grow: 1;
   position: relative;
-  height: 60vh;
+  /* 230px representss size of hawtio bar, panel header,tab  navigation,and footer  */
+  height: calc(100vh - 230px);
   min-height: 50vh;
-  max-height: 75vh;
+  max-height: calc(100vh - 230px);
   width: 100%;
 }
 

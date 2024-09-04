@@ -23,6 +23,14 @@
   flex: 1;
 }
 
+#route-diagram-tracing-view .camel-route-diagram {
+  /* 330px is approximately size of hawtio bar, header, navigation, paddings and footer  */
+  height: calc(100vh - 330px);
+  min-height: 50vh;
+  max-height: calc(100vh - 330px);
+  width: 100%;
+}
+
 #trace-header-container {
   display: flex;
   justify-content: space-between;
