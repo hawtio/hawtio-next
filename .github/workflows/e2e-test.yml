@@ -166,14 +166,6 @@ jobs:
             ${{ env.REPORT_DIR }}/*.log
             ${{ env.REPORT_DIR }}/cucumber-reports/*
 
-      - name: Archive failed test reports
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: 'test-results'
-          path: |
-            results/**/*
-
   publish-results:
     runs-on: ubuntu-latest
     needs: test
@@ -183,6 +175,13 @@ jobs:
       actions: read
       pull-requests: write
     steps:
+      - name: Archive failed test reports
+        uses: actions/upload-artifact/merge@v4
+        if: always()
+        with:
+          name: 'test-results'
+          pattern: test-results-*
+          separate-directories: true
       - name: Download Test Results
         uses: actions/download-artifact@v4.1.7
         with:
