@@ -157,7 +157,7 @@ jobs:
           echo "Container log:"
           cat results/$REPORT_DIR/container.log
       - name: Archive test artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: 'test-${{ env.REPORT_DIR }}'
@@ -167,7 +167,7 @@ jobs:
             ${{ env.REPORT_DIR }}/cucumber-reports/*
 
       - name: Archive failed test reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: 'test-results'
