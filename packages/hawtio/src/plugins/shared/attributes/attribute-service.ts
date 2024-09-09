@@ -2,7 +2,7 @@ import { eventService } from '@hawtiosrc/core'
 import { rbacService } from '@hawtiosrc/plugins/rbac/rbac-service'
 import { AttributeValues, jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { escapeMBean } from '@hawtiosrc/util/jolokia'
-import { Request, RequestOptions, Response } from 'jolokia.js'
+import { JolokiaRequest, JolokiaErrorResponse, JolokiaSuccessResponse, RequestOptions } from 'jolokia.js'
 import { log } from '../globals'
 import { jmxPreferencesService } from '../jmx-preferences-service'
 
@@ -14,7 +14,7 @@ class AttributeService {
     return serializeLong ? { serializeLong: 'string' } : {}
   }
 
-  private setupConfig(request: Request): Request {
+  private setupConfig(request: JolokiaRequest): JolokiaRequest {
     const { serializeLong } = jmxPreferencesService.loadOptions()
     if (serializeLong) {
       request.config = { ...request.config, serializeLong: 'string' }
@@ -31,7 +31,7 @@ class AttributeService {
     callback(attrs)
   }
 
-  async register(request: Request, callback: (response: Response) => void) {
+  async register(request: JolokiaRequest, callback: (response: JolokiaSuccessResponse | JolokiaErrorResponse) => void) {
     const handle = await jolokiaService.register(this.setupConfig(request), callback)
     log.debug('Register handle:', handle)
     this.handles.push(handle)
@@ -65,7 +65,7 @@ class AttributeService {
     eventService.notify({ type: 'success', message: `Updated attribute: ${attribute}` })
   }
 
-  async bulkRequest(requests: Request[]) {
+  async bulkRequest(requests: JolokiaRequest[]) {
     return jolokiaService.bulkRequest(requests.map(this.setupConfig))
   }
 }

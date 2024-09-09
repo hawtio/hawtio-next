@@ -10,6 +10,7 @@ import { log } from '../globals'
 import { AttributeModal } from './AttributeModal'
 import { attributeService } from './attribute-service'
 import './AttributeTable.css'
+import Jolokia from 'jolokia.js'
 
 export const Attributes: React.FunctionComponent = () => {
   const { selectedNode } = useContext(PluginNodeSelectionContext)
@@ -33,8 +34,10 @@ export const Attributes: React.FunctionComponent = () => {
     })
 
     attributeService.register({ type: 'read', mbean: objectName }, response => {
-      log.debug('Scheduler - Attributes:', response.value)
-      setAttributes(response.value as AttributeValues)
+      if (!Jolokia.isError(response)) {
+        log.debug('Scheduler - Attributes:', response.value)
+        setAttributes(response.value as AttributeValues)
+      }
     })
 
     return () => attributeService.unregisterAll()

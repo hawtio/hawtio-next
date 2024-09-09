@@ -18,7 +18,7 @@ import {
   Title,
 } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
-import { Request, Response } from 'jolokia.js'
+import { JolokiaSuccessResponse, JolokiaErrorResponse, ReadRequest } from 'jolokia.js'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { HawtioEmptyCard } from '../HawtioEmptyCard'
 import { HawtioLoadingCard } from '../HawtioLoadingCard'
@@ -173,8 +173,11 @@ export const Chart: React.FunctionComponent = () => {
     else updateNode(mbeanObjectName, data)
   }
 
-  function extractChartDataFromResponse(response: Response, nodeName: string) {
+  function extractChartDataFromResponse(response: JolokiaSuccessResponse | JolokiaErrorResponse, nodeName: string) {
     const time = response.timestamp
+    if ('error' in response) {
+      return
+    }
     const attr = response.value as AttributeValues
 
     const attributesEntry: AttributesEntry = {}
@@ -182,7 +185,7 @@ export const Chart: React.FunctionComponent = () => {
       .filter(value => isNumber(value[1]))
       .forEach(([attrName, value]) => {
         attributesEntry[attrName] = {
-          time: time,
+          time: time!,
           value: value as number,
         }
       })
@@ -194,21 +197,26 @@ export const Chart: React.FunctionComponent = () => {
     ;[node, ...node.getChildren()]
       .filter(node => node && node.objectName)
       .forEach(node => {
-        attributeService.register({ type: 'read', mbean: node.objectName! }, (response: Response) =>
-          extractChartDataFromResponse(response, node.name),
+        attributeService.register(
+          { type: 'read', mbean: node.objectName! },
+          (response: JolokiaSuccessResponse | JolokiaErrorResponse) =>
+            extractChartDataFromResponse(response, node.name),
         )
       })
   }
 
   async function fetchChartData(node: MBeanNode) {
     if (!node) return
-    const requests: Request[] = []
+    const requests: ReadRequest[] = []
     ;[node, ...node.getChildren()].forEach(node => {
       if (node.objectName) requests.push({ type: 'read', mbean: node.objectName })
     })
 
     const responses = await attributeService.bulkRequest(requests)
     responses.forEach(resp => {
+      if (!('mbean' in resp)) {
+        return
+      }
       const req = resp.request as unknown as { mbean: string }
       let name = req.mbean.match(/name="([^"]+)"/)
       if (!name) {

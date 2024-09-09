@@ -19,6 +19,7 @@ import { QuartzContext } from '../context'
 import { log } from '../globals'
 import { QUARTZ_OPERATIONS, quartzService } from '../quartz-service'
 import './Scheduler.css'
+import Jolokia from 'jolokia.js'
 
 export const Scheduler: React.FunctionComponent = () => {
   const { selectedNode } = useContext(QuartzContext)
@@ -39,6 +40,10 @@ export const Scheduler: React.FunctionComponent = () => {
     })
 
     attributeService.register({ type: 'read', mbean: objectName }, response => {
+      if (Jolokia.isError(response)) {
+        log.warn('Scheduler - Attributes (error):', response.error)
+        return
+      }
       log.debug('Scheduler - Attributes:', response.value)
       setAttributes(response.value as AttributeValues)
     })

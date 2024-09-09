@@ -1,49 +1,52 @@
 import { userService } from '@hawtiosrc/auth'
 import { eventService, hawtio } from '@hawtiosrc/core'
-import { basicAuthHeaderValue, getCookie } from '@hawtiosrc/util/https'
+import { getCookie } from '@hawtiosrc/util/https'
 import {
   escapeMBeanPath,
+  onAttributeSuccessAndError,
   onBulkSuccessAndError,
   onExecuteSuccessAndError,
   onListSuccessAndError,
   onSearchSuccessAndError,
-  onSuccessAndError,
   onVersionSuccessAndError,
 } from '@hawtiosrc/util/jolokia'
 import { isObject, isString } from '@hawtiosrc/util/objects'
 import { parseBoolean } from '@hawtiosrc/util/strings'
-import Jolokia, {
-  AttributeRequestOptions,
-  BaseRequestOptions,
-  BulkRequestOptions,
-  ErrorResponse,
-  ExecuteRequestOptions,
-  ListRequestOptions,
-  ListResponse,
-  NotificationMode,
+import {
+  ErrorCallback,
+  ExecResponseValue,
+  FetchErrorCallback,
+  JobCallback,
+  JobRegistrationConfig,
+  JolokiaErrorResponse,
+  JolokiaRequest,
+  JolokiaResponse,
+  JolokiaResponseValue,
+  JolokiaSuccessResponse,
+  ListResponseValue,
+  NotificationHandle,
   NotificationOptions,
-  Request,
+  ReadResponseValue,
   RequestOptions,
-  Response,
-  SearchRequestOptions,
-  VersionRequestOptions,
-  VersionResponse,
+  SearchResponseValue,
+  VersionResponseValue,
+  WriteResponseValue,
 } from 'jolokia.js'
-import 'jolokia.js/simple'
+import Jolokia, { IJolokiaSimple, SimpleRequestOptions, SimpleResponseCallback } from '@jolokia.js/simple'
 import $ from 'jquery'
-import { func, is, object, type } from 'superstruct'
+import { is, object } from 'superstruct'
 import {
   PARAM_KEY_CONNECTION,
   PARAM_KEY_REDIRECT,
   SESSION_KEY_CURRENT_CONNECTION,
   connectService,
-} from '../shared/connect-service'
+} from './connect-service'
 import { log } from './globals'
 import { OptimisedJmxDomains, OptimisedMBeanInfo, isJmxDomain, isJmxDomains, isMBeanInfo } from './tree'
 
 export const DEFAULT_MAX_DEPTH = 7
 export const DEFAULT_MAX_COLLECTION_SIZE = 50000
-const DEFAULT_JOLOKIA_OPTIONS: RequestOptions = {
+const DEFAULT_JOLOKIA_OPTIONS: SimpleRequestOptions = {
   method: 'post',
   mimeType: 'application/json',
   maxCollectionSize: DEFAULT_MAX_COLLECTION_SIZE,
@@ -78,6 +81,7 @@ export type OptimisedListResponse = {
   cache: OptimisedMBeanInfoCache
   domains: CacheableOptimisedJmxDomains
 }
+// see https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates
 function isOptimisedListResponse(value: unknown): value is OptimisedListResponse {
   return is(value, object({ cache: object(), domains: object() }))
 }
@@ -99,43 +103,73 @@ export const STORAGE_KEY_JOLOKIA_OPTIONS = 'connect.jolokia.options'
 export const STORAGE_KEY_UPDATE_RATE = 'connect.jolokia.updateRate'
 export const STORAGE_KEY_AUTO_REFRESH = 'connect.jolokia.autoRefresh'
 
-type JQueryBeforeSend = (this: unknown, jqXHR: JQueryXHR, settings: unknown) => false | void
-type JQueryAjaxError = (xhr: JQueryXHR, text: string, error: string) => void
 type AjaxErrorResolver = () => void
 
+/** Narrowed Jolokia ReadResponseValue type - only a record of attribute values */
 export type AttributeValues = Record<string, unknown>
 
+/**
+ * Jolokia access interface used by Hawtio. Underneath, Jolokia's own {@link IJolokiaSimple} interface is used, but it
+ * can also be obtained from this interface, to be used directly.
+ */
 export interface IJolokiaService {
+  // --- Management methods
+
   reset(): void
+
   getJolokiaUrl(): Promise<string | null>
-  getJolokia(): Promise<Jolokia>
-  getListMethod(): Promise<JolokiaListMethod>
   getFullJolokiaUrl(): Promise<string>
-  list(options?: ListRequestOptions): Promise<OptimisedJmxDomains>
-  sublist(paths: string | string[], options?: ListRequestOptions): Promise<OptimisedJmxDomains>
+
+  getJolokia(): Promise<IJolokiaSimple>
+  getListMethod(): Promise<JolokiaListMethod>
+
+  // --- Methods using Jolokia API (read, write, exec, list, search, version)
+
+  list(options?: SimpleRequestOptions): Promise<OptimisedJmxDomains>
+  sublist(paths: string | string[], options?: SimpleRequestOptions): Promise<OptimisedJmxDomains>
+
   readAttributes(mbean: string, options?: RequestOptions): Promise<AttributeValues>
   readAttribute(mbean: string, attribute: string, options?: RequestOptions): Promise<unknown>
   writeAttribute(mbean: string, attribute: string, value: unknown, options?: RequestOptions): Promise<unknown>
-  execute(mbean: string, operation: string, args?: unknown[], options?: ExecuteRequestOptions): Promise<unknown>
-  search(mbeanPattern: string): Promise<string[]>
-  bulkRequest(requests: Request[], options?: BulkRequestOptions): Promise<Response[]>
-  register(request: Request, callback: (response: Response | ErrorResponse) => void): Promise<number>
+
+  execute(mbean: string, operation: string, args?: unknown[], options?: SimpleRequestOptions): Promise<unknown>
+
+  search(mbeanPattern: string, options?: SimpleRequestOptions): Promise<string[]>
+
+  bulkRequest(
+    requests: JolokiaRequest[],
+    options?: RequestOptions,
+  ): Promise<(JolokiaSuccessResponse | JolokiaErrorResponse)[]>
+
+  // --- Methods using Jolokia registration API
+
+  register(
+    request: JolokiaRequest,
+    callback: (response: JolokiaSuccessResponse | JolokiaErrorResponse) => void,
+  ): Promise<number>
   unregister(handle: number): void
+
+  // --- Configuration methods
+
   loadUpdateRate(): number
   saveUpdateRate(value: number): void
+
   loadAutoRefresh(): boolean
   saveAutoRefresh(value: boolean): void
+
   loadJolokiaStoredOptions(): JolokiaStoredOptions
   saveJolokiaStoredOptions(options: JolokiaStoredOptions): void
 }
 
 class JolokiaService implements IJolokiaService {
   private jolokiaUrl?: Promise<string | null>
-  private jolokia?: Promise<Jolokia>
+  private jolokia?: Promise<IJolokiaSimple>
   private config: JolokiaConfig = {
     method: JolokiaListMethod.DEFAULT,
     mbean: OPTIMISED_JOLOKIA_LIST_MBEAN,
   }
+
+  // --- Management methods
 
   reset() {
     this.jolokiaUrl = undefined
@@ -164,7 +198,7 @@ class JolokiaService implements IJolokiaService {
     return this.jolokiaUrl
   }
 
-  getJolokia(): Promise<Jolokia> {
+  getJolokia(): Promise<IJolokiaSimple> {
     if (this.jolokia) {
       return this.jolokia
     }
@@ -174,8 +208,11 @@ class JolokiaService implements IJolokiaService {
       // Checking versions
       jolokia.version(
         onVersionSuccessAndError(
-          version => {
-            log.info('Jolokia version:', { client: jolokia.CLIENT_VERSION, agent: version.agent })
+          (version: JolokiaResponseValue) => {
+            log.info('Jolokia version:', {
+              client: jolokia.CLIENT_VERSION,
+              agent: (version as VersionResponseValue).agent,
+            })
           },
           error => log.error('Failed to fetch Jolokia version:', error),
         ),
@@ -222,14 +259,14 @@ class JolokiaService implements IJolokiaService {
     // TOCHECK: scenarios when there's no server side session (Keycloak, OIDC)
     return new Promise<string>((resolve, reject) => {
       $.ajax(path)
-        .done((data: string, textStatus: string, xhr: JQueryXHR) => {
+        .done((data: string, _textStatus: string, xhr: JQueryXHR) => {
           if (xhr.status !== 200) {
             reject()
             return
           }
 
           try {
-            const resp = JSON.parse(data)
+            const resp = typeof data === 'string' ? JSON.parse(data) : data
             if ('value' in resp && 'agent' in resp.value) {
               log.debug('Found jolokia agent at:', path, ', version:', resp.value.agent)
               resolve(path)
@@ -254,34 +291,23 @@ class JolokiaService implements IJolokiaService {
     })
   }
 
-  private async createJolokia(postCreate?: (jolokia: Jolokia) => void): Promise<Jolokia> {
+  private async createJolokia(postCreate?: (jolokia: IJolokiaSimple) => void): Promise<IJolokiaSimple> {
     const jolokiaUrl = await this.getJolokiaUrl()
     if (!jolokiaUrl) {
       log.debug('Use dummy Jolokia')
       return new DummyJolokia()
     }
 
-    // An auth plugin such as Keycloak may have already set up jQuery beforeSend
-    if (!$.ajaxSettings.beforeSend) {
-      log.debug('Set up jQuery beforeSend')
-      const beforeSend = await this.beforeSend()
-      $.ajaxSetup({ beforeSend })
+    const options = await this.loadJolokiaOptions()
+    if (!options.fetchError) {
+      // Default fetch() error handler (called "fetchError" in Jolokia 2.1.x, called "ajaxError" in 2.0.x and earlier)
+      options.fetchError = this.fetchError()
     }
 
-    const options = await this.loadJolokiaOptions()
-    if (!options.ajaxError) {
-      // Default ajax error handler
-      options.ajaxError = this.ajaxError()
-    }
+    await this.configureAuthorization(options)
 
     const jolokia = new Jolokia(options)
     jolokia.stop()
-
-    // https://github.com/hawtio/hawtio-next/issues/832
-    // at this stage we didn't call Jolokia yet and first attempt, when the server returns 401/403, we may
-    // get native browser popup to enter Basic Auth credentials.
-    // ideally we should prevent this dialog, but it's not possible with xhr. only with Fetch API with
-    // "credentials:'omit'". for now let's leave as is
 
     // let's check if we can call faster jolokia.list()
     await this.checkListOptimisation(jolokia)
@@ -293,101 +319,90 @@ class JolokiaService implements IJolokiaService {
     return jolokia
   }
 
-  private async beforeSend(): Promise<JQueryBeforeSend> {
+  private async configureAuthorization(options: RequestOptions): Promise<undefined> {
     const connection = await connectService.getCurrentConnection()
     // Just set Authorization for now...
-    const header = 'Authorization'
     if ((await userService.isLogin()) && userService.getToken()) {
       log.debug('Set authorization header to token')
-      return (xhr: JQueryXHR) => {
-        if (userService.getToken()) {
-          xhr.setRequestHeader(header, `Bearer ${userService.getToken()}`)
-        }
-      }
+      ;(options.headers as Record<string, string>)['Authorization'] = `Bearer ${userService.getToken()}`
     } else if (connection && connection.token) {
       // TODO: when?
-      return (xhr: JQueryXHR) => xhr.setRequestHeader(header, `Bearer ${connection.token}`)
+      ;(options.headers as Record<string, string>)['Authorization'] = `Bearer ${connection.token}`
     } else if (connection && connection.username && connection.password) {
       log.debug('Set authorization header to username/password')
-      const headerValue = basicAuthHeaderValue(connection.username, connection.password)
-      return (xhr: JQueryXHR) => xhr.setRequestHeader(header, headerValue)
-    } else {
-      const token = getCookie('XSRF-TOKEN')
-      if (token) {
-        // For CSRF protection with Spring Security
-        log.debug('Set XSRF token header from cookies')
-        return (xhr: JQueryXHR) => xhr.setRequestHeader('X-XSRF-TOKEN', token)
-      } else {
-        log.debug('Not set any authorization header')
-        return () => {
-          /* no-op */
-        }
-      }
+      options.username = connection.username
+      options.password = connection.password
+    }
+    const token = getCookie('XSRF-TOKEN')
+    if (token) {
+      // For CSRF protection with Spring Security
+      log.debug('Set XSRF token header from cookies')
+      ;(options.headers as Record<string, string>)['X-XSRF-TOKEN'] = token
+      // } else {
+      //   log.debug('Not set any authorization header')
     }
   }
 
-  private ajaxError(resolve?: AjaxErrorResolver): JQueryAjaxError {
+  private fetchError(resolve?: AjaxErrorResolver): FetchErrorCallback {
     const errorThreshold = 2
     let errorCount = 0
     let errorToastDisplayed = false
-    return (xhr: JQueryXHR) => {
-      switch (xhr.status) {
-        case 401:
-        case 403: {
-          const url = new URL(window.location.href)
-          // If window was opened to connect to remote Jolokia endpoint
-          if (url.searchParams.has(PARAM_KEY_CONNECTION) || sessionStorage.getItem(SESSION_KEY_CURRENT_CONNECTION)) {
-            // we're in connected tab/window and Jolokia access attempt ended with 401/403
-            // because xhr was used we _should_ have seen native browser popup to enter credentials and later
-            // to store them in browser's password manager. If user closes this dialog and doesn't enter any valid
-            // credentials we should display connect/login page with React dialog which accepts and stores the
-            // credentials in sessionStorage using encryption.
-            // but this is NOT possible in insecure context where we can't use window.crypto.subtle object
-            if (!window.isSecureContext) {
-              // this won't work if user manually browses to URL with con=connection-id.
-              // there will be "Scripts may not close windows that were not opened by script." warning in console
-              window.close()
-              return
-            }
-            const loginPath = connectService.getLoginPath()
-            if (url.pathname !== loginPath) {
-              // ... and not showing the login modal
-              this.jolokia?.then(jolokia => jolokia.stop())
-              const redirectUrl = window.location.href
-              url.pathname = loginPath
-              url.searchParams.append(PARAM_KEY_REDIRECT, redirectUrl)
-              // full browser refresh
-              window.location.href = url.href
-            }
-          } else {
-            // just logout
-            userService.isLogin().then(login => {
-              log.debug('Logging out due to jQuery ajax error: status =', xhr.status)
-              login && userService.logout()
-            })
+    // this callback is new in Jolokia 2.1.x and gets two parameters:
+    // - response if there's a HTTP!=200 problem
+    // - error if there's communication error or fetch() configuration error (like bad header or GET with body)
+    return (response: Response | null, _error: DOMException | TypeError | string | null) => {
+      if (response && response.status && (response.status == 401 || response.status == 403)) {
+        const url = new URL(window.location.href)
+        // If window was opened to connect to remote Jolokia endpoint
+        if (url.searchParams.has(PARAM_KEY_CONNECTION) || sessionStorage.getItem(SESSION_KEY_CURRENT_CONNECTION)) {
+          // we're in connected tab/window and Jolokia access attempt ended with 401/403
+          // because xhr was used we _should_ have seen native browser popup to enter credentials and later
+          // to store them in browser's password manager. If user closes this dialog and doesn't enter any valid
+          // credentials we should display connect/login page with React dialog which accepts and stores the
+          // credentials in sessionStorage using encryption.
+          // but this is NOT possible in insecure context where we can't use window.crypto.subtle object
+          if (!window.isSecureContext) {
+            // this won't work if user manually browses to URL with con=connection-id.
+            // there will be "Scripts may not close windows that were not opened by script." warning in console
+            window.close()
+            return
           }
-          break
+          const loginPath = connectService.getLoginPath()
+          if (url.pathname !== loginPath) {
+            // ... and not showing the login modal
+            this.jolokia?.then(jolokia => jolokia.stop())
+            const redirectUrl = window.location.href
+            url.pathname = loginPath
+            url.searchParams.append(PARAM_KEY_REDIRECT, redirectUrl)
+            // full browser refresh
+            window.location.href = url.href
+          }
+        } else {
+          // just logout
+          userService.isLogin().then(login => {
+            log.debug('Logging out due to fetch() error: status =', response.status)
+            login && userService.logout()
+          })
         }
-        default: {
-          errorCount++
-          const updateRate = this.loadUpdateRate()
-          const validityPeriod = updateRate * (errorThreshold + 1)
-          setTimeout(() => {
-            errorCount--
-            if (errorCount == 0) {
-              errorToastDisplayed = false
-            }
-            return errorCount
-          }, validityPeriod)
-          if (errorCount > errorThreshold && !errorToastDisplayed) {
-            eventService.notify({
-              type: 'danger',
-              message: 'Connection lost. Will attempt reconnection...',
-              // -100ms is to not overlap between update and notification
-              duration: updateRate - 100,
-            })
-            errorToastDisplayed = true
+      } else {
+        errorCount++
+        const updateRate = this.loadUpdateRate()
+        const validityPeriod = updateRate * (errorThreshold + 1)
+        setTimeout(() => {
+          errorCount--
+          if (errorCount == 0) {
+            errorToastDisplayed = false
           }
+          return errorCount
+        }, validityPeriod)
+        if (errorCount > errorThreshold && !errorToastDisplayed) {
+          eventService.notify({
+            type: 'danger',
+            message: 'Connection lost. Will attempt reconnection...',
+            // -100ms is to not overlap between update and notification
+            duration: updateRate - 100,
+          })
+          errorToastDisplayed = true
         }
       }
 
@@ -402,10 +417,10 @@ class JolokiaService implements IJolokiaService {
    *
    * @param jolokia Jolokia instance to use
    */
-  protected async checkListOptimisation(jolokia: Jolokia): Promise<void> {
+  protected async checkListOptimisation(jolokia: IJolokiaSimple): Promise<void> {
     log.debug('Check if we can call optimised jolokia.list() operation')
     return new Promise<void>(resolve => {
-      const successFn: NonNullable<ListRequestOptions['success']> = (value: ListResponse) => {
+      const successFn: SimpleResponseCallback = (value: JolokiaResponseValue) => {
         // check if the MBean exists by testing whether the returned value has
         // the 'op' property
         if (isMBeanInfo(value) && isObject(value.op)) {
@@ -419,7 +434,7 @@ class JolokiaService implements IJolokiaService {
         resolve()
       }
 
-      const errorFn: NonNullable<ListRequestOptions['error']> = (response: ErrorResponse) => {
+      const errorFn: ErrorCallback = (response: JolokiaErrorResponse) => {
         log.debug('Operation "list" failed due to:', response.error)
         log.debug('Optimisation on jolokia.list() not available')
         resolve() // optimisation not happening
@@ -427,12 +442,12 @@ class JolokiaService implements IJolokiaService {
 
       jolokia.list(
         escapeMBeanPath(this.config.mbean),
-        onListSuccessAndError(successFn, errorFn, { ajaxError: this.ajaxError(resolve) }),
+        onListSuccessAndError(successFn, errorFn, { fetchError: this.fetchError(resolve) }),
       )
     })
   }
 
-  private async loadJolokiaOptions(): Promise<BaseRequestOptions> {
+  private async loadJolokiaOptions(): Promise<RequestOptions> {
     const opts = { ...DEFAULT_JOLOKIA_OPTIONS, ...this.loadJolokiaStoredOptions() }
 
     const jolokiaUrl = await this.getJolokiaUrl()
@@ -470,15 +485,15 @@ class JolokiaService implements IJolokiaService {
     return this.config.method
   }
 
-  list(options?: ListRequestOptions): Promise<OptimisedJmxDomains> {
+  list(options?: SimpleRequestOptions): Promise<OptimisedJmxDomains> {
     return this.doList([], options)
   }
 
-  sublist(paths: string | string[], options?: ListRequestOptions): Promise<OptimisedJmxDomains> {
+  sublist(paths: string | string[], options?: SimpleRequestOptions): Promise<OptimisedJmxDomains> {
     return this.doList(Array.isArray(paths) ? paths : [paths], options)
   }
 
-  private async doList(paths: string[], options: ListRequestOptions = {}): Promise<OptimisedJmxDomains> {
+  private async doList(paths: string[], options: SimpleRequestOptions = {}): Promise<OptimisedJmxDomains> {
     // Granularity of the return value is MBean info and cannot be smaller
     paths.forEach(path => {
       if (path.split('/').length > 2) {
@@ -495,12 +510,14 @@ class JolokiaService implements IJolokiaService {
 
     const { method, mbean } = this.config
 
-    const { success, error: errorFn, ajaxError } = options
+    const { success, error: errorFn, fetchError } = options
 
     return new Promise((resolve, reject) => {
-      // Override ajaxError to make sure it terminates in case of ajax error
-      options.ajaxError = (xhr, text, error) => {
-        ajaxError?.(xhr, text, error)
+      // Override fetchError to make sure it terminates in case of ajax error
+      options.fetchError = (response, error) => {
+        if (fetchError !== 'ignore') {
+          fetchError?.(response, error)
+        }
         reject(error)
       }
       // Overwrite max depth as listing MBeans requires some constant depth to work
@@ -521,10 +538,12 @@ class JolokiaService implements IJolokiaService {
               resolve(domains)
             },
             error => {
-              errorFn?.(error)
+              if (errorFn && errorFn !== 'ignore') {
+                errorFn?.(error, 0)
+              }
               reject(error)
             },
-            options as BaseRequestOptions,
+            options,
           )
           if (paths.length === 0) {
             jolokia.execute(mbean, 'list()', execOptions)
@@ -532,7 +551,7 @@ class JolokiaService implements IJolokiaService {
             jolokia.execute(mbean, 'list(java.lang.String)', paths[0], execOptions)
           } else {
             // Bulk request and merge the result
-            const requests: Request[] = paths.map(path => ({
+            const requests: JolokiaRequest[] = paths.map(path => ({
               type: 'exec',
               mbean,
               operation: 'list(java.lang.String)',
@@ -556,7 +575,9 @@ class JolokiaService implements IJolokiaService {
               resolve(domains)
             },
             error => {
-              errorFn?.(error)
+              if (errorFn && errorFn !== 'ignore') {
+                errorFn?.(error, 0)
+              }
               reject(error)
             },
             options,
@@ -567,7 +588,7 @@ class JolokiaService implements IJolokiaService {
             jolokia.list(paths[0] ?? '', listOptions)
           } else {
             // Bulk request and merge the result
-            const requests: Request[] = paths.map(path => ({ type: 'list', path, config: listOptions }))
+            const requests: JolokiaRequest[] = paths.map(path => ({ type: 'list', path, config: listOptions }))
             this.bulkList(jolokia, requests, listOptions)
           }
         }
@@ -620,20 +641,22 @@ class JolokiaService implements IJolokiaService {
     throw new Error('Unexpected Jolokia list response: ' + JSON.stringify(response))
   }
 
-  private bulkList(jolokia: Jolokia, requests: Request[], listOptions: ListRequestOptions) {
-    const bulkResponse: Response[] = []
+  private bulkList(jolokia: IJolokiaSimple, requests: JolokiaRequest[], listOptions: SimpleRequestOptions) {
+    // bulk responses contain Jolokia generic responses, not @jolokia.js/simple response _values_
+    const bulkResponse: (JolokiaSuccessResponse | JolokiaErrorResponse)[] = []
     const mergeResponses = () => {
       const domains = bulkResponse
         .filter(response => {
-          if (response.status === 200) {
+          if (!Jolokia.isError(response)) {
             return true
           } else {
-            const error = response as ErrorResponse
-            log.warn('Bulk list response error:', error.error)
+            log.warn('Bulk list response error:', response.error)
             return false
           }
         })
-        .map(response => {
+        .map((r: JolokiaResponse) => {
+          // it's already filtered for success responses
+          const response = r as JolokiaSuccessResponse
           switch (response.request.type) {
             case 'list': {
               const path = response.request.path?.split('/')
@@ -653,9 +676,9 @@ class JolokiaService implements IJolokiaService {
     jolokia.request(
       requests,
       onBulkSuccessAndError(
-        response => {
+        (response: JolokiaSuccessResponse, _index: number) => {
           // Response can never be string in Hawtio's setup of Jolokia
-          bulkResponse.push(response as Response)
+          bulkResponse.push(response as JolokiaSuccessResponse)
           // Resolve only when all the responses from the bulk request are collected
           if (bulkResponse.length === requests.length) {
             mergeResponses()
@@ -670,7 +693,7 @@ class JolokiaService implements IJolokiaService {
           }
         },
         // Reuse the list options other than success and error functions
-        listOptions as BaseRequestOptions,
+        listOptions as SimpleRequestOptions,
       ),
     )
   }
@@ -690,15 +713,20 @@ class JolokiaService implements IJolokiaService {
     return target
   }
 
+  /**
+   * Reading all attributes of an MBean as a record (key-value pairs)
+   * @param mbean
+   * @param options
+   */
   async readAttributes(mbean: string, options?: RequestOptions): Promise<AttributeValues> {
     const jolokia = await this.getJolokia()
     return new Promise(resolve => {
       jolokia.request(
         { type: 'read', mbean },
-        onSuccessAndError(
-          response => {
-            // Response can never be string in Hawtio's setup of Jolokia
-            resolve((response as Response).value as AttributeValues)
+        onAttributeSuccessAndError(
+          (response: JolokiaSuccessResponse) => {
+            // Response can never be string/number in Hawtio's setup of Jolokia
+            resolve(response.value as AttributeValues)
           },
           error => {
             log.error('Error during readAttributes:', error)
@@ -710,15 +738,20 @@ class JolokiaService implements IJolokiaService {
     })
   }
 
+  /**
+   * Reading single attribute of an MBean
+   * @param mbean
+   * @param attribute
+   * @param options
+   */
   async readAttribute(mbean: string, attribute: string, options?: RequestOptions): Promise<unknown> {
     const jolokia = await this.getJolokia()
     return new Promise(resolve => {
       jolokia.request(
         { type: 'read', mbean, attribute },
-        onSuccessAndError(
-          response => {
-            // Response can never be string in Hawtio's setup of Jolokia
-            resolve((response as Response).value as unknown)
+        onAttributeSuccessAndError(
+          (response: JolokiaSuccessResponse) => {
+            resolve(response.value)
           },
           error => {
             log.error('Error during readAttribute:', error)
@@ -730,15 +763,21 @@ class JolokiaService implements IJolokiaService {
     })
   }
 
+  /**
+   * Writing a single attribute of an MBean
+   * @param mbean
+   * @param attribute
+   * @param value
+   * @param options
+   */
   async writeAttribute(mbean: string, attribute: string, value: unknown, options?: RequestOptions): Promise<unknown> {
     const jolokia = await this.getJolokia()
     return new Promise(resolve => {
       jolokia.request(
         { type: 'write', mbean, attribute, value },
-        onSuccessAndError(
-          response => {
-            // Response can never be string in Hawtio's setup of Jolokia
-            resolve((response as Response).value as unknown)
+        onAttributeSuccessAndError(
+          (response: JolokiaSuccessResponse) => {
+            resolve(response.value)
           },
           error => {
             log.error('Error during writeAttribute:', error)
@@ -750,11 +789,18 @@ class JolokiaService implements IJolokiaService {
     })
   }
 
+  /**
+   * Execute an operation on an MBean
+   * @param mbean
+   * @param operation
+   * @param args
+   * @param options
+   */
   async execute(
     mbean: string,
     operation: string,
     args: unknown[] = [],
-    options?: ExecuteRequestOptions,
+    options?: SimpleRequestOptions,
   ): Promise<unknown> {
     const jolokia = await this.getJolokia()
     return new Promise((resolve, reject) => {
@@ -787,16 +833,19 @@ class JolokiaService implements IJolokiaService {
     })
   }
 
-  async bulkRequest(requests: Request[], options?: BulkRequestOptions): Promise<Response[]> {
+  async bulkRequest(
+    requests: JolokiaRequest[],
+    options?: RequestOptions,
+  ): Promise<(JolokiaSuccessResponse | JolokiaErrorResponse)[]> {
     const jolokia = await this.getJolokia()
     return new Promise(resolve => {
-      const bulkResponse: Response[] = []
+      const bulkResponse: (JolokiaSuccessResponse | JolokiaErrorResponse)[] = []
       jolokia.request(
         requests,
         onBulkSuccessAndError(
-          response => {
+          (response: JolokiaSuccessResponse) => {
             // Response can never be string in Hawtio's setup of Jolokia
-            bulkResponse.push(response as Response)
+            bulkResponse.push(response as JolokiaSuccessResponse)
             // Resolve only when all the responses from the bulk request are collected
             if (bulkResponse.length === requests.length) {
               resolve(bulkResponse)
@@ -816,7 +865,10 @@ class JolokiaService implements IJolokiaService {
     })
   }
 
-  async register(request: Request, callback: (response: Response) => void): Promise<number> {
+  async register(
+    request: JolokiaRequest,
+    callback: (response: JolokiaSuccessResponse | JolokiaErrorResponse) => void,
+  ): Promise<number> {
     const jolokia = await this.getJolokia()
     return jolokia.register(callback, request)
   }
@@ -861,70 +913,37 @@ class JolokiaService implements IJolokiaService {
 /**
  * Dummy Jolokia implementation that does nothing.
  */
-class DummyJolokia implements Jolokia {
+class DummyJolokia implements IJolokiaSimple {
   CLIENT_VERSION = 'DUMMY'
   isDummy = true
   private running = false
 
-  request(...args: unknown[]) {
-    return null
+  // jolokia.js API
+
+  async request(
+    _request: JolokiaRequest | JolokiaRequest[],
+    _params?: RequestOptions,
+  ): Promise<
+    | string
+    | JolokiaSuccessResponse
+    | JolokiaErrorResponse
+    | (JolokiaSuccessResponse | JolokiaErrorResponse)[]
+    | Response
+    | undefined
+  > {
+    return
   }
 
-  getAttribute(
-    mbean: string,
-    attribute: string,
-    path?: string | AttributeRequestOptions,
-    opts?: AttributeRequestOptions,
-  ) {
-    if (typeof path !== 'string') {
-      path?.success?.({})
-    }
-    opts?.success?.({})
-    return null
-  }
-  setAttribute(
-    mbean: string,
-    attribute: string,
-    value: unknown,
-    path?: string | AttributeRequestOptions,
-    opts?: AttributeRequestOptions,
-  ) {
-    if (typeof path !== 'string') {
-      path?.success?.({})
-    }
-    opts?.success?.({})
-  }
-
-  execute(mbean: string, operation: string, ...args: unknown[]) {
-    args?.forEach(arg => is(arg, type({ success: func() })) && arg.success(null))
-    return null
-  }
-  search(mbeanPattern: string, opts?: SearchRequestOptions) {
-    opts?.success?.([])
-    return null
-  }
-  list(path?: string | string[] | ListRequestOptions, opts?: ListRequestOptions) {
-    if (typeof path !== 'string' && !Array.isArray(path)) {
-      path?.success?.({})
-    }
-    opts?.success?.({})
-    return null
-  }
-  version(opts?: VersionRequestOptions) {
-    opts?.success?.({} as VersionResponse)
-    return {} as VersionResponse
-  }
-
-  register(params: unknown, ...request: unknown[]) {
+  register(_callback: JobCallback | JobRegistrationConfig, ..._requests: JolokiaRequest[]) {
     return 0
   }
-  unregister(handle: number) {
+  unregister(_handle: number) {
     // no-op
   }
   jobs() {
     return []
   }
-  start(period: number) {
+  start(_interval?: number) {
     this.running = true
   }
   stop() {
@@ -934,14 +953,78 @@ class DummyJolokia implements Jolokia {
     return this.running
   }
 
-  addNotificationListener(opts: NotificationOptions) {
-    // no-op
+  addNotificationListener(_opts: NotificationOptions): Promise<NotificationHandle> {
+    return Promise.resolve({ id: '0', mode: 'pull' })
   }
-  removeNotificationListener(handle: { id: string; mode: NotificationMode }) {
-    // no-op
+  removeNotificationListener(_handle: NotificationHandle) {
+    return Promise.resolve(true)
   }
   unregisterNotificationClient() {
-    // no-op
+    return Promise.resolve(true)
+  }
+
+  escape(part: string): string {
+    return Jolokia.escape(part)
+  }
+  escapePost(part: string): string {
+    return Jolokia.escapePost(part)
+  }
+  isError(resp: JolokiaResponse): resp is JolokiaErrorResponse {
+    return Jolokia.isError(resp)
+  }
+
+  // @jolokia.js/simple API
+
+  async getAttribute(
+    _mbean: string,
+    ...params: (string | string[] | SimpleRequestOptions)[]
+  ): Promise<ReadResponseValue> {
+    this.callDetectedCallback(...params)
+    return null
+  }
+
+  async setAttribute(
+    _mbean: string,
+    _attribute: string,
+    _value: unknown,
+    ...params: (string | string[] | SimpleRequestOptions)[]
+  ): Promise<WriteResponseValue> {
+    this.callDetectedCallback(...params)
+    return null
+  }
+
+  async execute(
+    _mbean: string,
+    _operation: string,
+    ...params: (unknown | SimpleRequestOptions)[]
+  ): Promise<ExecResponseValue> {
+    this.callDetectedCallback(...params)
+    return null
+  }
+
+  async search(_mbeanPattern: string, opts?: SimpleRequestOptions): Promise<SearchResponseValue> {
+    opts?.success?.([])
+    return []
+  }
+
+  async version(opts?: SimpleRequestOptions): Promise<VersionResponseValue> {
+    opts?.success?.({} as VersionResponseValue)
+    return {} as VersionResponseValue
+  }
+
+  async list(...params: (string[] | string | SimpleRequestOptions)[]): Promise<ListResponseValue> {
+    this.callDetectedCallback(...params)
+    return null
+  }
+
+  private callDetectedCallback(...params: (unknown | string | string[] | SimpleRequestOptions)[]) {
+    if (
+      params.length > 0 &&
+      typeof params[params.length - 1] === 'object' &&
+      'success' in (params[params.length - 1] as SimpleRequestOptions)
+    ) {
+      ;(params[params.length - 1] as SimpleRequestOptions)?.success?.({})
+    }
   }
 }
 /* eslint-enable @typescript-eslint/no-unused-vars */

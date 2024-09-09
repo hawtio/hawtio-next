@@ -76,10 +76,14 @@ class DiscoverService {
       }
       // One-off Jolokia instance to connect to the agent
       const jolokia = connectService.createJolokia(this.agentToConnection(agent))
-      agent.startTime = jolokia.getAttribute('java.lang:type=Runtime', 'StartTime') as number
+      agent.startTime = (await jolokia.getAttribute('java.lang:type=Runtime', 'StartTime')) as number
       if (!this.hasName(agent)) {
         // Only look for command if agent vm is not known
-        agent.command = jolokia.getAttribute('java.lang:type=Runtime', 'SystemProperties', 'sun.java.command') as string
+        agent.command = (await jolokia.getAttribute(
+          'java.lang:type=Runtime',
+          'SystemProperties',
+          'sun.java.command',
+        )) as string
       }
     }
   }

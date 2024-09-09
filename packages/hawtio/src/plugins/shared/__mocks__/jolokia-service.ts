@@ -1,7 +1,8 @@
-import Jolokia, { ListRequestOptions, Request, Response } from 'jolokia.js'
+import { IJolokiaSimple, SimpleRequestOptions } from '@jolokia.js/simple'
 import { AttributeValues, IJolokiaService, JolokiaListMethod, JolokiaStoredOptions } from '../jolokia-service'
 import { OptimisedJmxDomains } from '../tree'
 import jmxCamelResponse from './jmx-camel-tree.json'
+import { JolokiaErrorResponse, JolokiaRequest, JolokiaSuccessResponse, RequestOptions } from 'jolokia.js'
 
 class MockJolokiaService implements IJolokiaService {
   constructor() {
@@ -13,7 +14,7 @@ class MockJolokiaService implements IJolokiaService {
     // no-op
   }
 
-  getJolokia(): Promise<Jolokia> {
+  getJolokia(): Promise<IJolokiaSimple> {
     return Promise.reject('Method not implemented.')
   }
 
@@ -29,43 +30,49 @@ class MockJolokiaService implements IJolokiaService {
     return ''
   }
 
-  async list(options?: ListRequestOptions): Promise<OptimisedJmxDomains> {
+  async list(_options?: SimpleRequestOptions): Promise<OptimisedJmxDomains> {
     return jmxCamelResponse.domains as unknown as OptimisedJmxDomains
   }
 
-  async sublist(paths: string | string[], options?: ListRequestOptions): Promise<OptimisedJmxDomains> {
+  async sublist(_paths: string | string[], _options?: SimpleRequestOptions): Promise<OptimisedJmxDomains> {
     return jmxCamelResponse.domains as unknown as OptimisedJmxDomains
   }
 
-  async readAttributes(mbean: string): Promise<AttributeValues> {
+  async readAttributes(_mbean: string): Promise<AttributeValues> {
     return {}
   }
 
-  async readAttribute(mbean: string, attribute: string): Promise<unknown> {
+  async readAttribute(_mbean: string, _attribute: string): Promise<unknown> {
     return null
   }
 
-  async writeAttribute(mbean: string, attribute: string, value: unknown): Promise<unknown> {
+  async writeAttribute(_mbean: string, _attribute: string, _value: unknown): Promise<unknown> {
     return null
   }
 
-  async execute(mbean: string, operation: string, args?: unknown[]): Promise<unknown> {
+  async execute(_mbean: string, _operation: string, _args?: unknown[]): Promise<unknown> {
     return {}
   }
 
-  async search(mbeanPattern: string): Promise<string[]> {
+  async search(_mbeanPattern: string): Promise<string[]> {
     return []
   }
 
-  async bulkRequest(requests: Request[]): Promise<Response[]> {
+  async bulkRequest(
+    _requests: JolokiaRequest[],
+    _options?: RequestOptions,
+  ): Promise<(JolokiaSuccessResponse | JolokiaErrorResponse)[]> {
     return []
   }
 
-  async register(request: Request, callback: (response: Response) => void): Promise<number> {
+  async register(
+    _request: JolokiaRequest,
+    _callback: (response: JolokiaSuccessResponse | JolokiaErrorResponse) => void,
+  ): Promise<number> {
     return 0
   }
 
-  unregister(handle: number) {
+  unregister(_handle: number) {
     // no-op
   }
 
@@ -73,7 +80,7 @@ class MockJolokiaService implements IJolokiaService {
     return 0
   }
 
-  saveUpdateRate(value: number) {
+  saveUpdateRate(_value: number) {
     //no-op
   }
 
@@ -81,7 +88,7 @@ class MockJolokiaService implements IJolokiaService {
     return false
   }
 
-  saveAutoRefresh(value: boolean) {
+  saveAutoRefresh(_value: boolean) {
     //no-op
   }
 
@@ -92,7 +99,7 @@ class MockJolokiaService implements IJolokiaService {
     }
   }
 
-  saveJolokiaStoredOptions(options: JolokiaStoredOptions) {
+  saveJolokiaStoredOptions(_options: JolokiaStoredOptions) {
     //no-op
   }
 }

@@ -1,11 +1,11 @@
 import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { escapeMBean } from '@hawtiosrc/util/jolokia'
-import { ExecuteRequestOptions } from 'jolokia.js'
+import { SimpleRequestOptions } from '@jolokia.js/simple'
 import { log } from '../globals'
 import { jmxPreferencesService } from '../jmx-preferences-service'
 
 class OperationService {
-  private requestOptions(): ExecuteRequestOptions {
+  private requestOptions(): SimpleRequestOptions {
     const { serializeLong } = jmxPreferencesService.loadOptions()
     return serializeLong ? { serializeLong: 'string' } : {}
   }

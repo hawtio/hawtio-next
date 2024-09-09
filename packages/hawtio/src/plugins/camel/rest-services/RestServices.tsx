@@ -17,7 +17,7 @@ import {
 } from '@patternfly/react-core'
 
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
-import { Response } from 'jolokia.js'
+import Jolokia, { JolokiaSuccessResponse, JolokiaErrorResponse } from 'jolokia.js'
 import React, { ChangeEvent, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { CamelContext } from '../context'
 import { log } from '../globals'
@@ -75,8 +75,12 @@ export const RestServices: React.FunctionComponent = () => {
         mbean: selectedNode.objectName as string,
         operation: 'listRestServices()',
       },
-      (response: Response) => {
-        log.debug('Scheduler - Debug:', response.value)
+      (response: JolokiaSuccessResponse | JolokiaErrorResponse) => {
+        if (Jolokia.isError(response)) {
+          log.warn('Scheduler - RestService:', response.error)
+          return
+        }
+        log.debug('Scheduler - RestService:', response.value)
         fetchRest()
       },
     )
@@ -162,7 +166,7 @@ export const RestServices: React.FunctionComponent = () => {
     filterRestSvcData(restSvcData, removed)
   }
 
-  const onSelectFilterType = (event?: ChangeEvent<Element> | MouseEvent<Element>, value?: string | number) => {
+  const onSelectFilterType = (_event?: ChangeEvent<Element> | MouseEvent<Element>, value?: string | number) => {
     if (!value) return
 
     setFilterType(value as string)

@@ -2,7 +2,7 @@ import { eventService, hawtio } from '@hawtiosrc/core'
 import { decrypt, encrypt, generateKey, toBase64, toByteArray } from '@hawtiosrc/util/crypto'
 import { toString } from '@hawtiosrc/util/strings'
 import { joinPaths } from '@hawtiosrc/util/urls'
-import Jolokia from 'jolokia.js'
+import Jolokia, { IJolokiaSimple } from '@jolokia.js/simple'
 import { log } from './globals'
 
 export type Connections = {
@@ -80,7 +80,7 @@ export interface IConnectService {
   connect(connection: Connection): void
   login(username: string, password: string): Promise<LoginResult>
   redirect(): void
-  createJolokia(connection: Connection, checkCredentials?: boolean): Jolokia
+  createJolokia(connection: Connection, checkCredentials?: boolean): IJolokiaSimple
   getJolokiaUrl(connection: Connection): string
   getJolokiaUrlFromName(name: string): string | null
   getLoginPath(): string
@@ -353,17 +353,22 @@ class ConnectService implements IConnectService {
         {
           success: () => resolve({ type: 'success' }),
           error: () => resolve({ type: 'failure' }),
-          ajaxError: (xhr: JQueryXHR) => {
-            log.debug('Login error:', xhr.status, xhr.statusText)
-            if (xhr.status === 429) {
-              // Login throttled
-              const retryAfter = parseInt(xhr.getResponseHeader('Retry-After') ?? '0')
-              resolve({ type: 'throttled', retryAfter })
-              return
-            }
-            if (xhr.status === 403 && 'SESSION_EXPIRED' === xhr.getResponseHeader('Hawtio-Forbidden-Reason')) {
-              resolve({ type: 'session-expired' })
-              return
+          fetchError: (response: Response | null, error: DOMException | TypeError | string | null) => {
+            if (response) {
+              log.debug('Login error:', response.status, response.statusText)
+              if (response.status === 429) {
+                // Login throttled
+                const retryAfter = parseInt(response.headers.get('Retry-After') ?? '0')
+                resolve({ type: 'throttled', retryAfter })
+                return
+              }
+              if (response.status === 403 && 'SESSION_EXPIRED' === response.headers.get('Hawtio-Forbidden-Reason')) {
+                resolve({ type: 'session-expired' })
+                return
+              }
+            } else {
+              // more serious problem - no fetch() response at all, just an exception
+              log.debug('Login error:', error)
             }
             resolve({ type: 'failure' })
           },
@@ -422,7 +427,7 @@ class ConnectService implements IConnectService {
   /**
    * Create a Jolokia instance with the given connection.
    */
-  createJolokia(connection: Connection, checkCredentials = false): Jolokia {
+  createJolokia(connection: Connection, checkCredentials = false): IJolokiaSimple {
     if (checkCredentials) {
       return new Jolokia({
         url: this.getJolokiaUrl(connection),
