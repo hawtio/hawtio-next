@@ -830,7 +830,7 @@ __metadata:
     jest-environment-jsdom: "npm:^29.7.0"
     jest-fetch-mock: "npm:^3.0.3"
     jest-watch-typeahead: "npm:^2.2.2"
-    jolokia.js: "npm:^2.0.3"
+    jolokia.js: "npm:^2.1.3"
     jquery: "npm:^3.7.1"
     js-logger: "npm:^1.6.1"
     jwt-decode: "npm:^4.0.0"
@@ -8745,20 +8745,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jolokia.js@npm:^2.0.3":
-  version: 2.0.3
-  resolution: "jolokia.js@npm:2.0.3"
-  dependencies:
-    jquery: "npm:^3.7.1"
-  peerDependencies:
-    cubism: ^1.6.0
-    jsdom: ^22.1.0
-  peerDependenciesMeta:
-    cubism:
-      optional: true
-    jsdom:
-      optional: true
-  checksum: 10/0410a7563b5a2fb2b947309ff0fe863bd5df4ec4acf52e8184df8f92765b707a89398ad94aac138965911abf7639821ced8c4116b8a9fbf9e3f8c60fca1a9982
+"jolokia.js@npm:^2.1.3":
+  version: 2.1.3
+  resolution: "jolokia.js@npm:2.1.3"
+  checksum: 10/15dfaa7b646a02b54c80ae531c798f038710cf9ac091af049627c2890085aa5c8fcac05bd622ff1a1fa4ce3fc00b05f15eaf0ecb400861181e8ee16ae410e104
   languageName: node
   linkType: hard
 
