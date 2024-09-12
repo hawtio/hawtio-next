@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import { Plugin } from './core'
 import { Logger } from './logging'
 
@@ -192,14 +191,21 @@ class ConfigManager {
 
   private updateHref(id: string, path: string, moveToLast: boolean = false): void {
     log.info('Updating href for', id, '-', path, moveToLast)
-    const elm = $(id)
-    elm.prop('disabled', true)
-    elm.attr({ href: path })
+    const elm = document.querySelector(id) as HTMLInputElement
+    if (!elm) {
+      return
+    }
+    if ('disabled' in elm) {
+      elm.disabled = true
+    }
+    elm.setAttribute('href', path)
     if (moveToLast) {
       elm.remove()
-      $('head').append(elm)
+      document.querySelector('head')?.append(elm)
     }
-    elm.prop('disabled', false)
+    if ('disabled' in elm) {
+      elm.disabled = false
+    }
   }
 
   async isRouteEnabled(path: string): Promise<boolean> {

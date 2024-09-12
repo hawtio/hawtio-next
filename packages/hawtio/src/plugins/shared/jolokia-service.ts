@@ -33,7 +33,6 @@ import {
   WriteResponseValue,
 } from 'jolokia.js'
 import Jolokia, { IJolokiaSimple, SimpleRequestOptions, SimpleResponseCallback } from '@jolokia.js/simple'
-import $ from 'jquery'
 import { is, object } from 'superstruct'
 import {
   PARAM_KEY_CONNECTION,
@@ -258,35 +257,38 @@ class JolokiaService implements IJolokiaService {
     // browser popup)
     // TOCHECK: scenarios when there's no server side session (Keycloak, OIDC)
     return new Promise<string>((resolve, reject) => {
-      $.ajax(path)
-        .done((data: string, _textStatus: string, xhr: JQueryXHR) => {
-          if (xhr.status !== 200) {
+      fetch(path)
+        .then(async (response: Response) => {
+          // for fetch(), .then() is fed with any response code, while .catch() is used to handle
+          // more serious issues (like connection refused)
+          if (response.status == 200) {
+            try {
+              const resp = await response.json()
+              if ('value' in resp && 'agent' in resp.value) {
+                log.debug('Found jolokia agent at:', path, ', version:', resp.value.agent)
+                resolve(path)
+                return
+              }
+            } catch (e) {
+              // Parse error should mean redirect to html
+              reject(e)
+              return
+            }
             reject()
             return
           }
-
-          try {
-            const resp = typeof data === 'string' ? JSON.parse(data) : data
-            if ('value' in resp && 'agent' in resp.value) {
-              log.debug('Found jolokia agent at:', path, ', version:', resp.value.agent)
-              resolve(path)
-              return
-            }
-          } catch (e) {
-            // Parse error should mean redirect to html
-            reject(e)
-            return
-          }
-          reject()
-        })
-        .fail((xhr: JQueryXHR) => {
-          if (xhr.status === 401 || xhr.status === 403) {
+          if (response.status === 401 || response.status === 403) {
             // I guess this could be it...
-            log.debug('Using URL:', path, 'assuming it could be an agent but got return code:', xhr.status)
+            log.debug('Using URL:', path, 'assuming it could be an agent but got return code:', response.status)
             resolve(path)
             return
           }
-          reject(`${xhr.status} ${xhr.statusText}`)
+          reject()
+          return
+        })
+        .catch(error => {
+          reject(error)
+          return
         })
     })
   }

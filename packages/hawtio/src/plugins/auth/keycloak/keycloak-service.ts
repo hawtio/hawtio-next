@@ -2,7 +2,6 @@ import { userService } from '@hawtiosrc/auth'
 import { ResolveUser } from '@hawtiosrc/auth/user-service'
 import { fetchPath } from '@hawtiosrc/util/fetch'
 import { basicAuthHeaderValue, getCookie } from '@hawtiosrc/util/https'
-import $ from 'jquery'
 import Keycloak, { KeycloakConfig, KeycloakInitOptions, KeycloakPkceMethod, KeycloakProfile } from 'keycloak-js'
 import { UserProfile } from '../types'
 import { PATH_KEYCLOAK_CLIENT_CONFIG, PATH_KEYCLOAK_ENABLED, PATH_KEYCLOAK_VALIDATE, log } from './globals'
@@ -139,7 +138,6 @@ class KeycloakService implements IKeycloakService {
         userService.setToken(userProfile.token)
       }
 
-      this.setupJQueryAjax()
       this.setupFetch()
 
       return true
@@ -161,60 +159,6 @@ class KeycloakService implements IKeycloakService {
       return true
     }
     userService.addLogoutHook('keycloak', logout)
-  }
-
-  private async setupJQueryAjax() {
-    const keycloak = await this.keycloak
-    const config = await this.config
-    if (!keycloak || !config) {
-      return
-    }
-
-    log.debug('Set authorization header to Keycloak token for AJAX requests')
-    const beforeSend = (xhr: JQueryXHR, settings: JQueryAjaxSettings) => {
-      const logPrefix = 'jQuery -'
-      if (!keycloak.authenticated || keycloak.isTokenExpired(KEYCLOAK_TOKEN_MINIMUM_VALIDITY)) {
-        log.debug(logPrefix, 'Try to update token for request:', settings.url)
-        this.updateToken(
-          token => {
-            if (token) {
-              log.debug(logPrefix, 'Keycloak token refreshed. Set new value to userService')
-              userService.setToken(token)
-            }
-            log.debug(logPrefix, 'Re-sending request after successfully updating Keycloak token:', settings.url)
-            $.ajax(settings)
-          },
-          () => {
-            log.debug(logPrefix, 'Logging out due to token update failed')
-            userService.logout()
-          },
-        )
-        return false
-      }
-
-      if (config.jaas) {
-        // Use BearerTokenLoginModule on server side
-        if (keycloak.profile && keycloak.profile.username && keycloak.token) {
-          const headerValue = basicAuthHeaderValue(keycloak.profile.username, keycloak.token)
-          xhr.setRequestHeader('Authorization', headerValue)
-        } else {
-          log.error(logPrefix, 'Keycloak username or token not found in JAAS mode:', keycloak.profile, keycloak.token)
-        }
-      } else {
-        // Otherwise, bearer token is used
-        xhr.setRequestHeader('Authorization', `Bearer ${keycloak.token}`)
-      }
-
-      // For CSRF protection with Spring Security
-      const token = getCookie('XSRF-TOKEN')
-      if (token) {
-        log.debug(logPrefix, 'Set XSRF token header from cookies')
-        xhr.setRequestHeader('X-XSRF-TOKEN', token)
-      }
-
-      return // To suppress ts(7030)
-    }
-    $.ajaxSetup({ beforeSend })
   }
 
   private async setupFetch() {
