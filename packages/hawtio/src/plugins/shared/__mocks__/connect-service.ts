@@ -1,4 +1,5 @@
-import Jolokia from 'jolokia.js'
+import 'jolokia.js'
+import Jolokia, { IJolokiaSimple } from '@jolokia.js/simple'
 import {
   Connection,
   ConnectionCredentials,
@@ -63,7 +64,7 @@ class MockConnectService implements IConnectService {
     // no-op
   }
 
-  createJolokia(connection: Connection, checkCredentials?: boolean): Jolokia {
+  createJolokia(connection: Connection, checkCredentials?: boolean): IJolokiaSimple {
     return new Jolokia('/jolokia')
   }
 

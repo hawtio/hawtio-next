@@ -8,7 +8,8 @@ import {
 } from '@hawtiosrc/plugins/shared'
 import { operationToString } from '@hawtiosrc/util/jolokia'
 import { isString } from '@hawtiosrc/util/objects'
-import { Request, Response } from 'jolokia.js'
+import { JolokiaRequest, JolokiaSuccessResponse, JolokiaErrorResponse } from 'jolokia.js'
+import Jolokia from '@jolokia.js/simple'
 import { log } from './globals'
 import { rbacService } from './rbac-service'
 
@@ -73,7 +74,7 @@ export const rbacTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
 type BulkRequest = { [name: string]: string[] }
 
 async function processRBAC(aclMBean: string, mbeans: Record<string, MBeanNode>) {
-  const requests: Request[] = []
+  const requests: JolokiaRequest[] = []
   const bulkRequest: BulkRequest = {}
   // register canInvoke requests for each MBean and accumulate bulkRequest for all ops
   Object.entries(mbeans).forEach(([mbeanName, node]) => {
@@ -97,7 +98,7 @@ function addCanInvokeRequests(
   aclMBean: string,
   mbeanName: string,
   node: MBeanNode,
-  requests: Request[],
+  requests: JolokiaRequest[],
   bulkRequest: BulkRequest,
 ) {
   // request for MBean
@@ -145,8 +146,8 @@ type BulkResponse = { [name: string]: Operations }
 type Operations = { [name: string]: Operation }
 type Operation = { ObjectName: string; Method: string; CanInvoke: boolean }
 
-function applyCanInvoke(mbeans: Record<string, MBeanNode>, response: Response) {
-  if (response.request.type !== 'exec') {
+function applyCanInvoke(mbeans: Record<string, MBeanNode>, response: JolokiaSuccessResponse | JolokiaErrorResponse) {
+  if (!response.request || Jolokia.isError(response) || response.request.type !== 'exec') {
     return
   }
   const requestMBean = response.request.arguments?.[0]

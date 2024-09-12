@@ -16,7 +16,7 @@ import {
   EmptyStateHeader,
 } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons'
-import { Response } from 'jolokia.js'
+import Jolokia, { JolokiaSuccessResponse, JolokiaErrorResponse } from 'jolokia.js'
 import React, { useContext, useEffect, useState } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import './CamelContent.css'
@@ -209,14 +209,21 @@ const CamelContentContextToolbar: React.FunctionComponent = () => {
       const attr = await contextsService.getContext(selectedNode)
       if (attr) setContextState(attr)
 
-      contextsService.register({ type: 'read', mbean: objectName }, (response: Response) => {
-        log.debug('Scheduler - Contexts:', response.value)
+      contextsService.register(
+        { type: 'read', mbean: objectName },
+        (response: JolokiaSuccessResponse | JolokiaErrorResponse) => {
+          if (Jolokia.isError(response)) {
+            log.debug('Scheduler - Contexts (error):', response.error)
+            return
+          }
+          log.debug('Scheduler - Contexts:', response.value)
 
-        // Replace the context in the existing set with the new one
-        const attrs = response.value as AttributeValues
-        const newAttrs = contextsService.toContextState(selectedNode, attrs)
-        if (newAttrs) setContextState(newAttrs)
-      })
+          // Replace the context in the existing set with the new one
+          const attrs = response.value as AttributeValues
+          const newAttrs = contextsService.toContextState(selectedNode, attrs)
+          if (newAttrs) setContextState(newAttrs)
+        },
+      )
     }
     readAttributes()
 

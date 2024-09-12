@@ -44,6 +44,7 @@ module.exports = {
       'warn',
       {
         args: 'none',
+        argsIgnorePattern: '^_',
         ignoreRestSiblings: true,
       },
     ],

@@ -1,9 +1,10 @@
 import { userService } from '@hawtiosrc/auth'
 import { configManager, eventService, JmxConfig, Logger } from '@hawtiosrc/core'
 import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
-import { ErrorResponse, ListRequestOptions, Response } from 'jolokia.js'
+import { JolokiaErrorResponse, JolokiaSuccessResponse } from 'jolokia.js'
 import { pluginName } from './globals'
 import { MBeanNode, MBeanTree } from './tree'
+import { SimpleRequestOptions } from '@jolokia.js/simple'
 
 const log = Logger.get(`${pluginName}-workspace`)
 
@@ -53,12 +54,13 @@ class Workspace implements IWorkspace {
     const mbeanPaths = config.workspace && typeof config.workspace !== 'boolean' ? config.workspace : []
 
     log.debug('Load JMX MBean tree:', mbeanPaths)
-    const options: ListRequestOptions = {
+    const options: SimpleRequestOptions = {
       ignoreErrors: true,
-      error: (response: ErrorResponse) => {
+      error: (response: JolokiaErrorResponse) => {
         log.debug('Error - fetching JMX tree:', response)
       },
-      ajaxError: (xhr: JQueryXHR, text: string, error: string) => {
+      fetchError: (response: Response | null, error: DOMException | TypeError | string | null) => {
+        const text = response?.statusText || error
         log.debug('Ajax error - fetching JMX tree:', text, '-', error)
       },
     }
@@ -100,7 +102,7 @@ class Workspace implements IWorkspace {
             mbean: HAWTIO_REGISTRY_MBEAN,
             attribute: 'UpdateCounter',
           },
-          (response: Response) => this.maybeUpdatePlugins(response),
+          (response: JolokiaSuccessResponse | JolokiaErrorResponse) => this.maybeUpdatePlugins(response),
         )
       }
     } else {
@@ -129,7 +131,7 @@ class Workspace implements IWorkspace {
             mbean: HAWTIO_TREE_WATCHER_MBEAN,
             attribute: 'Counter',
           },
-          (response: Response) => this.maybeReloadTree(response),
+          (response: JolokiaSuccessResponse | JolokiaErrorResponse) => this.maybeReloadTree(response),
         )
       }
     } else {
@@ -142,8 +144,8 @@ class Workspace implements IWorkspace {
     }
   }
 
-  private maybeUpdatePlugins(response: Response) {
-    const counter = response.value as number
+  private maybeUpdatePlugins(response: JolokiaSuccessResponse | JolokiaErrorResponse) {
+    const counter = 'value' in response ? (response.value as number) : 0
     if (!this.pluginUpdateCounter) {
       // Initial counter setting
       this.pluginUpdateCounter = counter
@@ -161,8 +163,8 @@ class Workspace implements IWorkspace {
     }
   }
 
-  private maybeReloadTree(response: Response) {
-    const counter = response.value as number
+  private maybeReloadTree(response: JolokiaSuccessResponse | JolokiaErrorResponse) {
+    const counter = 'value' in response ? (response.value as number) : 0
     if (!this.treeWatcherCounter) {
       // Initial counter setting
       this.treeWatcherCounter = counter

@@ -1,7 +1,7 @@
 import { HawtioEmptyCard, HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
 import { Panel, PanelHeader, PanelMain, PanelMainBody, Title } from '@patternfly/react-core'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
-import { Response } from 'jolokia.js'
+import Jolokia, { JolokiaSuccessResponse, JolokiaErrorResponse } from 'jolokia.js'
 import React, { useContext, useEffect, useState } from 'react'
 import { CamelContext } from '../context'
 import { log } from '../globals'
@@ -33,8 +33,12 @@ export const Profile: React.FunctionComponent = () => {
         mbean: selectedNode.objectName as string,
         operation: 'dumpRouteStatsAsXml()',
       },
-      (response: Response) => {
-        log.debug('Scheduler - Debug:', response.value)
+      (response: JolokiaSuccessResponse | JolokiaErrorResponse) => {
+        if (Jolokia.isError(response)) {
+          log.warn('Scheduler - Profile (error):', response.error)
+          return
+        }
+        log.debug('Scheduler - Profile:', response.value)
         profile()
       },
     )

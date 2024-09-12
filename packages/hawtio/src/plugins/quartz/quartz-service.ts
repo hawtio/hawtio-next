@@ -1,7 +1,8 @@
 import { eventService } from '@hawtiosrc/core'
 import { AttributeValues, MBeanNode, jolokiaService, workspace } from '@hawtiosrc/plugins/shared'
 import { getQueryParameterValue } from '@hawtiosrc/util/urls'
-import { Request } from 'jolokia.js'
+import { JolokiaRequest } from 'jolokia.js'
+import Jolokia from '@jolokia.js/simple'
 import { attributeService } from '../shared/attributes/attribute-service'
 import { jmxDomain, log } from './globals'
 
@@ -126,6 +127,10 @@ class QuartzService {
 
   registerTriggersLoad(schedulerMBean: string, callback: (triggers: Trigger[]) => void) {
     attributeService.register({ type: 'read', mbean: schedulerMBean }, async response => {
+      if (Jolokia.isError(response)) {
+        log.warn('Scheduler - Attributes (error):', response.error)
+        return
+      }
       const attrs = response.value as AttributeValues
       log.debug('Scheduler - Attributes:', attrs)
       const triggers = attrs['AllTriggers'] as Trigger[]
@@ -138,6 +143,10 @@ class QuartzService {
 
   registerJobsLoad(schedulerMBean: string, callback: (jobs: Job[]) => void) {
     attributeService.register({ type: 'read', mbean: schedulerMBean }, async response => {
+      if (Jolokia.isError(response)) {
+        log.warn('Scheduler - Attributes (error):', response.error)
+        return
+      }
       const attrs = response.value as AttributeValues
       log.debug('Scheduler - Attributes:', attrs)
       const jobDetails = attrs['AllJobDetails'] as JobDetails
@@ -159,7 +168,7 @@ class QuartzService {
       return
     }
 
-    const requests: Request[] = triggers.map(trigger => ({
+    const requests: JolokiaRequest[] = triggers.map(trigger => ({
       type: 'exec',
       mbean: schedulerMBean,
       operation: QUARTZ_OPERATIONS.getTriggerState,
@@ -167,7 +176,11 @@ class QuartzService {
     }))
     const responses = await jolokiaService.bulkRequest(requests)
     triggers.forEach((trigger, index) => {
-      trigger.state = (responses[index]?.value ?? 'unknown') as string
+      const response = responses[index]
+      if (!response || (response && Jolokia.isError(response))) {
+        return
+      }
+      trigger.state = (response?.value ?? 'unknown') as string
       this.applyJobDetails(trigger, jobDetails)
     })
   }

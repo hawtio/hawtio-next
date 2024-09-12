@@ -1,7 +1,9 @@
 import { userService } from '@hawtiosrc/auth'
-import Jolokia, { ListRequestOptions } from 'jolokia.js'
 import { DEFAULT_MAX_COLLECTION_SIZE, DEFAULT_MAX_DEPTH, JolokiaListMethod, jolokiaService } from './jolokia-service'
 import { hawtio } from '@hawtiosrc/core'
+import { ErrorCallback, RequestOptions } from 'jolokia.js'
+import 'jolokia.js'
+import Jolokia, { SimpleRequestOptions, SimpleResponseCallback } from '@jolokia.js/simple'
 
 describe('JolokiaService', () => {
   beforeEach(() => {
@@ -23,12 +25,14 @@ describe('JolokiaService', () => {
 
   test('getJolokia - optimised', async () => {
     jolokiaService.getJolokiaUrl = jest.fn(async () => '/test')
-    Jolokia.prototype.list = jest.fn((path?: string | string[] | ListRequestOptions, opts?: ListRequestOptions) => {
+    Jolokia.prototype.list = jest.fn((path?: string | string[] | RequestOptions, opts?: SimpleRequestOptions) => {
       if (typeof path !== 'string') throw new Error('String is expected for path')
       if (!opts) throw new Error('No options set')
-      if (!opts.success) throw new Error('No success option set')
+      if (!opts.success) {
+        throw new Error('No success option set')
+      }
 
-      opts.success({
+      ;(opts.success! as SimpleResponseCallback)({
         desc: '',
         attr: {},
         op: {
@@ -44,20 +48,37 @@ describe('JolokiaService', () => {
 
   test('getJolokia - default', async () => {
     jolokiaService.getJolokiaUrl = jest.fn(async () => '/test')
-    Jolokia.prototype.list = jest.fn((path?: string | string[] | ListRequestOptions, opts?: ListRequestOptions) => {
+    Jolokia.prototype.list = jest.fn((...params: (string[] | string | SimpleRequestOptions)[]) => {
+      let path
+      let opts: SimpleRequestOptions | undefined = undefined
+      if (params.length === 2 && !Array.isArray(params[1]) && typeof params[1] === 'object') {
+        path = params[0] as string | string[]
+        opts = params[1] as SimpleRequestOptions
+      } else if (params.length === 1) {
+        if (!Array.isArray(params[0]) && !Array.isArray(params[0]) && typeof params[0] === 'object') {
+          opts = params[0] as SimpleRequestOptions
+        } else {
+          path = params[0] as string | string[]
+        }
+      }
+
       if (typeof path !== 'string') throw new Error('String is expected for path')
       if (!opts) throw new Error('No options set')
-      if (!opts.error) throw new Error('No error option set')
+      if (!opts.error) {
+        throw new Error('No error option set')
+      }
 
-      opts.error({
-        status: -1,
-        timestamp: 123456789,
-        request: { type: 'list', path: path },
-        value: null,
-        error_type: 'non-exist',
-        error: 'ERROR HAS OCCURRED',
-        stacktrace: 'not available',
-      })
+      ;(opts.error! as ErrorCallback)(
+        {
+          status: -1,
+          timestamp: 123456789,
+          request: { type: 'list', path: path },
+          error_type: 'non-exist',
+          error: 'ERROR HAS OCCURRED',
+          stacktrace: 'not available',
+        },
+        0,
+      )
       return null
     })
 

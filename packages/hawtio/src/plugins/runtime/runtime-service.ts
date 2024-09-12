@@ -1,5 +1,5 @@
 import { jolokiaService } from '@hawtiosrc/plugins/shared'
-import { Request, Response } from 'jolokia.js'
+import Jolokia, { JolokiaRequest, JolokiaSuccessResponse } from 'jolokia.js'
 import { Metric, SystemProperty, Thread } from './types'
 
 class RuntimeService {
@@ -32,8 +32,10 @@ class RuntimeService {
         arguments: [true, true],
       },
       resp => {
-        const threads = resp.value as Thread[]
-        callback(threads)
+        if (!Jolokia.isError(resp)) {
+          const threads = resp.value as unknown as Thread[]
+          callback(threads)
+        }
       },
     )
     this.handlers.push(handler)
@@ -76,15 +78,15 @@ class RuntimeService {
     return dumpedThreads
   }
 
-  getRegisterRequest(mbean: string, attribute?: string, args?: string[]): Request {
-    const request: Request = { type: 'read', mbean: mbean }
+  getRegisterRequest(mbean: string, attribute?: string, _args?: string[]): JolokiaRequest {
+    const request: JolokiaRequest = { type: 'read', mbean: mbean }
     if (attribute) {
       request.attribute = attribute
     }
     return request
   }
 
-  responseCallback(response: Response, callback: (metric: Metric) => void) {
+  responseCallback(response: JolokiaSuccessResponse, callback: (metric: Metric) => void) {
     const req = response.request as { type: 'read'; mbean: string; attribute?: string | string[]; path?: string }
     switch (req.mbean) {
       case 'java.lang:type=Threading': {
@@ -172,8 +174,8 @@ class RuntimeService {
     }
   }
 
-  getJolokiaRequests(): Request[] {
-    const requests: Request[] = []
+  getJolokiaRequests(): JolokiaRequest[] {
+    const requests: JolokiaRequest[] = []
     requests.push(this.getRegisterRequest('java.lang:type=Threading', 'ThreadCount'))
     requests.push(this.getRegisterRequest('java.lang:type=Memory', 'HeapMemoryUsage'))
     requests.push(this.getRegisterRequest('java.lang:type=Runtime'))
@@ -185,7 +187,9 @@ class RuntimeService {
   async registerMetrics(callback: (metrics: Metric) => void) {
     for (const request of this.getJolokiaRequests()) {
       const handler = await jolokiaService.register(request, resp => {
-        this.responseCallback(resp, callback)
+        if (!Jolokia.isError(resp)) {
+          this.responseCallback(resp, callback)
+        }
       })
       this.handlers.push(handler)
     }
@@ -196,7 +200,9 @@ class RuntimeService {
 
     const responses = await jolokiaService.bulkRequest(this.getJolokiaRequests())
     responses.forEach(resp => {
-      this.responseCallback(resp, metric => metrics.push(metric))
+      if (!Jolokia.isError(resp)) {
+        this.responseCallback(resp, metric => metrics.push(metric))
+      }
     })
 
     return metrics

@@ -793,6 +793,7 @@ __metadata:
   dependencies:
     "@hawtio/camel-model-v4_0": "npm:@hawtio/camel-model@~4.0.5"
     "@hawtio/camel-model-v4_4": "npm:@hawtio/camel-model@~4.4.2"
+    "@jolokia.js/simple": "npm:^2.1.7"
     "@module-federation/utilities": "npm:^3.1.7"
     "@patternfly/react-charts": "npm:~7.3.0"
     "@patternfly/react-code-editor": "npm:~5.3.3"
@@ -819,7 +820,7 @@ __metadata:
     jest-environment-jsdom: "npm:^29.7.0"
     jest-fetch-mock: "npm:^3.0.3"
     jest-watch-typeahead: "npm:^2.2.2"
-    jolokia.js: "npm:^2.0.3"
+    jolokia.js: "npm:^2.1.7"
     jquery: "npm:^3.7.1"
     js-logger: "npm:^1.6.1"
     jwt-decode: "npm:^4.0.0"
@@ -1145,6 +1146,15 @@ __metadata:
     "@types/yargs": "npm:^17.0.8"
     chalk: "npm:^4.0.0"
   checksum: 10/f74bf512fd09bbe2433a2ad460b04668b7075235eea9a0c77d6a42222c10a79b9747dc2b2a623f140ed40d6865a2ed8f538f3cbb75169120ea863f29a7ed76cd
+  languageName: node
+  linkType: hard
+
+"@jolokia.js/simple@npm:^2.1.7":
+  version: 2.1.7
+  resolution: "@jolokia.js/simple@npm:2.1.7"
+  dependencies:
+    jolokia.js: "npm:^2.1.7"
+  checksum: 10/26bc017c64df1600325f5185c39d48f600d0f3e43c5bed9e79c738c9f248eba03c9bf8a68303d7aee9bfcb9f34d44cafba705f4c5ebdd74adfdda238b29826f3
   languageName: node
   linkType: hard
 
@@ -8680,20 +8690,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jolokia.js@npm:^2.0.3":
-  version: 2.0.3
-  resolution: "jolokia.js@npm:2.0.3"
-  dependencies:
-    jquery: "npm:^3.7.1"
-  peerDependencies:
-    cubism: ^1.6.0
-    jsdom: ^22.1.0
-  peerDependenciesMeta:
-    cubism:
-      optional: true
-    jsdom:
-      optional: true
-  checksum: 10/0410a7563b5a2fb2b947309ff0fe863bd5df4ec4acf52e8184df8f92765b707a89398ad94aac138965911abf7639821ced8c4116b8a9fbf9e3f8c60fca1a9982
+"jolokia.js@npm:^2.1.7":
+  version: 2.1.7
+  resolution: "jolokia.js@npm:2.1.7"
+  checksum: 10/7e10e0b842c96853ea2815d46cc7cea278470d259d8660711fbfda58c3a730764790ee28dd9ad346ebcb8324bd500f109408675f19d8c0a75578703522956d91
   languageName: node
   linkType: hard
 

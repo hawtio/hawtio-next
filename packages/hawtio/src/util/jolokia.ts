@@ -1,79 +1,114 @@
 import { Logger } from '@hawtiosrc/core/logging'
+
 import {
-  AttributeRequestOptions,
   BaseRequestOptions,
-  BulkRequestOptions,
-  ErrorResponse,
-  ExecuteRequestOptions,
-  ListRequestOptions,
+  ErrorCallback,
+  JolokiaErrorResponse,
   MBeanOperationArgument,
   RequestOptions,
-  SearchRequestOptions,
-  VersionRequestOptions,
+  ResponseCallback,
 } from 'jolokia.js'
+import { SimpleRequestOptions, SimpleResponseCallback } from '@jolokia.js/simple'
 
 const log = Logger.get('hawtio-util')
 
-export function onSuccessAndError(
-  successFn: NonNullable<RequestOptions['success']>,
-  errorFn: NonNullable<RequestOptions['error']>,
-  options: BaseRequestOptions = {},
+// Hawtio uses both _normal_ and _simple_ Jolokia APIs:
+// - _normal_ means generic Jolokia.request() method, where we can pass callbacks accepting entire response object
+// - _simple_ means @jolokia.js/simple API, where we can use callbacks accepting just the "value" field of the response
+
+/**
+ * _normal_ configuration object to handle `read` and `write` operations using `Jolokia.request()` generic call
+ * @param successFn
+ * @param errorFn
+ * @param options
+ */
+export function onAttributeSuccessAndError(
+  successFn: ResponseCallback,
+  errorFn: ErrorCallback,
+  options: RequestOptions = {},
 ): RequestOptions {
   return onGenericSuccessAndError(successFn, errorFn, options)
 }
 
-export function onAttributeSuccessAndError(
-  successFn: NonNullable<AttributeRequestOptions['success']>,
-  errorFn: NonNullable<AttributeRequestOptions['error']>,
-  options: AttributeRequestOptions = {},
-): AttributeRequestOptions {
-  return onGenericSuccessAndError(successFn, errorFn, options)
-}
-
+/**
+ * _simple_ configuration object to handle `exec` Jolokia operation using Jolokia Simple API call
+ * @param successFn
+ * @param errorFn
+ * @param options
+ */
 export function onExecuteSuccessAndError(
-  successFn: NonNullable<ExecuteRequestOptions['success']>,
-  errorFn: NonNullable<ExecuteRequestOptions['error']>,
-  options: ExecuteRequestOptions = {},
-): ExecuteRequestOptions {
+  successFn: SimpleResponseCallback,
+  errorFn: ErrorCallback,
+  options: SimpleRequestOptions = {},
+): SimpleRequestOptions {
   return onGenericSuccessAndError(successFn, errorFn, options)
 }
 
+/**
+ * _simple_ configuration object to handle `search` Jolokia operation using Jolokia Simple API call
+ * @param successFn
+ * @param errorFn
+ * @param options
+ */
 export function onSearchSuccessAndError(
-  successFn: NonNullable<SearchRequestOptions['success']>,
-  errorFn: NonNullable<SearchRequestOptions['error']>,
-  options: SearchRequestOptions = {},
-): SearchRequestOptions {
+  successFn: SimpleResponseCallback,
+  errorFn: ErrorCallback,
+  options: SimpleRequestOptions = {},
+): SimpleRequestOptions {
   return onGenericSuccessAndError(successFn, errorFn, options)
 }
 
+/**
+ * _simple_ configuration object to handle `list` Jolokia operation using Jolokia Simple API call
+ * @param successFn
+ * @param errorFn
+ * @param options
+ */
 export function onListSuccessAndError(
-  successFn: NonNullable<ListRequestOptions['success']>,
-  errorFn: NonNullable<ListRequestOptions['error']>,
-  options: ListRequestOptions = {},
-): ListRequestOptions {
+  successFn: SimpleResponseCallback,
+  errorFn: ErrorCallback,
+  options: SimpleRequestOptions = {},
+): SimpleRequestOptions {
   return onGenericSuccessAndError(successFn, errorFn, options)
 }
 
+/**
+ * _simple_ configuration object to handle `version` Jolokia operation using Jolokia Simple API call
+ * @param successFn
+ * @param errorFn
+ * @param options
+ */
 export function onVersionSuccessAndError(
-  successFn: NonNullable<VersionRequestOptions['success']>,
-  errorFn: NonNullable<VersionRequestOptions['error']>,
-  options: VersionRequestOptions = {},
-): VersionRequestOptions {
+  successFn: SimpleResponseCallback,
+  errorFn: ErrorCallback,
+  options: SimpleRequestOptions = {},
+): SimpleRequestOptions {
   return onGenericSuccessAndError(successFn, errorFn, options)
 }
 
 export function onBulkSuccessAndError(
-  successFn: NonNullable<BulkRequestOptions['success']>,
-  errorFn: NonNullable<BulkRequestOptions['error']>,
-  options: BulkRequestOptions = {},
-): BulkRequestOptions {
+  successFn: NonNullable<RequestOptions['success']>,
+  errorFn: NonNullable<RequestOptions['error']>,
+  options: RequestOptions = {},
+): RequestOptions {
   return onGenericSuccessAndError(successFn, errorFn, options)
 }
 
+/**
+ * Configuration factory to prepare Jolokia configuration object with default Jolokia error handler
+ * @param successFn a callback function to handle successful Jolokia response
+ * @param options simple or normal (full) Jolokia configuration option object
+ */
 export function onGenericSuccess<S, O extends BaseRequestOptions>(successFn: S, options?: O): O {
   return onGenericSuccessAndError(successFn, defaultErrorHandler(), options)
 }
 
+/**
+ * Generic configuration factory, which deals both with simple and normal Jolokia configurations
+ * @param successFn a callback function to handle successful Jolokia response
+ * @param errorFn a callback function to handle error Jolokia response (but still HTTP == 200)
+ * @param options simple or normal (full) Jolokia configuration option object
+ */
 export function onGenericSuccessAndError<S, E, O extends BaseRequestOptions>(successFn: S, errorFn: E, options?: O): O {
   const defaultOptions: BaseRequestOptions = {
     method: 'post',
@@ -91,14 +126,14 @@ export function onGenericSuccessAndError<S, E, O extends BaseRequestOptions>(suc
  * The default error handler which logs errors either using debug or log level logging
  * based on the silent setting.
  */
-function defaultErrorHandler(): NonNullable<RequestOptions['error']> {
-  return (response: ErrorResponse) => {
+function defaultErrorHandler(): ErrorCallback {
+  return (response: JolokiaErrorResponse, _index: number) => {
     if (!response.error) {
       return
     }
 
     const req = response.request
-    const operation = req?.type === 'exec' ? req.operation : 'unknown'
+    const operation = req?.type === 'exec' ? 'exec/' + req.operation : req ? req.type : 'unknown'
     if (isIgnorableException(response)) {
       log.debug('Operation', operation, 'failed due to:', response.error)
     } else {
@@ -113,7 +148,7 @@ function defaultErrorHandler(): NonNullable<RequestOptions['error']> {
  *
  * @param response the error response from a Jolokia request
  */
-function isIgnorableException(response: ErrorResponse): boolean {
+function isIgnorableException(response: JolokiaErrorResponse): boolean {
   const ignorables = [
     'InstanceNotFoundException',
     'AttributeNotFoundException',
@@ -134,7 +169,7 @@ export function escapeMBean(mbean: string): string {
 
 /**
  * Escapes the MBean as a path for Jolokia POST "list" requests.
- * See: https://jolokia.org/reference/html/protocol.html#list
+ * See: https://jolokia.org/reference/html/manual/jolokia_protocol.html#list
  *
  * @param mbean the MBean
  */
@@ -144,7 +179,7 @@ export function escapeMBeanPath(mbean: string): string {
 
 /**
  * Applies the Jolokia escaping rules to the MBean name.
- * See: http://www.jolokia.org/reference/html/protocol.html#escape-rules
+ * See: https://jolokia.org/reference/html/manual/jolokia_protocol.html#_escaping_rules_in_get_requests
  *
  * @param mbean the MBean
  */

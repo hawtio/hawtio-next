@@ -5,7 +5,7 @@ import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { Card, CardBody, Text } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
-import { Response } from 'jolokia.js'
+import Jolokia, { JolokiaSuccessResponse, JolokiaErrorResponse } from 'jolokia.js'
 import React, { useContext, useEffect, useState } from 'react'
 import { log } from '../globals'
 import { ContextToolbar } from './ContextToolbar'
@@ -60,18 +60,25 @@ export const Contexts: React.FunctionComponent = () => {
       if (!objectName) {
         return
       }
-      contextsService.register({ type: 'read', mbean: objectName }, (response: Response) => {
-        log.debug('Scheduler - Contexts:', response.value)
+      contextsService.register(
+        { type: 'read', mbean: objectName },
+        (r: JolokiaSuccessResponse | JolokiaErrorResponse) => {
+          if (Jolokia.isError(r)) {
+            log.warn('Scheduler - Contexts (error):', r.error)
+            return
+          }
+          log.debug('Scheduler - Contexts:', r.value)
 
-        // Replace the context in the existing set with the new one
-        const attrs = response.value as AttributeValues
-        const newCtx = contextsService.toContextState(ctx.node, attrs)
+          // Replace the context in the existing set with the new one
+          const attrs = r.value as AttributeValues
+          const newCtx = contextsService.toContextState(ctx.node, attrs)
 
-        // Replace the context in the contexts array
-        const newContexts = [...contexts]
-        newContexts.splice(idx, 1, newCtx)
-        setContexts(newContexts)
-      })
+          // Replace the context in the contexts array
+          const newContexts = [...contexts]
+          newContexts.splice(idx, 1, newCtx)
+          setContexts(newContexts)
+        },
+      )
     })
 
     return () => contextsService.unregisterAll()
