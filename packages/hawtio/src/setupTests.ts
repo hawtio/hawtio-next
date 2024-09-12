@@ -5,7 +5,6 @@
 import '@testing-library/jest-dom'
 import crypto from 'crypto'
 import fetchMock from 'jest-fetch-mock'
-import $ from 'jquery'
 import { TextDecoder, TextEncoder } from 'util'
 
 fetchMock.enableMocks()
@@ -27,7 +26,6 @@ fetchMock.mockResponse(req => {
 // To fix "jQuery is not defined" error
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const global: any
-global.$ = global.jQuery = $
 
 // For testing crypto
 Object.defineProperty(global, 'crypto', { value: crypto.webcrypto })

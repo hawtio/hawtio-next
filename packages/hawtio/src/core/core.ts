@@ -1,6 +1,5 @@
 import { userService } from '@hawtiosrc/auth'
 import { importRemote, ImportRemoteOptions } from '@module-federation/utilities'
-import $ from 'jquery'
 import { configManager } from './config-manager'
 import { eventService } from './event-service'
 import { log } from './globals'
@@ -162,9 +161,9 @@ class HawtioCore {
   }
 
   private documentBase(): string | undefined {
-    const base = $('head').find('base')
-    if (base && base.length > 0) {
-      return base.attr('href')
+    const base = document.querySelector('head base')
+    if (base) {
+      return base.getAttribute('href') ?? undefined
     }
     return undefined
   }

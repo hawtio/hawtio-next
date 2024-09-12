@@ -4,7 +4,6 @@ import { jwtDecode } from 'jwt-decode'
 import * as oidc from 'oauth4webapi'
 import { AuthorizationServer, Client, OAuth2Error } from 'oauth4webapi'
 import { fetchPath } from '@hawtiosrc/util/fetch'
-import $ from 'jquery'
 import { getCookie } from '@hawtiosrc/util/https'
 
 const pluginName = 'hawtio-oidc'
@@ -285,7 +284,6 @@ export class OidcService implements IOidcService {
     // clear the URL bar
     window.history.replaceState(null, '', loginData.h)
 
-    this.setupJQueryAjax()
     this.setupFetch()
 
     return {
@@ -383,49 +381,6 @@ export class OidcService implements IOidcService {
     } else {
       log.error('No refresh token available')
     }
-  }
-
-  private async setupJQueryAjax() {
-    let userInfo = await this.userInfo
-    if (!userInfo) {
-      return
-    }
-
-    log.debug('Set authorization header to OIDC token for AJAX requests')
-    const beforeSend = (xhr: JQueryXHR, settings: JQueryAjaxSettings) => {
-      const logPrefix = 'jQuery -'
-      if (userInfo && (!userInfo.access_token || this.isTokenExpiring(userInfo.at_exp))) {
-        log.debug(logPrefix, 'Try to update token for request:', settings.url)
-        this.updateToken(
-          _userInfo => {
-            if (_userInfo) {
-              userInfo = _userInfo
-              log.debug(logPrefix, 'OIDC token refreshed. Set new value to userService')
-              userService.setToken(userInfo.access_token!)
-            }
-            log.debug(logPrefix, 'Re-sending request after successfully updating OIDC token:', settings.url)
-            $.ajax(settings)
-          },
-          () => {
-            log.debug(logPrefix, 'Logging out due to token update failed')
-            userService.logout()
-          },
-        )
-        return false
-      }
-
-      xhr.setRequestHeader('Authorization', `Bearer ${userInfo!.access_token}`)
-
-      // For CSRF protection with Spring Security
-      const token = getCookie('XSRF-TOKEN')
-      if (token) {
-        log.debug(logPrefix, 'Set XSRF token header from cookies')
-        xhr.setRequestHeader('X-XSRF-TOKEN', token)
-      }
-
-      return // To suppress ts(7030)
-    }
-    $.ajaxSetup({ beforeSend })
   }
 
   private async setupFetch() {
