@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.4.0](https://github.com/hawtio/hawtio-next/compare/v1.3.0...v1.4.0) (2024-09-13)
+
+
+### Features
+
+* **RouteDiagram:** Proper visualisation of parallel processing of the multicast ([736cce6](https://github.com/hawtio/hawtio-next/commit/736cce6011ce53c7883b5ed220861829dd1c0e8c))
+
+
+### Bug Fixes
+
+* add warning for copying not working in insecure contexts ([bdc7f40](https://github.com/hawtio/hawtio-next/commit/bdc7f4078ccb61e50f04acdf039e8a4df67ee494))
+* **CPU load:** Fix CPU load showing 0% in Runtime -> Metrics -> System ([ef87d11](https://github.com/hawtio/hawtio-next/commit/ef87d1158a58538b8a4226b98119d4132dd91b2d))
+* **deps:** Upgrade to jolokia.js 2.1.7 (typescript, fetch(), no jquery) (closes [#1101](https://github.com/hawtio/hawtio-next/issues/1101)) ([#1111](https://github.com/hawtio/hawtio-next/issues/1111)) ([1658a7b](https://github.com/hawtio/hawtio-next/commit/1658a7b5efcf0bf21c3f27909fd0af21e807f3f1))
+* Disable help for disabled plugins ([8c6f3c8](https://github.com/hawtio/hawtio-next/commit/8c6f3c8ed5f101bbf354f5772664db96dc960d94))
+* fix format ([94256ee](https://github.com/hawtio/hawtio-next/commit/94256eefa82aef80984237df1c68399b35c239d6))
+* **HAWNG-753:** tweak size of the Route Diagram to fill the screen ([5a61c15](https://github.com/hawtio/hawtio-next/commit/5a61c157c0bfe453b1b216666aabe38d5f5d30ea))
+* **Quartz:** Remove actions= from the tittle of the cards ([c8c399c](https://github.com/hawtio/hawtio-next/commit/c8c399cb79d41ecd7c7fb354025577a5f170bce9)), closes [#1021](https://github.com/hawtio/hawtio-next/issues/1021)
+* **shared:** fix jolokia unwindListResponse after superstruct upgrade ([db76323](https://github.com/hawtio/hawtio-next/commit/db7632313f87be03b71989cac656f1661a5db1dd))
+* **shared:** Stop using jquery (for ajax and selection) (closes [#76](https://github.com/hawtio/hawtio-next/issues/76)) ([#1114](https://github.com/hawtio/hawtio-next/issues/1114)) ([f1809c5](https://github.com/hawtio/hawtio-next/commit/f1809c5bdcf51ac08f80f58f3714b194722f5371))
+* **ui:** Fix UI inconsistencies ([6edb48b](https://github.com/hawtio/hawtio-next/commit/6edb48ba2ecaab85fa62b70c1de16930c5f3788e))
+
 ## [1.3.0](https://github.com/hawtio/hawtio-next/compare/v1.3.0-dev.2...v1.3.0) (2024-07-09)
 
 
