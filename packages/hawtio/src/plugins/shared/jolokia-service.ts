@@ -13,6 +13,7 @@ import {
 import { isObject, isString } from '@hawtiosrc/util/objects'
 import { parseBoolean } from '@hawtiosrc/util/strings'
 import {
+  BaseRequestOptions,
   ErrorCallback,
   ExecResponseValue,
   FetchErrorCallback,
@@ -160,6 +161,9 @@ export interface IJolokiaService {
   saveJolokiaStoredOptions(options: JolokiaStoredOptions): void
 }
 
+// Note: While Jolokia 2.1.0 switches to fetch() API and introduces recommended _promise mode_, we still
+// use _callback mode_ as it was before.
+
 class JolokiaService implements IJolokiaService {
   private jolokiaUrl?: Promise<string | null>
   private jolokia?: Promise<IJolokiaSimple>
@@ -271,6 +275,8 @@ class JolokiaService implements IJolokiaService {
               }
             } catch (e) {
               // Parse error should mean redirect to html
+              // this exception could also be handled by removing this try..catch and getting the exception
+              // in this promise's .catch() handler
               reject(e)
               return
             }
@@ -421,6 +427,8 @@ class JolokiaService implements IJolokiaService {
    */
   protected async checkListOptimisation(jolokia: IJolokiaSimple): Promise<void> {
     log.debug('Check if we can call optimised jolokia.list() operation')
+    // hawtio/hawtio-next#635: we pass an executor which accepts only resolve cb - we never call reject cb even
+    // on error, but we ensure that resolve cb is called
     return new Promise<void>(resolve => {
       const successFn: SimpleResponseCallback = (value: JolokiaResponseValue) => {
         // check if the MBean exists by testing whether the returned value has
@@ -716,13 +724,39 @@ class JolokiaService implements IJolokiaService {
   }
 
   /**
+   * Configure Jolokia's `fetchError` callback which ensures that promises returned by this API are rejected
+   * in case of Jolokia/HTTP error
+   * @param options
+   * @param reject
+   * @private
+   */
+  private configureFetchErrorCallback(
+    options: RequestOptions | SimpleRequestOptions | undefined,
+    reject: (reason?: unknown) => void,
+  ): BaseRequestOptions {
+    if (!options) {
+      options = {}
+    }
+    const fetchError = options.fetchError
+    options.fetchError = (response: Response | null, error: DOMException | TypeError | string | null): void => {
+      if (typeof fetchError === 'function') {
+        ;(fetchError as FetchErrorCallback)?.(response, error)
+      }
+      // reject the relevant promise on any HTTP/communication error
+      reject()
+    }
+    return options
+  }
+
+  /**
    * Reading all attributes of an MBean as a record (key-value pairs)
    * @param mbean
    * @param options
    */
   async readAttributes(mbean: string, options?: RequestOptions): Promise<AttributeValues> {
     const jolokia = await this.getJolokia()
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
+      options = this.configureFetchErrorCallback(options, reject)
       jolokia.request(
         { type: 'read', mbean },
         onAttributeSuccessAndError(
@@ -748,7 +782,8 @@ class JolokiaService implements IJolokiaService {
    */
   async readAttribute(mbean: string, attribute: string, options?: RequestOptions): Promise<unknown> {
     const jolokia = await this.getJolokia()
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
+      options = this.configureFetchErrorCallback(options, reject)
       jolokia.request(
         { type: 'read', mbean, attribute },
         onAttributeSuccessAndError(
@@ -774,7 +809,8 @@ class JolokiaService implements IJolokiaService {
    */
   async writeAttribute(mbean: string, attribute: string, value: unknown, options?: RequestOptions): Promise<unknown> {
     const jolokia = await this.getJolokia()
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
+      options = this.configureFetchErrorCallback(options, reject)
       jolokia.request(
         { type: 'write', mbean, attribute, value },
         onAttributeSuccessAndError(
@@ -806,6 +842,7 @@ class JolokiaService implements IJolokiaService {
   ): Promise<unknown> {
     const jolokia = await this.getJolokia()
     return new Promise((resolve, reject) => {
+      options = this.configureFetchErrorCallback(options, reject)
       jolokia.execute(
         mbean,
         operation,
@@ -821,7 +858,8 @@ class JolokiaService implements IJolokiaService {
 
   async search(mbeanPattern: string): Promise<string[]> {
     const jolokia = await this.getJolokia()
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
+      const options: SimpleRequestOptions = this.configureFetchErrorCallback({}, reject)
       jolokia.search(
         mbeanPattern,
         onSearchSuccessAndError(
@@ -830,6 +868,7 @@ class JolokiaService implements IJolokiaService {
             log.error('Error during search:', error)
             resolve([])
           },
+          options,
         ),
       )
     })
@@ -840,8 +879,9 @@ class JolokiaService implements IJolokiaService {
     options?: RequestOptions,
   ): Promise<(JolokiaSuccessResponse | JolokiaErrorResponse)[]> {
     const jolokia = await this.getJolokia()
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       const bulkResponse: (JolokiaSuccessResponse | JolokiaErrorResponse)[] = []
+      options = this.configureFetchErrorCallback(options, reject)
       jolokia.request(
         requests,
         onBulkSuccessAndError(
