@@ -27,6 +27,9 @@ export const ConnectLogin: React.FunctionComponent = () => {
       const result = await connectService.login(username, password)
       switch (result.type) {
         case 'success':
+          // successful login at this page will finally stop <HawtioPage>
+          // making client-redirects
+          sessionStorage.removeItem('connect-login-redirect')
           setLoginFailed(false)
           // Redirect to the original URL
           connectService.redirect()

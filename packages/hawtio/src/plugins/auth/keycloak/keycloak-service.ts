@@ -117,6 +117,11 @@ class KeycloakService implements IKeycloakService {
     const initOptions: KeycloakInitOptions = {
       onLoad: 'login-required',
       pkceMethod,
+      // required for Keycloak 23
+      // see: https://github.com/keycloak/keycloak/issues/26651
+      // and we can't switch to Keycloak 25
+      // see: https://github.com/keycloak/keycloak/issues/27624
+      useNonce: false,
     }
     return initOptions
   }

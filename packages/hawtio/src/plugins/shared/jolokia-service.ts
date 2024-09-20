@@ -1,6 +1,6 @@
 import { userService } from '@hawtiosrc/auth'
 import { eventService, hawtio } from '@hawtiosrc/core'
-import { getCookie } from '@hawtiosrc/util/https'
+import { basicAuthHeaderValue, getCookie } from '@hawtiosrc/util/https'
 import {
   escapeMBeanPath,
   onAttributeSuccessAndError,
@@ -329,25 +329,39 @@ class JolokiaService implements IJolokiaService {
 
   private async configureAuthorization(options: RequestOptions): Promise<undefined> {
     const connection = await connectService.getCurrentConnection()
-    // Just set Authorization for now...
+    if (!options.headers) {
+      options.headers = {}
+    }
+
+    // Set Authorization header depending on current setup
+    let authConfigured = false
     if ((await userService.isLogin()) && userService.getToken()) {
       log.debug('Set authorization header to token')
       ;(options.headers as Record<string, string>)['Authorization'] = `Bearer ${userService.getToken()}`
-    } else if (connection && connection.token) {
-      // TODO: when?
-      ;(options.headers as Record<string, string>)['Authorization'] = `Bearer ${connection.token}`
-    } else if (connection && connection.username && connection.password) {
-      log.debug('Set authorization header to username/password')
-      options.username = connection.username
-      options.password = connection.password
+      authConfigured = true
     }
+
+    if (connection && connection.username && connection.password) {
+      if (!authConfigured) {
+        // we'll simply let Jolokia set the "Authorization: Basic <base64(username:password)>"
+        log.debug('Set authorization header to username/password')
+        options.username = connection.username
+        options.password = connection.password
+      } else {
+        // we can't have two Authorization headers (one for proxy servlet and one for remote Jolokia agent), so
+        // we have to be smart here
+        ;(options.headers as Record<string, string>)['X-Jolokia-Authorization'] = basicAuthHeaderValue(
+          connection.username,
+          connection.password,
+        )
+      }
+    }
+
     const token = getCookie('XSRF-TOKEN')
     if (token) {
       // For CSRF protection with Spring Security
       log.debug('Set XSRF token header from cookies')
       ;(options.headers as Record<string, string>)['X-XSRF-TOKEN'] = token
-      // } else {
-      //   log.debug('Not set any authorization header')
     }
   }
 
@@ -364,12 +378,15 @@ class JolokiaService implements IJolokiaService {
         // If window was opened to connect to remote Jolokia endpoint
         if (url.searchParams.has(PARAM_KEY_CONNECTION) || sessionStorage.getItem(SESSION_KEY_CURRENT_CONNECTION)) {
           // we're in connected tab/window and Jolokia access attempt ended with 401/403
-          // because xhr was used we _should_ have seen native browser popup to enter credentials and later
-          // to store them in browser's password manager. If user closes this dialog and doesn't enter any valid
-          // credentials we should display connect/login page with React dialog which accepts and stores the
-          // credentials in sessionStorage using encryption.
-          // but this is NOT possible in insecure context where we can't use window.crypto.subtle object
+          // if this 401 is delivered with 'WWW-Authenticate: Basic realm="xxx"' then native browser popup
+          // would appear to collect the credentials from user and store them (if user allows) in browser's
+          // password manager
+          // We've prevented this behaviour by translating 'WWW-Authenticate: Basic xxx' to
+          // 'WWW-Authenticate: Hawtio original-scheme="Basic" ...'
+          // this is how we are sure that React dialog is presented to collect the credentials and put them
+          // into session storage
           if (!window.isSecureContext) {
+            // but this is NOT possible in insecure context where we can't use window.crypto.subtle object
             // this won't work if user manually browses to URL with con=connection-id.
             // there will be "Scripts may not close windows that were not opened by script." warning in console
             window.close()

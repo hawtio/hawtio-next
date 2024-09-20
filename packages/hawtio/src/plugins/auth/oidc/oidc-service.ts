@@ -1,5 +1,5 @@
 import { ResolveUser, userService } from '@hawtiosrc/auth/user-service'
-import { Logger } from '@hawtiosrc/core'
+import { hawtio, Logger } from '@hawtiosrc/core'
 import { jwtDecode } from 'jwt-decode'
 import * as oidc from 'oauth4webapi'
 import { AuthorizationServer, Client, OAuth2Error } from 'oauth4webapi'
@@ -163,6 +163,11 @@ export class OidcService implements IOidcService {
       // there are no query/fragment params in the URL, so we're logging for the first time
       const code_challenge_method = config!.code_challenge_method
       const code_verifier = oidc.generateRandomCodeVerifier()
+      // TODO: - this method calls crypto.subtle.digest('SHA-256', buf(codeVerifier)) so we need secure context
+      if (!window.isSecureContext) {
+        log.error("Can't perform OpenID Connect authentication in non-secure context")
+        return null
+      }
       const code_challenge = await oidc.calculatePKCECodeChallenge(code_verifier)
 
       const state = oidc.generateRandomState()
@@ -186,6 +191,20 @@ export class OidcService implements IOidcService {
       authorizationUrl.searchParams.set('response_mode', config.response_mode)
       authorizationUrl.searchParams.set('client_id', config.client_id)
       authorizationUrl.searchParams.set('redirect_uri', config.redirect_uri)
+      const basePath = hawtio.getBasePath()
+      const u = new URL(window.location.href)
+      u.hash = ''
+      let redirect = u.pathname
+      if (basePath && redirect.startsWith(basePath)) {
+        redirect = redirect.slice(basePath.length)
+        if (redirect.startsWith('/')) {
+          redirect = redirect.slice(1)
+        }
+      }
+      // we have to use react-router to do client-redirect to connect/login if necessary
+      // and we can't do full redirect to URL that's not configured on OIDC provider
+      // and Entra ID can't use redirect_uri with wildcards... (Keycloak can do it)
+      sessionStorage.setItem('connect-login-redirect', redirect)
       authorizationUrl.searchParams.set('scope', config.scope)
       if (code_challenge_method) {
         authorizationUrl.searchParams.set('code_challenge_method', code_challenge_method)
@@ -193,11 +212,7 @@ export class OidcService implements IOidcService {
       }
       authorizationUrl.searchParams.set('state', state)
       authorizationUrl.searchParams.set('nonce', nonce)
-      // authorizationUrl.searchParams.set('login_hint', 'hawtio-viewer@fuseqe.onmicrosoft.com')
-      // authorizationUrl.searchParams.set('hsu', '1')
-      if (config.prompt) {
-        authorizationUrl.searchParams.set('prompt', config.prompt)
-      }
+      // do not take 'prompt' option, leave the default non-set version, as it works best with Hawtio and redirects
 
       log.info('Redirecting to ', authorizationUrl)
 
@@ -350,6 +365,7 @@ export class OidcService implements IOidcService {
         token_endpoint_auth_method: 'none',
       }
 
+      // use the original fetch - we don't want stack overflow
       const options: oidc.TokenEndpointRequestOptions = { [oidc.customFetch]: this.originalFetch }
       const res = await oidc.refreshTokenGrantRequest(as, client, userInfo.refresh_token, options).catch(e => {
         log.error('Problem refreshing token', e)
@@ -383,6 +399,11 @@ export class OidcService implements IOidcService {
     }
   }
 
+  /**
+   * Replace global `fetch` function with a delegated call that handles authorization for remote Jolokia agents
+   * and target agent that may run as proxy (to remote Jolokia agent)
+   * @private
+   */
   private async setupFetch() {
     let userInfo = await this.userInfo
     if (!userInfo) {
