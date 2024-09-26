@@ -8,6 +8,9 @@ export async function proxy(uri: string, req: Request, res: Response) {
     res.status(500).end(`error proxying to "${uri}: ${e}`)
   }
   delete req.headers.referer
+  if (req.headers['x-jolokia-authorization']) {
+    req.headers['Authorization'] = req.headers['x-jolokia-authorization']
+  }
   try {
     const res2 = await axios({
       method: req.method,
