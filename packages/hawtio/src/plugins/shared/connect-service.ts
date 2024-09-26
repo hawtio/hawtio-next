@@ -1,10 +1,10 @@
 import { eventService, hawtio } from '@hawtiosrc/core'
 import { decrypt, encrypt, generateKey, toBase64, toByteArray } from '@hawtiosrc/util/crypto'
+import { basicAuthHeaderValue, getCookie } from '@hawtiosrc/util/https'
 import { toString } from '@hawtiosrc/util/strings'
 import { joinPaths } from '@hawtiosrc/util/urls'
 import Jolokia, { IJolokiaSimple } from '@jolokia.js/simple'
 import { log } from './globals'
-
 export type Connections = {
   // key is ID, not name, so we can alter the name
   [key: string]: Connection
@@ -21,9 +21,6 @@ export type Connection = {
   jolokiaUrl?: string
   username?: string
   password?: string
-
-  // TODO: check if it is used
-  token?: string
 }
 
 export const INITIAL_CONNECTION: Connection = {
@@ -264,11 +261,16 @@ class ConnectService implements IConnectService {
     // doesn't include "Basic" scheme. This is enough for the browser to skip the dialog. Even with xhr.
     return new Promise<ConnectionTestResult>((resolve, reject) => {
       try {
+        const xsrfToken = getCookie('XSRF-TOKEN')
+        const headers: { [header: string]: string } = {}
+        if (xsrfToken) {
+          headers['X-XSRF-TOKEN'] = xsrfToken
+        }
         fetch(this.getJolokiaUrl(connection), {
           method: 'post',
           // with application/json, I'm getting "CanceledError: Request stream has been aborted" when running
           // via hawtioMiddleware...
-          headers: { 'Content-Type': 'text/json' },
+          headers: { ...headers, 'Content-Type': 'text/json' },
           credentials: 'same-origin',
           body: JSON.stringify({ type: 'version' }),
         })
@@ -348,11 +350,18 @@ class ConnectService implements IConnectService {
     const result = await new Promise<LoginResult>(resolve => {
       connection.username = username
       connection.password = password
+      // this special header is used to pass credentials to remote Jolokia agent when
+      // Authorization header is already "taken" by OIDC/Keycloak authenticator
+      const headers = {
+        'X-Jolokia-Authorization': basicAuthHeaderValue(connection.username, connection.password),
+      }
       this.createJolokia(connection, true).request(
         { type: 'version' },
         {
           success: () => resolve({ type: 'success' }),
+          // this handles Jolokia error (HTTP status = 200, Jolokia status != 200) - unlikely for "version" request
           error: () => resolve({ type: 'failure' }),
+          // this handles HTTP status != 200 or other communication error (like connection refused)
           fetchError: (response: Response | null, error: DOMException | TypeError | string | null) => {
             if (response) {
               log.debug('Login error:', response.status, response.statusText)
@@ -372,6 +381,7 @@ class ConnectService implements IConnectService {
             }
             resolve({ type: 'failure' })
           },
+          headers,
         },
       )
     })

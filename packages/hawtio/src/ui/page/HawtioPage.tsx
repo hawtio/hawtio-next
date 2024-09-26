@@ -48,7 +48,14 @@ export const HawtioPage: React.FunctionComponent = () => {
   log.debug(`Login state: username = ${username}, isLogin = ${isLogin}`)
 
   const defaultPlugin = plugins[0] ?? null
-  const defaultPage = defaultPlugin ? <Navigate to={{ pathname: defaultPlugin.path, search }} /> : <HawtioHome />
+  let defaultPage = defaultPlugin ? <Navigate to={{ pathname: defaultPlugin.path, search }} /> : <HawtioHome />
+  const tr = sessionStorage.getItem('connect-login-redirect')
+  if (tr) {
+    // this is required for OIDC, because we can't have redirect_uri with
+    // wildcard on EntraID...
+    // this session storage item is removed after successful login at connect/login page
+    defaultPage = <Navigate to={{ pathname: tr, search }} />
+  }
 
   const showVerticalNavByDefault = preferencesService.isShowVerticalNavByDefault()
 
