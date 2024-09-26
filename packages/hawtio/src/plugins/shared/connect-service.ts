@@ -348,15 +348,12 @@ class ConnectService implements IConnectService {
 
     // Check credentials
     const result = await new Promise<LoginResult>(resolve => {
+      connection.username = username
+      connection.password = password
       // this special header is used to pass credentials to remote Jolokia agent when
       // Authorization header is already "taken" by OIDC/Keycloak authenticator
       const headers = {
-        'X-Jolokia-Authorization': basicAuthHeaderValue(username, password),
-      }
-      const token = getCookie('XSRF-TOKEN')
-      if (token) {
-        // For CSRF protection with Spring Security
-        ;(headers as Record<string, string>)['X-XSRF-TOKEN'] = token
+        'X-Jolokia-Authorization': basicAuthHeaderValue(connection.username, connection.password),
       }
       this.createJolokia(connection, true).request(
         { type: 'version' },
