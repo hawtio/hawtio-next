@@ -334,27 +334,17 @@ class JolokiaService implements IJolokiaService {
     }
 
     // Set Authorization header depending on current setup
-    let authConfigured = false
     if ((await userService.isLogin()) && userService.getToken()) {
       log.debug('Set authorization header to token')
       ;(options.headers as Record<string, string>)['Authorization'] = `Bearer ${userService.getToken()}`
-      authConfigured = true
     }
 
+    // for remote Jolokia authorization, we'll always use X-Jolokia-Authorization header
     if (connection && connection.username && connection.password) {
-      if (!authConfigured) {
-        // we'll simply let Jolokia set the "Authorization: Basic <base64(username:password)>"
-        log.debug('Set authorization header to username/password')
-        options.username = connection.username
-        options.password = connection.password
-      } else {
-        // we can't have two Authorization headers (one for proxy servlet and one for remote Jolokia agent), so
-        // we have to be smart here
-        ;(options.headers as Record<string, string>)['X-Jolokia-Authorization'] = basicAuthHeaderValue(
-          connection.username,
-          connection.password,
-        )
-      }
+      ;(options.headers as Record<string, string>)['X-Jolokia-Authorization'] = basicAuthHeaderValue(
+        connection.username,
+        connection.password,
+      )
     }
 
     const token = getCookie('XSRF-TOKEN')
