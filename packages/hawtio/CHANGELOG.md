@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.5.0](https://github.com/hawtio/hawtio-next/compare/v1.4.0...v1.5.0) (2024-10-02)
+
+
+### Features
+
+* **camel:** update supported Camel models to 4.4.x and 4.8.x ([4662e74](https://github.com/hawtio/hawtio-next/commit/4662e7424c7efb330da70c50713293d5feb8a003)), closes [#1146](https://github.com/hawtio/hawtio-next/issues/1146)
+
+
+### Bug Fixes
+
+* **#1125:** Fix scenario with OIDC and remote, authenticated Jolokia agent ([#1126](https://github.com/hawtio/hawtio-next/issues/1126)) ([aadc600](https://github.com/hawtio/hawtio-next/commit/aadc600bbdad00190391e0d4f037537a27657f1e))
+* **#635:** Ensure that promise's reject() is called in case of errors ([6fdc294](https://github.com/hawtio/hawtio-next/commit/6fdc2945a803efd74f5fa4630f7b7f895dedd682)), closes [#635](https://github.com/hawtio/hawtio-next/issues/635)
+* **security:** Use X-Jolokia-Authorization with XSRF cookies ([d0455b8](https://github.com/hawtio/hawtio-next/commit/d0455b82588564fa565f89f779529e93287983a7))
+* **security:** Use X-Jolokia-Authorization with XSRF cookies ([#1138](https://github.com/hawtio/hawtio-next/issues/1138)) ([13d1d85](https://github.com/hawtio/hawtio-next/commit/13d1d8561e1082678abd5107eb1514733f49fe7b))
+
 ## [1.4.0](https://github.com/hawtio/hawtio-next/compare/v1.3.0...v1.4.0) (2024-09-13)
 
 
