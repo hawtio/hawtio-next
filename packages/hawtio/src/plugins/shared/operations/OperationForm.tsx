@@ -139,6 +139,7 @@ const OperationActions: React.FunctionComponent = () => {
     try {
       navigator.clipboard.writeText(text)
       notifySuccessfulCopy()
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       notifyCopyFailure(text)
     }

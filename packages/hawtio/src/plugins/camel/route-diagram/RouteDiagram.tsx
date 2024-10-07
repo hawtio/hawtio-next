@@ -1,6 +1,7 @@
 import { Table, Tbody, Td, Tr } from '@patternfly/react-table'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import ReactFlow, {
+import {
+  ReactFlow,
   Connection,
   ConnectionLineType,
   Handle,

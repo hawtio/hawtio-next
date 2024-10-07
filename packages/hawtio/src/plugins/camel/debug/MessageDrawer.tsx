@@ -16,8 +16,7 @@ import {
   Text,
 } from '@patternfly/react-core'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
-import React from 'react'
-import { useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { MessageData } from './debug-service'
 
 export interface MessageDrawerProps {
@@ -43,13 +42,9 @@ export const MessageDrawer: React.FunctionComponent<MessageDrawerProps> = (props
     setActivePanelTab(result.itemId as string)
   }
 
-  const onPanelExpand = () => {
-    panelRef.current && panelRef.current.focus()
-  }
+  const onPanelExpand = () => panelRef.current && panelRef.current.focus()
 
-  const onPanelCloseClick = () => {
-    props.setExpanded(false)
-  }
+  const onPanelCloseClick = () => props.setExpanded(false)
 
   const panelHeaderTab = (): JSX.Element => {
     if (!props.messages || props.messages.length === 0) return <em key='header-no-messages'>No Messages</em>

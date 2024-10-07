@@ -102,7 +102,6 @@ class ExpandableSection extends React.Component<ExpandableSectionProps, Expandab
     toggleText: '',
     toggleTextExpanded: '',
     toggleTextCollapsed: '',
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onToggle: (event, isExpanded): void => undefined,
     isActive: false,
     isDetached: false,
@@ -191,7 +190,6 @@ class ExpandableSection extends React.Component<ExpandableSectionProps, Expandab
   render() {
     const {
       onToggle: onToggleProp,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       isActive,
       className,
       toggleText,
@@ -207,7 +205,6 @@ class ExpandableSection extends React.Component<ExpandableSectionProps, Expandab
       contentId,
       toggleId,
       variant,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       truncateMaxLines,
       ...props
     } = this.props
@@ -294,6 +291,7 @@ export const ExpandableText: React.FunctionComponent<{ children: React.ReactNode
     return (
       <ExpandableSection
         onClick={e => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
           ;(e.target as HTMLElement)?.classList.contains('pf-v5-c-expandable-section__toggle-text') &&
             e.stopPropagation()
         }}

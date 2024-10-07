@@ -243,6 +243,7 @@ class ConnectService implements IConnectService {
     try {
       const result = await this.testConnection(connection)
       return result.status
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       return 'not-reachable'
     }
@@ -421,6 +422,7 @@ class ConnectService implements IConnectService {
         ['http:', 'https:'].includes(protocol) &&
         connectionKey !== '' &&
         connectionKey === this.currentConnection
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_e) {
       log.error('Invalid URL')
       eventService.notify({

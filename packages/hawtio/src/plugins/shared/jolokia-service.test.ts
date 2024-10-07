@@ -1,8 +1,7 @@
 import { userService } from '@hawtiosrc/auth'
 import { DEFAULT_MAX_COLLECTION_SIZE, DEFAULT_MAX_DEPTH, JolokiaListMethod, jolokiaService } from './jolokia-service'
 import { hawtio } from '@hawtiosrc/core'
-import { ErrorCallback, RequestOptions } from 'jolokia.js'
-import 'jolokia.js'
+import * as jolokia from 'jolokia.js'
 import Jolokia, { SimpleRequestOptions, SimpleResponseCallback } from '@jolokia.js/simple'
 
 describe('JolokiaService', () => {
@@ -25,22 +24,24 @@ describe('JolokiaService', () => {
 
   test('getJolokia - optimised', async () => {
     jolokiaService.getJolokiaUrl = jest.fn(async () => '/test')
-    Jolokia.prototype.list = jest.fn((path?: string | string[] | RequestOptions, opts?: SimpleRequestOptions) => {
-      if (typeof path !== 'string') throw new Error('String is expected for path')
-      if (!opts) throw new Error('No options set')
-      if (!opts.success) {
-        throw new Error('No success option set')
-      }
+    Jolokia.prototype.list = jest.fn(
+      (path?: string | string[] | jolokia.RequestOptions, opts?: SimpleRequestOptions) => {
+        if (typeof path !== 'string') throw new Error('String is expected for path')
+        if (!opts) throw new Error('No options set')
+        if (!opts.success) {
+          throw new Error('No success option set')
+        }
 
-      ;(opts.success! as SimpleResponseCallback)({
-        desc: '',
-        attr: {},
-        op: {
-          value: { desc: 'exec', args: [], ret: '' },
-        },
-      })
-      return null
-    })
+        ;(opts.success! as SimpleResponseCallback)({
+          desc: '',
+          attr: {},
+          op: {
+            value: { desc: 'exec', args: [], ret: '' },
+          },
+        })
+        return null
+      },
+    )
 
     await expect(jolokiaService.getJolokia()).resolves.not.toThrow()
     await expect(jolokiaService.getListMethod()).resolves.toEqual(JolokiaListMethod.OPTIMISED)
@@ -68,7 +69,7 @@ describe('JolokiaService', () => {
         throw new Error('No error option set')
       }
 
-      ;(opts.error! as ErrorCallback)(
+      ;(opts.error! as jolokia.ErrorCallback)(
         {
           status: -1,
           timestamp: 123456789,

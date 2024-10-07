@@ -246,6 +246,7 @@ class JolokiaService implements IJolokiaService {
       log.debug('Checking Jolokia path:', path)
       try {
         return await this.tryProbeJolokiaPath(path)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (e) {
         // ignore
       }
@@ -396,7 +397,7 @@ class JolokiaService implements IJolokiaService {
           // just logout
           userService.isLogin().then(login => {
             log.debug('Logging out due to fetch() error: status =', response.status)
-            login && userService.logout()
+            if (login) userService.logout()
           })
         }
       } else {
@@ -958,7 +959,6 @@ class JolokiaService implements IJolokiaService {
   }
 }
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Dummy Jolokia implementation that does nothing.
  */
@@ -1076,6 +1076,5 @@ class DummyJolokia implements IJolokiaSimple {
     }
   }
 }
-/* eslint-enable @typescript-eslint/no-unused-vars */
 
 export const jolokiaService = new JolokiaService()

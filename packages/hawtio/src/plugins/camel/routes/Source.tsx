@@ -53,6 +53,7 @@ export const Source: React.FunctionComponent = () => {
           type: 'success',
           message: 'Route was updated',
         })
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (e) {
         eventService.notify({ type: 'danger', message: 'Failed to save route' })
       }
