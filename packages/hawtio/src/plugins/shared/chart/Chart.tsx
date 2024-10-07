@@ -3,8 +3,8 @@ import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import { isNumber } from '@hawtiosrc/util/objects'
 import { ChartArea, ChartAxis, Chart as ChartDraw, ChartVoronoiContainer } from '@patternfly/react-charts'
-import { getResizeObserver } from '@patternfly/react-core'
 import {
+  getResizeObserver,
   Button,
   Card,
   CardBody,

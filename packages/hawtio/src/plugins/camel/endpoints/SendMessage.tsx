@@ -113,7 +113,6 @@ const MessageHeaders: React.FunctionComponent<{
   return (
     <React.Fragment>
       <FormGroup>
-        {/* eslint-disable-next-line react/jsx-no-undef */}
         <Button variant='link' onClick={handleAddHeader}>
           Add Headers
         </Button>
@@ -183,6 +182,7 @@ const MessageBody: React.FunctionComponent<{
           // monaco doesn't have built in xml formatter
           try {
             updateMessageBody(xmlFormat(messageBody))
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
           } catch (e) {
             eventService.notify({
               type: 'danger',

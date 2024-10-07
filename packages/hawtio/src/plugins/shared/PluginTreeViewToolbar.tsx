@@ -9,7 +9,6 @@ interface ToolbarProps {
 export const PluginTreeViewToolbar: React.FunctionComponent<ToolbarProps> = (props: ToolbarProps) => {
   const [expanded, setExpanded] = useState(false)
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onSearch = (event: ChangeEvent<HTMLInputElement>) => {
     if (props.onSearch) {
       props.onSearch(event)
