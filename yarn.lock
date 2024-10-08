@@ -2319,7 +2319,7 @@ __metadata:
     jwt-decode: "npm:^4.0.0"
     keycloak-js: "npm:^23.0.7"
     monaco-editor: "npm:^0.52.0"
-    oauth4webapi: "npm:^2.17.0"
+    oauth4webapi: "npm:^3.0.0"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     react-markdown: "npm:^8.0.7"
@@ -12097,10 +12097,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"oauth4webapi@npm:^2.17.0":
-  version: 2.17.0
-  resolution: "oauth4webapi@npm:2.17.0"
-  checksum: 10/bfe4d3c0e5ec1a67ee00889b758cabccdb45b3cfbcfb62fee5ad935f1f0d7c78432c69718b79303956f006c0a950eccc0b1f19ef85aeb0067b85d06439704dc9
+"oauth4webapi@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "oauth4webapi@npm:3.0.0"
+  checksum: 10/422d925029e5cd550b9928b61fede0aaec60637f4826452ca1afea517b8969727f7312a678b71f7dcda0a7dbd82246da87a424389c977fe3858644d39813c026
   languageName: node
   linkType: hard
 
