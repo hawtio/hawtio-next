@@ -12,6 +12,8 @@ const HAWTIO_REGISTRY_MBEAN = 'hawtio:type=Registry'
 const HAWTIO_TREE_WATCHER_MBEAN = 'hawtio:type=TreeWatcher'
 
 export interface IWorkspace {
+  hasErrors(): Promise<boolean>
+  getErrors(): Promise<Error[]>
   refreshTree(): Promise<void>
   getTree(): Promise<MBeanTree>
   hasMBeans(): Promise<boolean>
@@ -26,9 +28,25 @@ class Workspace implements IWorkspace {
   private pluginUpdateCounter?: number
   private treeWatchRegisterHandle?: Promise<number>
   private treeWatcherCounter?: number
+  private _errors: Error[] = []
+
+  async hasErrors(): Promise<boolean> {
+    await this.getTree()
+    return this._errors.length > 0
+  }
+
+  async getErrors(): Promise<Error[]> {
+    await this.getTree()
+    return this._errors
+  }
+
+  addError(error: Error) {
+    this._errors.push(error)
+  }
 
   async refreshTree() {
     this.tree = undefined
+    this._errors = []
     await this.getTree()
     eventService.refresh()
   }
@@ -44,11 +62,13 @@ class Workspace implements IWorkspace {
 
   private async loadTree(): Promise<MBeanTree> {
     if (!(await userService.isLogin())) {
+      this.addError(new Error('User needs to have logged in to use workspace'))
       throw new Error('User needs to have logged in to use workspace')
     }
 
     const config = await this.getConfig()
     if (config.workspace === false || (typeof config.workspace !== 'boolean' && config.workspace?.length === 0)) {
+      // TODO Should this set the error??
       return MBeanTree.createEmpty(pluginName)
     }
     const mbeanPaths = config.workspace && typeof config.workspace !== 'boolean' ? config.workspace : []
@@ -57,10 +77,17 @@ class Workspace implements IWorkspace {
     const options: SimpleRequestOptions = {
       ignoreErrors: true,
       error: (response: JolokiaErrorResponse) => {
+        this.addError(
+          new Error(`Error - fetching JMX tree: ${response.error_type} ${response.error} ${response.error_value}`),
+        )
         log.debug('Error - fetching JMX tree:', response)
       },
       fetchError: (response: Response | null, error: DOMException | TypeError | string | null) => {
         const text = response?.statusText || error
+        const err = new Error(`Ajax error - fetching JMX tree: ${text}`)
+        err.cause = error
+        this.addError(err)
+
         log.debug('Ajax error - fetching JMX tree:', text, '-', error)
       },
     }
@@ -77,7 +104,11 @@ class Workspace implements IWorkspace {
 
       return tree
     } catch (error) {
-      log.error('A request to list the JMX tree failed:', error)
+      const wkspError: Error = new Error('A request to list the JMX tree failed')
+      wkspError.cause = error
+      this.addError(wkspError)
+
+      log.error(wkspError.message, error)
       return MBeanTree.createEmpty(pluginName)
     }
   }

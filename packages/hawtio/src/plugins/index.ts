@@ -9,6 +9,7 @@ import { quartz } from './quartz'
 import { rbac } from './rbac'
 import { runtime } from './runtime'
 import { springboot } from './springboot'
+import { consoleStatus } from './console-status'
 
 /**
  * Registers the builtin plugins for Hawtio React.
@@ -28,10 +29,11 @@ export const registerPlugins: HawtioPlugin = () => {
   logs()
   quartz()
   springboot()
+  consoleStatus()
 }
 
 // Export each plugin's entry point so that a custom console assembler can select which to bundle
-export { camel, connect, jmx, keycloak, oidc, logs, quartz, rbac, runtime, springboot }
+export { camel, connect, jmx, keycloak, oidc, logs, quartz, rbac, runtime, springboot, consoleStatus }
 
 // Common plugin API
 export * from './connect'
