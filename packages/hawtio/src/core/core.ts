@@ -169,7 +169,7 @@ class HawtioCore {
   }
 
   /**
-   * Adds an angular module to the list of modules to bootstrap.
+   * Adds a module to the list of modules to bootstrap.
    */
   addPlugin(plugin: Plugin): HawtioCore {
     log.info('Add plugin:', plugin.id)
