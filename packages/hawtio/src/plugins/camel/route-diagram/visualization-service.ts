@@ -257,7 +257,9 @@ class VisualizationService {
             }
           } else {
             siblingNodes.forEach(function (nodeId) {
-              links.push({ id: nodeId + '-' + id, source: nodeId + '', target: id })
+              if (nodeDatas[nodeId]!.type !== 'stop') {
+                links.push({ id: nodeId + '-' + id, source: nodeId + '', target: id })
+              }
             })
 
             siblingNodes.length = 0
