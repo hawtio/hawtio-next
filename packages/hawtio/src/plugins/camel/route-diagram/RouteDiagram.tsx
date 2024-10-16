@@ -160,13 +160,12 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
     >
       <Handle type='target' position={targetPosition ?? Position.Top} />
       <Handle type='source' position={sourcePosition ?? Position.Bottom} id='a' />
-
       <div className='annotation'>{annotation?.element}</div>
       <div className='icon'>{data.imageUrl}</div>
       <div className='inflights'>{showInflightCounter && data.stats?.exchangesInflight}</div>
       <div className='number'>{data.stats?.exchangesCompleted}</div>
-      <div className='camel-node-label'> {truncate(data.label)}</div>
-
+      <div className='camel-node-label'>{truncate(data.label)}</div>
+      {data.cid && <div className='camel-node-id'> (ID: {data.cid})</div>}
       {showStatistics && (
         <NodeToolbar isVisible={isVisible} position={Position.Bottom} style={{ marginTop: '-30px' }}>
           <div className={'node-tooltip'}>

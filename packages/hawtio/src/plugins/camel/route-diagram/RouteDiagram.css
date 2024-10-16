@@ -8,12 +8,12 @@
 }
 .react-flow__node-camel .camel-node-content {
   display: grid;
-  grid-template-rows: 30% 40% 30%;
+  grid-template-rows: 25% 25% 25% 25%; /* Now there are four rows */
   grid-template-columns: 40% 35% 25%;
   border: 2px solid #8a8d90;
   background-color: #fafafa;
   padding: 5px;
-  height: 80px;
+  height: 100px;
   min-width: 150px;
   border-radius: 10px;
 
@@ -51,6 +51,11 @@
 
 .react-flow__node-camel .camel-node-content .camel-node-label {
   grid-row: 3 / 4;
+  grid-column: 1 / 4;
+  justify-self: center;
+}
+.react-flow__node-camel .camel-node-content .camel-node-id {
+  grid-row: 4 / 5;
   grid-column: 1 / 4;
   justify-self: center;
 }
