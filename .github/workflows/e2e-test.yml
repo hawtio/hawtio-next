@@ -215,6 +215,6 @@ jobs:
         if: github.event_name == 'pull_request_target'
         uses: thollander/actions-comment-pull-request@v3
         with:
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-          filePath: summary.md
-          comment_tag: execution
+          github-token: ${{ steps.generate-token.outputs.token }}
+          file-path: summary.md
+          comment-tag: execution
