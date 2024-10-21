@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.6.0](https://github.com/hawtio/hawtio-next/compare/v1.5.0...v1.6.0) (2024-10-21)
+
+
+### Features
+
+* Adds better error handling of workspace loading errors ([9b4c600](https://github.com/hawtio/hawtio-next/commit/9b4c600b5ab1f7311754fcf030d7f849fe8f591f))
+* **routeDiagram:** Add IDs to the nodes ([459c59e](https://github.com/hawtio/hawtio-next/commit/459c59ede33adab109b5d88a8ce9fd630e78f96a))
+
+
+### Bug Fixes
+
+* **route-visualization:** edge shoudln't be displayed when stop is used ([e185cd7](https://github.com/hawtio/hawtio-next/commit/e185cd795a63dc350c10274ee3d15c670eccf193))
+* Upgrades eslint to v9 and migrate to flat config [#870](https://github.com/hawtio/hawtio-next/issues/870) ([b6c6e5d](https://github.com/hawtio/hawtio-next/commit/b6c6e5de26df23678d730e8b44d7090e16637458))
+
 ## [1.5.0](https://github.com/hawtio/hawtio-next/compare/v1.4.0...v1.5.0) (2024-10-02)
 
 
