@@ -201,7 +201,7 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
                     <Td>{data.stats?.meanProcessingTime} (ms)</Td>
                   </Tr>
                   <Tr>
-                    <Td>Mix</Td>
+                    <Td>Min</Td>
                     <Td>{data.stats?.minProcessingTime} (ms)</Td>
                   </Tr>
                   <Tr>
