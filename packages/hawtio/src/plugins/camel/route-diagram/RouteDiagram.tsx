@@ -147,6 +147,9 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
     return newLabel.substring(0, 17) + '...'
   }
 
+  const totalExchanges: number =
+    parseInt(data.stats?.exchangesCompleted ?? '0') + parseInt(data.stats?.exchangesInflight ?? '0')
+
   return (
     <div
       className={'camel-node-content' + (selected ? ' highlighted' : '')}
@@ -163,7 +166,7 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
       <div className='annotation'>{annotation?.element}</div>
       <div className='icon'>{data.imageUrl}</div>
       <div className='inflights'>{showInflightCounter && data.stats?.exchangesInflight}</div>
-      <div className='number'>{data.stats?.exchangesCompleted}</div>
+      <div className='number'>{totalExchanges}</div>
       <div className='camel-node-label'>{truncate(data.label)}</div>
       {data.cid && <div className='camel-node-id'> (ID: {data.cid})</div>}
       {showStatistics && (
@@ -176,6 +179,10 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
                   <Tr>
                     <Td>ID</Td>
                     <Td>{data.stats.id}</Td>
+                  </Tr>
+                  <Tr>
+                    <Td>Total</Td>
+                    <Td>{totalExchanges}</Td>
                   </Tr>
                   <Tr>
                     <Td>Completed</Td>
