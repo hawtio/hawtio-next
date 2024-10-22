@@ -49,6 +49,7 @@ export type RouteStats = Statistics & {
 
 export const ROUTE_OPERATIONS = {
   dumpRoutesAsXml: 'dumpRoutesAsXml()',
+  dumpRoutesStatsAsXml: 'dumpRoutesStatsAsXml',
 } as const
 
 // TODO: This service should be named more properly like RoutesXmlService, RouteStatisticsService, etc.
@@ -212,15 +213,11 @@ class RoutesService {
 
   async dumpRoutesStatsXML(routesNode: MBeanNode): Promise<string | null> {
     let xml = null
-    const routeNodeOperation = 'dumpRouteStatsAsXml'
-    const routesFolderOperation = 'dumpRoutesStatsAsXml'
-
     const mbeanName = routesNode.getMetadata(contextNodeType)
-    const operationForMBean = mbeanName ? routesFolderOperation : routeNodeOperation
-    const mbeanToQuery = mbeanName ? mbeanName : (routesNode.objectName ?? '')
+    const mbeanToQuery = mbeanName ? mbeanName : (routesNode.parent?.getMetadata(contextNodeType) ?? '')
 
     try {
-      xml = await jolokiaService.execute(mbeanToQuery, operationForMBean, [true, true])
+      xml = await jolokiaService.execute(mbeanToQuery, ROUTE_OPERATIONS.dumpRoutesStatsAsXml, [true, true])
     } catch (error) {
       throw new Error('Failed to dump routes stats from mbean ' + mbeanName + ': ' + error)
     }
