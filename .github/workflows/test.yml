@@ -3,12 +3,12 @@ name: Test
 on:
   pull_request:
     branches:
-      - main
+      - 1.6.x
     paths-ignore:
       - '**.md'
   push:
     branches:
-      - main
+      - 1.6.x
     paths-ignore:
       - '**.md'
 
