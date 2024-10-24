@@ -30,6 +30,10 @@ import { doSendMessage } from './endpoints-service'
 // TODO: Parameterise the version of Camel mode for the exchange headers
 import { headers as exchangeHeaders } from './exchange-headers-camel-model.json'
 
+import { loader } from '@monaco-editor/react'
+
+loader.config({ monaco: monacoEditor })
+
 export const SendMessage: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
   const messageHeaders = useRef<{ name: string; value: string }[]>([])
