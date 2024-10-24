@@ -8,6 +8,11 @@ import { routesService } from './routes-service'
 import { eventService } from '@hawtiosrc/core'
 import { Alert, AlertActionCloseButton, AlertVariant } from '@patternfly/react-core'
 
+import * as monaco from 'monaco-editor'
+import { loader } from '@monaco-editor/react'
+
+loader.config({ monaco })
+
 export const Source: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
   const [xmlSource, setXmlSource] = useState('')

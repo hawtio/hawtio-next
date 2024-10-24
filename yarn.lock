@@ -2016,6 +2016,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:^5.0.0"
     eslint-plugin-testing-library: "npm:^6.4.0"
     prettier: "npm:3.3.3"
+    typescript: "npm:^5.4.5"
     typescript-eslint: "npm:^8.11.0"
   languageName: unknown
   linkType: soft
@@ -2028,6 +2029,7 @@ __metadata:
     "@hawtio/camel-model-v4_8": "npm:@hawtio/camel-model@~4.8.0"
     "@jolokia.js/simple": "npm:^2.1.7"
     "@module-federation/utilities": "npm:^3.1.16"
+    "@monaco-editor/react": "npm:^4.6.0"
     "@patternfly/react-charts": "npm:~7.3.0"
     "@patternfly/react-code-editor": "npm:~5.3.3"
     "@patternfly/react-core": "npm:~5.3.3"
@@ -4742,6 +4744,7 @@ __metadata:
     css-loader: "npm:^7.1.2"
     html-webpack-plugin: "npm:^5.6.2"
     jest: "npm:^29.7.0"
+    monaco-editor: "npm:^0.52.0"
     monaco-editor-webpack-plugin: "npm:^7.1.0"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"

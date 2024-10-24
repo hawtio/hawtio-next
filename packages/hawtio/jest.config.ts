@@ -15,6 +15,8 @@ const config: Config = {
     '\\.(css|less)$': '<rootDir>/src/__mocks__/styleMock.js',
     '@hawtiosrc/(.*)': '<rootDir>/src/$1',
     'react-markdown': '<rootDir>/../../node_modules/react-markdown/react-markdown.min.js',
+    'monaco-editor': path.resolve(__dirname, './src/__mocks__/monacoEditor.js'),
+    '@monaco-editor/react': path.resolve(__dirname, './src/__mocks__/monacoEditor.js'),
     '@patternfly/react-code-editor': path.resolve(__dirname, './src/__mocks__/codeEditorMock.js'),
     oauth4webapi: path.resolve(__dirname, './src/__mocks__/oauth4webapi.js'),
   },
