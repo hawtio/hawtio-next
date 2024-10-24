@@ -76,6 +76,7 @@ export type AboutConfig = {
   title?: string
   description?: string
   imgSrc?: string
+  backgroundImgSrc?: string
   productInfo?: AboutProductInfo[]
   copyright?: string
 }
