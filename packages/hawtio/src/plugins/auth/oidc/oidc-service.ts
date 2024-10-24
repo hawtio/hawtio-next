@@ -2,12 +2,17 @@ import { ResolveUser, userService } from '@hawtiosrc/auth/user-service'
 import { hawtio, Logger } from '@hawtiosrc/core'
 import { jwtDecode } from 'jwt-decode'
 import * as oidc from 'oauth4webapi'
-import { AuthorizationServer, Client, OAuth2Error } from 'oauth4webapi'
+import { AuthorizationResponseError, AuthorizationServer, Client, ClientAuth, OAuth2Error } from 'oauth4webapi'
 import { fetchPath } from '@hawtiosrc/util/fetch'
 import { getCookie } from '@hawtiosrc/util/https'
 
 const pluginName = 'hawtio-oidc'
 const log = Logger.get(pluginName)
+
+const clientAuth: ClientAuth = (_as, client, parameters, _headers) => {
+  parameters.set('client_id', client.client_id)
+  return Promise.resolve()
+}
 
 export type OidcConfig = {
   /** Provider type. If "null", then OIDC is not enabled */
@@ -95,9 +100,13 @@ export class OidcService implements IOidcService {
     } else {
       log.info('Fetching openid-configuration')
       const cfgUrl = new URL(cfg!.provider)
-      res = await oidc.discoveryRequest(cfgUrl).catch(e => {
-        log.error('Failed OIDC discovery request', e)
-      })
+      res = await oidc
+        .discoveryRequest(cfgUrl, {
+          [oidc.allowInsecureRequests]: true,
+        })
+        .catch(e => {
+          log.error('Failed OIDC discovery request', e)
+        })
       if (!res || !res.ok) {
         return null
       }
@@ -219,7 +228,7 @@ export class OidcService implements IOidcService {
       // point of no return
       window.location.assign(authorizationUrl)
       // return unresolvable promise to wait for redirect
-      return new Promise((resolve, reject) => {
+      return new Promise((_resolve, _reject) => {
         log.debug('Waiting for redirect')
       })
     }
@@ -231,11 +240,14 @@ export class OidcService implements IOidcService {
 
     // there are proper OAuth2/OpenID params, so we can exchange them for access_token, refresh_token and id_token
     const state = urlParams!.get('state')
-    const authResponse = oidc.validateAuthResponse(as, client, urlParams!, state!)
-
-    if (oidc.isOAuth2Error(authResponse)) {
-      log.error('OpenID Authorization error', authResponse)
-      return null
+    let authResponse
+    try {
+      authResponse = oidc.validateAuthResponse(as, client, urlParams!, state!)
+    } catch (e) {
+      if (e instanceof AuthorizationResponseError) {
+        log.error('OpenID Authorization error', e)
+        return null
+      }
     }
 
     log.info('Getting localStore data, because we have params', urlParams)
@@ -252,26 +264,29 @@ export class OidcService implements IOidcService {
     }
 
     const res = await oidc
-      .authorizationCodeGrantRequest(as, client, authResponse, config.redirect_uri, loginData.cv, {})
+      .authorizationCodeGrantRequest(as, client, clientAuth, authResponse!, config.redirect_uri, loginData.cv, {
+        [oidc.allowInsecureRequests]: true,
+      })
       .catch(e => {
         log.warn('Problem accessing OpenID token endpoint', e)
         return null
       })
     if (!res) {
+      log.warn('No authorization code grant response available')
       return null
     }
 
     const tokenResponse = await oidc
-      .processAuthorizationCodeOpenIDResponse(as, client, res, loginData.n, oidc.skipAuthTimeCheck)
+      .processAuthorizationCodeResponse(as, client, res, {
+        expectedNonce: loginData.n,
+        maxAge: oidc.skipAuthTimeCheck,
+      })
       .catch(e => {
         log.warn('Problem processing OpenID token response', e)
+        log.error('OpenID Token error', e)
         return null
       })
     if (!tokenResponse) {
-      return null
-    }
-    if (oidc.isOAuth2Error(tokenResponse)) {
-      log.error('OpenID Token error', tokenResponse)
       return null
     }
 
@@ -294,6 +309,10 @@ export class OidcService implements IOidcService {
     }
 
     const claims = oidc.getValidatedIdTokenClaims(tokenResponse)
+    if (!claims) {
+      log.warn('No ID token returned')
+      return null
+    }
     const user = (claims.preferred_username ?? claims.sub) as string
 
     // clear the URL bar
@@ -366,13 +385,18 @@ export class OidcService implements IOidcService {
       }
 
       // use the original fetch - we don't want stack overflow
-      const options: oidc.TokenEndpointRequestOptions = { [oidc.customFetch]: this.originalFetch }
-      const res = await oidc.refreshTokenGrantRequest(as, client, userInfo.refresh_token, options).catch(e => {
-        log.error('Problem refreshing token', e)
-        if (failure) {
-          failure()
-        }
-      })
+      const options: oidc.TokenEndpointRequestOptions = {
+        [oidc.customFetch]: this.originalFetch,
+        [oidc.allowInsecureRequests]: true,
+      }
+      const res = await oidc
+        .refreshTokenGrantRequest(as, client, clientAuth, userInfo.refresh_token, options)
+        .catch(e => {
+          log.error('Problem refreshing token', e)
+          if (failure) {
+            failure()
+          }
+        })
       if (!res) {
         return
       }
