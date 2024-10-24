@@ -19,6 +19,7 @@ export const HawtioAbout: React.FunctionComponent<HawtioAboutProps> = props => {
   }
 
   const imgSrc = about.imgSrc || imgLogo
+  const backgroundImgSrc = about.backgroundImgSrc
   const title = about.title || 'Hawtio Management Console'
   const copyright = about.copyright || '© Hawtio project'
 
@@ -36,7 +37,6 @@ export const HawtioAbout: React.FunctionComponent<HawtioAboutProps> = props => {
   const productInfo = about.productInfo || []
   productInfo.sort((a, b) => stringSorter(a.name, b.name))
   log.debug('Product info:', productInfo)
-
   const AboutProductInfo = () => (
     <TextContent id='hawtio-about-product-info'>
       <Text component='h3'>Component versions</Text>
@@ -57,6 +57,7 @@ export const HawtioAbout: React.FunctionComponent<HawtioAboutProps> = props => {
       onClose={props.onClose}
       productName={title}
       brandImageSrc={imgSrc}
+      backgroundImageSrc={backgroundImgSrc}
       brandImageAlt={title}
       trademark={copyright}
     >
