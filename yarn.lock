@@ -2076,6 +2076,7 @@ __metadata:
     ts-node: "npm:^10.9.2"
     tsup: "npm:^8.3.0"
     typescript: "npm:^5.4.5"
+    webpack: "npm:^5.95.0"
     xml-formatter: "npm:^3.6.3"
   peerDependencies:
     "@patternfly/react-core": ^5
