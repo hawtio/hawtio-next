@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.6.1](https://github.com/hawtio/hawtio-next/compare/v1.6.0...v1.6.1) (2024-10-25)
+
+
+### Bug Fixes
+
+* **#303:** Show total exchanges instead of completed ([5cdab92](https://github.com/hawtio/hawtio-next/commit/5cdab92e9126e97c18f1c4e13f20b7104096761b)), closes [#303](https://github.com/hawtio/hawtio-next/issues/303)
+* **AboutModal:** Add backgroung image to aboutModal ([f9014e8](https://github.com/hawtio/hawtio-next/commit/f9014e862b260fdb8ee0a98fc44622e4d6357b6c)), closes [#1031](https://github.com/hawtio/hawtio-next/issues/1031)
+* Add missing whitespace between links and text ([190ba0a](https://github.com/hawtio/hawtio-next/commit/190ba0a4c95282df1bf9a8a3650ff2b58b361984))
+* **monaco:** Do not use CDN version of monaco-editor (fixes [#1186](https://github.com/hawtio/hawtio-next/issues/1186)) ([#1187](https://github.com/hawtio/hawtio-next/issues/1187)) ([8022fdf](https://github.com/hawtio/hawtio-next/commit/8022fdf0da684e5ec98419f0c26e418afaebe76d))
+* **routes-service:** Fetch always statistics from the context, because the stats from the route don't inlcude inflights ([e032008](https://github.com/hawtio/hawtio-next/commit/e03200833062f7cb01881fa0784a10653d6e3796))
+
 ## [1.6.0](https://github.com/hawtio/hawtio-next/compare/v1.5.0...v1.6.0) (2024-10-21)
 
 
