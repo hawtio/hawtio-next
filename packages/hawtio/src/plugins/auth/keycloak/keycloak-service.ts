@@ -242,7 +242,7 @@ class KeycloakService implements IKeycloakService {
 
     keycloak
       .updateToken(KEYCLOAK_TOKEN_MINIMUM_VALIDITY)
-      .then(refreshed => {
+      .then((refreshed: boolean) => {
         if (refreshed) {
           const token = keycloak.token
           if (token) {
@@ -252,7 +252,7 @@ class KeycloakService implements IKeycloakService {
           log.debug('Token is still valid')
         }
       })
-      .catch(reason => {
+      .catch((reason: Error) => {
         log.error("Couldn't update token:", reason)
         errorFn?.()
       })
