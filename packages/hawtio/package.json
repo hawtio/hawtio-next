@@ -40,7 +40,7 @@
     "@monaco-editor/react": "^4.6.0",
     "@patternfly/react-charts": "~7.3.0",
     "@patternfly/react-code-editor": "~6.0.0",
-    "@patternfly/react-core": "~5.3.3",
+    "@patternfly/react-core": "~6.0.0",
     "@patternfly/react-table": "~5.3.3",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.2",

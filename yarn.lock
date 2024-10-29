@@ -2032,7 +2032,7 @@ __metadata:
     "@monaco-editor/react": "npm:^4.6.0"
     "@patternfly/react-charts": "npm:~7.3.0"
     "@patternfly/react-code-editor": "npm:~6.0.0"
-    "@patternfly/react-core": "npm:~5.3.3"
+    "@patternfly/react-core": "npm:~6.0.0"
     "@patternfly/react-table": "npm:~5.3.3"
     "@simbathesailor/use-what-changed": "npm:^2.0.0"
     "@testing-library/dom": "npm:^10.4.0"
@@ -2626,7 +2626,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-core@npm:^5.3.3, @patternfly/react-core@npm:~5.3.3":
+"@patternfly/react-core@npm:^5.3.3":
   version: 5.3.3
   resolution: "@patternfly/react-core@npm:5.3.3"
   dependencies:
@@ -2643,7 +2643,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-core@npm:^6.0.0":
+"@patternfly/react-core@npm:^6.0.0, @patternfly/react-core@npm:~6.0.0":
   version: 6.0.0
   resolution: "@patternfly/react-core@npm:6.0.0"
   dependencies:
