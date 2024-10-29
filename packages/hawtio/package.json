@@ -86,7 +86,7 @@
     "timezone-mock": "^1.3.6",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
-    "tsup": "^8.3.0",
+    "tsup": "^8.3.5",
     "webpack": "^5.95.0"
   },
   "peerDependencies": {
