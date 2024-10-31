@@ -1,11 +1,9 @@
 import {
-  Card,
   CardBody,
+  Divider,
   Nav,
   NavItem,
   NavList,
-  PageGroup,
-  PageNavigation,
   PageSection,
   PageSectionVariants,
   TextContent,
@@ -40,38 +38,37 @@ export const HawtioHelp: React.FunctionComponent = () => {
       <PageSection variant={PageSectionVariants.light}>
         <Title headingLevel='h1'>Help</Title>
       </PageSection>
-      <PageGroup>
-        <PageNavigation>
-          <Nav aria-label='Nav' variant='tertiary'>
-            <NavList>
-              {helps.map(help => (
-                <NavItem key={help.id} isActive={location.pathname === `/help/${help.id}`}>
-                  <NavLink to={help.id}>{help.title}</NavLink>
-                </NavItem>
-              ))}
-            </NavList>
-          </Nav>
-        </PageNavigation>
-      </PageGroup>
-      <PageSection>
-        <Card isFullHeight>
-          <Routes>
-            {helpRegistry.getHelps().map(help => (
-              <Route
-                key={help.id}
-                path={help.id}
-                element={
-                  <CardBody>
-                    <TextContent>
-                      <Markdown>{help.content}</Markdown>
-                    </TextContent>
-                  </CardBody>
-                }
-              />
+      <Divider />
+
+      <PageSection type='tabs' hasShadowBottom>
+        <Nav aria-label='Nav' variant='tertiary'>
+          <NavList>
+            {helps.map(help => (
+              <NavItem key={help.id} isActive={location.pathname === `/help/${help.id}`}>
+                <NavLink to={help.id}>{help.title}</NavLink>
+              </NavItem>
             ))}
-            <Route path='/' element={<Navigate to='home' />} />
-          </Routes>
-        </Card>
+          </NavList>
+        </Nav>
+      </PageSection>
+      <Divider />
+      <PageSection variant={PageSectionVariants.light}>
+        <Routes>
+          {helpRegistry.getHelps().map(help => (
+            <Route
+              key={help.id}
+              path={help.id}
+              element={
+                <CardBody>
+                  <TextContent>
+                    <Markdown>{help.content}</Markdown>
+                  </TextContent>
+                </CardBody>
+              }
+            />
+          ))}
+          <Route path='/' element={<Navigate to='home' />} />
+        </Routes>
       </PageSection>
     </React.Fragment>
   )
