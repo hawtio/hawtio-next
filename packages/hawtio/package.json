@@ -41,7 +41,7 @@
     "@patternfly/react-charts": "~7.3.0",
     "@patternfly/react-code-editor": "~6.0.0",
     "@patternfly/react-core": "~5.4.8",
-    "@patternfly/react-table": "~5.3.3",
+    "@patternfly/react-table": "~5.4.9",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.0.1",
