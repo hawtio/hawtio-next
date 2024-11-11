@@ -2028,7 +2028,7 @@ __metadata:
     "@hawtio/camel-model-v4_4": "npm:@hawtio/camel-model@~4.4.3"
     "@hawtio/camel-model-v4_8": "npm:@hawtio/camel-model@~4.8.1"
     "@jolokia.js/simple": "npm:^2.1.7"
-    "@module-federation/utilities": "npm:^3.1.16"
+    "@module-federation/utilities": "npm:^3.1.24"
     "@monaco-editor/react": "npm:^4.6.0"
     "@patternfly/react-charts": "npm:~7.3.0"
     "@patternfly/react-code-editor": "npm:~6.0.0"
@@ -2469,18 +2469,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@module-federation/sdk@npm:0.6.10":
-  version: 0.6.10
-  resolution: "@module-federation/sdk@npm:0.6.10"
-  checksum: 10/23c052b654e766fdcc28f66de5243c2cddf3fc2db159e3ede10035e725a4a108ae1e7fc09f640bbf0318e41589e0518b7607c133b51ca5233ca7d86581ac6a21
+"@module-federation/sdk@npm:0.7.1":
+  version: 0.7.1
+  resolution: "@module-federation/sdk@npm:0.7.1"
+  dependencies:
+    isomorphic-rslog: "npm:0.0.6"
+  checksum: 10/0db783ae7f7aa3f411d4cb056392372e02e5ed41934a778092ad292754c5210c20f6a00bf07c3c4b6ac3f33fd98a97f947f77dc1ff1856a8d778214f833237bd
   languageName: node
   linkType: hard
 
-"@module-federation/utilities@npm:^3.1.16":
-  version: 3.1.16
-  resolution: "@module-federation/utilities@npm:3.1.16"
+"@module-federation/utilities@npm:^3.1.24":
+  version: 3.1.24
+  resolution: "@module-federation/utilities@npm:3.1.24"
   dependencies:
-    "@module-federation/sdk": "npm:0.6.10"
+    "@module-federation/sdk": "npm:0.7.1"
   peerDependencies:
     react: ^16 || ^17 || ^18
     react-dom: ^16 || ^17 || ^18
@@ -2492,7 +2494,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10/0c796366447b91544a4903c991f50f06e6d69f76f438e4e8164072d28e9eef925aa79ee7ea326ec186acb3ee1a6e2d1f8714a6edab2c2bc5b824f2559efcbd50
+  checksum: 10/dd77b09314a8ed533e2dce7c79aac8bf9a0bfb0e92cdb610899f03bae018705f05ec11e31a52a4262738be3c4cba37d3f02da2aefa633c7b621c2470dc2849e9
   languageName: node
   linkType: hard
 
@@ -9771,6 +9773,13 @@ __metadata:
   version: 3.0.1
   resolution: "isobject@npm:3.0.1"
   checksum: 10/db85c4c970ce30693676487cca0e61da2ca34e8d4967c2e1309143ff910c207133a969f9e4ddb2dc6aba670aabce4e0e307146c310350b298e74a31f7d464703
+  languageName: node
+  linkType: hard
+
+"isomorphic-rslog@npm:0.0.6":
+  version: 0.0.6
+  resolution: "isomorphic-rslog@npm:0.0.6"
+  checksum: 10/3845525005054dde6876e844a2a499eb715628e57d7389ff6a5dac21a482e643b8e0e3abfbb0e6ed7613720e321d17befade4b42e1c2d62fbb76103a530c9c8f
   languageName: node
   linkType: hard
 
