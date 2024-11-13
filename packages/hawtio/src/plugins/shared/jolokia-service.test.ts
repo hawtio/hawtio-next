@@ -22,7 +22,7 @@ describe('JolokiaService', () => {
     await expect(jolokiaService.getJolokiaUrl()).resolves.toBeNull()
   }, 10000)
 
-  test('getJolokia - optimised', async () => {
+  test('getJolokia - optimised (mbean)', async () => {
     jolokiaService.getJolokiaUrl = jest.fn(async () => '/test')
     Jolokia.prototype.list = jest.fn(
       (path?: string | string[] | jolokia.RequestOptions, opts?: SimpleRequestOptions) => {
@@ -42,9 +42,32 @@ describe('JolokiaService', () => {
         return null
       },
     )
+    Jolokia.prototype.version = jest.fn((opts?: SimpleRequestOptions) => {
+      ;(opts!.success! as SimpleResponseCallback)({
+        agent: 'test',
+        protocol: '7.3',
+        info: {},
+        config: {},
+      })
+    })
 
     await expect(jolokiaService.getJolokia()).resolves.not.toThrow()
     await expect(jolokiaService.getListMethod()).resolves.toEqual(JolokiaListMethod.OPTIMISED)
+  })
+
+  test('getJolokia - optimised (native)', async () => {
+    jolokiaService.getJolokiaUrl = jest.fn(async () => '/test')
+    Jolokia.prototype.version = jest.fn((opts?: SimpleRequestOptions) => {
+      ;(opts!.success! as SimpleResponseCallback)({
+        agent: 'test',
+        protocol: '8.0',
+        info: {},
+        config: {},
+      })
+    })
+
+    await expect(jolokiaService.getJolokia()).resolves.not.toThrow()
+    await expect(jolokiaService.getListMethod()).resolves.toEqual(JolokiaListMethod.NATIVE)
   })
 
   test('getJolokia - default', async () => {
@@ -81,6 +104,14 @@ describe('JolokiaService', () => {
         0,
       )
       return null
+    })
+    Jolokia.prototype.version = jest.fn((opts?: SimpleRequestOptions) => {
+      ;(opts!.success! as SimpleResponseCallback)({
+        agent: 'test',
+        protocol: '7.3',
+        info: {},
+        config: {},
+      })
     })
 
     await expect(jolokiaService.getJolokia()).resolves.not.toThrow()
