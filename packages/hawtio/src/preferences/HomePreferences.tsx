@@ -94,7 +94,7 @@ const ResetForm: React.FunctionComponent = () => {
         <FormHelperText>
           <HelperText>
             <HelperTextItem>
-              Clear all custom settings stored in your browser `&apos;`s local storage and reset to defaults.
+              Clear all custom settings stored in your browser`s local storage and reset to defaults.
             </HelperTextItem>
           </HelperText>
         </FormHelperText>
