@@ -63,8 +63,10 @@ const JOLOKIA_PATHS = ['jolokia', '/hawtio/jolokia', '/jolokia'] as const
 export enum JolokiaListMethod {
   /** The default LIST+EXEC Jolokia operations. */
   DEFAULT,
-  /** The optimised list operations provided by Hawtio RBACRegistry MBean. */
+  /** The optimised list operation provided by Hawtio RBACRegistry MBean. */
   OPTIMISED,
+  /** THe optimised list operation provided directly by Jolokia 2.1+ */
+  NATIVE,
   /** Not determined. */
   UNDETERMINED,
 }
@@ -437,11 +439,38 @@ class JolokiaService implements IJolokiaService {
     log.debug('Check if we can call optimised jolokia.list() operation')
     // hawtio/hawtio-next#635: we pass an executor which accepts only resolve cb - we never call reject cb even
     // on error, but we ensure that resolve cb is called
+
+    const path = escapeMBeanPath(this.config.mbean)
+    async function checkCapabilities(
+      successFn: SimpleResponseCallback,
+      errorFn: ErrorCallback,
+      options: SimpleRequestOptions,
+    ) {
+      // check for Jolokia version (TODO: use single call)
+      await jolokia.version(onVersionSuccessAndError(successFn, errorFn, options))
+      // check for special MBean
+      await jolokia.list(path, onListSuccessAndError(successFn, errorFn, options))
+    }
+
     return new Promise<void>(resolve => {
       const successFn: SimpleResponseCallback = (value: JolokiaResponseValue) => {
-        // check if the MBean exists by testing whether the returned value has
-        // the 'op' property
-        if (isMBeanInfo(value) && isObject(value.op)) {
+        // check if this is a version response - since protocol version 8.0 we can get optimized response directly
+        if (this.config.method === JolokiaListMethod.NATIVE) {
+          resolve()
+          return
+        }
+        if (value && typeof value === 'object' && 'protocol' in value) {
+          const protocolVersion = value.protocol
+          if (parseFloat(protocolVersion as string) >= 8.0) {
+            this.config.method = JolokiaListMethod.NATIVE
+            log.debug('Jolokia list method:', JolokiaListMethod[this.config.method])
+            resolve()
+          }
+          // return without resolve
+          return
+        } else if (isMBeanInfo(value) && isObject(value.op)) {
+          // check if the MBean exists by testing whether the returned value has
+          // the 'op' property
           this.config.method = JolokiaListMethod.OPTIMISED
         } else {
           // we could get 403 error, mark the method as special case,
@@ -458,10 +487,7 @@ class JolokiaService implements IJolokiaService {
         resolve() // optimisation not happening
       }
 
-      jolokia.list(
-        escapeMBeanPath(this.config.mbean),
-        onListSuccessAndError(successFn, errorFn, { fetchError: this.fetchError(resolve) }),
-      )
+      checkCapabilities(successFn, errorFn, { fetchError: this.fetchError(resolve) })
     })
   }
 
@@ -582,8 +608,14 @@ class JolokiaService implements IJolokiaService {
         }
         case JolokiaListMethod.DEFAULT:
         case JolokiaListMethod.UNDETERMINED:
+        case JolokiaListMethod.NATIVE:
         default: {
-          log.debug('Invoke Jolokia list MBean in default mode:', paths)
+          if (method === JolokiaListMethod.NATIVE) {
+            options.listCache = true
+            log.debug('Invoke Jolokia list MBean in native mode:', paths)
+          } else {
+            log.debug('Invoke Jolokia list MBean in default mode:', paths)
+          }
           const listOptions = onListSuccessAndError(
             value => {
               // For empty or single list, the first path should be enough

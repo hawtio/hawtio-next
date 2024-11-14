@@ -48,8 +48,13 @@ export const rbacTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
   const mbeans = tree.flatten()
   const listMethod = await jolokiaService.getListMethod()
   switch (listMethod) {
+    case JolokiaListMethod.NATIVE:
     case JolokiaListMethod.OPTIMISED: {
-      log.debug('Process JMX tree: optimised list mode')
+      if (listMethod === JolokiaListMethod.NATIVE) {
+        log.debug('Process JMX tree: native list mode')
+      } else {
+        log.debug('Process JMX tree: optimised list mode')
+      }
       // Check if RBACDecorator has been already applied to the MBean tree at server side.
       const decorated = Object.values(mbeans).every(node => node.isRBACDecorated())
       if (decorated) {
