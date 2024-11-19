@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.6.2](https://github.com/hawtio/hawtio-next/compare/v1.6.1...v1.6.2) (2024-11-19)
+
+
+### Bug Fixes
+
+* **Jolokia:** Support native Jolokia 2.1.x optimization mode (fixes [#3663](https://github.com/hawtio/hawtio-next/issues/3663)) ([#1221](https://github.com/hawtio/hawtio-next/issues/1221)) ([#1222](https://github.com/hawtio/hawtio-next/issues/1222)) ([4e2ea4e](https://github.com/hawtio/hawtio-next/commit/4e2ea4eb9479570ae7a5bc182e744a3c5a6de33b))
+
 ## [1.6.1](https://github.com/hawtio/hawtio-next/compare/v1.6.0...v1.6.1) (2024-10-25)
 
 
