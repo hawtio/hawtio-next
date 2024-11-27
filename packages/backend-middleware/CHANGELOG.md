@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## 1.0.6 (2024-11-27)
+
+### Bug Fixes
+
+* **backend-middleware:** translate X-Jolokia-Authorization header to Authorization when contacting proxy ([13d1d85](https://github.com/hawtio/hawtio-next/commit/13d1d8561e1082678abd5107eb1514733f49fe7b))
+
 ## 1.0.5 (2024-04-23)
 
 ### Bug Fixes
