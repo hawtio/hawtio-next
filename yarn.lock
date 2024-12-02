@@ -2030,7 +2030,7 @@ __metadata:
     "@jolokia.js/simple": "npm:^2.1.8"
     "@module-federation/utilities": "npm:^3.1.28"
     "@monaco-editor/react": "npm:^4.6.0"
-    "@patternfly/react-charts": "npm:~7.4.6"
+    "@patternfly/react-charts": "npm:~7.4.7"
     "@patternfly/react-code-editor": "npm:~6.0.0"
     "@patternfly/react-core": "npm:~5.4.8"
     "@patternfly/react-table": "npm:~5.3.4"
@@ -2576,9 +2576,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-charts@npm:~7.4.6":
-  version: 7.4.6
-  resolution: "@patternfly/react-charts@npm:7.4.6"
+"@patternfly/react-charts@npm:~7.4.7":
+  version: 7.4.7
+  resolution: "@patternfly/react-charts@npm:7.4.7"
   dependencies:
     "@patternfly/react-styles": "npm:^5.4.1"
     "@patternfly/react-tokens": "npm:^5.4.1"
@@ -2605,7 +2605,7 @@ __metadata:
   peerDependencies:
     react: ^17 || ^18
     react-dom: ^17 || ^18
-  checksum: 10/07ec8e690e66c8bf8e7248a17c4621e971376f12e067ebb1cbca89b59eb13aa95129046fb73f45daab7a72c940e7c69ca052017ec2cccb46e29267fdbfd65230
+  checksum: 10/4b17a86ed061df264aec4a349fbaa3c3811d101a26d22554dbbfeb3408cabb7a5f6f1bb0058dce18f83ff4ebb8dab3f5627d95debfe4e51ade59720cd2c78eb0
   languageName: node
   linkType: hard
 
