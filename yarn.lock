@@ -2051,7 +2051,7 @@ __metadata:
     jquery: "npm:^3.7.1"
     js-logger: "npm:^1.6.1"
     jwt-decode: "npm:^4.0.0"
-    keycloak-js: "npm:^26.0.2"
+    keycloak-js: "npm:^26.0.6"
     monaco-editor: "npm:^0.52.0"
     oauth4webapi: "npm:^2.17.0"
     react: "npm:^18.3.1"
@@ -10458,10 +10458,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"keycloak-js@npm:^26.0.2":
-  version: 26.0.2
-  resolution: "keycloak-js@npm:26.0.2"
-  checksum: 10/e7df9c65e350ecdfb5e7e9ddfee853aa22824adcfca62a4de121448f9a0cfb1e773f476fb544a45725029cc3ee877d1c2c0103a07bd8ec4e8f15845678688fbd
+"keycloak-js@npm:^26.0.6":
+  version: 26.0.6
+  resolution: "keycloak-js@npm:26.0.6"
+  checksum: 10/f4cd1a46f379f38bd426076ab40625602226d8fc8565857d44d97bd408a2604864e567e129526ffe9a4be3bab2955d496aa5f09cda9c59e7eaf5e65eb95de197
   languageName: node
   linkType: hard
 
