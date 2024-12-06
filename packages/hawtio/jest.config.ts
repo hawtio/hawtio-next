@@ -15,6 +15,7 @@ const config: Config = {
     '\\.(css|less)$': '<rootDir>/src/__mocks__/styleMock.js',
     '@hawtiosrc/(.*)': '<rootDir>/src/$1',
     'react-markdown': '<rootDir>/../../node_modules/react-markdown/react-markdown.min.js',
+    'keycloak-js': path.resolve(__dirname, './src/__mocks__/keycloak.js'),
     'monaco-editor': path.resolve(__dirname, './src/__mocks__/monacoEditor.js'),
     '@monaco-editor/react': path.resolve(__dirname, './src/__mocks__/monacoEditor.js'),
     '@patternfly/react-code-editor': path.resolve(__dirname, './src/__mocks__/codeEditorMock.js'),
