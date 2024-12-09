@@ -36,7 +36,7 @@
     "publish:backend-middleware": "yarn workspace @hawtio/backend-middleware npm publish --tolerate-republish"
   },
   "devDependencies": {
-    "@eslint/compat": "^1.2.3",
+    "@eslint/compat": "^1.2.4",
     "@eslint/js": "^9.16.0",
     "concurrently": "^9.1.0",
     "cz-conventional-changelog": "3.3.0",
