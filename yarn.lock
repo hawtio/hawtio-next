@@ -2032,7 +2032,7 @@ __metadata:
     "@monaco-editor/react": "npm:^4.6.0"
     "@patternfly/react-charts": "npm:~7.4.7"
     "@patternfly/react-code-editor": "npm:~6.0.0"
-    "@patternfly/react-core": "npm:~5.4.10"
+    "@patternfly/react-core": "npm:~5.4.11"
     "@patternfly/react-table": "npm:~5.3.4"
     "@simbathesailor/use-what-changed": "npm:^2.0.0"
     "@testing-library/dom": "npm:^10.4.0"
@@ -2660,9 +2660,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-core@npm:~5.4.10":
-  version: 5.4.10
-  resolution: "@patternfly/react-core@npm:5.4.10"
+"@patternfly/react-core@npm:~5.4.11":
+  version: 5.4.11
+  resolution: "@patternfly/react-core@npm:5.4.11"
   dependencies:
     "@patternfly/react-icons": "npm:^5.4.2"
     "@patternfly/react-styles": "npm:^5.4.1"
@@ -2673,7 +2673,7 @@ __metadata:
   peerDependencies:
     react: ^17 || ^18
     react-dom: ^17 || ^18
-  checksum: 10/6997845d757ccbcbada99acf2d9349b144322a0017936ff7c3f1067fd3d6365a5d71129e20e430aa9da511e7966f404827e30968eb69ebc7077bd173f3dae357
+  checksum: 10/7a951695af3c1e605bba8b885ad1cefd51ad676faec9ccfaf0f97d6f1ee6c40fe7d89ccf029ba32eda475c107ea1c7c924a477bbb0704848611d512e2efe9a5e
   languageName: node
   linkType: hard
 
