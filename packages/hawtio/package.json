@@ -89,7 +89,7 @@
   },
   "peerDependencies": {
     "@patternfly/react-core": "^5",
-    "keycloak-js": "^21",
+    "keycloak-js": "^26",
     "react": "^16.8 || ^17 || ^18",
     "react-dom": "^16.8 || ^17 || ^18"
   },
