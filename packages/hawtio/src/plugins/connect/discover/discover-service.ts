@@ -1,6 +1,10 @@
 import { Connection, INITIAL_CONNECTION, connectService, jolokiaService, workspace } from '@hawtiosrc/plugins/shared'
 import { isBlank } from '@hawtiosrc/util/strings'
 import { log } from '../globals'
+import camelLogo from '../img/camel-logo.svg'
+import javaLogo from '../img/java-logo.svg'
+import jettyLogo from '../img/jetty-logo.svg'
+import tomcatLogo from '../img/tomcat-logo.svg'
 
 /**
  * @see https://jolokia.org/reference/html/manual/jolokia_mbeans.html#mbean-discovery
@@ -22,7 +26,7 @@ export type Agent = {
 }
 
 /**
- * @see https://github.com/hawtio/hawtio/blob/3.x/plugins/hawtio-local-jvm-mbean/src/main/java/io/hawt/jvm/local/VMDescriptorDTO.java
+ * @see https://github.com/hawtio/hawtio/blob/4.x/plugins/hawtio-local-jvm-mbean/src/main/java/io/hawt/jvm/local/VMDescriptorDTO.java
  */
 export type Jvm = {
   id: string
@@ -33,6 +37,13 @@ export type Jvm = {
   hostname: string | null
   scheme: string | null
   path: string | null
+}
+
+export const PRODUCT_LOGO: Record<string, string> = {
+  camel: camelLogo,
+  jetty: jettyLogo,
+  tomcat: tomcatLogo,
+  generic: javaLogo,
 }
 
 class DiscoverService {
@@ -90,6 +101,22 @@ class DiscoverService {
 
   hasName(agent: Agent): boolean {
     return [agent.server_vendor, agent.server_product, agent.server_version].every(s => !isBlank(s))
+  }
+
+  productLogo(agent: Agent): string {
+    // Special handling for Camel
+    if (agent.command?.startsWith('main.CamelJBang')) {
+      return PRODUCT_LOGO.camel!
+    }
+    return PRODUCT_LOGO[agent.server_product?.toLowerCase() ?? 'generic'] ?? PRODUCT_LOGO.generic!
+  }
+
+  productLogoJvm(jvm: Jvm): string {
+    // Special handling for Camel
+    if (jvm.displayName.startsWith('main.CamelJBang')) {
+      return PRODUCT_LOGO.camel!
+    }
+    return PRODUCT_LOGO.generic!
   }
 
   agentToConnection(agent: Agent): Connection {

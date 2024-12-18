@@ -32,9 +32,6 @@ import React, { useContext, useEffect, useState } from 'react'
 import { ADD, UPDATE } from '../connections'
 import { ConnectContext } from '../context'
 import { log } from '../globals'
-import javaLogo from '../img/java-logo.svg'
-import jettyLogo from '../img/jetty-logo.svg'
-import tomcatLogo from '../img/tomcat-logo.svg'
 import { Agent, Jvm, discoverService } from './discover-service'
 
 export const Discover: React.FunctionComponent = () => {
@@ -223,20 +220,10 @@ export const Discover: React.FunctionComponent = () => {
   )
 }
 
-const PRODUCT_LOGO: Record<string, string> = {
-  jetty: jettyLogo,
-  tomcat: tomcatLogo,
-  generic: javaLogo,
-}
-
 export const AgentCard: React.FunctionComponent<{
   agent: Agent
   connect: (conn: Connection) => void
 }> = ({ agent, connect }) => {
-  const productLogo = (agent: Agent) => {
-    return PRODUCT_LOGO[agent.server_product?.toLowerCase() ?? 'generic'] ?? PRODUCT_LOGO.generic
-  }
-
   const title = discoverService.hasName(agent) ? (
     `${agent.server_vendor} ${agent.server_product} ${agent.server_version}`
   ) : (
@@ -247,16 +234,15 @@ export const AgentCard: React.FunctionComponent<{
     <Card isCompact id={`connect-discover-agent-card-${agent.agent_id}`}>
       <CardHeader
         actions={{
-          actions: (
-            <>
-              <Label color='blue'>Agent</Label>
-            </>
-          ),
+          actions: <Label color='blue'>Agent</Label>,
           hasNoOffset: false,
-          className: undefined,
         }}
       >
-        <img src={productLogo(agent)} alt={agent.server_product} style={{ maxWidth: '30px', paddingRight: '0.5rem' }} />
+        <img
+          src={discoverService.productLogo(agent)}
+          alt={agent.server_product}
+          style={{ maxWidth: '30px', paddingRight: '0.5rem' }}
+        />
         <CardTitle style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{title}</CardTitle>
       </CardHeader>
       <CardBody>
@@ -334,16 +320,15 @@ export const JvmCard: React.FunctionComponent<{
     <Card isCompact id={`connect-discover-jvm-card-${jvm.id}`}>
       <CardHeader
         actions={{
-          actions: (
-            <>
-              <Label color='green'>JVM</Label>
-            </>
-          ),
+          actions: <Label color='green'>JVM</Label>,
           hasNoOffset: false,
-          className: undefined,
         }}
       >
-        <img src={PRODUCT_LOGO.generic} alt={jvm.alias} style={{ maxWidth: '30px', paddingRight: '0.5rem' }} />
+        <img
+          src={discoverService.productLogoJvm(jvm)}
+          alt={jvm.alias}
+          style={{ maxWidth: '30px', paddingRight: '0.5rem' }}
+        />
         <CardTitle style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {jvm.alias}
         </CardTitle>
