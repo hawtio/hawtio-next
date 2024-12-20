@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.7.0](https://github.com/hawtio/hawtio-next/compare/v1.6.0...v1.7.0) (2024-12-20)
+
+
+### Features
+
+* **connect:** show Camel icon for Camel JBang in Discover ([9912567](https://github.com/hawtio/hawtio-next/commit/9912567a28b08d61047e4d0fc47c358c0a764ae8)), closes [hawtio/hawtio#3698](https://github.com/hawtio/hawtio/issues/3698)
+
+
+### Bug Fixes
+
+* **#303:** Show total exchanges instead of completed ([45c277d](https://github.com/hawtio/hawtio-next/commit/45c277d3ad6e6db7c4c262b00f2f8185731ec617)), closes [#303](https://github.com/hawtio/hawtio-next/issues/303)
+* **AboutModal:** Add backgroung image to aboutModal ([af8ac3c](https://github.com/hawtio/hawtio-next/commit/af8ac3cde2c455936967d3145cdfb818836ae001)), closes [#1031](https://github.com/hawtio/hawtio-next/issues/1031)
+* Add missing whitespace between links and text ([072a36f](https://github.com/hawtio/hawtio-next/commit/072a36f3933fed230fe29fa1337a3fb060ed5346))
+* **Jolokia:** Support native Jolokia 2.1.x optimization mode (fixes [#3663](https://github.com/hawtio/hawtio-next/issues/3663)) ([#1221](https://github.com/hawtio/hawtio-next/issues/1221)) ([a7ec911](https://github.com/hawtio/hawtio-next/commit/a7ec9110ac7d24d573b02fa78a917afd82037530))
+* **monaco:** Do not use CDN version of monaco-editor (fixes [#1186](https://github.com/hawtio/hawtio-next/issues/1186)) ([#1187](https://github.com/hawtio/hawtio-next/issues/1187)) ([f0805fa](https://github.com/hawtio/hawtio-next/commit/f0805fac3bbd82f147afe5c736a4998e0ac0b183))
+* **routes-service:** Fetch always statistics from the context, because the stats from the route don't inlcude inflights ([66d126e](https://github.com/hawtio/hawtio-next/commit/66d126e61546bb96a40f1116344dce5d77e22108))
+* **test:** downgrade @testing-library/react to fix test flakiness ([a64ae7f](https://github.com/hawtio/hawtio-next/commit/a64ae7fab9250650b404dc812ef2b284740d239a))
+
 ## [1.6.0](https://github.com/hawtio/hawtio-next/compare/v1.5.0...v1.6.0) (2024-10-21)
 
 
