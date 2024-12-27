@@ -1,10 +1,10 @@
 import { HawtioPlugin, hawtio } from '@hawtiosrc/core'
 import { connectService, workspace } from '@hawtiosrc/plugins/shared'
 import { ConsoleStatus } from './ConsoleStatus'
-import { pluginId, pluginPath, pluginName } from './globals'
+import { pluginId, pluginPath, pluginTitle } from './globals'
 
-/*
- * Target application status plugin
+/**
+ * Target application status plugin,
  * only active if the workspace contains no mbeans, ie, totally empty.
  * and / or the workspace has produced errors.
  * Will communicate this to the user with a notice component.
@@ -12,7 +12,7 @@ import { pluginId, pluginPath, pluginName } from './globals'
 export const consoleStatus: HawtioPlugin = () => {
   hawtio.addPlugin({
     id: pluginId,
-    title: pluginName,
+    title: pluginTitle,
     path: pluginPath,
     component: ConsoleStatus,
     isActive: async () => {
