@@ -77,7 +77,7 @@ export interface IConnectService {
   connectionToUrl(connection: Connection): string
   checkReachable(connection: Connection): Promise<ConnectStatus>
   testConnection(connection: Connection): Promise<ConnectionTestResult>
-  connect(connection: Connection): void
+  connect(connection: Connection, current?: boolean): void
   login(username: string, password: string): Promise<LoginResult>
   redirect(): void
   createJolokia(connection: Connection, checkCredentials?: boolean): IJolokiaSimple
@@ -94,6 +94,13 @@ class ConnectService implements IConnectService {
     this.currentConnectionId = this.initCurrentConnection()
   }
 
+  /**
+   * The precedence of the current connection is as follows:
+   * 1. URL query parameter: {@link PARAM_KEY_CONNECTION}
+   * 2. Session storage: {@link SESSION_KEY_CURRENT_CONNECTION}
+   * 3. Preset connections from the backend API: {@link PATH_PRESET_CONNECTIONS}
+   *    (after page reload or new tabs opened)
+   */
   private initCurrentConnection(): string | null {
     // Check remote connection from URL query param
     const url = new URL(window.location.href)
@@ -169,8 +176,13 @@ class ConnectService implements IConnectService {
       })
       this.saveConnections(connections)
 
-      // Open connections in new tabs
+      // Open the first connection in the current tab
+      // and open the rest in new tabs
+      const first = toOpen.shift()
       toOpen.forEach(c => this.connect(c))
+      if (first) {
+        this.connect(first, true)
+      }
     } catch (err) {
       // Silently ignore errors
       log.debug('Error loading preset connections:', err)
@@ -394,13 +406,18 @@ class ConnectService implements IConnectService {
       })
   }
 
-  connect(connection: Connection) {
+  connect(connection: Connection, current = false) {
     log.debug('Connecting with options:', toString(connection))
     const basepath = hawtio.getBasePath() ?? ''
     const url = `${basepath}/?${PARAM_KEY_CONNECTION}=${connection.id}`
-    log.debug('Opening URL:', url)
-    // let's open the same connection in the same tab (2nd parameter)
-    window.open(url, connection.id)
+    if (current) {
+      log.debug('Redirecting to URL:', url)
+      window.location.href = url
+    } else {
+      log.debug('Opening URL:', url)
+      // let's open the same connection in the same tab (2nd parameter)
+      window.open(url, connection.id)
+    }
   }
 
   /**
