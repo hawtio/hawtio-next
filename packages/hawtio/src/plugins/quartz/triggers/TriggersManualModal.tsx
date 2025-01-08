@@ -26,11 +26,11 @@ export const TriggersManualModal: React.FunctionComponent<{
   }
 
   const { objectName } = selectedNode
-  const { name, group } = input
+  const { name, group, jobName, jobGroup } = input
 
   const fireTrigger = () => {
     log.info('Manually fire trigger:', objectName, input, parameters)
-    quartzService.triggerJob(objectName, name, group, parameters)
+    quartzService.triggerJob(objectName, jobName, jobGroup, parameters)
     clear()
   }
 

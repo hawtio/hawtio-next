@@ -1,8 +1,8 @@
 import { eventService } from '@hawtiosrc/core'
 import { AttributeValues, MBeanNode, jolokiaService, workspace } from '@hawtiosrc/plugins/shared'
 import { getQueryParameterValue } from '@hawtiosrc/util/urls'
-import { JolokiaRequest } from 'jolokia.js'
 import Jolokia from '@jolokia.js/simple'
+import { JolokiaRequest } from 'jolokia.js'
 import { attributeService } from '../shared/attributes/attribute-service'
 import { jmxDomain, log } from './globals'
 
@@ -345,15 +345,15 @@ class QuartzService {
     })
   }
 
-  async triggerJob(schedulerMBean: string, name: string, group: string, parameters: string) {
+  async triggerJob(schedulerMBean: string, jobName: string, jobGroup: string, parameters: string) {
     await jolokiaService.execute(schedulerMBean, QUARTZ_OPERATIONS.triggerJob, [
-      name,
-      group,
+      jobName,
+      jobGroup,
       parameters === '' ? {} : JSON.parse(parameters),
     ])
     eventService.notify({
       type: 'success',
-      message: `Manually fired trigger: ${group}/${name}`,
+      message: `Manually fired trigger: ${jobGroup}/${jobName}`,
     })
   }
 }
