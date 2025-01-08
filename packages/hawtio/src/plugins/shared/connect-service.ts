@@ -91,7 +91,7 @@ class ConnectService implements IConnectService {
   private readonly currentConnectionId: string | null
 
   constructor() {
-    this.currentConnectionId = this.initCurrentConnection()
+    this.currentConnectionId = this.initCurrentConnectionId()
   }
 
   /**
@@ -101,27 +101,31 @@ class ConnectService implements IConnectService {
    * 3. Preset connections from the backend API: {@link PATH_PRESET_CONNECTIONS}
    *    (after page reload or new tabs opened)
    */
-  private initCurrentConnection(): string | null {
+  private initCurrentConnectionId(): string | null {
     // Check remote connection from URL query param
     const url = new URL(window.location.href)
     const searchParams = url.searchParams
     log.debug('Checking search params:', searchParams.toString())
-    let conn = searchParams.get(PARAM_KEY_CONNECTION)
-    if (conn) {
-      searchParams.delete(PARAM_KEY_CONNECTION, conn)
-      sessionStorage.setItem(SESSION_KEY_CURRENT_CONNECTION, JSON.stringify(conn))
+    const idOrName = searchParams.get(PARAM_KEY_CONNECTION)
+    if (idOrName) {
+      const connId = this.resolveConnectionId(idOrName)
+      if (connId) {
+        sessionStorage.setItem(SESSION_KEY_CURRENT_CONNECTION, JSON.stringify(connId))
+      }
+
       // clear "con" parameter - will be available in session storage only
+      searchParams.delete(PARAM_KEY_CONNECTION, idOrName)
       url.search = searchParams.toString()
       window.history.replaceState(null, '', url)
 
-      return conn
+      return connId
     }
 
     // Case when user may refresh the page after "con" parameter has already been cleared
     // Check remote connection from session storage
-    conn = sessionStorage.getItem(SESSION_KEY_CURRENT_CONNECTION)
-    if (conn) {
-      return JSON.parse(conn)
+    const connId = sessionStorage.getItem(SESSION_KEY_CURRENT_CONNECTION)
+    if (connId) {
+      return JSON.parse(connId)
     }
 
     // Processing preset connections should come at last to prevent processing
@@ -130,6 +134,14 @@ class ConnectService implements IConnectService {
     this.loadPresetConnections()
 
     return null
+  }
+
+  private resolveConnectionId(idOrName: string): string | null {
+    const conns = this.loadConnections()
+    if (conns[idOrName]) {
+      return idOrName
+    }
+    return Object.values(conns).find(c => c.name === idOrName)?.id ?? null
   }
 
   /**
