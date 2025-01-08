@@ -64,7 +64,7 @@ export const PARAM_KEY_CONNECTION = 'con'
 export const PARAM_KEY_REDIRECT = 'redirect'
 
 const PATH_LOGIN = '/connect/login'
-const PATH_PRESET_CONNECTIONS = 'preset-connections'
+const PATH_PRESET_CONNECTIONS = '/preset-connections'
 
 export interface IConnectService {
   getCurrentConnectionId(): string | null
@@ -137,7 +137,8 @@ class ConnectService implements IConnectService {
    */
   private async loadPresetConnections(): Promise<void> {
     try {
-      const res = await fetch(PATH_PRESET_CONNECTIONS)
+      const path = this.getPresetConnectionsPath()
+      const res = await fetch(path)
       if (!res.ok) {
         log.debug('Failed to load preset connections:', res.status, res.statusText)
         return
@@ -187,6 +188,11 @@ class ConnectService implements IConnectService {
       // Silently ignore errors
       log.debug('Error loading preset connections:', err)
     }
+  }
+
+  private getPresetConnectionsPath(): string {
+    const basePath = hawtio.getBasePath()
+    return basePath ? `${basePath}${PATH_PRESET_CONNECTIONS}` : PATH_PRESET_CONNECTIONS
   }
 
   getCurrentConnectionId(): string | null {
@@ -574,7 +580,7 @@ class ConnectService implements IConnectService {
 
   getLoginPath(): string {
     const basePath = hawtio.getBasePath()
-    return `${basePath}${PATH_LOGIN}`
+    return basePath ? `${basePath}${PATH_LOGIN}` : PATH_LOGIN
   }
 
   export(connections: Connections) {
