@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.8.0](https://github.com/hawtio/hawtio-next/compare/v1.7.0...v1.8.0) (2025-01-09)
+
+
+### Features
+
+* **connect:** enable auto-connect based on preset connections from backend ([1b78eb9](https://github.com/hawtio/hawtio-next/commit/1b78eb9475b0a95dbf6f29e07739ef76dce81513)), closes [hawtio/hawtio#3731](https://github.com/hawtio/hawtio/issues/3731)
+* **connect:** make primary tab auto-connect to the first preset connection ([2915289](https://github.com/hawtio/hawtio-next/commit/2915289b156f96287bfaa156332a632c1e2777c7)), closes [hawtio/hawtio#3731](https://github.com/hawtio/hawtio/issues/3731)
+
+
+### Bug Fixes
+
+* **connect:** 'con=' parameter should also accept connection name ([e3c2889](https://github.com/hawtio/hawtio-next/commit/e3c2889efc924f94d01558dc1ea224907308b86d)), closes [#1285](https://github.com/hawtio/hawtio-next/issues/1285)
+* **connect:** better handling of preset-connections path ([39ed52d](https://github.com/hawtio/hawtio-next/commit/39ed52dcd87d26d4b4a2fdfda7b18038f4537f41))
+* **console-status:** fix plugin name ([27f0a8d](https://github.com/hawtio/hawtio-next/commit/27f0a8d137389b1856ded74a2b9eb2228b72bd91))
+* **console-status:** fix plugin title ([56dad14](https://github.com/hawtio/hawtio-next/commit/56dad14ddc166236bb25ebe5ca97a8e3a94da567))
+* **quartz:** fail to fire triggers manually with exception "job does not exist" ([5f477ef](https://github.com/hawtio/hawtio-next/commit/5f477efcf804d98b4674fbd4770af4f9d1fa5704)), closes [#1049](https://github.com/hawtio/hawtio-next/issues/1049)
+
 ## [1.7.0](https://github.com/hawtio/hawtio-next/compare/v1.6.0...v1.7.0) (2024-12-20)
 
 
