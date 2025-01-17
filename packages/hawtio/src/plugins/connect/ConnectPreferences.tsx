@@ -16,7 +16,7 @@ import {
   TextInput,
 } from '@patternfly/react-core'
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom-v5-compat'
 import { RESET } from './connections'
 import { useConnections } from './context'
 import { log } from './globals'

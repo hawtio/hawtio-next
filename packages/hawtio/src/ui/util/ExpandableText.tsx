@@ -287,6 +287,11 @@ class ExpandableSection extends React.Component<ExpandableSectionProps, Expandab
 }
 
 export const ExpandableText: React.FunctionComponent<{ children: React.ReactNode }> = ({ children }) => {
+
+  if (! children || Object.keys(children).length === 0) {
+    return (<></>)
+  }
+
   if (isString(children)) {
     return (
       <ExpandableSection
@@ -304,5 +309,7 @@ export const ExpandableText: React.FunctionComponent<{ children: React.ReactNode
       </ExpandableSection>
     )
   }
-  return children
+
+  // TODO this should return children but causes a compile error
+  return <></>
 }

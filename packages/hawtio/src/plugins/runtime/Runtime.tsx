@@ -1,7 +1,7 @@
 import { Divider, Nav, NavItem, NavList, PageGroup, PageSection, Title } from '@patternfly/react-core'
 import React from 'react'
 
-import { Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom'
+import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom-v5-compat'
 import { Metrics } from './Metrics'
 import { SysProps } from './SysProps'
 import { Threads } from './Threads'

@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom-v5-compat'
 import { hawtio } from './core'
 import './Hawtio.css'
 import { HawtioLogin } from './ui/login'

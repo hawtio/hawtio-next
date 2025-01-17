@@ -1,6 +1,6 @@
 import { configManager, hawtio, Hawtio, registerPlugins } from '@hawtio/react'
 import React from 'react'
-import ReactDOM from 'react-dom/client'
+import ReactDOM from 'react-dom'
 import { registerExamples } from './examples'
 
 // Configure the console
@@ -21,9 +21,9 @@ registerPlugins()
 registerExamples()
 hawtio.bootstrap()
 
-const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
-root.render(
+ReactDOM.render(
   <React.StrictMode>
     <Hawtio />
   </React.StrictMode>,
+  document.getElementById('root')
 )

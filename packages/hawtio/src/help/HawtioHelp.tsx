@@ -11,7 +11,7 @@ import {
 } from '@patternfly/react-core'
 import React, { useMemo } from 'react'
 import Markdown from 'react-markdown'
-import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom-v5-compat'
 import help from './help.md'
 import { helpRegistry } from './registry'
 import { hawtio, usePlugins } from '@hawtiosrc/core'
