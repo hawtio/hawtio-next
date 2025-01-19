@@ -15,7 +15,7 @@ import {
 } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons'
 import React, { useEffect } from 'react'
-import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom-v5-compat'
+import { Navigate, Route, Routes, useLocation, useNavigate } from '@hawtiosrc/virtual-router'
 import { HawtioNotification } from '../notification'
 import { HawtioHeader } from './HawtioHeader'
 import { HawtioLoadingPage } from './HawtioLoadingPage'

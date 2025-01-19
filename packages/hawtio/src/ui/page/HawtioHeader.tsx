@@ -26,7 +26,7 @@ import {
 
 import { BarsIcon, HelpIcon } from '@patternfly/react-icons'
 import React, { useContext, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom-v5-compat'
+import { Link, useLocation } from '@hawtiosrc/virtual-router'
 import './HawtioHeader.css'
 import { PageContext } from './context'
 

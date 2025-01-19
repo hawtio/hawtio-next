@@ -287,9 +287,8 @@ class ExpandableSection extends React.Component<ExpandableSectionProps, Expandab
 }
 
 export const ExpandableText: React.FunctionComponent<{ children: React.ReactNode }> = ({ children }) => {
-
-  if (! children || Object.keys(children).length === 0) {
-    return (<></>)
+  if (!children || Object.keys(children).length === 0) {
+    return <></>
   }
 
   if (isString(children)) {

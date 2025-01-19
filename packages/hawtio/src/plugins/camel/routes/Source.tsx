@@ -42,7 +42,7 @@ export const Source: React.FunctionComponent = () => {
 
   //SelectedNode should be always selected when this view is routed
   if (!selectedNode) {
-    return (<></>)
+    return <></>
   }
 
   const onCodeChange = (code: string) => {

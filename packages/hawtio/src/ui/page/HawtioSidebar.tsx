@@ -1,6 +1,6 @@
 import { Nav, NavItem, NavList, PageSidebar, PageSidebarBody } from '@patternfly/react-core'
 import React, { useContext } from 'react'
-import { NavLink, useLocation } from 'react-router-dom-v5-compat'
+import { NavLink, useLocation } from '@hawtiosrc/virtual-router'
 import { PageContext } from './context'
 
 export const HawtioSidebar: React.FunctionComponent = () => {

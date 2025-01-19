@@ -3,7 +3,7 @@ import { DEFAULT_APP_NAME, DEFAULT_LOGIN_TITLE, useHawtconfig, usePlugins } from
 import { hawtioLogo, background } from '@hawtiosrc/img'
 import { ListItem, ListVariant, LoginFooterItem, LoginPage } from '@patternfly/react-core'
 import React, { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom-v5-compat'
+import { useNavigate } from '@hawtiosrc/virtual-router'
 import { HawtioNotification } from '../notification'
 import { HawtioLoadingPage } from '../page/HawtioLoadingPage'
 import { HawtioLoginForm } from './HawtioLoginForm'
