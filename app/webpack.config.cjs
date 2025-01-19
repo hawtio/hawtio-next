@@ -14,6 +14,7 @@ module.exports = (_, args) => {
   const isProduction = args.mode === 'production'
   return {
     entry: './src/index',
+    devtool: 'eval-source-map',
     plugins: [
       new ModuleFederationPlugin({
         name: 'app',
@@ -92,6 +93,11 @@ module.exports = (_, args) => {
               },
             },
           },
+        },
+        {
+          test: /\.js$/,
+          enforce: 'pre',
+          use: ['source-map-loader'],
         },
         {
           test: /\.css$/i,
