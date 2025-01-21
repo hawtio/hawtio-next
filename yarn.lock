@@ -2027,7 +2027,7 @@ __metadata:
   dependencies:
     "@hawtio/camel-model-v4_4": "npm:@hawtio/camel-model@~4.4.3"
     "@hawtio/camel-model-v4_8": "npm:@hawtio/camel-model@~4.8.1"
-    "@jolokia.js/simple": "npm:^2.1.8"
+    "@jolokia.js/simple": "npm:^2.1.9"
     "@module-federation/utilities": "npm:^3.1.40"
     "@monaco-editor/react": "npm:^4.6.0"
     "@patternfly/react-charts": "npm:~7.4.8"
@@ -2389,12 +2389,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jolokia.js/simple@npm:^2.1.8":
-  version: 2.1.8
-  resolution: "@jolokia.js/simple@npm:2.1.8"
+"@jolokia.js/simple@npm:^2.1.9":
+  version: 2.1.9
+  resolution: "@jolokia.js/simple@npm:2.1.9"
   dependencies:
-    jolokia.js: "npm:^2.1.8"
-  checksum: 10/b60f874c93c55444998702e2948c7b5821cdecce8e12d93506260ca5787bb6d7fad81542cbf509cd9112360b6c31839bab970669b77df57d48459b1aa434ace3
+    jolokia.js: "npm:^2.1.9"
+  checksum: 10/fc88f0a7c7d01f932d9b0e84fdc0a8de99250fe88cd58006a6962c8723cdf242266a49c84cdabc501d8d1b1ebce859c271f4ea7ea0be6f9f68321b5521829d5f
   languageName: node
   linkType: hard
 
@@ -10441,13 +10441,6 @@ __metadata:
   bin:
     jest: bin/jest.js
   checksum: 10/97023d78446098c586faaa467fbf2c6b07ff06e2c85a19e3926adb5b0effe9ac60c4913ae03e2719f9c01ae8ffd8d92f6b262cedb9555ceeb5d19263d8c6362a
-  languageName: node
-  linkType: hard
-
-"jolokia.js@npm:^2.1.8":
-  version: 2.1.8
-  resolution: "jolokia.js@npm:2.1.8"
-  checksum: 10/4dd3db2954abbaf875a3630591257056c866a201df5f3bab36148eee9e2e1520061c3b14d6873f3f0af71b2938323ecaa9540a9e37c3d952711bee077b99aca5
   languageName: node
   linkType: hard
 
