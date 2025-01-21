@@ -186,7 +186,9 @@ const JolokiaForm: React.FunctionComponent = () => {
         />
       </FormGroup>
       <FormGroup fieldId='jolokia-form-apply'>
-        <Button onClick={applyJolokia}>Apply</Button>
+        <Button data-testid='apply-jolokia' onClick={applyJolokia}>
+          Apply
+        </Button>
         <FormHelperText>
           <HelperText>
             <HelperTextItem>Restart Hawtio with the new values in effect.</HelperTextItem>
@@ -215,16 +217,17 @@ const ResetForm: React.FunctionComponent = () => {
 
   const ConfirmClearModal = () => (
     <Modal
+      data-testid='clear-connections-modal'
       variant={ModalVariant.small}
       title='Clear saved connections'
       titleIconVariant='danger'
       isOpen={isConfirmModalOpen}
       onClose={confirmClear}
       actions={[
-        <Button key='reset' variant='danger' onClick={clear}>
+        <Button key='reset' data-testid='clear-btn' variant='danger' onClick={clear}>
           Clear
         </Button>,
-        <Button key='cancel' variant='link' onClick={confirmClear}>
+        <Button key='cancel' data-testid='cancel-btn' variant='link' onClick={confirmClear}>
           Cancel
         </Button>,
       ]}
@@ -236,7 +239,7 @@ const ResetForm: React.FunctionComponent = () => {
   return (
     <FormSection title='Reset' titleElement='h2'>
       <FormGroup label='Clear saved connections' fieldId='reset-form-clear'>
-        <Button variant='danger' onClick={confirmClear}>
+        <Button data-testid='clear-btn' variant='danger' onClick={confirmClear}>
           Clear
         </Button>
         <ConfirmClearModal />

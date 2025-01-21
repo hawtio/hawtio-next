@@ -40,6 +40,7 @@ const UIForm: React.FunctionComponent = () => {
   return (
     <FormGroup label='Default vertical nav state' fieldId='ui-form-vertical-nav-switch'>
       <Switch
+        data-testid='switch-vertical-nav-state'
         label='Show vertical navigation'
         labelOff='Hide vertical navigation'
         isChecked={showVerticalNav}
@@ -65,16 +66,17 @@ const ResetForm: React.FunctionComponent = () => {
 
   const ConfirmResetModal = () => (
     <Modal
+      data-testid='reset-settings-modal'
       variant={ModalVariant.small}
       title='Reset settings'
       titleIconVariant='danger'
       isOpen={isConfirmResetOpen}
       onClose={confirmReset}
       actions={[
-        <Button key='reset' variant='danger' onClick={reset}>
+        <Button key='reset' data-testid='reset-btn' variant='danger' onClick={reset}>
           Reset
         </Button>,
-        <Button key='cancel' variant='link' onClick={confirmReset}>
+        <Button key='cancel' data-testid='cancel-btn' variant='link' onClick={confirmReset}>
           Cancel
         </Button>,
       ]}
@@ -88,7 +90,7 @@ const ResetForm: React.FunctionComponent = () => {
   return (
     <React.Fragment>
       <FormGroup label='Reset settings' fieldId='reset-form-reset'>
-        <Button variant='danger' onClick={confirmReset}>
+        <Button data-testid='reset-btn' variant='danger' onClick={confirmReset}>
           Reset
         </Button>
         <FormHelperText>
