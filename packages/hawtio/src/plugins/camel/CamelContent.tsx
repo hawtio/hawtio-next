@@ -184,7 +184,7 @@ export const CamelContent: React.FunctionComponent = () => {
         {navItems.length > 0 && (
           <Routes>
             {camelNavRoutes}
-            <Route key='root' path='/' element={<Navigate to={navItems[0]?.id ?? ''} />} />
+            <Route key='root' index element={<Navigate to={navItems[0]?.id ?? ''} />} />
           </Routes>
         )}
         {navItems.length === 0 && !selectedNode.objectName && <JmxContentMBeans />}

@@ -5,6 +5,7 @@ import { useNavigate } from '@hawtiosrc/virtual-router'
 import './CamelTreeView.css'
 import { CamelContext } from './context'
 import { pluginPath } from './globals'
+import { joinPaths } from '@hawtiosrc/util/urls'
 
 /**
  * Expansion requires more than 2 states since the expandAll
@@ -59,9 +60,11 @@ export const CamelTreeView: React.FunctionComponent = () => {
   }
 
   const onSelect = (event: React.MouseEvent<Element, MouseEvent>, item: TreeViewDataItem) => {
-    setSelectedNode(item as MBeanNode)
-    /* On change of node selection update the url to the base plugin path */
-    navigate(pluginPath)
+    const node = item as MBeanNode
+
+    setSelectedNode(node)
+    // /* On change of node selection update the url to the base plugin path */
+    navigate(joinPaths(pluginPath, node.getType() ?? '/'))
   }
 
   const getActiveItems = (): TreeViewDataItem[] => {
