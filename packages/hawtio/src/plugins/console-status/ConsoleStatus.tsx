@@ -64,8 +64,8 @@ export const ConsoleStatus: React.FunctionComponent = () => {
         <CardBody>
           <Alert variant='warning' title='Application returned no mbeans' />
 
-          {errors.map(error => (
-            <Alert variant='danger' title={error.message} className='console-alert'>
+          {errors.map((error, index) => (
+            <Alert key={index} variant='danger' title={error.message} className='console-alert'>
               {hasCause(error) && <p>Cause: {(error.cause as Error).message}</p>}
             </Alert>
           ))}
