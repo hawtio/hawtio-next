@@ -16,6 +16,11 @@ export type Hawtconfig = {
   branding?: BrandingConfig
 
   /**
+   * Configuration for the placement and structure of the UI
+   */
+  appearance?: AppearanceConfig
+
+  /**
    * Configuration for the built-in login page.
    */
   login?: LoginConfig
@@ -53,6 +58,25 @@ export type BrandingConfig = {
   appLogoUrl?: string
   css?: string
   favicon?: string
+}
+
+export enum PluginBarOrientation {
+  VERTICAL = 'vertical',
+  HORIZONTAL = 'horizontal'
+}
+
+/**
+ * Appearance configuration type.
+ */
+export type AppearanceConfig = {
+  // Whether to display the header bar (default: true)
+  showHeader: boolean
+
+  /*
+   * Orientation of the Plugin Navigation Bar - verical | horizontal
+   * (default: vertical)
+   */
+  pluginBarOrientation: PluginBarOrientation
 }
 
 /**
@@ -235,6 +259,37 @@ class ConfigManager {
       config.about.productInfo = []
     }
     config.about.productInfo.push({ name, value })
+  }
+
+  /*
+   * Synchronous method to retrieve the appearance.showHeader
+   * property from the existing hawtconfig. The hawtconfig
+   * should have been obtained using an async process,
+   * eg. the #useHawtconfig hook
+   */
+  isHeaderShown(hawtconfig: Hawtconfig): boolean {
+    if (! hawtconfig) return true
+
+    const appearance = hawtconfig.appearance
+    if (!appearance) return true
+
+    return appearance.showHeader ?? true
+  }
+
+  /*
+   * Synchronous method to retrieve the
+   * appearance.getPluginBarOrientation property from
+   * the existing hawtconfig. The hawtconfig should
+   * have been obtained using an async process,
+   * eg. the #useHawtconfig hook
+   */
+  getPluginBarOrientation(hawtconfig: Hawtconfig): PluginBarOrientation {
+    if (! hawtconfig) return PluginBarOrientation.VERTICAL
+
+    const appearance = hawtconfig.appearance
+    if (!appearance) return PluginBarOrientation.VERTICAL
+
+    return appearance.pluginBarOrientation ?? PluginBarOrientation.VERTICAL
   }
 }
 

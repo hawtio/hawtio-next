@@ -1,5 +1,5 @@
 import fetchMock from 'jest-fetch-mock'
-import { configManager } from './config-manager'
+import { PluginBarOrientation, configManager } from './config-manager'
 
 describe('ConfigManager', () => {
   beforeEach(() => {
@@ -176,5 +176,32 @@ describe('ConfigManager', () => {
     const product = config.about?.productInfo?.[0]
     expect(product?.name).toEqual('Hawtio React')
     expect(product?.value).toEqual('1.0.0')
+  })
+
+  test('appearance is loaded', async () => {
+    // response for fetching hawtconfig.json
+    fetchMock.mockResponse(
+      JSON.stringify({
+        appearance: {
+          showHeader: true,
+          pluginBarOrientation: 'vertical'
+        },
+      }),
+    )
+
+    const config = await configManager.getHawtconfig()
+    expect(config.appearance?.showHeader).toBe(true)
+    expect(config.appearance?.pluginBarOrientation).toBe(PluginBarOrientation.VERTICAL)
+  })
+
+  test('appearance defaults', async () => {
+    // response for fetching hawtconfig.json
+    fetchMock.mockResponse(
+      JSON.stringify({}),
+    )
+
+    const hawtconfig = await configManager.getHawtconfig()
+    expect(configManager.isHeaderShown(hawtconfig)).toBe(true)
+    expect(configManager.getPluginBarOrientation(hawtconfig)).toBe(PluginBarOrientation.VERTICAL)
   })
 })

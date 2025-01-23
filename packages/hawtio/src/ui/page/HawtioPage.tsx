@@ -1,5 +1,5 @@
 import { useUser } from '@hawtiosrc/auth/hooks'
-import { usePlugins } from '@hawtiosrc/core'
+import { PluginBarOrientation, configManager, useHawtconfig, usePlugins } from '@hawtiosrc/core'
 import { HawtioHelp } from '@hawtiosrc/help/HawtioHelp'
 import { background } from '@hawtiosrc/img'
 import { PluginNodeSelectionContext, usePluginNodeSelected } from '@hawtiosrc/plugins'
@@ -28,6 +28,7 @@ import './HawtioPage.css'
 export const HawtioPage: React.FunctionComponent = () => {
   const { username, isLogin, userLoaded, userLoading } = useUser()
   const { plugins, pluginsLoaded } = usePlugins()
+  const { hawtconfig, hawtconfigLoaded } = useHawtconfig()
   const navigate = useNavigate()
   const { search } = useLocation()
   const { selectedNode, setSelectedNode } = usePluginNodeSelected()
@@ -40,7 +41,7 @@ export const HawtioPage: React.FunctionComponent = () => {
     }
   }, [isLogin, navigate, userLoading])
 
-  if (!userLoaded || !pluginsLoaded || userLoading) {
+  if (!userLoaded || !pluginsLoaded || userLoading || !hawtconfigLoaded) {
     log.debug('Loading:', 'user =', userLoaded, ', plugins =', pluginsLoaded)
     return <HawtioLoadingPage />
   }
@@ -63,13 +64,34 @@ export const HawtioPage: React.FunctionComponent = () => {
     sessionService.userActivity()
   }
 
+  const headerShown = configManager.isHeaderShown(hawtconfig)
+  const sideBarOrientation = configManager.getPluginBarOrientation(hawtconfig)
+  const isSideBarVertical = sideBarOrientation === PluginBarOrientation.VERTICAL
+
+  const header = () => {
+    if (headerShown && sideBarOrientation === PluginBarOrientation.HORIZONTAL) {
+      return (
+        // Unlikely to happen but cannot rule it out
+        <React.Fragment>
+          <HawtioHeader />
+          <HawtioSidebar orientation={sideBarOrientation} />
+        </React.Fragment>
+      )
+    } else if (headerShown) {
+      // Side Bar is vertical
+      return ( <HawtioHeader />)
+    } else {
+      return ( <HawtioSidebar orientation={sideBarOrientation} /> )
+    }
+  }
+
   return (
     <PageContext.Provider value={{ username, plugins }}>
       <BackgroundImage src={background} />
       <Page
         id='hawtio-main-page'
-        header={<HawtioHeader />}
-        sidebar={<HawtioSidebar />}
+        header={header()}
+        sidebar={isSideBarVertical && <HawtioSidebar />}
         isManagedSidebar
         defaultManagedSidebarIsOpen={showVerticalNavByDefault}
         onClick={keepAlive}

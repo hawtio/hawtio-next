@@ -1,9 +1,14 @@
-import { Nav, NavItem, NavList, PageSidebar, PageSidebarBody } from '@patternfly/react-core'
+import { Button, Masthead, MastheadContent, MastheadMain, Nav, NavItem, NavList, PageSidebar, PageSidebarBody, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core'
 import React, { useContext } from 'react'
 import { NavLink, useLocation } from '@hawtiosrc/virtual-router'
 import { PageContext } from './context'
+import { PluginBarOrientation } from '@hawtiosrc/core'
 
-export const HawtioSidebar: React.FunctionComponent = () => {
+type HawtioSidebarProps = {
+  orientation?: PluginBarOrientation
+}
+
+export const HawtioSidebar: React.FunctionComponent<HawtioSidebarProps> = (props: HawtioSidebarProps) => {
   const { plugins } = useContext(PageContext)
   const { pathname } = useLocation()
 
@@ -14,16 +19,39 @@ export const HawtioSidebar: React.FunctionComponent = () => {
     return path.startsWith(pluginPath)
   }
 
+  const filteredPlugins = plugins
+    .filter(plugin => plugin.path != null)
+
+  if (props.orientation === PluginBarOrientation.HORIZONTAL) {
+    const headerToolbar = (
+      <Toolbar id="hawtio-plugin-toolbar">
+        <ToolbarContent>
+          {filteredPlugins.map(plugin => (
+            <ToolbarItem key={plugin.id}>
+              <Button variant="secondary" isActive={pathMatch(pathname, plugin.path!)}>
+                <NavLink to={plugin.path!}>{plugin.title}</NavLink>
+              </Button>
+            </ToolbarItem>
+          ))}
+        </ToolbarContent>
+      </Toolbar>
+    )
+
+    return (
+      <Masthead inset={{ default: 'insetXs' }}>
+        <MastheadContent>{headerToolbar}</MastheadContent>
+      </Masthead>
+    )
+  }
+
   const pageNav = (
     <Nav theme='dark'>
       <NavList>
-        {plugins
-          .filter(plugin => plugin.path != null)
-          .map(plugin => (
-            <NavItem key={plugin.id} isActive={pathMatch(pathname, plugin.path!)}>
-              <NavLink to={plugin.path!}>{plugin.title}</NavLink>
-            </NavItem>
-          ))}
+        {filteredPlugins.map(plugin => (
+          <NavItem key={plugin.id} isActive={pathMatch(pathname, plugin.path!)}>
+            <NavLink to={plugin.path!}>{plugin.title}</NavLink>
+          </NavItem>
+        ))}
       </NavList>
     </Nav>
   )
