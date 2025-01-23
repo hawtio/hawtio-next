@@ -42,7 +42,7 @@ export const Camel: React.FunctionComponent = () => {
 
   return (
     <CamelContext.Provider value={{ tree, selectedNode, setSelectedNode }}>
-      <Split className='camel-split' sizes={[25, 75]} minSize={200} gutterSize={5}>
+      <Split className='hawtio-camel-split' sizes={[25, 75]} minSize={200} gutterSize={5}>
         <div>
           <CamelTreeView />
         </div>
