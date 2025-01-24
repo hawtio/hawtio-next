@@ -4,6 +4,8 @@ import {
   ActionGroup,
   Alert,
   Button,
+  Card,
+  CardBody,
   Checkbox,
   ClipboardCopy,
   ClipboardCopyVariant,
@@ -17,6 +19,8 @@ import {
   Dropdown,
   DropdownItem,
   DropdownList,
+  Flex,
+  FlexItem,
   Form,
   FormGroup,
   FormHelperText,
@@ -34,6 +38,7 @@ import './OperationForm.css'
 import { Operation, OperationArgument } from './operation'
 import { operationService } from './operation-service'
 import EllipsisVIcon from '@patternfly/react-icons/dist/js/icons/ellipsis-v-icon'
+import DOMPurify from 'dompurify'
 
 export const OperationContext = createContext<{
   name: string
@@ -188,9 +193,8 @@ const OperationFormContents: React.FunctionComponent<{ isExpanded: boolean }> = 
   const { name } = useContext(OperationContext)
   const [isFailed, setIsFailed] = useState(false)
   const [result, setResult] = useState<string | null>(null)
+  const [isRenderHtmlMode, setIsRenderHtmlMode] = useState(true)
 
-  // TODO: impl HTML escaping
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const isResultHtml = () => {
     if (!result) {
       return false
@@ -198,29 +202,57 @@ const OperationFormContents: React.FunctionComponent<{ isExpanded: boolean }> = 
     return result.startsWith('<!DOCTYPE html>') || /^<table[^>]*>/.test(result) || /^<ul[^>]*>/.test(result)
   }
 
+  const sanitizeHTML = (rawHtml: string) => {
+    return DOMPurify.sanitize(rawHtml)
+  }
+
   const OperationExecuteResult = () => (
     <React.Fragment>
-      <Title headingLevel='h4'>Result</Title>
-      <ClipboardCopy
-        variant={ClipboardCopyVariant.expansion}
-        isExpanded
-        isCode
-        isReadOnly
-        className={isFailed ? 'jmx-operation-error' : ''}
-      >
-        {result}
-      </ClipboardCopy>
+      <Flex>
+        <FlexItem>
+          <Title headingLevel='h4'>Result</Title>
+        </FlexItem>
+
+        {isResultHtml() && (
+          <FlexItem>
+            <Button
+              variant="secondary"
+              onClick={() => setIsRenderHtmlMode(!isRenderHtmlMode)}
+            >
+              {isRenderHtmlMode ? 'Raw View' : 'Render HTML'}
+            </Button>
+          </FlexItem>
+        )}
+      </Flex>
+
+      {isRenderHtmlMode && isResultHtml() ? (
+        <Card>
+          <CardBody>
+            <div dangerouslySetInnerHTML={{__html: sanitizeHTML(result!)}}/>
+          </CardBody>
+        </Card>
+      ) : (
+        <ClipboardCopy
+          variant={ClipboardCopyVariant.expansion}
+          isExpanded
+          isCode
+          isReadOnly
+          className={isFailed ? 'jmx-operation-error' : ''}
+        >
+          {result}
+        </ClipboardCopy>
+      )}
     </React.Fragment>
   )
 
   return (
     <React.Fragment>
       <DataListContent id={`operation-execute-${name}`} aria-label={`operation execute ${name}`} isHidden={!isExpanded}>
-        <OperationExecuteForm setResult={setResult} setIsFailed={setIsFailed} />
+        <OperationExecuteForm setResult={setResult} setIsFailed={setIsFailed}/>
       </DataListContent>
       {result && (
         <DataListContent id={`operation-result-${name}`} aria-label={`operation result ${name}`} isHidden={!isExpanded}>
-          <OperationExecuteResult />
+          <OperationExecuteResult/>
         </DataListContent>
       )}
     </React.Fragment>
