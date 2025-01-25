@@ -215,10 +215,7 @@ const OperationFormContents: React.FunctionComponent<{ isExpanded: boolean }> = 
 
         {isResultHtml() && (
           <FlexItem>
-            <Button
-              variant="secondary"
-              onClick={() => setIsRenderHtmlMode(!isRenderHtmlMode)}
-            >
+            <Button variant='secondary' onClick={() => setIsRenderHtmlMode(!isRenderHtmlMode)}>
               {isRenderHtmlMode ? 'Raw View' : 'Render HTML'}
             </Button>
           </FlexItem>
@@ -228,7 +225,7 @@ const OperationFormContents: React.FunctionComponent<{ isExpanded: boolean }> = 
       {isRenderHtmlMode && isResultHtml() ? (
         <Card>
           <CardBody>
-            <div dangerouslySetInnerHTML={{__html: sanitizeHTML(result!)}}/>
+            <div dangerouslySetInnerHTML={{ __html: sanitizeHTML(result!) }} />
           </CardBody>
         </Card>
       ) : (
@@ -248,11 +245,11 @@ const OperationFormContents: React.FunctionComponent<{ isExpanded: boolean }> = 
   return (
     <React.Fragment>
       <DataListContent id={`operation-execute-${name}`} aria-label={`operation execute ${name}`} isHidden={!isExpanded}>
-        <OperationExecuteForm setResult={setResult} setIsFailed={setIsFailed}/>
+        <OperationExecuteForm setResult={setResult} setIsFailed={setIsFailed} />
       </DataListContent>
       {result && (
         <DataListContent id={`operation-result-${name}`} aria-label={`operation result ${name}`} isHidden={!isExpanded}>
-          <OperationExecuteResult/>
+          <OperationExecuteResult />
         </DataListContent>
       )}
     </React.Fragment>
