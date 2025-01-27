@@ -4,6 +4,7 @@
     "paths": {
       "@hawtiosrc/*": ["src/*"]
     },
+    "target": "es2015",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
