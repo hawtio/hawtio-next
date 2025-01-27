@@ -8,18 +8,6 @@
   align-items: center;
 }
 
-.react-flow {
-  background-color: white !important;
-}
-
-.react-flow__renderer {
-  background-color: white !important;
-}
-
-.react-flow__viewport {
-  background-color: white !important;
-}
-
 .breakpoint-symbol {
   text-align: right;
   color: darkred;
