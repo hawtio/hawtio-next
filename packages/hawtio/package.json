@@ -72,7 +72,7 @@
     "reactflow": "^11.11.4",
     "superstruct": "^2.0.2",
     "typescript": "^5.4.5",
-    "xml-formatter": "^3.6.3"
+    "xml-formatter": "^3.6.4"
   },
   "devDependencies": {
     "@simbathesailor/use-what-changed": "^2.0.0",
