@@ -38,7 +38,7 @@
     "@jolokia.js/simple": "^2.2.1",
     "@module-federation/utilities": "^3.1.40",
     "@monaco-editor/react": "^4.6.0",
-    "@patternfly/react-charts": "~7.4.8",
+    "@patternfly/react-charts": "~7.4.9",
     "@patternfly/react-code-editor": "~6.1.0",
     "@patternfly/react-core": "~5.4.12",
     "@patternfly/react-table": "~5.3.4",
