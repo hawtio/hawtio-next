@@ -88,7 +88,7 @@ export interface IConnectService {
 }
 
 class ConnectService implements IConnectService {
-  private readonly currentConnectionId: string | null
+  private currentConnectionId: string | null
 
   constructor() {
     this.currentConnectionId = this.initCurrentConnectionId()
@@ -237,6 +237,18 @@ class ConnectService implements IConnectService {
     this.clearCredentialsOnLogout()
 
     return conn
+  }
+
+  setCurrentConnection(connection: Connection) {
+    const connectionId = connection.id
+    if (!this.resolveConnectionId(connectionId)) {
+      log.warn('Cannot resolve connection Id in saved connections')
+      return
+    }
+
+    // Set the connection as the current connection
+    sessionStorage.setItem(SESSION_KEY_CURRENT_CONNECTION, JSON.stringify(connectionId))
+    this.currentConnectionId = connectionId
   }
 
   private clearCredentialsOnLogout() {
