@@ -177,4 +177,35 @@ describe('ConfigManager', () => {
     expect(product?.name).toEqual('Hawtio React')
     expect(product?.value).toEqual('1.0.0')
   })
+
+  test('appearance is loaded', async () => {
+    // response for fetching hawtconfig.json
+    fetchMock.mockResponse(
+      JSON.stringify({
+        appearance: {
+          showHeader: true,
+          showBrand: true,
+          showSideBar: true,
+          showUserHeader: true,
+        },
+      }),
+    )
+
+    const config = await configManager.getHawtconfig()
+    expect(config.appearance?.showHeader).toBe(true)
+    expect(config.appearance?.showBrand).toBe(true)
+    expect(config.appearance?.showUserHeader).toBe(true)
+    expect(config.appearance?.showSideBar).toBe(true)
+  })
+
+  test('appearance defaults', async () => {
+    // response for fetching hawtconfig.json
+    fetchMock.mockResponse(JSON.stringify({}))
+
+    const config = await configManager.getHawtconfig()
+    expect(config.appearance?.showHeader).toBeUndefined()
+    expect(config.appearance?.showBrand).toBeUndefined()
+    expect(config.appearance?.showUserHeader).toBeUndefined()
+    expect(config.appearance?.showSideBar).toBeUndefined()
+  })
 })

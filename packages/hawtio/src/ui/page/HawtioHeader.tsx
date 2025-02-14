@@ -1,5 +1,11 @@
 import { PUBLIC_USER, userService } from '@hawtiosrc/auth'
-import { DEFAULT_APP_NAME, useHawtconfig, UniversalHeaderItem, isUniversalHeaderItem } from '@hawtiosrc/core'
+import {
+  DEFAULT_APP_NAME,
+  useHawtconfig,
+  UniversalHeaderItem,
+  isUniversalHeaderItem,
+  Hawtconfig,
+} from '@hawtiosrc/core'
 import { hawtioLogo, userAvatar } from '@hawtiosrc/img'
 import { preferencesService } from '@hawtiosrc/preferences/preferences-service'
 import { HawtioAbout } from '@hawtiosrc/ui/about'
@@ -31,43 +37,54 @@ import './HawtioHeader.css'
 import { PageContext } from './context'
 
 export const HawtioHeader: React.FunctionComponent = () => {
-  const [navOpen, setNavOpen] = useState(preferencesService.isShowVerticalNavByDefault())
-
-  const onNavToggle = () => setNavOpen(!navOpen)
-
-  return (
-    <Masthead id='hawtio-header' display={{ default: 'inline' }}>
-      <MastheadToggle>
-        <PageToggleButton
-          variant='plain'
-          aria-label='Global navigation'
-          isSidebarOpen={navOpen}
-          onSidebarToggle={onNavToggle}
-          id='vertical-nav-toggle'
-        >
-          <BarsIcon />
-        </PageToggleButton>
-      </MastheadToggle>
-      <MastheadMain>
-        <HawtioBrand />
-      </MastheadMain>
-      <MastheadContent>
-        <HawtioHeaderToolbar />
-      </MastheadContent>
-    </Masthead>
-  )
-}
-
-const HawtioBrand: React.FunctionComponent = () => {
   const { hawtconfig, hawtconfigLoaded } = useHawtconfig()
+  const [navOpen, setNavOpen] = useState(preferencesService.isShowVerticalNavByDefault())
 
   if (!hawtconfigLoaded) {
     return null
   }
 
-  const appLogo = hawtconfig.branding?.appLogoUrl ?? hawtioLogo
-  const appName = hawtconfig.branding?.appName ?? DEFAULT_APP_NAME
-  const showAppName = hawtconfig.branding?.showAppName ?? false
+  const onNavToggle = () => setNavOpen(!navOpen)
+
+  // If not defined then assume the default of shown
+  const sideBarShown = hawtconfig.appearance?.showSideBar ?? true
+  const isBrandShown = hawtconfig.appearance?.showBrand ?? true
+
+  return (
+    <Masthead id='hawtio-header' display={{ default: 'inline' }}>
+      {sideBarShown && (
+        <MastheadToggle>
+          <PageToggleButton
+            variant='plain'
+            aria-label='Global navigation'
+            isSidebarOpen={navOpen}
+            onSidebarToggle={onNavToggle}
+            id='vertical-nav-toggle'
+          >
+            <BarsIcon />
+          </PageToggleButton>
+        </MastheadToggle>
+      )}
+      {isBrandShown && (
+        <MastheadMain>
+          <HawtioBrand hawtconfig={hawtconfig} />
+        </MastheadMain>
+      )}
+      <MastheadContent>
+        <HawtioHeaderToolbar hawtconfig={hawtconfig} />
+      </MastheadContent>
+    </Masthead>
+  )
+}
+
+type HawtioBrandProps = {
+  hawtconfig: Hawtconfig
+}
+
+const HawtioBrand: React.FunctionComponent<HawtioBrandProps> = props => {
+  const appLogo = props.hawtconfig.branding?.appLogoUrl ?? hawtioLogo
+  const appName = props.hawtconfig.branding?.appName ?? DEFAULT_APP_NAME
+  const showAppName = props.hawtconfig.branding?.showAppName ?? false
 
   return (
     <MastheadBrand id='hawtio-header-brand' component={props => <Link to='/' {...props} />}>
@@ -81,7 +98,11 @@ const HawtioBrand: React.FunctionComponent = () => {
   )
 }
 
-const HawtioHeaderToolbar: React.FunctionComponent = () => {
+type HawtioHeaderToolbarProps = {
+  hawtconfig: Hawtconfig
+}
+
+const HawtioHeaderToolbar: React.FunctionComponent<HawtioHeaderToolbarProps> = props => {
   const { username, plugins } = useContext(PageContext)
   const location = useLocation()
 
@@ -96,6 +117,9 @@ const HawtioHeaderToolbar: React.FunctionComponent = () => {
   const onAboutToggle = () => setAboutOpen(!aboutOpen)
 
   const logout = () => userService.logout()
+
+  // If not defined then assume the default of shown
+  const userHeaderShown = props.hawtconfig.appearance?.showUserHeader ?? true
 
   const helpItems = [
     <DropdownItem key='help'>
@@ -186,29 +210,31 @@ const HawtioHeaderToolbar: React.FunctionComponent = () => {
             </Dropdown>
           </ToolbarItem>
         </ToolbarGroup>
-        <ToolbarGroup>
-          <ToolbarItem>
-            <Dropdown
-              onSelect={onUserSelect}
-              isOpen={userOpen}
-              onOpenChange={setUserOpen}
-              toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-                <MenuToggle
-                  ref={toggleRef}
-                  id='hawtio-header-user-dropdown-toggle'
-                  onClick={() => setUserOpen(!userOpen)}
-                  icon={<Avatar src={userAvatar} alt='user' />}
-                  isExpanded={userOpen}
-                  isFullHeight
-                >
-                  {isPublic ? '' : username}
-                </MenuToggle>
-              )}
-            >
-              <DropdownList>{userItems}</DropdownList>
-            </Dropdown>
-          </ToolbarItem>
-        </ToolbarGroup>
+        {userHeaderShown && (
+          <ToolbarGroup>
+            <ToolbarItem>
+              <Dropdown
+                onSelect={onUserSelect}
+                isOpen={userOpen}
+                onOpenChange={setUserOpen}
+                toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                  <MenuToggle
+                    ref={toggleRef}
+                    id='hawtio-header-user-dropdown-toggle'
+                    onClick={() => setUserOpen(!userOpen)}
+                    icon={<Avatar src={userAvatar} alt='user' />}
+                    isExpanded={userOpen}
+                    isFullHeight
+                  >
+                    {isPublic ? '' : username}
+                  </MenuToggle>
+                )}
+              >
+                <DropdownList>{userItems}</DropdownList>
+              </Dropdown>
+            </ToolbarItem>
+          </ToolbarGroup>
+        )}
       </ToolbarContent>
       <HawtioAbout isOpen={aboutOpen} onClose={onAboutToggle} />
     </Toolbar>

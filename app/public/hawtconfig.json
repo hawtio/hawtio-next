@@ -7,6 +7,12 @@
     "css": "",
     "favicon": "favicon.ico"
   },
+  "appearance": {
+    "showHeader": true,
+    "showBrand": true,
+    "showUserHeader": true,
+    "showSideBar": true
+  },
   "login": {
     "description": "Login page for Hawtio Management Console.",
     "links": [
