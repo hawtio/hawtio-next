@@ -178,6 +178,10 @@ class JolokiaService implements IJolokiaService {
 
   reset() {
     this.jolokiaUrl = undefined
+    this.jolokia?.then(jolokia => {
+      jolokia.stop()
+      return
+    })
     this.jolokia = undefined
     this.config = {
       method: JolokiaListMethod.DEFAULT,
