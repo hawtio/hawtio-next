@@ -16,6 +16,11 @@ export type Hawtconfig = {
   branding?: BrandingConfig
 
   /**
+   * Configuration for the placement and structure of the UI
+   */
+  appearance?: AppearanceConfig
+
+  /**
    * Configuration for the built-in login page.
    */
   login?: LoginConfig
@@ -53,6 +58,23 @@ export type BrandingConfig = {
   appLogoUrl?: string
   css?: string
   favicon?: string
+}
+
+/**
+ * Appearance configuration type.
+ */
+export type AppearanceConfig = {
+  // Whether to display the header bar (default: true)
+  showHeader?: boolean
+
+  // Whether to display the brand logo on the header bar (default: true)
+  showBrand?: boolean
+
+  // Whether to display the user header dropdown on the header bar (default: true)
+  showUserHeader?: boolean
+
+  // Whether to display the sidebar (default: true)
+  showSideBar?: boolean
 }
 
 /**

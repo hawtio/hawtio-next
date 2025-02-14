@@ -1,5 +1,5 @@
 import { useUser } from '@hawtiosrc/auth/hooks'
-import { usePlugins } from '@hawtiosrc/core'
+import { useHawtconfig, usePlugins } from '@hawtiosrc/core'
 import { HawtioHelp } from '@hawtiosrc/help/HawtioHelp'
 import { background } from '@hawtiosrc/img'
 import { PluginNodeSelectionContext, usePluginNodeSelected } from '@hawtiosrc/plugins'
@@ -28,6 +28,7 @@ import './HawtioPage.css'
 export const HawtioPage: React.FunctionComponent = () => {
   const { username, isLogin, userLoaded, userLoading } = useUser()
   const { plugins, pluginsLoaded } = usePlugins()
+  const { hawtconfig, hawtconfigLoaded } = useHawtconfig()
   const navigate = useNavigate()
   const { search } = useLocation()
   const { selectedNode, setSelectedNode } = usePluginNodeSelected()
@@ -40,7 +41,7 @@ export const HawtioPage: React.FunctionComponent = () => {
     }
   }, [isLogin, navigate, userLoading])
 
-  if (!userLoaded || !pluginsLoaded || userLoading) {
+  if (!userLoaded || !pluginsLoaded || userLoading || !hawtconfigLoaded) {
     log.debug('Loading:', 'user =', userLoaded, ', plugins =', pluginsLoaded)
     return <HawtioLoadingPage />
   }
@@ -63,14 +64,18 @@ export const HawtioPage: React.FunctionComponent = () => {
     sessionService.userActivity()
   }
 
+  // If not defined then assume the default of shown
+  const headerShown = hawtconfig.appearance?.showHeader ?? true
+  const sideBarShown = hawtconfig.appearance?.showSideBar ?? true
+
   return (
     <PageContext.Provider value={{ username, plugins }}>
       <BackgroundImage src={background} />
       <Page
         id='hawtio-main-page'
-        header={<HawtioHeader />}
-        sidebar={<HawtioSidebar />}
-        isManagedSidebar
+        header={headerShown && <HawtioHeader />}
+        sidebar={sideBarShown && <HawtioSidebar />}
+        isManagedSidebar={sideBarShown}
         defaultManagedSidebarIsOpen={showVerticalNavByDefault}
         onClick={keepAlive}
       >
