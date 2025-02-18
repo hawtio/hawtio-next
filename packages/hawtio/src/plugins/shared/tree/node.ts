@@ -39,7 +39,7 @@ export function isMBeanInfo(value: unknown): value is OptimisedMBeanInfo {
   return is(
     value,
     type({
-      desc: string(),
+      desc: optional(string()),
       class: optional(string()),
       attr: optional(record(string(), object())),
       op: optional(record(string(), union([object(), array(object())]))),
