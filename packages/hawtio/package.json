@@ -35,7 +35,7 @@
   "dependencies": {
     "@hawtio/camel-model-v4_10": "npm:@hawtio/camel-model@~4.10.0",
     "@hawtio/camel-model-v4_8": "npm:@hawtio/camel-model@~4.8.3",
-    "@jolokia.js/simple": "^2.2.3",
+    "@jolokia.js/simple": "^2.2.4",
     "@module-federation/utilities": "^3.1.45",
     "@monaco-editor/react": "^4.7.0",
     "@patternfly/react-charts": "~7.4.9",

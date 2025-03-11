@@ -709,7 +709,7 @@ class JolokiaService implements IJolokiaService {
         .map((r: JolokiaResponse) => {
           // it's already filtered for success responses
           const response = r as JolokiaSuccessResponse
-          switch (response.request.type) {
+          switch (response.request?.type) {
             case 'list': {
               const path = response.request.path?.split('/')
               return this.unwindListResponse(response.value, path)
