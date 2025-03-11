@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.9.0](https://github.com/hawtio/hawtio-next/compare/v1.8.1...v1.9.0) (2025-03-11)
+
+
+### Features
+
+* **camel:** support Camel model 4.10 and drop 4.4 ([4d3d153](https://github.com/hawtio/hawtio-next/commit/4d3d153e45b0a0519c441c563f6a84b28f631e4c)), closes [#1367](https://github.com/hawtio/hawtio-next/issues/1367)
+
+
+### Bug Fixes
+
+* **jolokia:** stop Jolokia instance in JolokiaService.reset() (fixes [#1353](https://github.com/hawtio/hawtio-next/issues/1353)) ([475f30c](https://github.com/hawtio/hawtio-next/commit/475f30ce870a3d563571102d4441318d30a806a3))
+* **shared:** fix handling null desc in jmx domain ([f0ca199](https://github.com/hawtio/hawtio-next/commit/f0ca199aa9e28f805b93baf63d57b4cf0a2644c4)), closes [#1349](https://github.com/hawtio/hawtio-next/issues/1349)
+
 ## [1.8.1](https://github.com/hawtio/hawtio-next/compare/v1.8.0...v1.8.1) (2025-01-28)
 
 ## [1.8.0](https://github.com/hawtio/hawtio-next/compare/v1.7.0...v1.8.0) (2025-01-09)
