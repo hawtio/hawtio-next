@@ -43,7 +43,7 @@ export type OidcConfig = {
 }
 
 export interface IOidcService {
-  registerUserHooks(): void
+  registerUserHooks(helpRegistration: () => void): void
 }
 
 class UserInfo {
@@ -338,7 +338,7 @@ export class OidcService implements IOidcService {
     }
   }
 
-  registerUserHooks() {
+  registerUserHooks(helpRegistration: () => void) {
     const fetchUser = async (resolveUser: ResolveUser, proceed?: () => boolean) => {
       if (proceed && !proceed()) {
         return false
@@ -350,6 +350,9 @@ export class OidcService implements IOidcService {
       }
       resolveUser({ username: userInfo.user!, isLogin: true })
       userService.setToken(userInfo.access_token!)
+
+      // only now register help tab for OIDC
+      helpRegistration()
 
       return true
     }

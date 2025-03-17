@@ -4,8 +4,13 @@ import help from './help.md'
 import { oidcService } from './oidc-service'
 
 const oidc: HawtioPlugin = () => {
-  oidcService.registerUserHooks()
-  helpRegistry.add('oidc', 'OpenID Connect', help, 22)
+  let helpRegistered = false
+  oidcService.registerUserHooks(() => {
+    if (!helpRegistered) {
+      helpRegistry.add('oidc', 'OpenID Connect', help, 22)
+      helpRegistered = true
+    }
+  })
 }
 
 export { oidc, oidcService }
