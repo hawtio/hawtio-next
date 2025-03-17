@@ -27,7 +27,7 @@ export const KEYCLOAK_TOKEN_MINIMUM_VALIDITY = 5 // 5 sec.
 
 export interface IKeycloakService {
   isKeycloakEnabled(): Promise<boolean>
-  registerUserHooks(): void
+  registerUserHooks(helpRegistration: () => void): void
   validateSubjectMatches(user: string): Promise<boolean>
 }
 
@@ -125,7 +125,7 @@ class KeycloakService implements IKeycloakService {
     return this.enabled
   }
 
-  registerUserHooks() {
+  registerUserHooks(helpRegistration: () => void) {
     const fetchUser = async (resolve: ResolveUser) => {
       const keycloak = await this.keycloak
       const userProfile = await this.userProfile
@@ -139,6 +139,9 @@ class KeycloakService implements IKeycloakService {
       }
 
       this.setupFetch()
+
+      // only now register help tab for OIDC
+      helpRegistration()
 
       return true
     }
