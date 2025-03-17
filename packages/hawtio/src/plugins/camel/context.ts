@@ -1,11 +1,11 @@
-import { createContext, useEffect, useState, useContext, useRef } from 'react'
-import { TreeViewDataItem } from '@patternfly/react-core'
+import { EVENT_REFRESH, eventService } from '@hawtiosrc/core'
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
-import { workspace, MBeanNode, MBeanTree } from '@hawtiosrc/plugins/shared'
-import { pluginName, pluginPath, jmxDomain } from './globals'
+import { MBeanNode, MBeanTree, workspace } from '@hawtiosrc/plugins/shared'
+import { TreeViewDataItem } from '@patternfly/react-core'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { eventService, EVENT_REFRESH } from '@hawtiosrc/core'
 import * as camelService from './camel-service'
+import { jmxDomain, pluginName, pluginPath } from './globals'
 
 /**
  * Custom React hook for using Camel MBean tree.
@@ -58,19 +58,22 @@ export function useCamelTree() {
         path.push(...contextsNode.path())
       }
 
-      const parentContext = rootNode.children[0]?.children
-
-      if (parentContext && parentContext[0]) {
+      const parentContext = contextsNode.children?.[0]
+      if (parentContext) {
         // expand the context tree
-        parentContext[0].defaultExpanded = true
+        parentContext.defaultExpanded = true
 
         // check whether to expand its children
-        parentContext[0].children?.forEach(childChild => {
-          switch (childChild.name) {
+        parentContext.children?.forEach(child => {
+          switch (child.name) {
             case 'routes':
+              // routes is the default view for Camel plugin
+              path.push('routes')
+              child.defaultExpanded = true
+              break
             case 'endpoints':
             case 'components':
-              childChild.defaultExpanded = true
+              child.defaultExpanded = true
               break
           }
         })

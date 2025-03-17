@@ -3,6 +3,7 @@ import { AttributeValues, Attributes, Chart, JmxContentMBeans, MBeanNode, Operat
 import {
   Divider,
   EmptyState,
+  EmptyStateHeader,
   EmptyStateIcon,
   EmptyStateVariant,
   Nav,
@@ -13,10 +14,9 @@ import {
   PageSectionVariants,
   Text,
   Title,
-  EmptyStateHeader,
 } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons'
-import Jolokia, { JolokiaSuccessResponse, JolokiaErrorResponse } from 'jolokia.js'
+import Jolokia, { JolokiaErrorResponse, JolokiaSuccessResponse } from 'jolokia.js'
 import React, { useContext, useEffect, useState } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import './CamelContent.css'
@@ -83,11 +83,6 @@ export const CamelContent: React.FunctionComponent = () => {
   // The order of the items in the following list is the order in will the tabs will be visualized.
   // For more info check: https://github.com/hawtio/hawtio-next/issues/237
   const allNavItems: NavItem[] = [
-    { id: 'attributes', title: 'Attributes', component: <Attributes />, isApplicable: isDefaultApplicable },
-    { id: 'operations', title: 'Operations', component: <Operations />, isApplicable: isDefaultApplicable },
-    { id: 'contexts', title: 'Contexts', component: <Contexts />, isApplicable: camelService.isContextsFolder },
-    { id: 'routes', title: 'Routes', component: <CamelRoutes />, isApplicable: camelService.isRoutesFolder },
-    { id: 'endpoints', title: 'Endpoints', component: <Endpoints />, isApplicable: camelService.isEndpointsFolder },
     {
       id: 'routeDiagram',
       title: 'Route Diagram',
@@ -98,6 +93,11 @@ export const CamelContent: React.FunctionComponent = () => {
       ),
       isApplicable: camelService.canViewRouteDiagram,
     },
+    { id: 'attributes', title: 'Attributes', component: <Attributes />, isApplicable: isDefaultApplicable },
+    { id: 'operations', title: 'Operations', component: <Operations />, isApplicable: isDefaultApplicable },
+    { id: 'contexts', title: 'Contexts', component: <Contexts />, isApplicable: camelService.isContextsFolder },
+    { id: 'routes', title: 'Routes', component: <CamelRoutes />, isApplicable: camelService.isRoutesFolder },
+    { id: 'endpoints', title: 'Endpoints', component: <Endpoints />, isApplicable: camelService.isEndpointsFolder },
     {
       id: 'source',
       title: 'Source',
