@@ -54,8 +54,9 @@ export function useCamelTree() {
       ) {
         path.push(...refSelectedNode.current.path())
       } else {
-        // No selection so select the contexts node to display the contexts view
-        path.push(...contextsNode.path())
+        // No selection so select the routes node under the contexts to display
+        // the route diagrams for all the routes as the default view
+        path.push(...contextsNode.path(), 'routes')
       }
 
       const parentContext = contextsNode.children?.[0]
@@ -67,10 +68,6 @@ export function useCamelTree() {
         parentContext.children?.forEach(child => {
           switch (child.name) {
             case 'routes':
-              // routes is the default view for Camel plugin
-              path.push('routes')
-              child.defaultExpanded = true
-              break
             case 'endpoints':
             case 'components':
               child.defaultExpanded = true
