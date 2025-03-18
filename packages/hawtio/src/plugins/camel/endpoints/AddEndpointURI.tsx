@@ -6,24 +6,20 @@ import * as es from './endpoints-service'
 
 export const AddEndpointURI: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
-  const ctx = useContext(AddEndpointContext)
+  const { showAddEndpoint } = useContext(AddEndpointContext)
   const [componentURI, setComponentURI] = useState('')
 
   if (!selectedNode) {
     return null
   }
 
-  const handleURIChange = (uri: string) => {
-    setComponentURI(uri)
-  }
-
   const onCancelClicked = () => {
-    ctx.showAddEndpoint(false)
+    showAddEndpoint(false)
   }
 
   const onSubmitClicked = () => {
     es.createEndpoint(selectedNode, componentURI)
-    ctx.showAddEndpoint(false)
+    showAddEndpoint(false)
   }
 
   return (
@@ -35,7 +31,7 @@ export const AddEndpointURI: React.FunctionComponent = () => {
           id='uri-input-text'
           name='uri-input-text'
           value={componentURI}
-          onChange={(_event, uri: string) => handleURIChange(uri)}
+          onChange={(_event, uri) => setComponentURI(uri)}
         />
       </FormGroup>
       <ActionGroup>

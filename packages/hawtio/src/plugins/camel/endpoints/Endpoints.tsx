@@ -13,8 +13,7 @@ export const Endpoints: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
   const ctx = useAddEndpointContext()
   const [isReading, setIsReading] = useState(false)
-  const emptyEndpoints: es.Endpoint[] = []
-  const [endpoints, setEndpoints] = useState(emptyEndpoints)
+  const [endpoints, setEndpoints] = useState<es.Endpoint[]>([])
   const [activeSortDirection, setActiveSortDirection] = useState<'asc' | 'desc' | null>('asc')
 
   useEffect(() => {

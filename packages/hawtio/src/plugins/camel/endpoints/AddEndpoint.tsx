@@ -7,8 +7,8 @@ import { AddEndpointContext } from './context'
 
 export const AddEndpoint: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
-  const ctx = useContext(AddEndpointContext)
-  const [createFrom, setCreateFrom] = useState('')
+  const { componentNames } = useContext(AddEndpointContext)
+  const [createFrom, setCreateFrom] = useState<'URI' | 'DATA' | ''>('')
 
   if (!selectedNode) {
     return (
@@ -29,7 +29,7 @@ export const AddEndpoint: React.FunctionComponent = () => {
   }
 
   const chooseWizard = (): JSX.Element => {
-    if ((ctx.componentNames && ctx.componentNames.length === 0) || createFrom === 'URI') return <AddEndpointURI />
+    if ((componentNames && componentNames.length === 0) || createFrom === 'URI') return <AddEndpointURI />
     else if (createFrom === 'DATA') return <AddEndpointWizard />
     else {
       return (
