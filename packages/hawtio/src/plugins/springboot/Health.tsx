@@ -12,6 +12,7 @@ import {
   InfoCircleIcon,
   QuestionCircleIcon,
 } from '@patternfly/react-icons'
+import './Health.css'
 
 const SPAN_6_COMPONENTS = ['diskSpace', 'camelHealth', 'camel']
 

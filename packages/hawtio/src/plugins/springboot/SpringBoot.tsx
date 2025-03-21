@@ -67,8 +67,8 @@ export const SpringBoot: React.FunctionComponent = () => {
       <Divider />
       <PageSection
         aria-label='Spring-boot Content'
-        variant={location.pathname === '/springboot/health' ? PageSectionVariants.default : PageSectionVariants.light}
-        padding={{ default: location.pathname.includes('health') ? 'padding' : 'noPadding' }}
+        variant={PageSectionVariants.light}
+        padding={{ default: 'noPadding' }}
       >
         <Routes>
           {navItems.map(navItem => (
