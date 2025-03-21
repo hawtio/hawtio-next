@@ -2,6 +2,11 @@
   height: 100%;
 }
 
+#quartz-tree-view > .pf-v5-c-tree-view__list {
+  max-height: 83vh;
+  overflow: auto;
+}
+
 #quartz-tree-view .pf-v5-c-tree-view__node {
   padding-top: 1px;
   padding-bottom: 1px;
