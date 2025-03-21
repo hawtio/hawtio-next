@@ -176,8 +176,8 @@ export const CamelContent: React.FunctionComponent = () => {
       <Divider />
       <PageSection
         id='camel-content-main'
-        variant={pathname.includes('chart') ? PageSectionVariants.default : PageSectionVariants.light}
-        padding={{ default: pathname.includes('chart') ? 'padding' : 'noPadding' }}
+        variant={PageSectionVariants.light}
+        padding={{ default: 'noPadding' }}
         hasOverflowScroll
         aria-label='camel-content-main'
       >
