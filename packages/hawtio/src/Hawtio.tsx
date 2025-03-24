@@ -17,10 +17,10 @@ export const Hawtio: React.FunctionComponent<HawtioProps> = props => {
   }
 
   return (
-    <BrowserRouter future={{v7_startTransition: true}} basename={hawtio.getBasePath()}>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }} basename={hawtio.getBasePath()}>
       <Routes>
         <Route path='/login' element={<HawtioLogin />} />
-        <Route path='/*' element={<HawtioPage />} />
+        <Route path='*' element={<HawtioPage />} />
       </Routes>
     </BrowserRouter>
   )
