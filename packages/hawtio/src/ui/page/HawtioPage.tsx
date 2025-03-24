@@ -86,11 +86,16 @@ export const HawtioPage: React.FunctionComponent = () => {
             {plugins
               .filter(plugin => plugin.path != null && plugin.component != null)
               .map(plugin => (
-                <Route key={plugin.id} path={`${plugin.path}/*`} element={React.createElement(plugin.component!)} />
+                <Route key={plugin.id} path={`${plugin.path}`} element={React.createElement(plugin.component!)}>
+                  <Route path='*' element={React.createElement(plugin.component!)} />
+                </Route>
               ))}
-            <Route key='help' path='help/*' element={<HawtioHelp />} />
-            <Route key='preferences' path='preferences/*' element={<HawtioPreferences />} />
-
+            <Route key='help' path='/help' element={<HawtioHelp />}>
+              <Route path='*' element={<HawtioHelp />} />
+            </Route>
+            <Route key='preferences' path='/preferences' element={<HawtioPreferences />}>
+              <Route path='*' element={<HawtioPreferences />} />
+            </Route>
             <Route key='index' path='index.html' element={<Navigate to='/' />} />
             <Route key='root' index element={defaultPage} />
           </Routes>
