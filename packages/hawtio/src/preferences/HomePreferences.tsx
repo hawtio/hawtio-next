@@ -13,7 +13,7 @@ import {
   Switch,
 } from '@patternfly/react-core'
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom-v5-compat'
+import { useHistory } from 'react-router-dom' // includes NavLink
 import { preferencesService } from './preferences-service'
 
 export const HomePreferences: React.FunctionComponent = () => (
@@ -51,13 +51,13 @@ const UIForm: React.FunctionComponent = () => {
 }
 
 const ResetForm: React.FunctionComponent = () => {
-  const navigate = useNavigate()
+  const navigate = useHistory()
   const [isConfirmResetOpen, setIsConfirmResetOpen] = useState(false)
 
   const reset = () => {
     preferencesService.reset()
     // Reload page after reset
-    navigate(0)
+    navigate.go(0)
   }
 
   const confirmReset = () => {

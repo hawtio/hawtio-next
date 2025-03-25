@@ -3,14 +3,14 @@ import { DEFAULT_APP_NAME, DEFAULT_LOGIN_TITLE, useHawtconfig, usePlugins } from
 import { hawtioLogo, background } from '@hawtiosrc/img'
 import { ListItem, ListVariant, LoginFooterItem, LoginPage } from '@patternfly/react-core'
 import React, { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom-v5-compat'
+import { useHistory } from 'react-router-dom' // includes NavLink
 import { HawtioNotification } from '../notification'
 import { HawtioLoadingPage } from '../page/HawtioLoadingPage'
 import { HawtioLoginForm } from './HawtioLoginForm'
 import { log } from './globals'
 
 export const HawtioLogin: React.FunctionComponent = () => {
-  const navigate = useNavigate()
+  const navigate = useHistory()
 
   const { isLogin, userLoaded } = useUser()
   const { hawtconfig, hawtconfigLoaded } = useHawtconfig()
@@ -20,7 +20,7 @@ export const HawtioLogin: React.FunctionComponent = () => {
   // otherwise "Cannot update a component (`BrowserRouter`) while rendering a different component" is thrown
   useEffect(() => {
     if (isLogin) {
-      navigate('/')
+      navigate.push('/')
     }
   }, [isLogin, navigate])
 

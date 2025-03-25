@@ -17,13 +17,14 @@ import {
 } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons'
 import React, { useContext } from 'react'
-import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom-v5-compat'
+import { NavLink, Redirect, Route, Switch, useLocation } from 'react-router-dom' // includes NavLink
 import './QuartzContent.css'
 import { QuartzContext } from './context'
 import { pluginPath } from './globals'
 import { Jobs } from './jobs'
 import { Scheduler } from './scheduler/Scheduler'
 import { Triggers } from './triggers'
+import { hawtio } from '@hawtiosrc/core'
 
 export const QuartzContent: React.FunctionComponent = () => {
   const { tree, selectedNode } = useContext(QuartzContext)
@@ -76,15 +77,15 @@ export const QuartzContent: React.FunctionComponent = () => {
     <Nav aria-label='Quartz Nav' variant='tertiary'>
       <NavList>
         {navItems.map(nav => (
-          <NavItem key={nav.id} isActive={pathname === `${pluginPath}/${nav.id}`}>
-            <NavLink to={{ pathname: nav.id, search }}>{nav.title}</NavLink>
+          <NavItem key={nav.id} isActive={hawtio.fullPath(pathname) === hawtio.fullPath(pluginPath, nav.id)}>
+            <NavLink to={{ pathname: hawtio.fullPath(pluginPath, nav.id), search }}>{nav.title}</NavLink>
           </NavItem>
         ))}
       </NavList>
     </Nav>
   )
 
-  const routes = navItems.map(nav => <Route key={nav.id} path={nav.id} element={React.createElement(nav.component)} />)
+  const routes = navItems.map(nav => <Route key={nav.id} path={hawtio.fullPath(pluginPath, nav.id)}>{React.createElement(nav.component)}</Route>)
 
   return (
     <PageGroup id='quartz-content'>
@@ -105,10 +106,10 @@ export const QuartzContent: React.FunctionComponent = () => {
         hasOverflowScroll
         aria-label='quartz-content-main'
       >
-        <Routes>
+        <Switch>
           {routes}
-          <Route key='root' path='/' element={<Navigate to={navItems[0]?.id ?? ''} />} />
-        </Routes>
+          <Route key='root' exact path={hawtio.fullPath(pluginPath)}><Redirect to={hawtio.fullPath(pluginPath, navItems[0]?.id ?? '')} /></Route>
+        </Switch>
       </PageSection>
     </PageGroup>
   )

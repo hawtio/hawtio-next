@@ -24,7 +24,14 @@ export function joinPaths(...paths: string[]): string {
       tmp.push(path)
     }
   })
-  return tmp.join('/')
+
+  return tmp.join('/').replaceAll('//', '/')
+}
+
+export function replaceUrlDelimiter(path: string): string {
+  if (!path) return ''
+
+  return path.replaceAll('/', '-')
 }
 
 /**
