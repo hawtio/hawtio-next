@@ -13,7 +13,7 @@ import {
   Switch,
 } from '@patternfly/react-core'
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom-v5-compat'
 import { preferencesService } from './preferences-service'
 
 export const HomePreferences: React.FunctionComponent = () => (
