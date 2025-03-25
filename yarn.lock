@@ -1979,7 +1979,7 @@ __metadata:
   resolution: "@hawtio/backend-middleware@workspace:packages/backend-middleware"
   dependencies:
     "@bitauth/libauth": "npm:^3.0.0"
-    "@types/express": "npm:^5.0.0"
+    "@types/express": "npm:^5.0.1"
     "@types/jest": "npm:^29.5.14"
     "@types/node": "npm:^22.13.10"
     axios: "npm:^1.8.3"
@@ -3751,7 +3751,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:*, @types/express@npm:^5.0.0":
+"@types/express@npm:*":
   version: 5.0.0
   resolution: "@types/express@npm:5.0.0"
   dependencies:
@@ -3772,6 +3772,17 @@ __metadata:
     "@types/qs": "npm:*"
     "@types/serve-static": "npm:*"
   checksum: 10/7a6d26cf6f43d3151caf4fec66ea11c9d23166e4f3102edfe45a94170654a54ea08cf3103d26b3928d7ebcc24162c90488e33986b7e3a5f8941225edd5eb18c7
+  languageName: node
+  linkType: hard
+
+"@types/express@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "@types/express@npm:5.0.1"
+  dependencies:
+    "@types/body-parser": "npm:*"
+    "@types/express-serve-static-core": "npm:^5.0.0"
+    "@types/serve-static": "npm:*"
+  checksum: 10/189dd078679c5f748644c9dccf6b9666755d2fd37741ae5b7494129531b14d0366746a79191e1064060c2547daf7d342a02c48923730f20c8980c9ca7dfce1d2
   languageName: node
   linkType: hard
 
