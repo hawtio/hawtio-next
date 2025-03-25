@@ -1,7 +1,7 @@
 import { Divider, Nav, NavItem, NavList, PageSection, PageSectionVariants, Title } from '@patternfly/react-core'
 import React, { useEffect, useState } from 'react'
 
-import { Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom'
+import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom-v5-compat'
 import { Health } from './Health'
 import { Info } from './Info'
 import { Loggers } from './Loggers'

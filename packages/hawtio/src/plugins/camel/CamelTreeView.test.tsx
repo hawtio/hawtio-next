@@ -15,9 +15,9 @@ const sampleRoutesXml = fs.readFileSync(routesXmlPath, { encoding: 'utf8', flag:
  * Mock out the useNavigate() to allow the tests to work
  */
 const mockedUsedNavigate = jest.fn()
-jest.mock('react-router-dom', () => ({
+jest.mock('react-router-dom-v5-compat', () => ({
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  ...(jest.requireActual('react-router-dom') as any),
+  ...(jest.requireActual('react-router-dom-v5-compat') as any),
   useNavigate: () => mockedUsedNavigate,
 }))
 

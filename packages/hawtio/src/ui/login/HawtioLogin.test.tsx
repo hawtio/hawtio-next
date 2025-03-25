@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter } from 'react-router-dom-v5-compat'
 import { HawtioLogin } from './HawtioLogin'
 
 describe('HawtioLogin', () => {

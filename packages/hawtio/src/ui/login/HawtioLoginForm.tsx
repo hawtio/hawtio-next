@@ -3,7 +3,7 @@ import { humanizeSeconds } from '@hawtiosrc/util/dates'
 import { LoginForm, LoginFormProps } from '@patternfly/react-core'
 import { ExclamationCircleIcon } from '@patternfly/react-icons'
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom-v5-compat'
 import { log } from './globals'
 import { loginService } from './login-service'
 
