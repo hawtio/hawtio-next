@@ -1,24 +1,34 @@
-# Hawtio React
+# Hawtio React for embedding in React single-page applications
 
-A Hawtio reimplementation based on TypeScript + React.
-This project reimplements the following Hawtio JS components in one project:
+# Usage
 
-- [hawtio-core](https://github.com/hawtio/hawtio-core)
-- [hawtio-integration](https://github.com/hawtio/hawtio-integration)
-- [hawtio-oauth](https://github.com/hawtio/hawtio-oauth)
+This version is specifically tailored to allow for insertion of the console
+into other React SPAs. The most notable change is the replacement of the React
+[BrowserRouter](https://v5.reactrouter.com/web/api/BrowserRouter) with the
+[MemoryRouter](https://v5.reactrouter.com/core/api/MemoryRouter) thereby ensuring
+that the address bar is not updated when a new page is required in the hawtio console.
+
+Due to the console being targetted for embedding in some applications, eg. OCP, the console has been backported to [React 17](https://17.reactjs.org/).
+
+## Source Branch
+
+https://github.com/hawtio/hawtio-next/tree/react17-memoryrouter
 
 ## Install
+
+- x: version of @hawtio/react to install
+- #: micro build of the version
 
 NPM
 
 ```console
-npm i @hawtio/react
+npm i @hawtio/react@1.9.x-React17_MemoryRouter.#
 ```
 
 Yarn
 
 ```console
-yarn add @hawtio/react
+yarn add @hawtio/react@1.9.x-React17_MemoryRouter.#
 ```
 
 ## Usage
