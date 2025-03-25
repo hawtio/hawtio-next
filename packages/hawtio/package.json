@@ -46,7 +46,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "~16.2.0",
     "@testing-library/user-event": "^14.6.1",
-    "@thumbmarkjs/thumbmarkjs": "^0.19.1",
+    "@thumbmarkjs/thumbmarkjs": "^0.20.0",
     "@types/dagre": "^0.7.52",
     "@types/dagre-layout": "^0.8.5",
     "@types/jest": "^29.5.14",
