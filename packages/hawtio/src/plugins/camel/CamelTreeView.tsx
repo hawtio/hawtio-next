@@ -1,10 +1,12 @@
 import { MBeanNode, MBeanTree, PluginTreeViewToolbar } from '@hawtiosrc/plugins/shared'
 import { TreeView, TreeViewDataItem } from '@patternfly/react-core'
 import React, { ChangeEvent, useContext, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom-v5-compat'
+import { useHistory } from 'react-router-dom' // includes NavLink
 import './CamelTreeView.css'
 import { CamelContext } from './context'
 import { pluginPath } from './globals'
+import { hawtio } from '@hawtiosrc/core'
+import { replaceUrlDelimiter } from '@hawtiosrc/util/urls'
 
 /**
  * Expansion requires more than 2 states since the expandAll
@@ -29,7 +31,7 @@ enum ExpansionValue {
 export const CamelTreeView: React.FunctionComponent = () => {
   const { tree, selectedNode, setSelectedNode } = useContext(CamelContext)
   const [expanded, setExpanded] = useState(ExpansionValue.Default)
-  const navigate = useNavigate()
+  const navigate = useHistory()
 
   const [filteredTree, setFilteredTree] = useState(tree.getTree())
 
@@ -59,9 +61,11 @@ export const CamelTreeView: React.FunctionComponent = () => {
   }
 
   const onSelect = (event: React.MouseEvent<Element, MouseEvent>, item: TreeViewDataItem) => {
-    setSelectedNode(item as MBeanNode)
-    /* On change of node selection update the url to the base plugin path */
-    navigate(pluginPath)
+    const node = item as MBeanNode
+
+    setSelectedNode(node)
+    /* On change of node selection update the url to the {base plugin path}/:id */
+    navigate.push(hawtio.fullPath(pluginPath, replaceUrlDelimiter(node.id) ?? ''))
   }
 
   const getActiveItems = (): TreeViewDataItem[] => {

@@ -3,6 +3,7 @@ import { importRemote, ImportRemoteOptions } from '@module-federation/utilities'
 import { configManager } from './config-manager'
 import { eventService } from './event-service'
 import { log } from './globals'
+import { joinPaths } from '@hawtiosrc/util/urls'
 
 /**
  * Components to be added to the header navbar
@@ -158,6 +159,21 @@ class HawtioCore {
       }
     }
     return this.basePath
+  }
+
+  fullPath(...subPaths: string[]): string {
+    const lastPath = subPaths.slice(-1).pop()
+    if (! lastPath?.endsWith('*')) {
+      subPaths.push('/')
+    }
+
+    const basePath = this.getBasePath() ?? '/'
+    let path = joinPaths(...subPaths)
+    if (path.startsWith(basePath))
+      return path // path already starts with base path
+
+    path = joinPaths(basePath, path)
+    return path
   }
 
   private documentBase(): string | undefined {

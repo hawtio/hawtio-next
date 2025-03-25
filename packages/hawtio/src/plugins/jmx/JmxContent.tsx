@@ -18,10 +18,12 @@ import {
 } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons'
 import React, { useContext } from 'react'
-import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom-v5-compat'
+import { NavLink, Redirect, Route, Switch, useLocation } from 'react-router-dom' // includes NavLink
 import './JmxContent.css'
 import { MBeanTreeContext } from './context'
 import { pluginPath } from '@hawtiosrc/plugins/jmx/globals'
+import { hawtio } from '@hawtiosrc/core'
+import { NODE_ID_ROOT, NODE_ID_TEMPLATE, ROOT } from '@hawtiosrc/RouteConstants'
 
 export const JmxContent: React.FunctionComponent = () => {
   const { selectedNode } = useContext(MBeanTreeContext)
@@ -65,8 +67,8 @@ export const JmxContent: React.FunctionComponent = () => {
     <Nav aria-label='MBean Nav' variant='tertiary'>
       <NavList>
         {navItems.map(nav => (
-          <NavItem key={nav.id} isActive={pathname === `${pluginPath}/${nav.id}`}>
-            <NavLink to={{ pathname: nav.id, search }}>{nav.title}</NavLink>
+          <NavItem key={nav.id} isActive={hawtio.fullPath(pathname) === hawtio.fullPath(pluginPath, NODE_ID_TEMPLATE, nav.id)}>
+            <NavLink to={{ pathname: hawtio.fullPath(pluginPath, NODE_ID_TEMPLATE, nav.id), search }}>{nav.title}</NavLink>
           </NavItem>
         ))}
       </NavList>
@@ -74,7 +76,7 @@ export const JmxContent: React.FunctionComponent = () => {
   )
 
   const mbeanRoutes = navItems.map(nav => (
-    <Route key={nav.id} path={nav.id} element={React.createElement(nav.component)} />
+    <Route key={nav.id} path={hawtio.fullPath(pluginPath, NODE_ID_TEMPLATE, nav.id)}>{React.createElement(nav.component)}</Route>
   ))
 
   return (
@@ -95,10 +97,11 @@ export const JmxContent: React.FunctionComponent = () => {
         hasOverflowScroll
         aria-label='jmx-content-main'
       >
-        <Routes>
+        <Switch>
           {mbeanRoutes}
-          <Route key='root' path='/' element={<Navigate to={navItems[0]?.id ?? ''} />} />
-        </Routes>
+          <Route key={NODE_ID_ROOT} exact path={hawtio.fullPath(pluginPath, NODE_ID_TEMPLATE)}><Redirect to={hawtio.fullPath(pluginPath, NODE_ID_TEMPLATE, navItems[0]?.id ?? '')} /></Route>
+          <Route key={ROOT} exact path={hawtio.fullPath(pluginPath)}><Redirect to={hawtio.fullPath(pluginPath, navItems[0]?.id ?? '')} /></Route>
+        </Switch>
       </PageSection>
     </PageGroup>
   )
