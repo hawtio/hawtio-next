@@ -3,7 +3,7 @@ import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
 import { MBeanNode, MBeanTree, workspace } from '@hawtiosrc/plugins/shared'
 import { TreeViewDataItem } from '@patternfly/react-core'
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import * as camelService from './camel-service'
 import { jmxDomain, pluginName, pluginPath } from './globals'
 
@@ -14,6 +14,7 @@ export function useCamelTree() {
   const [tree, setTree] = useState(MBeanTree.createEmpty(pluginName))
   const [loaded, setLoaded] = useState(false)
   const { selectedNode, setSelectedNode } = useContext(PluginNodeSelectionContext)
+  const { pathname } = useLocation()
   const navigate = useNavigate()
 
   /*
@@ -86,8 +87,11 @@ export function useCamelTree() {
       const newSelected = rootNode.navigate(...path)
       if (newSelected) setSelectedNode(newSelected)
 
-      /* On population of tree, ensure the url path is returned to the base plugin path */
-      navigate(pluginPath)
+      // On population of tree, ensure the url path is returned to the base plugin path.
+      // If the location is already in the Camel plugin, skip navigation.
+      if (!pathname.startsWith(pluginPath)) {
+        navigate(pluginPath)
+      }
     } else {
       setTree(wkspTree)
       // No camel contexts so redirect to the JMX view and select the first tree node
