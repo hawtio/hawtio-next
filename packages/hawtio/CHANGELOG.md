@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.9.2](https://github.com/hawtio/hawtio-next/compare/v1.9.1...v1.9.2) (2025-03-31)
+
+
+### Bug Fixes
+
+* **camel, jmx, quartz:** Added independent scrolling to Tree View [#1380](https://github.com/hawtio/hawtio-next/issues/1380) ([35fb3ba](https://github.com/hawtio/hawtio-next/commit/35fb3ba5f7160bb9e3e009fcf6aa8faad99931b9))
+* **camel,jmx:** fixed background for charts view ([859cbb5](https://github.com/hawtio/hawtio-next/commit/859cbb578239fdbab5db9c49edb0dc5befd16411)), closes [#1379](https://github.com/hawtio/hawtio-next/issues/1379)
+* **camel:** default view should be Route Diagram ([6152638](https://github.com/hawtio/hawtio-next/commit/6152638634c74d757905746eda67874d0f421efe)), closes [#1378](https://github.com/hawtio/hawtio-next/issues/1378)
+* **camel:** newly added endpoint not shown in the endpoints view ([9a41bdb](https://github.com/hawtio/hawtio-next/commit/9a41bdb7aed6e4d9904201bfbcbed53e7557dabd)), closes [#1409](https://github.com/hawtio/hawtio-next/issues/1409)
+* **camel:** start/stop routes in Routes redirects to Route Diagram tab ([5178bc0](https://github.com/hawtio/hawtio-next/commit/5178bc03ef8d99a4676811a60624ff65973c7a28)), closes [#1409](https://github.com/hawtio/hawtio-next/issues/1409)
+* **help:** Add help tabs for OIDC and Keycloak only if enabled (fixes [#1330](https://github.com/hawtio/hawtio-next/issues/1330)) ([bc798fa](https://github.com/hawtio/hawtio-next/commit/bc798fabc95cfde2553a2e25258adfcbb28ec3b8))
+* **springboot-plugin:** Set background to PF5 style. ([#1412](https://github.com/hawtio/hawtio-next/issues/1412)) ([216de10](https://github.com/hawtio/hawtio-next/commit/216de10affe1e629a1e5095089d0814f1cac9328))
+
 ## [1.9.1](https://github.com/hawtio/hawtio-next/compare/v1.9.0...v1.9.1) (2025-03-14)
 
 
