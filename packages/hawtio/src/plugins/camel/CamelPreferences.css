@@ -3,11 +3,11 @@
 }
 
 .pf-v5-c-form__group-label {
+  padding-top: 0px !important;
   display: flex;
-  justify-content: space-between;
   align-items: center;
 }
 
-.pf-v5-c-icon {
-  padding-right: 1em;
+.pf-v5-c-form__group-label > label {
+  padding-right: 0.5em;
 }
