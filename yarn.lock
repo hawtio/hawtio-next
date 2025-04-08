@@ -2035,7 +2035,7 @@ __metadata:
     "@hawtio/camel-model-v4_10": "npm:@hawtio/camel-model@~4.10.2"
     "@hawtio/camel-model-v4_8": "npm:@hawtio/camel-model@~4.8.5"
     "@jolokia.js/simple": "npm:^2.2.4"
-    "@module-federation/utilities": "npm:^3.1.49"
+    "@module-federation/utilities": "npm:^3.1.50"
     "@monaco-editor/react": "npm:^4.7.0"
     "@patternfly/react-charts": "npm:~7.4.9"
     "@patternfly/react-code-editor": "npm:~6.1.0"
@@ -2475,18 +2475,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@module-federation/sdk@npm:0.11.2":
-  version: 0.11.2
-  resolution: "@module-federation/sdk@npm:0.11.2"
-  checksum: 10/0b57523a03b8c81e975bf6bb756130742923a95f37dd7480335c5072500254a1d221077f0fbf595a8ddfb3ac30a0ffe685a259c2377b2982615ee80f856cb85c
+"@module-federation/sdk@npm:0.11.3":
+  version: 0.11.3
+  resolution: "@module-federation/sdk@npm:0.11.3"
+  checksum: 10/f718682bb1ca3e7a8b1ca25200bded0436983f9cad905cc804ae41f369f4af723ae236ac032e675f2a313767cf8505cba565abab53d803d2543b6fb28e2e49e7
   languageName: node
   linkType: hard
 
-"@module-federation/utilities@npm:^3.1.49":
-  version: 3.1.49
-  resolution: "@module-federation/utilities@npm:3.1.49"
+"@module-federation/utilities@npm:^3.1.50":
+  version: 3.1.50
+  resolution: "@module-federation/utilities@npm:3.1.50"
   dependencies:
-    "@module-federation/sdk": "npm:0.11.2"
+    "@module-federation/sdk": "npm:0.11.3"
   peerDependencies:
     react: ^16 || ^17 || ^18
     react-dom: ^16 || ^17 || ^18
@@ -2498,7 +2498,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10/f79ab7218d401987b72ac73430a44522ca825f83b4b29e3df24c64d04c0d80a894683bae3b27b96d7d3cd10d27580e9fcad24eb75097bee8fc02d8abf31d2eab
+  checksum: 10/22ae5b8a5c7f9d207fa2f8b0fd89446ac8c6596f0ae612e6489e5d0595b9b9d901826abb67d178b38c6c4c2914d0b7e0015316814b49fd03ecef52b10d788401
   languageName: node
   linkType: hard
 
