@@ -223,6 +223,11 @@ export function FilteredTable<T>({
               id='search-input'
               placeholder='Search...'
               value={searchTerm.value}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.code.includes('Enter') || e.keyCode === 13) {
+                  addToFilters()
+                }
+              }}
               onChange={(_event, value) => setSearchTerm({ key: attributeMenuItem?.key, value })}
               aria-label='Search input'
             />
