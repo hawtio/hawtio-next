@@ -173,7 +173,7 @@ export function FilteredTable<T>({
   }
 
   const onDeleteFilter = (filter: string) => {
-    if (filter === `${attributeMenuItem}: ${searchTerm.value}`) {
+    if (filter === `${attributeMenuItem?.name}: ${searchTerm.value}`) {
       setSearchTerm({
         key: attributeMenuItem?.key,
         value: '',
