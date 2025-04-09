@@ -173,7 +173,7 @@ export function FilteredTable<T>({
   }
 
   const onDeleteFilter = (filter: string) => {
-    if (filter === `${attributeMenuItem}: ${searchTerm.value}`) {
+    if (filter === `${attributeMenuItem?.name}: ${searchTerm.value}`) {
       setSearchTerm({
         key: attributeMenuItem?.key,
         value: '',
@@ -223,6 +223,11 @@ export function FilteredTable<T>({
               id='search-input'
               placeholder='Search...'
               value={searchTerm.value}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.code.includes('Enter') || e.keyCode === 13) {
+                  addToFilters()
+                }
+              }}
               onChange={(_event, value) => setSearchTerm({ key: attributeMenuItem?.key, value })}
               aria-label='Search input'
             />
