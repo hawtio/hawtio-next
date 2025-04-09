@@ -42,8 +42,8 @@ export const JmxContentMBeans: React.FunctionComponent = () => {
       <Table aria-label='MBeans' variant='compact'>
         <Thead>
           <Tr>
-            <Th>MBean</Th>
-            <Th>Object Name</Th>
+            <Th width={50}>MBean</Th>
+            <Th width={50}>Object Name</Th>
           </Tr>
         </Thead>
         <Tbody className={'jmx-table-body'}>
