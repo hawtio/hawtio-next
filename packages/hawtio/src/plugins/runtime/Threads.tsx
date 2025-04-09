@@ -102,14 +102,14 @@ export const Threads: React.FunctionComponent = () => {
 
       <FilteredTable
         tableColumns={[
-          { key: 'threadId', name: 'ID' },
-          { key: 'threadState', name: 'State' },
-          { key: 'threadName', name: 'Name' },
-          { key: 'waitedTime', name: 'Waited Time' },
-          { key: 'blockedTime', name: 'Blocked Time' },
-          { key: 'inNative', name: 'Native' },
-          { key: 'suspended', name: 'Suspended' },
-          { renderer: DetailsButton },
+          { key: 'threadId', name: 'ID', percentageWidth: 10 },
+          { key: 'threadState', name: 'State', percentageWidth: 10 },
+          { key: 'threadName', name: 'Name', percentageWidth: 30 },
+          { key: 'waitedTime', name: 'Waited Time', percentageWidth: 10 },
+          { key: 'blockedTime', name: 'Blocked Time', percentageWidth: 10 },
+          { key: 'inNative', name: 'Native', percentageWidth: 10 },
+          { key: 'suspended', name: 'Suspended', percentageWidth: 10 },
+          { renderer: DetailsButton, percentageWidth: 10 },
         ]}
         searchCategories={[
           {
