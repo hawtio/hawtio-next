@@ -184,19 +184,23 @@ const LogsTable: React.FunctionComponent = () => {
           {
             name: 'Timestamp',
             key: 'timestamp',
+            percentageWidth: 10,
           },
           {
             name: 'Level',
             key: 'level',
             renderer: val => <LogLevel level={val.level} />,
+            percentageWidth: 10,
           },
           {
             name: 'Logger',
             key: 'logger',
+            percentageWidth: 40,
           },
           {
             name: 'Message',
             key: 'message',
+            percentageWidth: 40,
           },
         ]}
         searchCategories={[

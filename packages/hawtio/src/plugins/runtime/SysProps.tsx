@@ -17,10 +17,12 @@ export const SysProps: React.FunctionComponent = () => {
         {
           name: 'Property Name',
           key: 'key',
+          percentageWidth: 20,
         },
         {
           name: 'Property Value',
           key: 'value',
+          percentageWidth: 80,
         },
       ]}
       rows={properties}
