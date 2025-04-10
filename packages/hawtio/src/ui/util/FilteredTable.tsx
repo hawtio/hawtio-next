@@ -29,15 +29,13 @@ import { SearchIcon } from '@patternfly/react-icons'
 import { ExpandableText } from './ExpandableText'
 import { isNumber, objectSorter } from '@hawtiosrc/util/objects'
 
-type AvailablePercentageWidths = 10 | 15 | 20 | 25 | 30 | 35 | 40 | 45 | 50 | 60 | 70 | 80 | 90 | 100
-
 interface Props<T> {
   extraToolbar?: React.ReactNode
   tableColumns: {
     name?: string
     key?: keyof T
     renderer?: (value: T) => React.ReactNode
-    percentageWidth?: AvailablePercentageWidths
+    percentageWidth?: ThProps['width']
   }[]
   rows: T[]
   searchCategories: { name: string; key: keyof T }[]
