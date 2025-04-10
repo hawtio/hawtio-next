@@ -1,5 +1,16 @@
 import { ChartBullet } from '@patternfly/react-charts'
-import { Card, CardBody, CardHeader, Grid, GridItem, Title } from '@patternfly/react-core'
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTerm,
+  Grid,
+  GridItem,
+  Title,
+} from '@patternfly/react-core'
 import React, { useEffect, useState } from 'react'
 import { runtimeService } from './runtime-service'
 import { Metric } from './types'
@@ -36,34 +47,38 @@ export const Metrics: React.FunctionComponent = () => {
             <Title headingLevel='h2'>System</Title>
           </CardHeader>
           <CardBody>
-            {Object.values(metrics)
-              .filter(m => m.type === 'System')
-              .map((metric, index) => {
-                return (
-                  <div key={index}>
-                    {metric.name} :
-                    <span>
-                      {metric.value} {metric.unit ?? ''}
-                      {metric.available &&
-                        ' of ' + metric.available + ' ' + (metric.availableUnit ?? metric.unit ?? '')}
-                    </span>
-                    {metric.chart && (
-                      <ChartBullet
-                        ariaDesc={metric.chartUnit}
-                        ariaTitle={metric.chartValue + ' ' + metric.chartUnit}
-                        comparativeWarningMeasureData={[
-                          { name: 'Warning', y: 0.9 * (metric.chartAvailable as number) },
-                        ]}
-                        constrainToVisibleArea
-                        maxDomain={{ y: metric.chartAvailable as number }}
-                        name={metric.name}
-                        primarySegmentedMeasureData={[{ name: metric.chartUnit, y: metric.chartValue }]}
-                        width={600}
-                      />
-                    )}
-                  </div>
-                )
-              })}
+            <DescriptionList>
+              {Object.values(metrics)
+                .filter(m => m.type === 'System')
+                .map((metric, index) => {
+                  return (
+                    <DescriptionListGroup key={index}>
+                      <DescriptionListTerm>{metric.name}</DescriptionListTerm>
+                      <DescriptionListDescription>
+                        <span>
+                          {metric.value} {metric.unit ?? ''}
+                          {metric.available &&
+                            ' of ' + metric.available + ' ' + (metric.availableUnit ?? metric.unit ?? '')}
+                        </span>
+                        {metric.chart && (
+                          <ChartBullet
+                            ariaDesc={metric.chartUnit}
+                            ariaTitle={metric.chartValue + ' ' + metric.chartUnit}
+                            comparativeWarningMeasureData={[
+                              { name: 'Warning', y: 0.9 * (metric.chartAvailable as number) },
+                            ]}
+                            constrainToVisibleArea
+                            maxDomain={{ y: metric.chartAvailable as number }}
+                            name={metric.name}
+                            primarySegmentedMeasureData={[{ name: metric.chartUnit, y: metric.chartValue }]}
+                            width={600}
+                          />
+                        )}
+                      </DescriptionListDescription>
+                    </DescriptionListGroup>
+                  )
+                })}
+            </DescriptionList>
           </CardBody>
         </Card>
       </GridItem>
@@ -74,19 +89,22 @@ export const Metrics: React.FunctionComponent = () => {
           </CardHeader>
 
           <CardBody>
-            {Object.values(metrics)
-              .filter(m => m.type === 'JVM')
-              .map((metric, index) => {
-                return (
-                  <div key={index}>
-                    {metric.name}:
-                    <span>
-                      {metric.value} {metric.unit ?? ''}
-                      {metric.available && 'of' + metric.available + ' ' + (metric.availableUnit ?? metric.unit ?? '')}
-                    </span>
-                  </div>
-                )
-              })}
+            <DescriptionList>
+              {Object.values(metrics)
+                .filter(m => m.type === 'JVM')
+                .map((metric, index) => {
+                  return (
+                    <DescriptionListGroup key={index}>
+                      <DescriptionListTerm>{metric.name}</DescriptionListTerm>
+                      <DescriptionListDescription>
+                        {metric.value} {metric.unit ?? ''}
+                        {metric.available &&
+                          'of' + metric.available + ' ' + (metric.availableUnit ?? metric.unit ?? '')}
+                      </DescriptionListDescription>
+                    </DescriptionListGroup>
+                  )
+                })}
+            </DescriptionList>
           </CardBody>
         </Card>
       </GridItem>
