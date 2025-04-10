@@ -25,6 +25,7 @@ import {
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core'
+import './Remote.css'
 import { PluggedIcon, PlusIcon, UnpluggedIcon } from '@patternfly/react-icons'
 import React, { useContext, useEffect, useState } from 'react'
 import { DELETE } from '../connections'
@@ -230,8 +231,14 @@ const ConnectionItem: React.FunctionComponent<{
             key={`connection-action-dropdown-${id}`}
             isOpen={isDropdownOpen}
             onOpenChange={setIsDropdownOpen}
+            popperProps={{ position: 'right' }}
             toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-              <MenuToggle variant='plain' ref={toggleRef} onClick={handleDropdownToggle}>
+              <MenuToggle
+                variant='plain'
+                ref={toggleRef}
+                className='data-list-action-toggle'
+                onClick={handleDropdownToggle}
+              >
                 <EllipsisVIcon />
               </MenuToggle>
             )}
