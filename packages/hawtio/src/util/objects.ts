@@ -21,6 +21,15 @@ export function isNumber(value: unknown): value is number {
   return typeof value === 'number' && !Number.isNaN(value)
 }
 
+export function isTranslatableToNumber(value: unknown): boolean {
+  return !Number.isNaN(Number(value))
+}
+
+export function roundNumber(value: unknown, decimals?: number) {
+  // Returns the value if it is a number rounded to the number of digits, or returns the value
+  return value && isTranslatableToNumber(value) ? +Number(value).toFixed(decimals || 0) : value
+}
+
 export function objectSorter(aValue: unknown, bValue: unknown, sortDesc?: boolean) {
   if (isNumber(aValue)) {
     // Numeric sort
