@@ -14,6 +14,7 @@ import {
 import React, { useEffect, useState } from 'react'
 import { runtimeService } from './runtime-service'
 import { Metric } from './types'
+import { roundNumber } from '@hawtiosrc/util/objects'
 
 export const Metrics: React.FunctionComponent = () => {
   const [metrics, setMetrics] = useState<Record<string, Metric>>({})
@@ -56,9 +57,12 @@ export const Metrics: React.FunctionComponent = () => {
                       <DescriptionListTerm>{metric.name}</DescriptionListTerm>
                       <DescriptionListDescription>
                         <span>
-                          {metric.value} {metric.unit ?? ''}
+                          {metric.value ? String(roundNumber(metric.value, 2)) : metric.value} {metric.unit ?? ''}
                           {metric.available &&
-                            ' of ' + metric.available + ' ' + (metric.availableUnit ?? metric.unit ?? '')}
+                            ' of ' +
+                              String(roundNumber(metric.available, 2)) +
+                              ' ' +
+                              (metric.availableUnit ?? metric.unit ?? '')}
                         </span>
                         {metric.chart && (
                           <ChartBullet
@@ -97,9 +101,12 @@ export const Metrics: React.FunctionComponent = () => {
                     <DescriptionListGroup key={index}>
                       <DescriptionListTerm>{metric.name}</DescriptionListTerm>
                       <DescriptionListDescription>
-                        {metric.value} {metric.unit ?? ''}
+                        {metric.value ? String(roundNumber(metric.value, 2)) : metric.value} {metric.unit ?? ''}
                         {metric.available &&
-                          'of' + metric.available + ' ' + (metric.availableUnit ?? metric.unit ?? '')}
+                          ' of ' +
+                            String(roundNumber(metric.available, 2)) +
+                            ' ' +
+                            (metric.availableUnit ?? metric.unit ?? '')}
                       </DescriptionListDescription>
                     </DescriptionListGroup>
                   )
