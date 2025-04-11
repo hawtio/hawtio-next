@@ -22,7 +22,7 @@ export function isNumber(value: unknown): value is number {
 }
 
 export function isTranslatableToNumber(value: unknown): boolean {
-  return !Number.isNaN(Number(value))
+  return ['number', 'string'].includes(typeof value) && value !== '' && !Number.isNaN(Number(value))
 }
 
 export function roundNumber(value: unknown, decimals?: number) {
