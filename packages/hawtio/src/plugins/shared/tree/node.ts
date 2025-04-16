@@ -5,7 +5,7 @@ import { TreeViewDataItem } from '@patternfly/react-core'
 import { CubeIcon, FolderIcon, FolderOpenIcon, LockIcon } from '@patternfly/react-icons'
 import { MBeanAttribute, MBeanInfo, MBeanInfoError, MBeanOperation } from 'jolokia.js'
 import React from 'react'
-import { array, define, is, object, optional, record, string, type, union } from 'superstruct'
+import {array, define, is, nullable, object, optional, record, string, type, union} from 'superstruct'
 import { log } from './globals'
 
 export const Icons = {
@@ -39,7 +39,7 @@ export function isMBeanInfo(value: unknown): value is OptimisedMBeanInfo {
   return is(
     value,
     type({
-      desc: optional(string()),
+      desc: optional(nullable(string())),
       class: optional(string()),
       attr: optional(record(string(), object())),
       op: optional(record(string(), union([object(), array(object())]))),
