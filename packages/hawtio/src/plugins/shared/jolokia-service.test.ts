@@ -630,24 +630,24 @@ describe('JolokiaService', () => {
   test('problematic JSON response with null desc from case hawtio/hawtio-next#1349', () => {
     const response = {
       value: {
-        'Tomcat': {
+        Tomcat: {
           'type=StringCache': {
             op: {
-              'reset': {
-                'args': [],
-                'ret': 'void',
-                'desc': 'Introspected operation reset'
-              }
+              reset: {
+                args: [],
+                ret: 'void',
+                desc: 'Introspected operation reset',
+              },
             },
             attr: {
-              'accessCount': {
-                'rw': false,
-                'type': 'int',
-                'desc': 'Introspected attribute accessCount'
-              }
+              accessCount: {
+                rw: false,
+                type: 'int',
+                desc: 'Introspected attribute accessCount',
+              },
             },
             class: 'org.apache.tomcat.util.modeler.BaseModelMBean',
-            desc: null
+            desc: null,
           },
         },
       },
