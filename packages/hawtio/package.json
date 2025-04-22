@@ -86,7 +86,7 @@
     "ts-jest": "^29.3.2",
     "ts-node": "^10.9.2",
     "tsup": "^8.4.0",
-    "webpack": "^5.99.5"
+    "webpack": "^5.99.6"
   },
   "peerDependencies": {
     "@patternfly/react-core": "^5",
