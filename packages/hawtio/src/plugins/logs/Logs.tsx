@@ -217,7 +217,7 @@ const LogsTable: React.FunctionComponent = () => {
           setSelected(row.logEntry)
           setIsModalOpen(true)
         }}
-        extraToolbar={levelToggles}
+        fixedSetToolbar={levelToggles}
         onClearAllFilters={() => handleFiltersChange('level', [])}
       />
     </>
