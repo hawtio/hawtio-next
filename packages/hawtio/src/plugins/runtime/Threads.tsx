@@ -122,7 +122,7 @@ export const Threads: React.FunctionComponent = () => {
           },
         ]}
         rows={threads}
-        extraToolbar={<ExtraToolBar />}
+        extraToolbarRight={<ExtraToolBar />}
       />
     </>
   )
