@@ -30,6 +30,7 @@ import { ExpandableText } from './ExpandableText'
 import { isNumber, objectSorter } from '@hawtiosrc/util/objects'
 
 interface Props<T> {
+  fixedSetToolbar?: React.ReactNode
   extraToolbar?: React.ReactNode
   tableColumns: {
     name?: string
@@ -53,6 +54,7 @@ function numberOrString(value: unknown): string | number {
 }
 
 export function FilteredTable<T>({
+  fixedSetToolbar,
   extraToolbar,
   tableColumns,
   rows,
@@ -192,6 +194,7 @@ export function FilteredTable<T>({
   const tableToolBar = (
     <Toolbar clearAllFilters={clearFilters}>
       <ToolbarContent>
+        {fixedSetToolbar}
         <ToolbarGroup>
           <Dropdown
             data-testid='attribute-select'
