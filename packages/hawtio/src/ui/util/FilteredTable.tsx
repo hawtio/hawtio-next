@@ -16,6 +16,9 @@ import {
   PanelMain,
   PanelMainBody,
   SearchInput,
+  Select,
+  SelectList,
+  SelectOption,
   Toolbar,
   ToolbarContent,
   ToolbarFilter,
@@ -39,6 +42,14 @@ interface Props<T> {
     percentageWidth?: ThProps['width']
   }[]
   rows: T[]
+  fixedSearchCategories?: {
+    key: keyof T
+    name: string
+    values: string[]
+    id?: string
+    ariaLabel?: string
+    renderer?: (value: string) => React.ReactNode
+  }[]
   searchCategories: { name: string; key: keyof T }[]
   onClick?: (value: T) => void
   onClearAllFilters?: () => void
@@ -58,6 +69,7 @@ export function FilteredTable<T>({
   extraToolbarRight,
   tableColumns,
   rows,
+  fixedSearchCategories,
   searchCategories,
   onClick,
   onClearAllFilters,
@@ -83,6 +95,15 @@ export function FilteredTable<T>({
   const [perPage, setPerPage] = useState(20)
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isFixedDropdownOpen, setIsFixedDropdownOpen] = useState<Map<keyof T, boolean>>(() => {
+    const fixedSearchDropdownMap = new Map<keyof T, boolean>()
+
+    fixedSearchCategories?.forEach(category => {
+      fixedSearchDropdownMap.set(category.key, false)
+    })
+
+    return fixedSearchDropdownMap
+  })
 
   const [sortIndex, setSortIndex] = useState<number>(-1)
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
@@ -194,6 +215,65 @@ export function FilteredTable<T>({
   const tableToolBar = (
     <Toolbar clearAllFilters={clearFilters}>
       <ToolbarContent>
+        {extraToolbarLeft}
+
+        {fixedSearchCategories?.map(category => (
+          <ToolbarFilter
+            id={category.id || String(category.key) + '-toolbar'}
+            categoryName='Level'
+            key={category.id || String(category.key) + '-toolbar'}
+          >
+            <Select
+              id={(category.id || String(category.key) + '-toolbar') + '-select'}
+              aria-label={category.ariaLabel || category.name}
+              selected={filters.filter(filter => filter.key === category.key).map(filter => filter.value)}
+              isOpen={isFixedDropdownOpen.get(category.key)}
+              onOpenChange={() => {
+                isFixedDropdownOpen.set(category.key, !isFixedDropdownOpen.get(category.key))
+                setIsFixedDropdownOpen(new Map(isFixedDropdownOpen))
+              }}
+              toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                <MenuToggle
+                  role='menu'
+                  ref={toggleRef}
+                  onClick={() => {
+                    isFixedDropdownOpen.set(category.key, !isFixedDropdownOpen.get(category.key))
+                    setIsFixedDropdownOpen(new Map(isFixedDropdownOpen))
+                  }}
+                >
+                  Level
+                </MenuToggle>
+              )}
+              onSelect={(event?: React.MouseEvent<Element, MouseEvent>, value?: string | number) => {
+                const checked = (event?.target as HTMLInputElement).checked
+
+                if (checked) {
+                  setFilters([...filters, { key: category.key, value: String(value), name: category.name }])
+                } else {
+                  setFilters([
+                    ...filters.filter(filter => !(filter.key === category.key && filter.value === String(value))),
+                  ])
+                }
+              }}
+            >
+              <SelectList>
+                {category.values.map((level, index) => (
+                  <SelectOption
+                    hasCheckbox
+                    key={level}
+                    value={level}
+                    isSelected={filters
+                      .filter(filter => filter.key === category.key)
+                      .map(filter => filter.value)
+                      .includes(level)}
+                  >
+                    {category.renderer?.(level)}
+                  </SelectOption>
+                ))}
+              </SelectList>
+            </Select>
+          </ToolbarFilter>
+        ))}
         {extraToolbarLeft}
         <ToolbarGroup>
           <Dropdown

@@ -15,16 +15,10 @@ import {
   PageSection,
   Skeleton,
   Title,
-  ToolbarFilter,
-  MenuToggle,
-  MenuToggleElement,
-  SelectOption,
-  Select,
-  SelectList,
 } from '@patternfly/react-core'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { log } from './globals'
-import { LogEntry, LogFilter } from './log-entry'
+import { LogEntry } from './log-entry'
 import { LOGS_UPDATE_INTERVAL, logsService } from './logs-service'
 import { FilteredTable } from '@hawtiosrc/ui'
 
@@ -63,20 +57,15 @@ const LogsTable: React.FunctionComponent = () => {
   const timestamp = useRef(0)
   const [loaded, setLoaded] = useState(false)
 
-  // Filters
-  const emptyFilters: LogFilter = { level: [], logger: '', message: '', properties: '' }
-  const [filters, setFilters] = useState(emptyFilters)
-  // Temporal filter values holder until applying it
-  const tempFilters = useRef<{ logger: string; message: string; properties: string }>(emptyFilters)
-  const [isSelectLevelOpen, setIsSelectLevelOpen] = useState(false)
-
   // Modal
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selected, setSelected] = useState<LogEntry | null>(null)
 
   const rows = useMemo(() => {
-    return logsService.filter(logs, filters).map(log => new LogRowData(log))
-  }, [logs, filters])
+    return logsService
+      .filter(logs, { level: [], logger: '', message: '', properties: '' })
+      .map(log => new LogRowData(log))
+  }, [logs])
 
   useEffect(() => {
     const loadLogs = async () => {
@@ -113,66 +102,11 @@ const LogsTable: React.FunctionComponent = () => {
     return <Skeleton data-testid='loading-logs' screenreaderText='Loading...' />
   }
 
-  const handleFiltersChange = (target: string, value: string | string[], apply = false) => {
-    if (apply || target === 'level') {
-      setFilters(prev => ({ ...prev, [target]: value }))
-    } else {
-      tempFilters.current = { ...tempFilters.current, [target]: value }
-    }
-  }
-
-  const onLevelSelect = (event?: React.MouseEvent<Element, MouseEvent>, value?: string | number) => {
-    const checked = (event?.target as HTMLInputElement).checked
-
-    setFilters(prev => {
-      const prevLevels = prev.level
-      const newLevels = checked ? [...prevLevels, value as string] : prevLevels.filter(l => l !== value)
-      return { ...prev, level: newLevels }
-    })
-  }
-
   const logLevels = ['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR']
 
   const handleModalToggle = () => {
     setIsModalOpen(!isModalOpen)
   }
-
-  const levelToggles = (
-    <ToolbarFilter
-      id='logs-table-toolbar-level'
-      chips={filters.level}
-      deleteChip={(_, chip) =>
-        handleFiltersChange(
-          'level',
-          filters.level.filter(l => l !== chip),
-        )
-      }
-      deleteChipGroup={() => handleFiltersChange('level', [])}
-      categoryName='Level'
-    >
-      <Select
-        id='logs-table-toolbar-level-select'
-        aria-label='Filter Level'
-        selected={filters.level}
-        isOpen={isSelectLevelOpen}
-        onOpenChange={setIsSelectLevelOpen}
-        toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-          <MenuToggle role='menu' ref={toggleRef} onClick={() => setIsSelectLevelOpen(!isSelectLevelOpen)}>
-            Level
-          </MenuToggle>
-        )}
-        onSelect={onLevelSelect}
-      >
-        <SelectList>
-          {logLevels.map((level, index) => (
-            <SelectOption hasCheckbox key={index} value={level} isSelected={filters.level.includes(level)}>
-              <LogLevel level={level} />
-            </SelectOption>
-          ))}
-        </SelectList>
-      </Select>
-    </ToolbarFilter>
-  )
 
   return (
     <>
@@ -203,6 +137,16 @@ const LogsTable: React.FunctionComponent = () => {
             percentageWidth: 40,
           },
         ]}
+        fixedSearchCategories={[
+          {
+            name: 'Level',
+            key: 'level',
+            id: 'logs-table-toolbar-level',
+            ariaLabel: 'Filter level',
+            values: logLevels,
+            renderer: val => <LogLevel level={val} />,
+          },
+        ]}
         searchCategories={[
           {
             name: 'Logger',
@@ -217,8 +161,6 @@ const LogsTable: React.FunctionComponent = () => {
           setSelected(row.logEntry)
           setIsModalOpen(true)
         }}
-        extraToolbarLeft={levelToggles}
-        onClearAllFilters={() => handleFiltersChange('level', [])}
       />
     </>
   )
