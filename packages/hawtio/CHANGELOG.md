@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.9.3](https://github.com/hawtio/hawtio-next/compare/v1.9.2...v1.9.3) (2025-04-25)
+
+
+### Bug Fixes
+
+* **connect:** Fixed toggle moving when dropdown was shown (hawng-967) ([69f7534](https://github.com/hawtio/hawtio-next/commit/69f75344234baf0f497e3f45fcb988e4b44dfa71))
+* **preferences, runtime:** Fixed icon placements to the left. Fixed search terms not being able to be removed. ([#1435](https://github.com/hawtio/hawtio-next/issues/1435), [#1438](https://github.com/hawtio/hawtio-next/issues/1438)) ([265eb47](https://github.com/hawtio/hawtio-next/commit/265eb4774e5f60099a94aded4dd98233d6481d78))
+* **runtime, logs:** Fixed column width in data tables changing ([#1452](https://github.com/hawtio/hawtio-next/issues/1452)) ([363d476](https://github.com/hawtio/hawtio-next/commit/363d47606cc21a3804639643737fb591951ead32))
+* **runtime:** Round values in Metrics ([#1437](https://github.com/hawtio/hawtio-next/issues/1437)) ([46c1e0e](https://github.com/hawtio/hawtio-next/commit/46c1e0e8014cf249c82692587ea4268484dbe5de))
+* **runtime:** Test for isTranslatableToNumber and roundNumber ([#1437](https://github.com/hawtio/hawtio-next/issues/1437)) ([f6ea5a8](https://github.com/hawtio/hawtio-next/commit/f6ea5a8fe616cee938092f82d7f32fe8491c278f))
+* **runtime:** Use DescriptionList in Metrics ([#1437](https://github.com/hawtio/hawtio-next/issues/1437)) ([009db89](https://github.com/hawtio/hawtio-next/commit/009db898de48511ec04a6ad6fe37a02e2746714b))
+* **shared:** Fixed column width in JMXAttributes ([#1452](https://github.com/hawtio/hawtio-next/issues/1452)) ([3bc0463](https://github.com/hawtio/hawtio-next/commit/3bc046314fa4949f30f0e0608ad3e0014bf94b46))
+
 ## [1.9.2](https://github.com/hawtio/hawtio-next/compare/v1.9.1...v1.9.2) (2025-03-31)
 
 
