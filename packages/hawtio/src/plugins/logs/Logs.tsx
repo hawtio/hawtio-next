@@ -16,7 +16,7 @@ import {
   Skeleton,
   Title,
 } from '@patternfly/react-core'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { log } from './globals'
 import { LogEntry } from './log-entry'
 import { LOGS_UPDATE_INTERVAL, logsService } from './logs-service'
@@ -53,7 +53,8 @@ class LogRowData {
 }
 
 const LogsTable: React.FunctionComponent = () => {
-  const [logs, setLogs] = useState<LogEntry[]>([])
+  const [, setLogs] = useState<LogEntry[]>([])
+  const [rows, setRows] = useState<LogRowData[]>([])
   const timestamp = useRef(0)
   const [loaded, setLoaded] = useState(false)
 
@@ -61,16 +62,11 @@ const LogsTable: React.FunctionComponent = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selected, setSelected] = useState<LogEntry | null>(null)
 
-  const rows = useMemo(() => {
-    return logsService
-      .filter(logs, { level: [], logger: '', message: '', properties: '' })
-      .map(log => new LogRowData(log))
-  }, [logs])
-
   useEffect(() => {
     const loadLogs = async () => {
       const result = await logsService.loadLogs()
       setLogs(result.logs)
+      setRows(result.logs.map(log => new LogRowData(log)))
       timestamp.current = result.timestamp
       setLoaded(true)
       log.debug('Load logs:', timestamp.current)
@@ -86,7 +82,11 @@ const LogsTable: React.FunctionComponent = () => {
       if (timeoutHandle && timestamp.current > 0) {
         const result = await logsService.loadLogsAfter(timestamp.current)
         if (result.logs.length > 0) {
-          setLogs(prev => logsService.append(prev, result.logs))
+          setLogs(prev => {
+            const logsAppended = logsService.append(prev, result.logs)
+            setRows(logsAppended.map(log => new LogRowData(log)))
+            return logsAppended
+          })
         }
         timestamp.current = result.timestamp
       }
