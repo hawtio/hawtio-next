@@ -22,13 +22,13 @@ https://github.com/hawtio/hawtio-next/tree/react17-memoryrouter
 NPM
 
 ```console
-npm i @hawtio/react@1.9.x-React17_MemoryRouter.#
+npm i @hawtio/react@1.9.x-react17.memoryrouter.dev.#
 ```
 
 Yarn
 
 ```console
-yarn add @hawtio/react@1.9.x-React17_MemoryRouter.#
+yarn add @hawtio/react@1.9.x-react17_memoryrouter.dev.#
 ```
 
 ## Usage
