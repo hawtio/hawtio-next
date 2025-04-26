@@ -423,17 +423,15 @@ class ConnectService implements IConnectService {
 
   private async forbiddenReasonMatches(response: Response, reason: string): Promise<boolean> {
     // Preserve compatibility with versions of Hawtio 2.x that return JSON on 403 responses
-    return response
-      .text()
-      .then(txt => {
+    return response.text().then(txt => {
+      try {
         const json = JSON.parse(txt)
-        // exception will propagate to .catch()
         return json['reason'] === reason
-      })
-      .catch(_ => {
+      } catch (_) {
         // Otherwise expect a response header containing a forbidden reason
         return response.headers.get('Hawtio-Forbidden-Reason') === reason
-      })
+      }
+    })
   }
 
   connect(connection: Connection, current = false) {
