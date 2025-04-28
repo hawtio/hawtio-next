@@ -427,7 +427,8 @@ class ConnectService implements IConnectService {
       try {
         const json = JSON.parse(txt)
         return json['reason'] === reason
-      } catch (_) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (e) {
         // Otherwise expect a response header containing a forbidden reason
         return response.headers.get('Hawtio-Forbidden-Reason') === reason
       }
