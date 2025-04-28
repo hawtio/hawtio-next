@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.9.4](https://github.com/hawtio/hawtio-next/compare/v1.9.3...v1.9.4) (2025-04-28)
+
+
+### Bug Fixes
+
+* catch exception on http code 403 properly ([7638fbc](https://github.com/hawtio/hawtio-next/commit/7638fbcd5ffcc424613638ed5941e307e49a3e95))
+
 ## [1.9.3](https://github.com/hawtio/hawtio-next/compare/v1.9.2...v1.9.3) (2025-04-25)
 
 
