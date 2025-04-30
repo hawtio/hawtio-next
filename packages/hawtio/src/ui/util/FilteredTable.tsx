@@ -39,7 +39,9 @@ interface Props<T> {
     name?: string
     key?: keyof T
     renderer?: (value: T) => React.ReactNode
+    isAction?: boolean
     percentageWidth?: ThProps['width']
+    hideValues?: string[]
   }[]
   rows: T[]
   fixedSearchCategories?: {
@@ -220,7 +222,7 @@ export function FilteredTable<T>({
         {fixedSearchCategories?.map(category => (
           <ToolbarFilter
             id={category.id || String(category.key) + '-toolbar'}
-            categoryName='Level'
+            categoryName={category.name}
             key={category.id || String(category.key) + '-toolbar'}
           >
             <Select
@@ -241,7 +243,7 @@ export function FilteredTable<T>({
                     setIsFixedDropdownOpen(new Map(isFixedDropdownOpen))
                   }}
                 >
-                  Level
+                  {category.name}
                 </MenuToggle>
               )}
               onSelect={(event?: React.MouseEvent<Element, MouseEvent>, value?: string | number) => {
@@ -257,17 +259,17 @@ export function FilteredTable<T>({
               }}
             >
               <SelectList>
-                {category.values.map((level, index) => (
+                {category.values.map((value, index) => (
                   <SelectOption
                     hasCheckbox
-                    key={level}
-                    value={level}
+                    key={index}
+                    value={value}
                     isSelected={filters
                       .filter(filter => filter.key === category.key)
                       .map(filter => filter.value)
-                      .includes(level)}
+                      .includes(value)}
                   >
-                    {category.renderer?.(level)}
+                    {category.renderer?.(value) ?? value}
                   </SelectOption>
                 ))}
               </SelectList>
@@ -359,8 +361,11 @@ export function FilteredTable<T>({
     return res
   }
 
-  const defaultCellRenderer = (data: (string | number)[], row: number, column: number) => {
+  const defaultCellRenderer = (data: (string | number)[], row: number, column: number, hideText?: string[]) => {
     let text: React.ReactNode = data[column]
+    if (hideText && hideText.includes(String(text))) {
+      text = ''
+    }
     if (highlightSearch) {
       text = highlightSearchedText(
         String(text),
@@ -400,9 +405,9 @@ export function FilteredTable<T>({
                     const values = getValuesForDisplay(item)
                     return (
                       <Tr key={'row' + index} data-testid={'row' + index} onClick={() => onClick?.(item)}>
-                        {tableColumns.map(({ renderer }, column) => (
-                          <Td key={'col' + index + '-' + column}>
-                            {renderer ? renderer(item) : defaultCellRenderer(values, index, column)}
+                        {tableColumns.map(({ renderer, hideValues, isAction }, column) => (
+                          <Td key={'col' + index + '-' + column} isActionCell={isAction}>
+                            {renderer ? renderer(item) : defaultCellRenderer(values, index, column, hideValues)}
                           </Td>
                         ))}
                       </Tr>
