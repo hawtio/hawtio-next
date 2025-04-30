@@ -1,54 +1,19 @@
 import { HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
-import {
-  Bullseye,
-  Button,
-  EmptyState,
-  EmptyStateBody,
-  EmptyStateIcon,
-  Panel,
-  PanelMain,
-  PanelMainBody,
-  SearchInput,
-  Toolbar,
-  ToolbarContent,
-  ToolbarGroup,
-  ToolbarItem,
-  EmptyStateHeader,
-  EmptyStateFooter,
-  Select,
-  SelectOption,
-  SelectList,
-  MenuToggleElement,
-  MenuToggle,
-} from '@patternfly/react-core'
+import { Button, Panel, PanelMain, PanelMainBody, Modal } from '@patternfly/react-core'
+import './Jobs.css'
 
-import { SearchIcon } from '@patternfly/react-icons'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { QuartzContext } from '../context'
-import { Job, JobFilter, quartzService } from '../quartz-service'
-import { JobsTableRow } from './JobsTableRow'
+import { Job, quartzService } from '../quartz-service'
+import { FilteredTable } from '@hawtiosrc/ui'
 
 export const Jobs: React.FunctionComponent = () => {
   const { selectedNode } = useContext(QuartzContext)
   const [jobs, setJobs] = useState<Job[]>([])
   const [isReading, setIsReading] = useState(true)
-
-  // Filters
-  const emptyFilters: JobFilter = {
-    group: '',
-    name: '',
-    durability: '',
-    shouldRecover: '',
-    jobClass: '',
-    description: '',
-  }
-  const [filters, setFilters] = useState(emptyFilters)
-  // Temporal filter values holder until applying it
-  const tempFilters = useRef(emptyFilters)
-  const [filteredJobs, setFilteredJobs] = useState<Job[]>([])
-  const [isSelectDurableOpen, setIsSelectDurableOpen] = useState(false)
-  const [isSelectRecoverOpen, setIsSelectRecoverOpen] = useState(false)
+  const [isDetailOpen, setIsDetailOpen] = useState(false)
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null)
 
   useEffect(() => {
     if (!selectedNode || !selectedNode.mbean || !selectedNode.objectName) {
@@ -71,11 +36,6 @@ export const Jobs: React.FunctionComponent = () => {
     return () => quartzService.unregisterAll()
   }, [selectedNode])
 
-  useEffect(() => {
-    const filteredJobs = quartzService.filterJobs(jobs, filters)
-    setFilteredJobs(filteredJobs)
-  }, [jobs, filters])
-
   if (!selectedNode || !selectedNode.mbean || !selectedNode.objectName) {
     return null
   }
@@ -84,149 +44,133 @@ export const Jobs: React.FunctionComponent = () => {
     return <HawtioLoadingCard />
   }
 
-  const handleFiltersChange = (target: string, value: string, apply = false) => {
-    if (apply || target === 'durability' || target === 'shouldRecover') {
-      setFilters(prev => ({ ...prev, [target]: value }))
-    } else {
-      tempFilters.current = { ...tempFilters.current, [target]: value }
+  const JobDetailModal: React.FunctionComponent<{
+    isOpen: boolean
+    onClose: () => void
+    input: Job | null
+  }> = ({ isOpen, onClose, input }) => {
+    if (!input) {
+      return null
     }
+
+    const { group, name, jobDataMap } = input
+
+    return (
+      <Modal
+        id='quartz-jobs-detail-modal'
+        variant='medium'
+        title={`Job Detail: ${group}/${name}`}
+        isOpen={isOpen}
+        onClose={onClose}
+        actions={[
+          <Button key='close' variant='primary' onClick={onClose}>
+            Close
+          </Button>,
+        ]}
+      >
+        <Table id='quartz-jobs-detail-table' variant='compact' aria-label='Job Detail Table' isStriped>
+          <Thead>
+            <Tr>
+              <Th>Key</Th>
+              <Th>Value</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {Object.entries(jobDataMap).map(([key, value], index) => (
+              <Tr key={index}>
+                <Td>{key}</Td>
+                <Td>{value}</Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      </Modal>
+    )
   }
-
-  const onSelect = (target: string) => (_event?: React.MouseEvent<Element, MouseEvent>, value?: string | number) => {
-    setFilters(prev => ({ ...prev, [target]: value === 'placeholder' ? '' : value }))
-  }
-
-  const applyFilters = () => {
-    setFilters(prev => ({ ...prev, ...tempFilters.current }))
-  }
-
-  const clearAllFilters = () => {
-    setFilters(emptyFilters)
-    tempFilters.current = emptyFilters
-  }
-
-  const toolbarItemSearchInput = (key: string) => (
-    <ToolbarItem key={key} id={`quartz-jobs-table-toolbar-${key}`}>
-      <SearchInput
-        id={`quartz-jobs-table-toolbar-${key}-input`}
-        aria-label={`Filter ${key.charAt(0).toUpperCase() + key.slice(1)}`}
-        placeholder={`Filter by ${key}`}
-        value={filters[key as keyof JobFilter]}
-        onChange={(_, value) => handleFiltersChange(key, value)}
-        onSearch={() => applyFilters()}
-        onClear={() => handleFiltersChange(key, '', true)}
-      />
-    </ToolbarItem>
-  )
-
-  const tableToolbar = (
-    <Toolbar id='quartz-jobs-table-toolbar' clearAllFilters={clearAllFilters}>
-      <ToolbarContent>
-        <ToolbarGroup id='quartz-jobs-table-toolbar-filters-1'>
-          {['group', 'name'].map(key => toolbarItemSearchInput(key))}
-          <ToolbarItem id='quartz-jobs-table-toolbar-durable'>
-            <Select
-              id='quartz-jobs-table-toolbar-durable-select'
-              aria-label='Filter Durable'
-              selected={filters.durability}
-              onOpenChange={setIsSelectDurableOpen}
-              isOpen={isSelectDurableOpen}
-              toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-                <MenuToggle ref={toggleRef} onClick={() => setIsSelectDurableOpen(!isSelectDurableOpen)}>
-                  Durable
-                </MenuToggle>
-              )}
-              onSelect={onSelect('durability')}
-            >
-              <SelectList>
-                <SelectOption key={0} value='placeholder'>
-                  Durable
-                </SelectOption>
-                <SelectOption key={1} value={'true'}>
-                  true
-                </SelectOption>
-                <SelectOption key={2} value={'false'}>
-                  false
-                </SelectOption>
-              </SelectList>
-            </Select>
-          </ToolbarItem>
-          <ToolbarItem id='quartz-jobs-table-toolbar-recover'>
-            <Select
-              id='quartz-jobs-table-toolbar-recover-select'
-              aria-label='Filter Recover'
-              selected={filters.shouldRecover}
-              onOpenChange={setIsSelectRecoverOpen}
-              isOpen={isSelectRecoverOpen}
-              toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-                <MenuToggle ref={toggleRef} onClick={() => setIsSelectRecoverOpen(!isSelectRecoverOpen)}>
-                  Recover
-                </MenuToggle>
-              )}
-              onSelect={onSelect('shouldRecover')}
-            >
-              <SelectList>
-                <SelectOption key={0} value='placeholder'>
-                  Recover
-                </SelectOption>
-                <SelectOption key={1} value={'true'}>
-                  true
-                </SelectOption>
-                <SelectOption key={2} value={'false'}>
-                  false
-                </SelectOption>
-              </SelectList>
-            </Select>
-          </ToolbarItem>
-        </ToolbarGroup>
-        <ToolbarGroup id='quartz-jobs-table-toolbar-filters-2'>
-          {['jobClass', 'description'].map(key => toolbarItemSearchInput(key))}
-        </ToolbarGroup>
-      </ToolbarContent>
-    </Toolbar>
-  )
-
-  const emptyResult = (
-    <Bullseye>
-      <EmptyState variant='sm'>
-        <EmptyStateHeader titleText='No results found' icon={<EmptyStateIcon icon={SearchIcon} />} headingLevel='h2' />
-        <EmptyStateBody>Clear all filters and try again.</EmptyStateBody>
-        <EmptyStateFooter>
-          <Button variant='link' onClick={clearAllFilters}>
-            Clear all filters
-          </Button>
-        </EmptyStateFooter>
-      </EmptyState>
-    </Bullseye>
-  )
 
   return (
     <Panel>
       <PanelMain>
         <PanelMainBody>
-          {tableToolbar}
-          <Table id='quartz-jobs-table' variant='compact' aria-label='Jobs Table' isStriped isStickyHeader>
-            <Thead noWrap>
-              <Tr>
-                <Th>Group</Th>
-                <Th>Name</Th>
-                <Th>Durable</Th>
-                <Th>Recover</Th>
-                <Th>Job Class Name</Th>
-                <Th>Description</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {filteredJobs.map((job, index) => (
-                <JobsTableRow key={index} job={job} />
-              ))}
-              {filteredJobs.length === 0 && (
-                <Tr>
-                  <Td colSpan={6}>{emptyResult}</Td>
-                </Tr>
-              )}
-            </Tbody>
-          </Table>
+          <FilteredTable
+            rows={jobs}
+            highlightSearch={true}
+            tableColumns={[
+              {
+                name: 'Group',
+                key: 'group',
+                percentageWidth: 20,
+              },
+              {
+                name: 'Name',
+                key: 'name',
+                percentageWidth: 10,
+              },
+              {
+                name: 'Durable',
+                key: 'durability',
+                percentageWidth: 10,
+              },
+              {
+                name: 'Recover',
+                key: 'shouldRecover',
+                percentageWidth: 10,
+              },
+              {
+                name: 'Job Class Name',
+                key: 'jobClass',
+                percentageWidth: 20,
+              },
+              {
+                name: 'Description',
+                key: 'description',
+                percentageWidth: 20,
+                hideValues: ['null'],
+              },
+            ]}
+            fixedSearchCategories={[
+              {
+                name: 'Durable',
+                key: 'durability',
+                values: ['true', 'false'],
+              },
+              {
+                name: 'Recover',
+                key: 'shouldRecover',
+                values: ['true', 'false'],
+              },
+            ]}
+            searchCategories={[
+              {
+                name: 'Group',
+                key: 'group',
+              },
+              {
+                name: 'Name',
+                key: 'name',
+              },
+              {
+                name: 'Job Class',
+                key: 'jobClass',
+              },
+              {
+                name: 'Description',
+                key: 'description',
+              },
+            ]}
+            onClick={row => {
+              setSelectedJob(row)
+              setIsDetailOpen(true)
+            }}
+          />
+          <JobDetailModal
+            isOpen={isDetailOpen}
+            onClose={() => {
+              setIsDetailOpen(false)
+              setSelectedJob(null)
+            }}
+            input={selectedJob}
+          />
         </PanelMainBody>
       </PanelMain>
     </Panel>

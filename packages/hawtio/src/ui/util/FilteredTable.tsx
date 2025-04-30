@@ -305,6 +305,7 @@ export function FilteredTable<T>({
             deleteChip={(_e, filter) => onDeleteFilter(filter as string)}
             deleteChipGroup={clearFilters}
             categoryName='Filters'
+            className='searchToolbar'
           >
             <SearchInput
               key='table-search-input'
