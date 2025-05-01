@@ -39,7 +39,7 @@
     "@bitauth/libauth": "^3.0.0",
     "@types/express": "^5.0.1",
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.14.1",
+    "@types/node": "^22.15.3",
     "axios": "^1.9.0",
     "express": "^5.1.0",
     "js-logger": "^1.6.1"
