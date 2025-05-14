@@ -371,6 +371,9 @@ class ConnectService implements IConnectService {
       try {
         const xsrfToken = getCookie('XSRF-TOKEN')
         const headers: { [header: string]: string } = {}
+        if (connection.username && connection.password) {
+          headers['X-Jolokia-Authorization'] = basicAuthHeaderValue(connection.username, connection.password)
+        }
         if (xsrfToken) {
           headers['X-XSRF-TOKEN'] = xsrfToken
         }
