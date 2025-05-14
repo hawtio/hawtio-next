@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.9.5](https://github.com/hawtio/hawtio-next/compare/v1.9.4...v1.9.5) (2025-05-14)
+
+
+### Bug Fixes
+
+* **deps:** downgrade react-code-editor back to 5 ([be531b6](https://github.com/hawtio/hawtio-next/commit/be531b6224ac0c9574c3f885f4d77ec830015bd5))
+
 ## [1.9.4](https://github.com/hawtio/hawtio-next/compare/v1.9.3...v1.9.4) (2025-04-28)
 
 
