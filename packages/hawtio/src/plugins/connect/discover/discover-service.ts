@@ -122,7 +122,7 @@ class DiscoverService {
   agentToConnection(agent: Agent): Connection {
     const conn = {
       ...INITIAL_CONNECTION,
-      id: agent.agent_id ?? `discover-${agent.agent_id}`,
+      id: agent.agent_id ? `discover-${agent.agent_id}` : '',
       name: agent.agent_description ?? `discover-${agent.agent_id}`,
     }
     if (!agent.url) {
