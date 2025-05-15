@@ -41,6 +41,13 @@ jobs:
       REPORT_DIR: results-${{matrix.runtime}}-node(${{matrix.node}})-java(${{matrix.java}})-${{matrix.browser}}
     runs-on: ubuntu-latest
     steps:
+      - name: Check matrix values
+        uses: actions/github-script@v6
+        env:
+          MATRIX_VALUE: '${{ matrix.os }}'
+        with:
+          script: |
+            console.log(process.env.MATRIX_VALUE)
       - name: Checkout code
         uses: actions/checkout@v4
         if: ${{ github.event_name == 'pull_request_target' }}
