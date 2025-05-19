@@ -60,7 +60,7 @@ export const ConnectionStatus: React.FunctionComponent = () => {
 
   return (
     <>
-      {icon} {connectionName && connectionName} {username && `(${username})`}
+      {icon}<span>&nbsp;{connectionName && connectionName}</span><span>&nbsp;{username ?? `(${username})`}</span>
     </>
   )
 }
