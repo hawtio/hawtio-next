@@ -245,6 +245,12 @@ export const Trace: React.FunctionComponent = () => {
                           <Tr>
                             <Th>ID</Th>
                             <Th>To Node</Th>
+                            <Th>Elapsed</Th>
+                            <Th>Endpoint Uri</Th>
+                            <Th>Is Remote?</Th>
+                            <Th>Service Url</Th>
+                            <Th>Protocol</Th>
+                            <Th>Metadata</Th>
                           </Tr>
                         </Thead>
                         <Tbody isOddStriped>
@@ -260,6 +266,12 @@ export const Trace: React.FunctionComponent = () => {
                                 </Button>
                               </Td>
                               <Td dataLabel='ToNode'>{message.toNode}</Td>
+                              <Td dataLabel='Elapsed'>{message.elapsed}ms</Td>
+                              <Td dataLabel='EndpointUri'>{message.endpointUri}</Td>
+                              <Td dataLabel='IsRemote'>{message.isRemoteEndpoint}</Td>
+                              <Td dataLabel='ServiceUrl'>{message.endpointServiceUrl}</Td>
+                              <Td dataLabel='Protocol'>{message.endpointServiceProtocol}</Td>
+                              <Td dataLabel='Metadata'>{message.endpointServiceMetadata}</Td>
                             </Tr>
                           ))}
                         </Tbody>
