@@ -16,6 +16,12 @@ export interface MessageData {
   id: string | null
   uid: string
   timestamp: string
+  endpointUri?: string
+  isRemoteEndpoint?: string
+  elapsed?: string
+  endpointServiceUrl?: string
+  endpointServiceProtocol?: string
+  endpointServiceMetadata?: string
   headers: Record<string, string>
   headerTypes: Record<string, string>
   headerHtml: string
@@ -196,6 +202,13 @@ class DebugService {
   createMessageFromXml(exchange: Element): MessageData | null {
     const uid = childText(exchange, 'uid') || ''
     const timestamp = childText(exchange, 'timestamp') || ''
+    const endpointUri = childText(exchange, 'endpointUri') || ''
+    const isRemoteEndpoint = childText(exchange, 'remoteEndpoint') || ''
+    const elapsed = childText(exchange, 'elapsed') || ''
+    const endpointElement = exchange.querySelector('endpointService')
+    const endpointServiceUrl = (endpointElement && childText(endpointElement, 'serviceUrl')) || ''
+    const endpointServiceProtocol = (endpointElement && childText(endpointElement, 'serviceProtocol')) || ''
+    const endpointServiceMetadata = (endpointElement && childText(endpointElement, 'serviceMetadata')) || ''
 
     let message = exchange.querySelector('message')
     if (!message) {
@@ -239,7 +252,22 @@ class DebugService {
       bodyType = this.humanizeJavaType(bodyType)
     }
 
-    return { headers, headerTypes, id, uid, timestamp, headerHtml, body, bodyType }
+    return {
+      headers,
+      headerTypes,
+      id,
+      uid,
+      timestamp,
+      headerHtml,
+      body,
+      bodyType,
+      endpointUri,
+      isRemoteEndpoint,
+      elapsed,
+      endpointServiceUrl,
+      endpointServiceProtocol,
+      endpointServiceMetadata,
+    }
   }
 
   private getIdFromHeaders(headers: Record<string, string>): string {

@@ -16,6 +16,7 @@
 #route-message-table-body {
   height: 100%;
   max-height: 60vh;
+  max-width: 40vw;
   overflow: auto;
 }
 
