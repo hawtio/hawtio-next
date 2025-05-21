@@ -238,7 +238,7 @@ const CamelContentContextToolbar: React.FunctionComponent = () => {
     setSelectedNode(null)
 
     // Navigate away from this context as it no longer exists
-    navigate('jmx')
+    navigate('/jmx')
 
     eventService.notify({
       type: 'warning',
