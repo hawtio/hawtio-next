@@ -95,7 +95,7 @@ export function useCamelTree() {
     } else {
       setTree(wkspTree)
       // No camel contexts so redirect to the JMX view and select the first tree node
-      navigate('jmx')
+      navigate('/jmx')
       eventService.notify({
         type: 'warning',
         message: 'No Camel domain detected in target. Redirecting to back to jmx.',

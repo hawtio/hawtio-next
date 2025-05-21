@@ -37,7 +37,7 @@ export const HawtioPage: React.FunctionComponent = () => {
   // otherwise "Cannot update a component (`BrowserRouter`) while rendering a different component" is thrown
   useEffect(() => {
     if (!isLogin && !userLoading) {
-      navigate('login')
+      navigate('/login')
     }
   }, [isLogin, navigate, userLoading])
 
