@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.9.6](https://github.com/hawtio/hawtio-next/compare/v1.9.5...v1.9.6) (2025-05-21)
+
+
+### Bug Fixes
+
+* **camel:** HAWNG-1018 update camel help link ([282307d](https://github.com/hawtio/hawtio-next/commit/282307dbc7bb2a41589c00085354a24037196de3))
+* **connect:** HAWNG-1008 copy paste error ([874067a](https://github.com/hawtio/hawtio-next/commit/874067ab79859ad31c59c5b532dbbf561f47d40c))
+* **connect:** When testing connections (top bar) add credentials if present (closes [#1504](https://github.com/hawtio/hawtio-next/issues/1504)) ([#1512](https://github.com/hawtio/hawtio-next/issues/1512)) ([3620292](https://github.com/hawtio/hawtio-next/commit/3620292628ada84e8414f28d1cf1c65bf8e76576))
+* HAWNG-1020 Fix routing behavior for login page with new v7 routing rules ([7c08d61](https://github.com/hawtio/hawtio-next/commit/7c08d61e8f87806c6cfa37afea52f8f33afe3b29))
+* **help:** HAWNG-1018 fix contributing page not found ([316f8d0](https://github.com/hawtio/hawtio-next/commit/316f8d0496b64ecc312d5a249ff3f58ac1a20f53))
+
 ## [1.9.5](https://github.com/hawtio/hawtio-next/compare/v1.9.4...v1.9.5) (2025-05-14)
 
 
