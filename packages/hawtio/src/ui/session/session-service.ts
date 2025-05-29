@@ -108,7 +108,7 @@ class SessionService {
         let cfg
         try {
           cfg = JSON.parse(data) as SessionConfig
-        } catch (_) {
+        } catch {
           return { timeout: -1 }
         }
         if (!cfg.timeout || cfg.timeout <= 0) {
