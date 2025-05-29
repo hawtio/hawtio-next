@@ -105,7 +105,12 @@ class SessionService {
     this.sessionTimeout = -1
     this.sessionConfig = await fetchPath<SessionConfig>('auth/config/session-timeout?t=' + Date.now(), {
       success: data => {
-        const cfg = JSON.parse(data) as SessionConfig
+        let cfg
+        try {
+          cfg = JSON.parse(data) as SessionConfig
+        } catch (_) {
+          return { timeout: -1 }
+        }
         if (!cfg.timeout || cfg.timeout <= 0) {
           cfg.timeout = -1
         }
