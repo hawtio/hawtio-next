@@ -1,7 +1,7 @@
 import { EVENT_REFRESH, eventService } from '@hawtiosrc/core'
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins'
 import { MBeanNode, MBeanTree, workspace } from '@hawtiosrc/plugins/shared'
-import { TreeViewDataItem } from '@patternfly/react-core'
+import { type TreeViewDataItem } from '@patternfly/react-core'
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import * as camelService from './camel-service'

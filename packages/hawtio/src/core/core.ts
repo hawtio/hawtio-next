@@ -189,10 +189,14 @@ class HawtioCore {
    */
   addPlugin(plugin: Plugin): HawtioCore {
     log.info('Add plugin:', plugin.id)
+    configManager.setConfigItem('Registering plugin: ' + plugin.id, false, "plugins")
     if (this.plugins[plugin.id]) {
       throw new Error(`Plugin "${plugin.id}" already exists`)
     }
     this.plugins[plugin.id] = plugin
+    setTimeout(() => {
+      configManager.setConfigItem('Registering plugin: ' + plugin.id, true, "plugins")
+    }, 0)
     return this
   }
 
@@ -220,6 +224,12 @@ class HawtioCore {
     log.info('Branding applied:', brandingApplied)
 
     log.info('Bootstrapped Hawtio')
+    configManager.setConfigItem("Finish", false, "finish")
+
+    return configManager.ready().then(() => {
+      log.debug("configManager.ready() resolved")
+      return true
+    })
   }
 
   /**
@@ -258,6 +268,7 @@ class HawtioCore {
   private async loadExternalPlugins(url: string) {
     log.debug('Trying url:', url)
     try {
+      configManager.setConfigItem('Loading plugins descriptor from URL "' + url + '"', false, "plugins")
       const res = await fetch(url)
       if (!res.ok) {
         log.error('Failed to fetch url:', url, '-', res.status, res.statusText)
@@ -266,18 +277,21 @@ class HawtioCore {
 
       const remotes = (await res.json()) as HawtioRemote[]
       log.debug('Loaded remotes from url:', url, '=', remotes)
+      configManager.setConfigItem('Loading plugins descriptor from URL "' + url + '"', true, "plugins")
 
       // Load plugins
       await Promise.all(
         remotes.map(async remote => {
           log.debug('Loading remote', remote)
           try {
+            configManager.setConfigItem('Importing plugin from: ' + remote.url, false, "plugins")
             const plugin = await importRemote<{ [entry: string]: HawtioPlugin }>(remote)
             const entryFn = plugin[remote.pluginEntry || DEFAULT_PLUGIN_ENTRY]
             if (!entryFn) {
               throw new Error(`Plugin entry not found: ${remote.pluginEntry || DEFAULT_PLUGIN_ENTRY}`)
             }
             entryFn()
+            configManager.setConfigItem('Importing plugin from: ' + remote.url, true, "plugins")
             log.debug('Loaded remote', remote)
           } catch (err) {
             log.error('Error loading remote:', remote, '-', err)

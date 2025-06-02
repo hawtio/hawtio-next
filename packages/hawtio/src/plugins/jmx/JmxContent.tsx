@@ -1,6 +1,4 @@
-import { Chart, JmxContentMBeans, MBeanNode } from '@hawtiosrc/plugins/shared'
-import { AttributeTable, Attributes } from '@hawtiosrc/plugins/shared/attributes'
-import { Operations } from '@hawtiosrc/plugins/shared/operations'
+import { AttributeTable, Attributes, Chart, JmxContentMBeans, MBeanNode, Operations } from '@hawtiosrc/plugins/shared'
 import {
   Divider,
   EmptyState,
