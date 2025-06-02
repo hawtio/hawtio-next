@@ -1,9 +1,9 @@
 import { useUser } from '@hawtiosrc/auth/hooks'
 import { useHawtconfig, usePlugins } from '@hawtiosrc/core'
-import { HawtioHelp } from '@hawtiosrc/help/HawtioHelp'
+import { HawtioHelp } from '@hawtiosrc/help/ui'
 import { background } from '@hawtiosrc/img'
 import { PluginNodeSelectionContext, usePluginNodeSelected } from '@hawtiosrc/plugins'
-import { HawtioPreferences } from '@hawtiosrc/preferences/HawtioPreferences'
+import { HawtioPreferences } from '@hawtiosrc/preferences/ui'
 import { preferencesService } from '@hawtiosrc/preferences/preferences-service'
 import {
   BackgroundImage,
@@ -16,7 +16,7 @@ import {
 import { CubesIcon } from '@patternfly/react-icons'
 import React, { useEffect } from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
-import { HawtioNotification } from '../notification'
+import { HawtioNotification } from '@hawtiosrc/ui/notification'
 import { HawtioHeader } from './HawtioHeader'
 import { HawtioLoadingPage } from './HawtioLoadingPage'
 import { HawtioSidebar } from './HawtioSidebar'
