@@ -1,6 +1,8 @@
 import { fetchPath } from '@hawtiosrc/util/fetch'
 import { log } from './globals'
 
+// TODO: should be outside of "ui" package?
+
 type SessionConfig = {
   req?: number
   res?: number

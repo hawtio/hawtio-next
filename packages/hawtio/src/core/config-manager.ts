@@ -145,6 +145,9 @@ export const HAWTCONFIG_JSON = 'hawtconfig.json'
 class ConfigManager {
   private config?: Promise<Hawtconfig>
 
+  private cfg: Record<string, { ready: boolean, group: string }> = {}
+  private listeners: ((config: Record<string, { ready: boolean, group: string }>) => void)[] = []
+
   reset() {
     this.config = undefined
   }
@@ -165,12 +168,14 @@ class ConfigManager {
   private async loadConfig(): Promise<Hawtconfig> {
     log.info('Loading', HAWTCONFIG_JSON)
 
+    this.setConfigItem("Loading " + HAWTCONFIG_JSON, false, "config")
     try {
       const res = await fetch(HAWTCONFIG_JSON)
       if (!res.ok) {
         log.error('Failed to fetch', HAWTCONFIG_JSON, '-', res.status, res.statusText)
         return {}
       }
+      this.setConfigItem("Loading " + HAWTCONFIG_JSON, true, "config")
 
       const config = await res.json()
       log.debug(HAWTCONFIG_JSON, '=', config)
@@ -194,6 +199,7 @@ class ConfigManager {
     }
 
     log.info('Apply branding', branding)
+    this.setConfigItem("Applying branding", false, "config")
     let applied = false
     if (branding.appName) {
       log.info('Updating title -', branding.appName)
@@ -209,6 +215,7 @@ class ConfigManager {
       this.updateHref('#favicon', branding.favicon)
       applied = true
     }
+    this.setConfigItem("Applying branding", true, "config")
     return applied
   }
 
@@ -257,6 +264,40 @@ class ConfigManager {
       config.about.productInfo = []
     }
     config.about.productInfo.push({ name, value })
+  }
+
+  getConfig(): Record<string, { ready: boolean, group: string }> {
+    return this.cfg
+  }
+
+  addListener(f: (config: Record<string, { ready: boolean, group: string }>) => void) {
+    this.listeners.push(f)
+  }
+
+  removeListener(f: (config: Record<string, { ready: boolean, group: string }>) => void) {
+    this.listeners.splice(this.listeners.indexOf(f), 1)
+  }
+
+  setConfigItem(item: string, ready: boolean, group: string) {
+    this.cfg[item] = { ready, group }
+    setTimeout(() => {
+      for (const l of this.listeners) {
+        l(this.cfg)
+      }
+    }, 0)
+  }
+
+  async ready(): Promise<boolean> {
+    return new Promise((resolve, _reject) => {
+      const h: NodeJS.Timeout = setInterval(() => {
+        const result = Object.values(this.cfg!).find(v => !v.ready) == undefined
+        console.info("ready?", result)
+        if (result) {
+          resolve(true)
+          clearInterval(h)
+        }
+      }, 100)
+    })
   }
 }
 
