@@ -1,4 +1,4 @@
-import { hawtio, HawtioPlugin } from '@hawtio/react'
+import { hawtio, type HawtioPlugin } from '@hawtio/react'
 
 export const registerDisabled: HawtioPlugin = () => {
   import("./Disabled").then(m => {
