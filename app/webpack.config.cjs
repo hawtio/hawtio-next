@@ -12,7 +12,9 @@ const outputPath = path.resolve(__dirname, 'build')
 
 module.exports = (_, args) => {
   const isProduction = args.mode === 'production'
-  return {
+  return [
+  // this is the "main" webpack configuration which builds entire application
+  {
     entry: './src/index',
 
     /*
@@ -25,10 +27,27 @@ module.exports = (_, args) => {
     devtool: isProduction ? 'source-map' : false,
     plugins: [
       new ModuleFederationPlugin({
+        // _host_ is an application that can:
+        //  - consume modules from "remotes" (ContainerReferencePlugin)
+        //  - provide modules from "exposes" (ContainerPlugin)
+        //
+        // "name" is required only if the _host_ uses "exposes" and it creates:
+        // "webpack/container/entry/app" module
         name: 'app',
+        // "filename" is only for ContainerPlugin (for "exposes") - regardles of the number of exposed modules
+        // we have single "remoteEntry.js" file
         filename: 'remoteEntry.js',
         exposes: {
-          './remote': './src/examples/remote',
+          './remote1': './src/examples/remote1',
+          './remote2': './src/examples/remote2'
+        },
+        // keys in this map are used in `webpack/container/reference/${key}` pattern
+        // the part before "@" should match "name" of some (could be different, but also this very same, as here)
+        // ModuleFederationPlugin configuration. We could simply have this webpack.config.cjs provide more
+        // configurations - each with own ModuleFederationPluginConfiguration
+        // so here "app" maatches our own ModuleFederationPlugin config's "name"
+        remotes: {
+          "static-remotes": "app@http://localhost:3000/hawtio/remoteEntry.js"
         },
         shared: {
           ...dependencies,
@@ -47,8 +66,12 @@ module.exports = (_, args) => {
           '@hawtio/react': {
             singleton: true,
             // Hardcoding needed because it cannot handle yarn 'workspace:*' version
-            requiredVersion: '^1.2.0',
+            requiredVersion: '1.9.2'
           },
+          '@patternfly/react-core': {
+            singleton: true,
+            requiredVersion: dependencies['@patternfly/react-core']
+          }
         },
       }),
       new HtmlWebpackPlugin({
@@ -153,14 +176,15 @@ module.exports = (_, args) => {
           devServer.app.get(`${publicPath}$`, (_, res) => res.redirect(`${publicPath}/`))
         }
 
-        const username = 'developer'
+        let username = 'developer'
         const proxyEnabled = true
         // TODO: Currently self-hosting remotes don't work despite no errors thrown
         const plugin = [
           {
-            url: 'http://localhost:3000',
-            scope: 'app',
-            module: './remote',
+            url: 'http://localhost:3000/hawtio',
+            scope: 'appRemote',
+            module: './remote3',
+            remoteEntryFileName: "remoteExternalEntry.js",
             pluginEntry: 'registerRemote',
           },
         ]
@@ -185,18 +209,20 @@ module.exports = (_, args) => {
         })
         devServer.app.post(`${publicPath}/auth/login`, (req, res) => {
           // Test authentication throttling with username 'throttled'
-          const { username } = req.body
-          if (username === 'throttled') {
+          const cred = req.body
+          if (cred.username === 'throttled') {
             res.append('Retry-After', 10) // 10 secs
             res.sendStatus(429)
             return
           }
 
           login = true
+          username = cred.username
           res.send(String(login))
         })
         devServer.app.get(`${publicPath}/auth/logout`, (_, res) => {
           login = false
+          username = null
           res.redirect(`${publicPath}/login`)
         })
 
@@ -258,5 +284,90 @@ module.exports = (_, args) => {
         return middlewares
       },
     },
-  }
+  },
+  // this is very slim configuration which only builds a file used as exposed entry point for ModuleFederation plugin
+  // which will be loaded dynamically by Hawtio using @module-federation/utiliites
+  {
+    entry: './src/examples/remote3',
+    devtool: false,
+    plugins: [
+      new ModuleFederationPlugin({
+        name: 'appRemote',
+        filename: 'remoteExternalEntry.js',
+        exposes: {
+          './remote3': './src/examples/remote3'
+        },
+        shared: {
+          ...dependencies,
+          react: {
+            singleton: true,
+            requiredVersion: dependencies['react'],
+          },
+          'react-dom': {
+            singleton: true,
+            requiredVersion: dependencies['react-dom'],
+          },
+          'react-router-dom': {
+            singleton: true,
+            requiredVersion: dependencies['react-router-dom'],
+          },
+          '@hawtio/react': {
+            singleton: true,
+            // Hardcoding needed because it cannot handle yarn 'workspace:*' version
+            requiredVersion: '1.9.2'
+          },
+          '@patternfly/react-core': {
+            singleton: true,
+            requiredVersion: dependencies['@patternfly/react-core']
+          }
+        },
+      }),
+    ],
+    output: {
+      clean: true,
+      path: path.resolve(__dirname, 'build-remote'),
+      publicPath: 'auto',
+      filename: isProduction ? 'static/js/[name].[contenthash:8].js' : 'static/js/bundle.js',
+      chunkFilename: isProduction ? 'static/js/[name].[contenthash:8].chunk.js' : 'static/js/[name].chunk.js',
+      assetModuleFilename: 'static/media/[name].[hash][ext]',
+      uniqueName: 'module-federation-external-module'
+    },
+    resolve: {
+      extensions: ['.ts', '.tsx', '.js', '.jsx'],
+    },
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          exclude: /node_modules/,
+          use: {
+            loader: 'swc-loader',
+            options: {
+              jsc: {
+                parser: {
+                  syntax: 'typescript',
+                },
+              },
+            },
+          },
+        },
+        {
+          test: /\.css$/i,
+          use: ['style-loader', 'css-loader'],
+        },
+        {
+          test: /\.(png|svg|jpg|jpeg|gif)$/i,
+          type: 'asset/resource',
+        },
+        {
+          test: /\.(woff|woff2|eot|ttf|otf)$/i,
+          type: 'asset/resource',
+        },
+        {
+          test: /\.md$/i,
+          type: 'asset/source',
+        },
+      ],
+    },
+  }]
 }
