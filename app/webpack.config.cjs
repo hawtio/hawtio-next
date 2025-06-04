@@ -80,6 +80,10 @@ module.exports = (_, args) => {
         // Trailing slash is really important for proper base path handling
         base: publicPath + '/',
         publicPath,
+        // this ensures that we don't have <script> tag for "remoteEntry.js"
+        // which is loaded by different means (by webpack code itself, without
+        // adding static <script> element to <head>
+        chunks: ["main"]
       }),
       new CopyWebpackPlugin({
         patterns: [
