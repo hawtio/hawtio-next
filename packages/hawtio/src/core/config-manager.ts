@@ -291,7 +291,6 @@ class ConfigManager {
     return new Promise((resolve, _reject) => {
       const h: NodeJS.Timeout = setInterval(() => {
         const result = Object.values(this.cfg!).find(v => !v.ready) == undefined
-        console.info("ready?", result)
         if (result) {
           resolve(true)
           clearInterval(h)
