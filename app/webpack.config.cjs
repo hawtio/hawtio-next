@@ -170,7 +170,10 @@ module.exports = (_, args) => {
         // Needed to fallback to bundled index instead of public/index.html template
         index: publicPath,
       },
-      devMiddleware: { publicPath },
+      devMiddleware: {
+        publicPath,
+        writeToDisk: true
+      },
       setupMiddlewares: (middlewares, devServer) => {
         devServer.app.use(bodyParser.json())
 
