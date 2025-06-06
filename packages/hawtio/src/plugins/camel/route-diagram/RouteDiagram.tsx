@@ -1,5 +1,5 @@
 import { Table, Tbody, Td, Tr } from '@patternfly/react-table'
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import React, { RefObject, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ReactFlow,
   Connection,
@@ -12,6 +12,14 @@ import {
   addEdge,
   useEdgesState,
   useNodesState,
+  ReactFlowProvider,
+  NodeMouseHandler,
+  OnConnect,
+  OnEdgesChange,
+  OnNodesChange,
+  NodeTypes,
+  Edge,
+  ReactFlowInstance,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 import { camelPreferencesService } from '../camel-preferences-service'
@@ -28,6 +36,7 @@ export const RouteDiagram: React.FunctionComponent = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const [statsXml, setStatsXml] = useState('')
   const nodeTypes = useMemo(() => ({ camel: CamelNode }), [])
+  const canvasRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!selectedNode) {
@@ -45,7 +54,10 @@ export const RouteDiagram: React.FunctionComponent = () => {
       if (statsXml) {
         visualizationService.updateStats(statsXml, camelNodes)
       }
-      const { layoutedNodes, layoutedEdges } = visualizationService.getLayoutedElements(camelNodes, edges)
+      const boundingRect = canvasRef.current
+        ? canvasRef.current.getBoundingClientRect()
+        : { x: 0, y: 0, width: 100, height: 100 }
+      const { layoutedNodes, layoutedEdges } = visualizationService.getLayoutedElements(camelNodes, edges, boundingRect)
 
       layoutedNodes.forEach(node => {
         node.selected = graphSelection === node.data.cid
@@ -93,18 +105,64 @@ export const RouteDiagram: React.FunctionComponent = () => {
   }
 
   return (
+    <div id='camel-route-diagram-outer-div' ref={canvasRef}>
+      <ReactFlowProvider>
+        <ReactFlowRouteDiagram
+          parent={canvasRef}
+          nodeTypes={nodeTypes}
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onNodeClick={onNodeClick}
+        />
+      </ReactFlowProvider>
+    </div>
+  )
+}
+
+type ReactFlowRouteDiagramProps = {
+  parent: RefObject<HTMLDivElement>
+  onNodeClick: NodeMouseHandler | undefined
+  onConnect: OnConnect | undefined
+  onEdgesChange: OnEdgesChange | undefined
+  onNodesChange: OnNodesChange | undefined
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  edges: Edge<any>[] | undefined
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  nodes: Node<any, string | undefined>[] | undefined
+  nodeTypes: NodeTypes | undefined
+}
+
+const ReactFlowRouteDiagram: React.FunctionComponent<ReactFlowRouteDiagramProps> = props => {
+  const onLoad = (reactFlowInstance: ReactFlowInstance) => {
+    if (props.parent && props.parent.current) {
+      const boundingRect = props.parent.current.getBoundingClientRect()
+      reactFlowInstance.fitBounds({
+        width: boundingRect.width,
+        height: boundingRect.height,
+        x: 0,
+        y: 0,
+      })
+    }
+
+    reactFlowInstance.fitView()
+  }
+
+  return (
     <div className='camel-route-diagram'>
       <ReactFlow
-        nodeTypes={nodeTypes}
-        nodes={nodes}
-        edges={edges}
+        nodeTypes={props.nodeTypes}
+        nodes={props.nodes}
+        edges={props.edges}
         connectionLineType={ConnectionLineType.SmoothStep}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        fitView={true}
+        onNodesChange={props.onNodesChange}
+        onEdgesChange={props.onEdgesChange}
+        onConnect={props.onConnect}
         elementsSelectable={true}
-        onNodeClick={onNodeClick}
+        onNodeClick={props.onNodeClick}
+        onInit={onLoad}
       />
     </div>
   )
@@ -176,37 +234,37 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
             {data.stats && !showFull && (
               <Table variant={'compact'}>
                 <Tbody style={{ fontSize: 'xx-small' }}>
-                  <Tr>
+                  <Tr className={'node-tooltip-odd-row'}>
                     <Td>ID</Td>
-                    <Td>{data.stats.id}</Td>
+                    <Td className={'node-tooltip-value'}>{data.stats.id}</Td>
                   </Tr>
-                  <Tr>
+                  <Tr className={'node-tooltip-even-row'}>
                     <Td>Total</Td>
-                    <Td>{totalExchanges}</Td>
+                    <Td className={'node-tooltip-value'}>{totalExchanges}</Td>
                   </Tr>
-                  <Tr>
+                  <Tr className={'node-tooltip-odd-row'}>
                     <Td>Completed</Td>
-                    <Td>{data.stats?.exchangesCompleted}</Td>
+                    <Td className={'node-tooltip-value'}>{data.stats?.exchangesCompleted}</Td>
                   </Tr>
-                  <Tr>
+                  <Tr className={'node-tooltip-even-row'}>
                     <Td>Inflight</Td>
-                    <Td>{data.stats?.exchangesInflight}</Td>
+                    <Td className={'node-tooltip-value'}>{data.stats?.exchangesInflight}</Td>
                   </Tr>
-                  <Tr>
+                  <Tr className={'node-tooltip-odd-row'}>
                     <Td>Last</Td>
-                    <Td>{data.stats?.lastProcessingTime} (ms)</Td>
+                    <Td className={'node-tooltip-value'}>{data.stats?.lastProcessingTime} (ms)</Td>
                   </Tr>
-                  <Tr>
+                  <Tr className={'node-tooltip-even-row'}>
                     <Td>Mean</Td>
-                    <Td>{data.stats?.meanProcessingTime} (ms)</Td>
+                    <Td className={'node-tooltip-value'}>{data.stats?.meanProcessingTime} (ms)</Td>
                   </Tr>
-                  <Tr>
+                  <Tr className={'node-tooltip-odd-row'}>
                     <Td>Min</Td>
-                    <Td>{data.stats?.minProcessingTime} (ms)</Td>
+                    <Td className={'node-tooltip-value'}>{data.stats?.minProcessingTime} (ms)</Td>
                   </Tr>
-                  <Tr>
+                  <Tr className={'node-tooltip-even-row'}>
                     <Td>Max</Td>
-                    <Td>{data.stats?.maxProcessingTime} (ms)</Td>
+                    <Td className={'node-tooltip-value'}>{data.stats?.maxProcessingTime} (ms)</Td>
                   </Tr>
                 </Tbody>
               </Table>
