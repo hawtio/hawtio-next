@@ -1,3 +1,17 @@
+/*
+ * By default, in the light theme, define diagram variables
+ */
+:root {
+  --hawtio-diagram-node--BackgroundColor: #fafafa;
+}
+
+/*
+ * When the theme is dark override the diagram variables
+ */
+:where(.pf-v5-theme-dark):root {
+  --hawtio-diagram-node--BackgroundColor: #656565;
+}
+
 .react-flow__node-camel {
   height: 80px;
   width: 150px;
@@ -11,7 +25,7 @@
   grid-template-rows: 25% 25% 25% 25%; /* Now there are four rows */
   grid-template-columns: 40% 35% 25%;
   border: 2px solid #8a8d90;
-  background-color: #fafafa;
+  background-color: var(--hawtio-diagram-node--BackgroundColor);
   padding: 5px;
   height: 100px;
   min-width: 150px;
@@ -60,12 +74,54 @@
   justify-self: center;
 }
 
+/*
+ * Attribution logo box for ReactFlow is grey by default & doesn't
+ * change when theme becomes dark. So set the background color to a
+ * patternfly var that does change when the theme is updated.
+ */
+.react-flow__attribution {
+  background-color: var(--pf-v5-c-page__main-section--BackgroundColor) !important;
+}
+
+/*
+ * Attribution logo box's text colour does not change on dark theme
+ * update so change it to a subtle dark colour when the theme is updated
+ */
+:where(.pf-v5-theme-dark) .react-flow__attribution a {
+  color: var(--pf-v5-global--BackgroundColor--dark-200) !important;
+}
+
 .node-tooltip {
-  background-color: white;
   border: solid 1px black;
-  border-radius: 5px;
-  padding: 10px;
-  font-size: x-small;
+  border-radius: 1px;
+  font-size: xx-small;
+}
+
+.node-tooltip table tbody td {
+  padding-top: 1px;
+  padding-bottom: 1px;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.node-tooltip-odd-row {
+  background-color: var(--pf-v5-global--BackgroundColor--100);
+}
+
+.node-tooltip-odd-row td {
+  color: var(--pf-v5-global--Color--100);
+}
+
+.node-tooltip-even-row {
+  background-color: var(--pf-v5-global--BackgroundColor--200);
+}
+
+.node-tooltip-even-row td {
+  color: var(--pf-v5-global--Color--200);
+}
+
+.node-tooltip-value {
+  text-align: right;
 }
 
 .camel-route-diagram {

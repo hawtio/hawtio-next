@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { hawtio } from './core'
 import './Hawtio.css'
@@ -15,6 +15,24 @@ export const Hawtio: React.FunctionComponent<HawtioProps> = props => {
   if (basepath) {
     hawtio.setBasePath(basepath)
   }
+
+  /*
+   * Initialise a window theme listener to update the application theme
+   * depending on the browser's chosen / default theme.
+   *
+   * Note: Will be ignored if a hawtio.disableThemeListener flag is set
+   * to true in localStorage.
+   */
+  hawtio.addWindowThemeListener()
+
+  useEffect(() => {
+    return () => {
+      /*
+       * Clean up the window listener on unmount
+       */
+      hawtio.removeWindowThemeListener()
+    }
+  }, [])
 
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }} basename={hawtio.getBasePath()}>
