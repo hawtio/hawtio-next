@@ -30,3 +30,18 @@ declare const global: any
 Object.defineProperty(global, 'crypto', { value: crypto.webcrypto })
 global.TextEncoder = TextEncoder
 global.TextDecoder = TextDecoder
+
+// For mocking window matchMedia function
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(), // Deprecated
+    removeListener: jest.fn(), // Deprecated
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+})

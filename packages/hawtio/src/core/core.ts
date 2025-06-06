@@ -107,6 +107,10 @@ export interface HawtioRemote extends ImportRemoteOptions {
 
 const DEFAULT_PLUGIN_ENTRY = 'plugin'
 
+const HAWTIO_DISABLE_THEME_LISTENER = 'hawtio.disableThemeListener'
+
+const PATTERNFLY_THEME_CLASS = 'pf-v5-theme-dark'
+
 /**
  * Hawtio core service.
  *
@@ -129,6 +133,18 @@ class HawtioCore {
    * Holds all of the Hawtio plugins that need to be bootstrapped.
    */
   private plugins: Plugins = {}
+
+  /**
+   * The Window Theme Listener callback function
+   */
+  private windowThemeListener = () => {
+    this.updateFromTheme()
+  }
+
+  /**
+   * Flag set once the window theme listener has been added
+   */
+  private windowListenerAdded = false
 
   /**
    * Sets the base path of the Hawtio console.
@@ -312,6 +328,62 @@ class HawtioCore {
     resolved.sort((a, b) => (a.order ?? DEFAULT_PLUGIN_ORDER) - (b.order ?? DEFAULT_PLUGIN_ORDER))
 
     return resolved
+  }
+
+  // Actual window theme query
+  private themeList() {
+    return window.matchMedia('(prefers-color-scheme: dark)')
+  }
+
+  /**
+   * Detect what theme the browser has been set to and
+   * return 'dark' | 'light'
+   */
+  private windowTheme() {
+    return this.themeList().matches ? 'dark' : 'light'
+  }
+
+  /**
+   * Update the document root with the patternfly dark class
+   * see https://www.patternfly.org/developer-resources/dark-theme-handbook
+   */
+  private updateFromTheme() {
+    if (this.windowTheme() === 'dark') {
+      document.documentElement.classList.add(PATTERNFLY_THEME_CLASS)
+    } else {
+      document.documentElement.classList.remove(PATTERNFLY_THEME_CLASS)
+    }
+  }
+
+  /**
+   * Adds an event listener to the window theme to update
+   * css values in the event of a change in theme
+   */
+  addWindowThemeListener() {
+    if (this.windowListenerAdded) {
+      // Avoid checking storage an trying to re-add if already added
+      return
+    }
+
+    const disableListener = localStorage.getItem(HAWTIO_DISABLE_THEME_LISTENER) ?? 'false'
+    if (disableListener === 'true') {
+      return // Do not enable theme listener
+    }
+
+    // Initial update when application is loaded
+    this.updateFromTheme()
+
+    // Subsequent attempts to change the theme
+    this.themeList().addEventListener('change', this.windowThemeListener)
+    this.windowListenerAdded = true
+  }
+
+  /**
+   * Removes the event listener to the window theme
+   */
+  removeWindowThemeListener() {
+    this.themeList().removeEventListener('change', this.windowThemeListener)
+    this.windowListenerAdded = false
   }
 }
 
