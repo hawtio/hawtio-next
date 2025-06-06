@@ -234,37 +234,37 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
             {data.stats && !showFull && (
               <Table variant={'compact'}>
                 <Tbody style={{ fontSize: 'xx-small' }}>
-                  <Tr>
+                  <Tr className={'node-tooltip-odd-row'}>
                     <Td>ID</Td>
-                    <Td>{data.stats.id}</Td>
+                    <Td className={'node-tooltip-value'}>{data.stats.id}</Td>
                   </Tr>
-                  <Tr>
+                  <Tr className={'node-tooltip-even-row'}>
                     <Td>Total</Td>
-                    <Td>{totalExchanges}</Td>
+                    <Td className={'node-tooltip-value'}>{totalExchanges}</Td>
                   </Tr>
-                  <Tr>
+                  <Tr className={'node-tooltip-odd-row'}>
                     <Td>Completed</Td>
-                    <Td>{data.stats?.exchangesCompleted}</Td>
+                    <Td className={'node-tooltip-value'}>{data.stats?.exchangesCompleted}</Td>
                   </Tr>
-                  <Tr>
+                  <Tr className={'node-tooltip-even-row'}>
                     <Td>Inflight</Td>
-                    <Td>{data.stats?.exchangesInflight}</Td>
+                    <Td className={'node-tooltip-value'}>{data.stats?.exchangesInflight}</Td>
                   </Tr>
-                  <Tr>
+                  <Tr className={'node-tooltip-odd-row'}>
                     <Td>Last</Td>
-                    <Td>{data.stats?.lastProcessingTime} (ms)</Td>
+                    <Td className={'node-tooltip-value'}>{data.stats?.lastProcessingTime} (ms)</Td>
                   </Tr>
-                  <Tr>
+                  <Tr className={'node-tooltip-even-row'}>
                     <Td>Mean</Td>
-                    <Td>{data.stats?.meanProcessingTime} (ms)</Td>
+                    <Td className={'node-tooltip-value'}>{data.stats?.meanProcessingTime} (ms)</Td>
                   </Tr>
-                  <Tr>
+                  <Tr className={'node-tooltip-odd-row'}>
                     <Td>Min</Td>
-                    <Td>{data.stats?.minProcessingTime} (ms)</Td>
+                    <Td className={'node-tooltip-value'}>{data.stats?.minProcessingTime} (ms)</Td>
                   </Tr>
-                  <Tr>
+                  <Tr className={'node-tooltip-even-row'}>
                     <Td>Max</Td>
-                    <Td>{data.stats?.maxProcessingTime} (ms)</Td>
+                    <Td className={'node-tooltip-value'}>{data.stats?.maxProcessingTime} (ms)</Td>
                   </Tr>
                 </Tbody>
               </Table>
