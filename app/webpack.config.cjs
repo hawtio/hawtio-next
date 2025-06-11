@@ -14,7 +14,15 @@ module.exports = (_, args) => {
   const isProduction = args.mode === 'production'
   return {
     entry: './src/index',
-    devtool: 'eval-source-map',
+
+    /*
+     * To debug in development with source maps
+     * update accordingly
+     *
+     * For other alternatives see
+     * https://webpack.js.org/configuration/devtool
+     */
+    devtool: isProduction ? 'source-map' : false,
     plugins: [
       new ModuleFederationPlugin({
         name: 'app',
