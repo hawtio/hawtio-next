@@ -32,7 +32,7 @@ import {
 
 import { BarsIcon, HelpIcon } from '@patternfly/react-icons'
 import React, { useContext, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import './HawtioHeader.css'
 import { PageContext } from './context'
 
@@ -105,6 +105,7 @@ type HawtioHeaderToolbarProps = {
 const HawtioHeaderToolbar: React.FunctionComponent<HawtioHeaderToolbarProps> = props => {
   const { username, plugins } = useContext(PageContext)
   const location = useLocation()
+  const navigate = useNavigate()
 
   const isPublic = username === PUBLIC_USER
 

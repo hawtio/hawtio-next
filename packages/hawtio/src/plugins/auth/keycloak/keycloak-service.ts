@@ -4,7 +4,8 @@ import { fetchPath } from '@hawtiosrc/util/fetch'
 import { basicAuthHeaderValue, getCookie } from '@hawtiosrc/util/https'
 import Keycloak, { KeycloakConfig, KeycloakInitOptions, KeycloakPkceMethod, KeycloakProfile } from 'keycloak-js'
 import { UserProfile } from '../types'
-import { PATH_KEYCLOAK_CLIENT_CONFIG, PATH_KEYCLOAK_ENABLED, PATH_KEYCLOAK_VALIDATE, log } from './globals'
+import { log, PATH_KEYCLOAK_CLIENT_CONFIG, PATH_KEYCLOAK_ENABLED, PATH_KEYCLOAK_VALIDATE } from './globals'
+import { configManager, TaskState } from '@hawtiosrc/core'
 
 export type KeycloakUserProfile = UserProfile & KeycloakProfile
 
@@ -46,15 +47,20 @@ class KeycloakService implements IKeycloakService {
   }
 
   private loadKeycloakEnabled(): Promise<boolean> {
-    return fetchPath<boolean>(PATH_KEYCLOAK_ENABLED, {
-      success: (data: string) => {
-        // Enable Keycloak only when explicitly enabled
-        const enabled = data.trim() === 'true'
-        log.debug('Keycloak enabled:', enabled)
-        return enabled
-      },
-      error: () => false,
-    })
+    configManager.initItem("Keycloak Configuration", TaskState.started, "config")
+    return fetch(PATH_KEYCLOAK_ENABLED)
+        .then(response => response.ok && response.status == 200 ? response.text() : null)
+        .then(data => {
+          // Enable Keycloak only when explicitly enabled
+          const enabled = data ? data.trim() === 'true' : false
+          configManager.initItem("Keycloak Configuration", enabled ? TaskState.finished : TaskState.skipped, "config")
+          log.debug('Keycloak enabled:', enabled)
+          return enabled
+        })
+        .catch(() => {
+          configManager.initItem("Keycloak Configuration", TaskState.skipped, "config")
+          return false
+        })
   }
 
   private async loadKeycloakConfig(): Promise<HawtioKeycloakConfig | null> {

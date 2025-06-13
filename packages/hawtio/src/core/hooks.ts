@@ -3,7 +3,13 @@ import { useEffect, useState } from 'react'
 import { log } from './globals'
 
 /**
- * Custom React hook for using Hawtio plugins.
+ * Custom React hook for accessing information about Hawtio plugins.
+ *
+ * This hook holds:
+ * * a state for an array of Plugin objects
+ * * a state for a flag indicating that plugins are loaded
+ *
+ * This hook synchronizes with interal Hawtio services that manage plugins state and configuration.
  */
 export function usePlugins() {
   const [plugins, setPlugins] = useState<Plugin[]>([])
@@ -13,13 +19,15 @@ export function usePlugins() {
 
   useEffect(() => {
     const loadPlugins = async () => {
+      // active plugins are selected depending on "user logged in" flag to separate
+      // plugins used by <HawtioPage> and <HawtioLogin>
       const activePlugins = await hawtio.resolvePlugins()
       // Filter plugins by hawtconfig.json
       const enabledPlugins = await configManager.filterEnabledPlugins(activePlugins)
       setPlugins(enabledPlugins)
       setPluginsLoaded(true)
     }
-    loadPlugins()
+    loadPlugins().then(() => true)
 
     // Reload plugins when they are updated elsewhere
     eventService.onPluginsUpdated(loadPlugins)
@@ -30,7 +38,12 @@ export function usePlugins() {
 }
 
 /**
- * Custom React hook for using hawtconfig.json.
+ * Custom React hook for using `hawtconfig.json`.
+ *
+ * This hook holds:
+ * * a state for `Hawtconfig` object
+ *
+ * This hook synchronizes (once, cached in `configManager`) with `hawtconfig.json` resource.
  */
 export function useHawtconfig() {
   const [hawtconfig, setHawtconfig] = useState<Hawtconfig>({})
@@ -41,7 +54,7 @@ export function useHawtconfig() {
       setHawtconfig(await configManager.getHawtconfig())
       setHawtconfigLoaded(true)
     }
-    loadHawtconfig()
+    loadHawtconfig().then(() => true)
   }, [])
 
   return { hawtconfig, hawtconfigLoaded }

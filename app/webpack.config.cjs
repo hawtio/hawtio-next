@@ -66,7 +66,7 @@ module.exports = (_, args) => {
           '@hawtio/react': {
             singleton: true,
             // Hardcoding needed because it cannot handle yarn 'workspace:*' version
-            requiredVersion: '1.9.2'
+            requiredVersion: '1.9.6'
           },
           '@patternfly/react-core': {
             singleton: true,
@@ -92,7 +92,6 @@ module.exports = (_, args) => {
             to: outputPath,
             context: 'public/',
             globOptions: {
-              gitignore: true,
               ignore: ['**/index.html', '**/favicon.ico'],
             },
           },
@@ -101,7 +100,7 @@ module.exports = (_, args) => {
       new MonacoWebpackPlugin({
         // 'html' is required as workaround for 'xml'
         // https://github.com/microsoft/monaco-editor/issues/1509
-        languages: ['xml', 'json', 'html', 'plaintext'],
+        languages: ['xml', 'json', 'html'],
         globalAPI: true,
       }),
     ],
@@ -154,6 +153,7 @@ module.exports = (_, args) => {
     },
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.jsx'],
+      symlinks: false
     },
     ignoreWarnings: [
       // For suppressing sourcemap warnings coming from some dependencies
@@ -170,11 +170,16 @@ module.exports = (_, args) => {
         // Needed to fallback to bundled index instead of public/index.html template
         index: publicPath,
       },
+      hot: !process.env.DISABLE_WS,
+      liveReload: !process.env.DISABLE_WS,
+      // changing to "ws" adds 20+ more modules to webpack-generated bundle
+      webSocketServer: process.env.DISABLE_WS ? false : "ws",
       devMiddleware: {
         publicPath,
         writeToDisk: true
       },
       setupMiddlewares: (middlewares, devServer) => {
+        // handle incoming JSON mime data, so handlers have access to JSONified req.body
         devServer.app.use(bodyParser.json())
 
         // Redirect / or /hawtio to /hawtio/
@@ -183,30 +188,10 @@ module.exports = (_, args) => {
           devServer.app.get(`${publicPath}$`, (_, res) => res.redirect(`${publicPath}/`))
         }
 
-        let username = 'developer'
-        const proxyEnabled = true
-        // TODO: Currently self-hosting remotes don't work despite no errors thrown
-        const plugin = [
-          {
-            url: 'http://localhost:3000/hawtio',
-            scope: 'appRemote',
-            module: './remote3',
-            remoteEntryFileName: "remoteExternalEntry.js",
-            pluginEntry: 'registerRemote',
-          },
-        ]
-        // Keycloak
-        const keycloakEnabled = false
-        const keycloakClientConfig = {
-          realm: 'hawtio-demo',
-          clientId: 'hawtio-client',
-          url: 'http://localhost:18080/',
-          jaas: false,
-          pkceMethod: 'S256',
-        }
+        /* Hawtio userinfo / login / logout mock endpoints */
 
-        // Hawtio backend API mock
         let login = true
+        let username = 'developer'
         devServer.app.get(`${publicPath}/user`, (_, res) => {
           if (login) {
             res.send(`"${username}"`)
@@ -218,7 +203,7 @@ module.exports = (_, args) => {
           // Test authentication throttling with username 'throttled'
           const cred = req.body
           if (cred.username === 'throttled') {
-            res.append('Retry-After', 10) // 10 secs
+            res.append('Retry-After', "10") // 10 secs
             res.sendStatus(429)
             return
           }
@@ -233,49 +218,142 @@ module.exports = (_, args) => {
           res.redirect(`${publicPath}/login`)
         })
 
+        /* Testing preset connections */
+
+        // devServer.app.get(`${publicPath}/preset-connections`, (_, res) => {
+        //   res.type('application/json')
+        //   res.send(
+        //     JSON.stringify([
+        //       { name: 'test1', scheme: 'http', host: 'localhost', port: 8778, path: '/jolokia/' },
+        //       { name: 'test2' },
+        //     ]),
+        //   )
+        // })
+
+        /* Configuration endpoints - global and for plugins */
+
+        const proxyEnabled = true
+        devServer.app.get(`${publicPath}/proxy/enabled`, (_, res) => {
+          res.send(String(proxyEnabled))
+        })
+
+        devServer.app.get(`${publicPath}/auth/config/session-timeout`, (_, res) => {
+          res.type('application/json')
+          res.send('{ timeout: -1 }')
+        })
+
+        /* Available plugins - for Module Federation plugins not handled by Webpack at build time */
+
+        const plugin = [
+          {
+            url: 'http://localhost:3000/hawtio',
+            scope: 'appRemote',
+            module: './remote3',
+            remoteEntryFileName: "remoteExternalEntry.js",
+            pluginEntry: 'registerRemote',
+          },
+        ]
+        devServer.app.get(`${publicPath}/plugin`, (_, res) => {
+          res.send(JSON.stringify(plugin))
+        })
+
+        /* Keycloak */
+
+        const keycloakEnabled = false
+        const keycloakClientConfig = {
+          realm: 'hawtio-demo',
+          clientId: 'hawtio-client',
+          url: 'http://localhost:18080/',
+          jaas: false,
+          pkceMethod: 'S256',
+        }
+        devServer.app.get(`${publicPath}/keycloak/enabled`, (_, res) => {
+          res.send(String(keycloakEnabled))
+        })
+        devServer.app.get(`${publicPath}/keycloak/client-config`, (_, res) => {
+          res.send(JSON.stringify(keycloakClientConfig))
+        })
+        devServer.app.get(`${publicPath}/keycloak/validate-subject-matches`, (_, res) => {
+          res.send('true')
+        })
+
+        /* OpenID Connect */
+
         const oidcEnabled = false
-        const oidcConfig = {
+        // const entraIDOidcConfig = {
+        //   method: 'oidc',
+        //   provider: 'https://login.microsoftonline.com/11111111-2222-3333-4444-555555555555/v2.0',
+        //   client_id: '66666666-7777-8888-9999-000000000000',
+        //   response_mode: 'fragment',
+        //   scope: 'openid email profile api://hawtio-server/Jolokia.Access',
+        //   redirect_uri: 'http://localhost:3000/hawtio/',
+        //   code_challenge_method: 'S256',
+        //   prompt: null
+        //   // prompt: 'login',
+        // }
+        const keycloakOidcConfig = {
           method: 'oidc',
-          provider: 'https://login.microsoftonline.com/11111111-2222-3333-4444-555555555555/v2.0',
-          client_id: '66666666-7777-8888-9999-000000000000',
+          provider: 'http://localhost:18080/realms/hawtio-demo',
+          client_id: 'hawtio-client',
           response_mode: 'fragment',
-          scope: 'openid email profile api://hawtio-server/Jolokia.Access',
+          scope: 'openid email profile',
           redirect_uri: 'http://localhost:3000/hawtio/',
           code_challenge_method: 'S256',
-          prompt: 'login',
+          prompt: null,
+          // prompt: 'login',
         }
-        devServer.app.get(`${publicPath}/auth/config`, (_, res) => {
+        devServer.app.get(`${publicPath}/auth/config/oidc`, (_, res) => {
           res.type('application/json')
           if (oidcEnabled) {
-            res.send(JSON.stringify(oidcConfig))
+            res.send(JSON.stringify(keycloakOidcConfig))
           } else {
             res.send('{}')
           }
         })
-        devServer.app.get(`${publicPath}/auth/config/session-timeout`, (_, res) => {
-          res.type('application/json')
-          res.send('{}')
-        })
-        devServer.app.get(`${publicPath}/proxy/enabled`, (_, res) => res.send(String(proxyEnabled)))
-        devServer.app.get(`${publicPath}/plugin`, (_, res) => res.send(JSON.stringify(plugin)))
-        devServer.app.get(`${publicPath}/keycloak/enabled`, (_, res) => res.send(String(keycloakEnabled)))
-        devServer.app.get(`${publicPath}/keycloak/client-config`, (_, res) =>
-          res.send(JSON.stringify(keycloakClientConfig)),
-        )
-        devServer.app.get(`${publicPath}/keycloak/validate-subject-matches`, (_, res) => res.send('true'))
 
-        // Testing preset connections
-        /*
-        devServer.app.get(`${publicPath}/preset-connections`, (_, res) => {
-          res.type('application/json')
-          res.send(
-            JSON.stringify([
-              { name: 'test1', scheme: 'http', host: 'localhost', port: 8778, path: '/jolokia/' },
-              { name: 'test2' },
-            ]),
-          )
+        /* Available authentication methods to configure <HawtioLogin> page */
+
+        const authLoginConfig = [
+          {
+            "method": "basic",
+            "name": "Basic Authentication",
+            "realm": "Hawtio Realm"
+          },
+          {
+            // TODO: for now this one is duplicated with /auth/config/oidc
+            "method": "oidc",
+            "name": "OpenID Connect (Keycloak)",
+            "provider": "http://localhost:18080/realms/hawtio-demo",
+            "openid-configuration": null,
+            "client_id": "hawtio-client",
+            "redirect_uri": "http://localhost:3000/hawtio/",
+            "scope": "openid email profile",
+            "response_mode": "fragment",
+            "code_challenge_method": "S256",
+            "prompt": null
+          },
+          // {
+          //   "method": "form",
+          //   "name": "Form/Session Authentication (application/x-www-form-urlencoded)",
+          //   "url": `${publicPath}/auth/login`,
+          //   "logoutUrl": `${publicPath}/auth/logout`,
+          //   "type": "form",
+          //   "userField": "username",
+          //   "passwordField": "password"
+          // },
+          {
+            "method": "form",
+            "name": "Form/Session Authentication (application/json)",
+            "url": `${publicPath}/auth/login`,
+            "logoutUrl": `${publicPath}/auth/logout`,
+            "type": "json",
+            "userField": "username",
+            "passwordField": "password"
+          },
+        ]
+        devServer.app.get(`${publicPath}/auth/config/login`, (_, res) => {
+          res.json(authLoginConfig)
         })
-        */
 
         // Hawtio backend middleware should be run before other middlewares (thus 'unshift')
         // in order to handle GET requests to the proxied Jolokia endpoint.
@@ -292,7 +370,7 @@ module.exports = (_, args) => {
       },
     },
   },
-  // this is very slim configuration which only builds a file used as exposed entry point for ModuleFederation plugin
+  // this is a very slim configuration which only builds a file used as exposed entry point for ModuleFederation plugin
   // which will be loaded dynamically by Hawtio using @module-federation/utiliites
   {
     entry: './src/examples/remote3',
@@ -321,7 +399,7 @@ module.exports = (_, args) => {
           '@hawtio/react': {
             singleton: true,
             // Hardcoding needed because it cannot handle yarn 'workspace:*' version
-            requiredVersion: '1.9.2'
+            requiredVersion: '1.9.6'
           },
           '@patternfly/react-core': {
             singleton: true,

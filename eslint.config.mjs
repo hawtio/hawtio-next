@@ -28,7 +28,7 @@ export default [
       '**/testdata/**/*.js',
       '**/jest.config.ts',
       '**/tsup.config*.ts',
-      '**/webpack*.js',
+      '**/webpack*.cjs',
       '**/proxy-dev-server.js',
       '**/dist/*',
       '**/build/*',
