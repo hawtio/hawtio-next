@@ -1,28 +1,27 @@
-import { eventService } from '@hawtiosrc/core'
+import { eventService, FormAuthenticationMethod } from '@hawtiosrc/core'
+import { PATH_LOGIN } from '@hawtiosrc/auth/globals'
 import { log } from './globals'
-
-const PATH_LOGIN = 'auth/login'
 
 const STORAGE_KEY_LOGIN = 'login'
 
 export type LoginResult = { type: 'success' } | { type: 'failure' } | { type: 'throttled'; retryAfter: number }
 
 export interface ILoginService {
-  login(username: string, password: string, remember: boolean): Promise<LoginResult>
+  login(username: string, password: string, remember: boolean, method: FormAuthenticationMethod): Promise<LoginResult>
   getUser(): string
   rememberUser(username: string): void
   clearUser(): void
 }
 
 class LoginService implements ILoginService {
-  async login(username: string, password: string, remember: boolean): Promise<LoginResult> {
+  async login(username: string, password: string, remember: boolean, method: FormAuthenticationMethod): Promise<LoginResult> {
     try {
-      const res = await fetch(PATH_LOGIN, {
+      const res = await fetch(method.url, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': method.type === 'json' ? 'application/json' : 'application/x-www-form-urlencoded',
         },
-        body: JSON.stringify({ username, password }),
+        body: method.type === 'json' ? JSON.stringify({ [method.userField]: username, [method.passwordField]: password }) : '',
       })
       if (!res.ok) {
         // Login failed

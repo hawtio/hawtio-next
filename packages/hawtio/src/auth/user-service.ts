@@ -1,14 +1,20 @@
-import { eventService } from '@hawtiosrc/core'
+import { configManager, eventService, TaskState } from '@hawtiosrc/core'
 import { log, PATH_LOGOUT, PATH_USER, PUBLIC_USER } from './globals'
 
+/** Information about logged-in user */
 export type User = {
+  /** Name of the user */
   username: string
+  /** Flag for actual user (`false` means guest or public user) */
   isLogin: boolean
-  isLoading?: boolean
 }
 
+/** User resolving function that resolves user promise */
 export type ResolveUser = (user: User) => void
+
+/** A function that may be registered by authentication plugin used to get information about logged-in user */
 export type FetchUserHook = (resolve: ResolveUser, proceed?: () => boolean) => Promise<boolean>
+/** A function that may be registered by authentication plugin used to log out a user */
 export type LogoutHook = () => Promise<boolean>
 
 export interface IUserService {
@@ -23,12 +29,20 @@ export interface IUserService {
 }
 
 class UserService implements IUserService {
+  /** The main promise resolving to `User` instance. That's why we need full browser redirect on logout. */
   private readonly user: Promise<User>
+  /** user promise resolve method - to be called by registered auth plugins or default auth plugin */
   private resolveUser: ResolveUser = () => {
     // no-op
   }
+
+  /** Named authentication hooks used to fetch information about actual user logged into Hawtio. */
   private fetchUserHooks: { [name: string]: FetchUserHook } = {}
+  /** Named authentication hooks used to logout the user. */
   private logoutHooks: { [name: string]: LogoutHook } = {}
+
+  /** Bearer Token to be used by Jolokia, set by plugins on successful authentication */
+  // TODO: Jolokia service should use auth plugins to configure the headers
   private token: string | null = null
 
   constructor() {
@@ -39,6 +53,7 @@ class UserService implements IUserService {
 
   addFetchUserHook(name: string, hook: FetchUserHook) {
     this.fetchUserHooks[name] = hook
+    configManager.initItem(`Registration of ${name} auth hook`, TaskState.finished, "config")
   }
 
   addLogoutHook(name: string, hook: LogoutHook) {
@@ -57,13 +72,23 @@ class UserService implements IUserService {
       }
       log.debug('Invoke fetch user hook', name, ': resolved =', resolved)
       if (resolved) {
-        // Login succeeded
+        // Login succeeded - only with resolved=true the passed promise-resolving method was called
         eventService.login()
         return
       }
     }
 
-    // Default fetch user logic
+    // this.user promise was still not resolved, useUser()'s effect is still waiting
+    await this.defaultFetchUser(retry, proceed)
+  }
+
+  /**
+   * Default user fetching logic that checks `/user` endpoint that returns json string value with named/logged-in user
+   * @param retry
+   * @param proceed
+   * @private
+   */
+  private async defaultFetchUser(retry = true, proceed?: () => boolean): Promise<void> {
     try {
       const res = await fetch(PATH_USER)
       if (!res.ok) {
@@ -74,7 +99,7 @@ class UserService implements IUserService {
           // but it no longer relies on the retry. Now it is kept mainly for
           // additional resilience at authentication.
           await new Promise(resolve => setTimeout(resolve, 1000))
-          return this.fetchUser(false)
+          return this.defaultFetchUser(false, proceed)
         }
 
         this.resolveUser({ username: PUBLIC_USER, isLogin: false })
@@ -100,11 +125,6 @@ class UserService implements IUserService {
 
   async isLogin(): Promise<boolean> {
     return (await this.user).isLogin
-  }
-
-  async isLoading(): Promise<boolean> {
-    const u = await this.user
-    return u.isLoading ?? false
   }
 
   getToken(): string | null {

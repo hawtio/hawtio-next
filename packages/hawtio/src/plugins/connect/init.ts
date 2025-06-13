@@ -1,6 +1,7 @@
 import { userService } from '@hawtiosrc/auth/user-service'
 import { connectService } from '@hawtiosrc/plugins/shared/connect-service'
-import { PATH_PROXY_ENABLED, log } from './globals'
+import { log, PATH_PROXY_ENABLED } from './globals'
+import { configManager, TaskState } from '@hawtiosrc/core'
 
 export async function isActive(): Promise<boolean> {
   const proxyEnabled = await isProxyEnabled()
@@ -24,25 +25,35 @@ export async function isConnectionStatusActive(): Promise<boolean> {
   return connectService.getCurrentConnectionId() !== null
 }
 
+let proxyEnabled: boolean | null = null
+
 async function isProxyEnabled(): Promise<boolean> {
+  if (proxyEnabled != null) {
+    return proxyEnabled
+  }
+
   try {
+    configManager.initItem("Checking proxy", TaskState.started, "config")
     const res = await fetch(PATH_PROXY_ENABLED)
     if (!res.ok) {
-      // Silently ignore and enable it when fetch failed
+      configManager.initItem("Checking proxy", TaskState.skipped, "config")
       log.debug('Failed to fetch', PATH_PROXY_ENABLED, ':', res.status, res.statusText)
-      return true
+      return false
     }
 
     const data = await res.text()
     // Disable proxy only when explicitly disabled
-    const enabled = data.trim() !== 'false'
-    log.debug('Proxy enabled:', enabled)
-    return enabled
+    proxyEnabled = data.trim() !== 'false'
+    configManager.initItem("Checking proxy", proxyEnabled ? TaskState.finished : TaskState.skipped, "config")
+    log.debug('Proxy enabled:', proxyEnabled)
   } catch (err) {
     // Silently ignore and enable it when the path is not available
+    configManager.initItem("Checking proxy", TaskState.skipped, "config")
     log.debug('Failed to fetch', PATH_PROXY_ENABLED, ':', err)
-    return true
+    proxyEnabled = false
   }
+
+  return proxyEnabled
 }
 
 function isConnectLogin(): boolean {

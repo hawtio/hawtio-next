@@ -12,17 +12,24 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 
-import { HawtioInitialization } from '@hawtio/react/init'
+import { configManager, hawtio, HawtioInitialization, TaskState } from '@hawtio/react/init'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
 // basic UI showing initialization progress without dependencies on Patternfly
 root.render(<HawtioInitialization />)
 
-import("@hawtio/react").then(m => {
-  // Configure the console
-  m.configManager.addProductInfo('Test App', '1.0.0')
-  m.hawtio.addUrl('plugin')
+configManager.initItem("Loading UI", TaskState.started, "config")
+
+// TODO: decide where to allow custom configuration
+configManager.authRetry = false
+
+// Configure the console
+configManager.addProductInfo('Test App', '1.0.0')
+
+hawtio.addUrl('plugin')
+
+import("@hawtio/react").then(async m => {
 
   // Register all default Hawtio plugins
   m.registerPlugins()
@@ -35,6 +42,10 @@ import("@hawtio/react").then(m => {
   import("./examples").then(m => {
     m.registerExamples()
   })
+
+  // hawtio.bootstrap() will wait for all init items to be ready, so we have to finish "loading"
+  // stage of UI. UI will be rendered after bootstrap()
+  configManager.initItem("Loading UI", TaskState.finished, "config")
 
   m.hawtio.bootstrap().then(() => {
     import("@hawtio/react/ui").then(m => {

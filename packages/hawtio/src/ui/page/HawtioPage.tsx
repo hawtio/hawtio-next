@@ -25,8 +25,11 @@ import { log } from './globals'
 import { sessionService, SessionMonitor } from '@hawtiosrc/ui/session'
 import './HawtioPage.css'
 
+/**
+ * One of two _main_ components to be displayed in `<Hawtio>` component. It is displayed when user is logged in.
+ */
 export const HawtioPage: React.FunctionComponent = () => {
-  const { username, isLogin, userLoaded, userLoading } = useUser()
+  const { username, isLogin, userLoaded } = useUser()
   const { plugins, pluginsLoaded } = usePlugins()
   const { hawtconfig, hawtconfigLoaded } = useHawtconfig()
   const navigate = useNavigate()
@@ -36,13 +39,13 @@ export const HawtioPage: React.FunctionComponent = () => {
   // navigate should be used in effect
   // otherwise "Cannot update a component (`BrowserRouter`) while rendering a different component" is thrown
   useEffect(() => {
-    if (!isLogin && !userLoading) {
+    if (!isLogin && userLoaded) {
       navigate('/login')
     }
-  }, [isLogin, navigate, userLoading])
+  }, [isLogin, userLoaded, navigate])
 
-  if (!userLoaded || !pluginsLoaded || userLoading || !hawtconfigLoaded) {
-    log.debug('Loading:', 'user =', userLoaded, ', plugins =', pluginsLoaded)
+  if (!isLogin || !userLoaded || !pluginsLoaded || !hawtconfigLoaded) {
+    log.info('Loading (<HawtioPage>):', 'user =', userLoaded, ', plugins =', pluginsLoaded)
     return <HawtioLoadingPage />
   }
 

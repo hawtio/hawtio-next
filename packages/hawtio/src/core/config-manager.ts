@@ -1,5 +1,6 @@
 import { Plugin } from './core'
 import { Logger } from './logging'
+import { PATH_LOGIN, PATH_LOGOUT } from '@hawtiosrc/auth/globals'
 
 const log = Logger.get('hawtio-core-config')
 
@@ -140,13 +141,189 @@ export type OnlineConfig = {
   projectSelector?: string
 }
 
+/** Stages of initialization tasks performed by Hawtio and presented in <HawtioInitialization> component */
+export enum TaskState { started, skipped, finished, error }
+export type InitializationTasks = Record<string, { ready: TaskState, group: string }>
+
+/** Supported authentication methods */
+export type AuthenticationKind =
+  /**
+   * Basic authentication - requires preparation of `Authorization: Basic <base64(user:password)>` HTTP header
+   */
+  "basic" |
+
+  /**
+   * Digest authentication - [Digest Access Authentication Scheme](https://www.rfc-editor.org/rfc/rfc2617#section-3),
+   * uses several challenge parameters (realm, nonces, ...)
+   */
+  "digest" |
+
+  /**
+   * Form authentication - we need to know the URI to send the credentials to. It may be
+   * `application/x-www-form-urlencoded` content (then we need to know the fields to use) or JSON with some schema.
+   */
+  "form" |
+
+  /**
+   * This may be tricky, because we can't control it at JavaScript level...
+   */
+  "clientcert" |
+
+  /**
+   * This is universal OpenID connect login type, so we need some information - should be configured
+   * using `.well-known/openid-configuration` endpoint, but with additional parameters (to choose supported values
+   * for some operations).
+   */
+  "oidc" |
+
+  /**
+   * Probably less standardized than `.well-known/openid-configuration`, but similar. We need to know the endpoints
+   * to use for OAuth2 auth.
+   */
+  "oauth2"
+
+/** Base type for authentication methods supported by Hawtio */
+export type AuthenticationMethod = {
+  method: AuthenticationKind,
+  name: string
+}
+
+/** Configuration of Basic Authentication */
+export type BasicAuthenticationMethod = AuthenticationMethod & {
+  /** Basic Authentication Realm - not sent with `Authorization`, but user should see it */
+  realm: string
+}
+
+/** Configuration of FORM-based login configuration */
+export type FormAuthenticationMethod = AuthenticationMethod & {
+  /** POST URL to send the credentials to */
+  url: string | URL
+
+  /** POST URL for logout endoint */
+  logoutUrl: string | URL
+
+  /**
+   * `application/x-www-form-urlencoded` or `application/json`. For JSON it's just object with two configurable fields
+   */
+  type: "form" | "json",
+
+  /**
+   * Field name for user name
+   */
+  userField: string
+
+  /**
+   * Field name for password
+   * TODO: possibly encoded/encrypted?
+   */
+  passwordField: string
+}
+
+/** OpenID Connect authentication method configuration */
+export type OidcAuthenticationMethod = AuthenticationMethod & {
+  /**
+   * Authentication provider URL - should be a _base_ address for the endpoints and for `/.well-known/openid-configuration`
+   * discovery.
+   */
+  provider: string | URL
+
+  /**
+   * OpenID Connnect configuration obtained from [/.well-known/openid-configuration](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfigurationRequest)
+   * endpoint.
+   *
+   * If not available, We should hit the `/.well-known/openid-configuration` at {@link provider}.
+   */
+  "openid-configuration"?: Record<string, unknown>
+
+  /**
+   * Client ID to send to authorization endpoint
+   */
+  client_id: string
+
+  /**
+   * URL to redirect to after OIDC Authentication. Should be known (valid) at provider side
+   */
+  redirect_uri: string | URL
+
+  /**
+   * Scope parameter to choose - if not provided from the server side, should be determined at Hawtio side
+   */
+  scope?: string
+
+  /**
+   * Mode of response from `response_modes_supported` of OIDC metadata
+   */
+  response_mode: string
+
+  /**
+   * Code challenge type from `code_challenge_methods_supported	` of OIDC metadata
+   */
+  code_challenge_method?: "S256" | "plain"
+
+  /**
+   * (Type of prompt](https://openid.net/specs/openid-connect-prompt-create-1_0-07.html#section-4.2) to use.
+   * Supported values are from `prompt_values_supported` OIDC metadata.
+   */
+  prompt?: string
+}
+
 export const HAWTCONFIG_JSON = 'hawtconfig.json'
 
 class ConfigManager {
   private config?: Promise<Hawtconfig>
 
-  private cfg: Record<string, { ready: boolean, group: string }> = {}
-  private listeners: ((config: Record<string, { ready: boolean, group: string }>) => void)[] = []
+  /** List of initialization tasks to be presented in <HawtioInitialization> */
+  private initTasks: InitializationTasks = {}
+
+  private initListeners: ((tasks: InitializationTasks) => void)[] = []
+
+  private authRetryFlag = false
+
+  private authenticationConfig: AuthenticationMethod[] = []
+
+  get authRetry() {
+    return this.authRetryFlag
+  }
+
+  set authRetry(flag: boolean) {
+    this.authRetryFlag = flag
+  }
+
+  /**
+   * This method is called by hawtio.bootstrap, so we have a single point where global (not plugin-specific)
+   * configuration is loaded
+   */
+  async initialize(): Promise<boolean> {
+    this.initItem("Checking authentication providers", TaskState.started, "config")
+
+    const defaultConfiguration: FormAuthenticationMethod = {
+      "method": 'form',
+      "name": "Form Authentication",
+      "url": PATH_LOGIN,
+      "logoutUrl": PATH_LOGOUT,
+      "type": "json",
+      "userField": "username",
+      "passwordField": "password",
+    }
+
+    this.authenticationConfig = await fetch('auth/config/login')
+        .then(response => response.ok ? response.json() : [])
+        .then((json: AuthenticationMethod[]) => {
+          if (Array.isArray(json)) {
+            return json.length == 0 ? [defaultConfiguration] : json
+          } else {
+            return [defaultConfiguration]
+          }
+        })
+        .catch(e => {
+          log.error("Problem fetching authentication providers", e)
+          return [defaultConfiguration]
+        })
+
+    this.initItem("Checking authentication providers", TaskState.finished, "config")
+
+    return true
+  }
 
   reset() {
     this.config = undefined
@@ -165,17 +342,21 @@ class ConfigManager {
     return this.config
   }
 
+  getAuthenticationConfig(): AuthenticationMethod[] {
+    return this.authenticationConfig
+  }
+
   private async loadConfig(): Promise<Hawtconfig> {
     log.info('Loading', HAWTCONFIG_JSON)
 
-    this.setConfigItem("Loading " + HAWTCONFIG_JSON, false, "config")
+    this.initItem("Loading " + HAWTCONFIG_JSON, TaskState.started, "config")
     try {
       const res = await fetch(HAWTCONFIG_JSON)
       if (!res.ok) {
         log.error('Failed to fetch', HAWTCONFIG_JSON, '-', res.status, res.statusText)
         return {}
       }
-      this.setConfigItem("Loading " + HAWTCONFIG_JSON, true, "config")
+      this.initItem("Loading " + HAWTCONFIG_JSON, TaskState.finished, "config")
 
       const config = await res.json()
       log.debug(HAWTCONFIG_JSON, '=', config)
@@ -199,7 +380,7 @@ class ConfigManager {
     }
 
     log.info('Apply branding', branding)
-    this.setConfigItem("Applying branding", false, "config")
+    this.initItem("Applying branding", TaskState.started, "config")
     let applied = false
     if (branding.appName) {
       log.info('Updating title -', branding.appName)
@@ -215,7 +396,7 @@ class ConfigManager {
       this.updateHref('#favicon', branding.favicon)
       applied = true
     }
-    this.setConfigItem("Applying branding", true, "config")
+    this.initItem("Applying branding", applied ? TaskState.finished : TaskState.skipped, "config")
     return applied
   }
 
@@ -266,31 +447,41 @@ class ConfigManager {
     config.about.productInfo.push({ name, value })
   }
 
-  getConfig(): Record<string, { ready: boolean, group: string }> {
-    return this.cfg
+  getInitializationTasks(): InitializationTasks {
+    return this.initTasks
   }
 
-  addListener(f: (config: Record<string, { ready: boolean, group: string }>) => void) {
-    this.listeners.push(f)
+  addInitListener(f: (tasks: InitializationTasks) => void) {
+    this.initListeners.push(f)
   }
 
-  removeListener(f: (config: Record<string, { ready: boolean, group: string }>) => void) {
-    this.listeners.splice(this.listeners.indexOf(f), 1)
+  removeInitListener(f: (tasks: InitializationTasks) => void) {
+    this.initListeners.splice(this.initListeners.indexOf(f), 1)
   }
 
-  setConfigItem(item: string, ready: boolean, group: string) {
-    this.cfg[item] = { ready, group }
+  /**
+   * Pass information about initialization iteam
+   * @param item name of the item
+   * @param ready is it ready/started/finished/error?
+   * @param group a group of the initialization item for groupping in the UI
+   */
+  initItem(item: string, ready: TaskState, group: string) {
+    this.initTasks[item] = { ready, group }
     setTimeout(() => {
-      for (const l of this.listeners) {
-        l(this.cfg)
+      for (const l of this.initListeners) {
+        l(this.initTasks)
       }
     }, 0)
   }
 
+  /**
+   * Are all the initialization items completed? The returned promise will be asynchronously resolved when
+   * initialization is complete
+   */
   async ready(): Promise<boolean> {
     return new Promise((resolve, _reject) => {
       const h: NodeJS.Timeout = setInterval(() => {
-        const result = Object.values(this.cfg!).find(v => !v.ready) == undefined
+        const result = Object.values(this.initTasks!).find(v => v.ready == TaskState.started || v.ready == TaskState.error) == undefined
         if (result) {
           resolve(true)
           clearInterval(h)

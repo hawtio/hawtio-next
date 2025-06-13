@@ -1,9 +1,8 @@
 import { ResolveUser, userService } from '@hawtiosrc/auth/user-service'
-import { hawtio, Logger } from '@hawtiosrc/core'
+import { configManager, hawtio, Logger, TaskState } from '@hawtiosrc/core'
 import { jwtDecode } from 'jwt-decode'
 import * as oidc from 'oauth4webapi'
 import { AuthorizationResponseError, AuthorizationServer, Client, ClientAuth, OAuth2Error } from 'oauth4webapi'
-import { fetchPath } from '@hawtiosrc/util/fetch'
 import { getCookie } from '@hawtiosrc/util/https'
 
 const pluginName = 'hawtio-oidc'
@@ -46,14 +45,14 @@ export interface IOidcService {
   registerUserHooks(helpRegistration: () => void): void
 }
 
-class UserInfo {
-  user: string | null = null
-  access_token: string | null | undefined = null
-  refresh_token: string | null | undefined = null
-  at_exp: number = 0
+type UserInfo = {
+  user: string | null
+  access_token: string | null | undefined
+  refresh_token: string | null | undefined
+  at_exp: number
 }
 
-export class OidcService implements IOidcService {
+class OidcService implements IOidcService {
   // promises created during construction - should be already resolved in fetchUser
   private readonly config: Promise<OidcConfig | null>
   private readonly enabled: Promise<boolean>
@@ -62,19 +61,24 @@ export class OidcService implements IOidcService {
   private originalFetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
 
   constructor() {
-    this.config = fetchPath<OidcConfig | null>('auth/config', {
-      success: (data: string) => {
-        try {
-          return JSON.parse(data)
-        } catch {
+    configManager.initItem("OIDC Configuration", TaskState.started, "config")
+    this.config = fetch('auth/config/oidc')
+        .then(response => response.ok && response.status == 200 ? response.json() : null)
+        .then(json => {
+          return json as OidcConfig
+        })
+        .catch(() => {
+          configManager.initItem("OIDC Configuration", TaskState.skipped, "config")
           return null
-        }
-      },
-      error: () => null,
-    })
+        })
 
     this.enabled = this.isOidcEnabled()
+    this.enabled.then(enabled => {
+      configManager.initItem("OIDC Configuration", enabled ? TaskState.finished : TaskState.skipped, "config")
+    })
     this.oidcMetadata = this.fetchOidcMetadata()
+
+    // TODO: no no no - should be on user request
     this.userInfo = this.initialize()
     this.originalFetch = fetch
   }
