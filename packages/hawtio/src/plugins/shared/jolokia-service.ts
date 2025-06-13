@@ -248,6 +248,7 @@ class JolokiaService implements IJolokiaService {
     }
 
     // Discover Jolokia
+    // TODO: should not check both 'jolokia' and '/hawtio/jolokia' if base path is '/hawtio/'
     for (const path of JOLOKIA_PATHS) {
       log.debug('Checking Jolokia path:', path)
       try {

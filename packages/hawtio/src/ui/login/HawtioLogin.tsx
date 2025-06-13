@@ -1,31 +1,119 @@
 import { useUser } from '@hawtiosrc/auth/hooks'
-import { DEFAULT_APP_NAME, DEFAULT_LOGIN_TITLE, useHawtconfig, usePlugins } from '@hawtiosrc/core'
+import {
+  AuthenticationMethod,
+  configManager,
+  DEFAULT_APP_NAME,
+  DEFAULT_LOGIN_TITLE, FormAuthenticationMethod,
+  useHawtconfig,
+  usePlugins
+} from '@hawtiosrc/core'
 import { hawtioLogo, background } from '@hawtiosrc/img'
-import { ListItem, ListVariant, LoginFooterItem, LoginPage } from '@patternfly/react-core'
-import React from 'react'
+import { Button, ListItem, ListVariant, LoginFooterItem, LoginPage } from '@patternfly/react-core'
+import React, { ReactNode, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { HawtioNotification } from '@hawtiosrc/ui/notification'
 import { HawtioLoadingPage } from '@hawtiosrc/ui/page'
 import { HawtioLoginForm } from './HawtioLoginForm'
 import { log } from './globals'
 
+/**
+ * One of two _main_ components to be displayed in `<Hawtio>` component. It is displayed when user is not logged in.
+ */
 export const HawtioLogin: React.FunctionComponent = () => {
   const navigate = useNavigate()
 
   const { isLogin, userLoaded } = useUser()
   const { hawtconfig, hawtconfigLoaded } = useHawtconfig()
   const { plugins, pluginsLoaded } = usePlugins()
+  const [ authenticationMethods, setAuthenticationMethods ] = useState<AuthenticationMethod[]>([])
+  const [ authenticationMethodSelected, setAuthenticationMethodSelected ] = useState(-1)
+  const [ authenticationMethodsLoaded, setAuthenticationMethodsLoaded ] = useState(false)
 
-  if (!userLoaded || !hawtconfigLoaded || !pluginsLoaded) {
-    log.debug('Loading:', 'user =', userLoaded, ', hawtconfig =', hawtconfigLoaded, ', pluginsLoaded =', pluginsLoaded)
+  useEffect(() => {
+    if (isLogin) {
+      navigate('/')
+    }
+  }, [isLogin, navigate])
+
+  useEffect(() => {
+    const methods = configManager.getAuthenticationConfig()
+    setAuthenticationMethods(methods)
+    setAuthenticationMethodsLoaded(true)
+  }, [])
+
+  if (isLogin || !userLoaded || !hawtconfigLoaded || !pluginsLoaded || !authenticationMethodsLoaded) {
+    log.info('Loading (<HawtioLogin>):', 'user =', userLoaded, ', hawtconfig =', hawtconfigLoaded, ', pluginsLoaded =', pluginsLoaded)
     return <HawtioLoadingPage />
   }
 
-  if (isLogin) {
-    navigate('/')
+  /**
+   * Prepares a React component to handle given `AuthenticationMethod`
+   * @param method
+   * @param multi
+   * @param idx
+   */
+  const configureLoginFragment = (method: AuthenticationMethod, multi: boolean, idx: number): ReactNode => {
+    if (multi) {
+      if (method.method === "oidc") {
+        // // just a link
+        // new URLSearchParams({
+        //
+        // })
+        return <Button component="a" variant="secondary" size="sm" isBlock className="idp">{method.name}</Button>
+      } else {
+        // a button with onClick
+        return <Button variant="secondary" size="sm" isBlock className="idp" onClick={() => {
+          sessionStorage.setItem("am", idx.toString())
+          setAuthenticationMethodSelected(idx)
+        }}>{method.name}</Button>
+      }
+    }
+
+    // single component version
+    switch (method.method) {
+      case "basic":
+        return <span>basic auth</span>
+      case "form":
+        return <HawtioLoginForm method={method as FormAuthenticationMethod} />
+      case "oidc":
+        return <Button variant="secondary" size="sm" isBlock className="idp">{method.name}</Button>
+      case "digest":
+      case "clientcert":
+      case "oauth2":
+      default:
+        return <div>???</div>
+    }
   }
 
-  let loginForm = <HawtioLoginForm />
+  // selected Login UI depends on the configuration
+  let loginForm
+
+  if (authenticationMethodSelected >= 0) {
+    loginForm = configureLoginFragment(authenticationMethods[authenticationMethodSelected]!, false, authenticationMethodSelected)
+  } else {
+    if (authenticationMethods.length == 0) {
+      // we provide a default, but still...
+      loginForm = <HawtioLoginForm method={authenticationMethods[0]! as FormAuthenticationMethod} />
+    } else {
+      if (authenticationMethods.length == 1) {
+        // easy
+        loginForm = configureLoginFragment(authenticationMethods[0]!, false, 0)
+      } else {
+        // multiple selection of login methods. user/password forms should use single pair of inputs, but
+        // the behaviour should be dependent on the method of choice
+        // OAuth2/OIDC methods should be shown as buttons
+        loginForm = (
+            <ul>
+              {authenticationMethods.map((method, idx) => {
+                const form = configureLoginFragment(method, true, idx)
+                return form ? (<li key={"k" + idx}>{form}</li>) : null
+              })}
+            </ul>
+        )
+      }
+    }
+  }
+
   const loginPlugins = plugins.filter(plugin => plugin.isLogin)
   log.debug('Discovered Login Plugins:', loginPlugins.length)
 
@@ -56,6 +144,12 @@ export const HawtioLogin: React.FunctionComponent = () => {
     </React.Fragment>
   )
 
+  const forgotCredentials = authenticationMethodSelected == -1 || authenticationMethods.length <= 1 ? null : (
+      <Button variant="link" isInline onClick={() => {
+        setAuthenticationMethodSelected(-1)
+      }}>Select different authentication method</Button>
+  )
+
   return (
     <LoginPage
       backgroundImgSrc={background}
@@ -65,6 +159,7 @@ export const HawtioLogin: React.FunctionComponent = () => {
       textContent={description}
       footerListItems={footerLinks}
       footerListVariants={ListVariant.inline}
+      forgotCredentials={forgotCredentials}
     >
       {loginForm}
       <HawtioNotification />

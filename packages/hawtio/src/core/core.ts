@@ -1,8 +1,11 @@
+import React from 'react'
 import { userService } from '@hawtiosrc/auth'
 import { importRemote, ImportRemoteOptions } from '@module-federation/utilities'
-import { configManager } from './config-manager'
+import { configManager, TaskState } from './config-manager'
 import { eventService } from './event-service'
 import { log } from './globals'
+
+const DEFAULT_REMOTE_ENTRY_FILE = 'remoteEntry.js'
 
 /**
  * Components to be added to the header navbar
@@ -117,6 +120,7 @@ const PATTERNFLY_THEME_CLASS = 'pf-v5-theme-dark'
  * This service provides the following functionalities:
  * - Base path provisioning
  * - Plugin loader and discovery mechanism
+ * - Bootstrapping the application
  */
 class HawtioCore {
   /**
@@ -176,6 +180,11 @@ class HawtioCore {
     return this.basePath
   }
 
+  /**
+   * Returns the base URL specified in html/head/base element, href attribute. It should end with trailing '/'.
+   * Specified base affects how `fetch()` global function works.
+   * @private
+   */
   private documentBase(): string | undefined {
     const base = document.querySelector('head base')
     if (base) {
@@ -189,13 +198,13 @@ class HawtioCore {
    */
   addPlugin(plugin: Plugin): HawtioCore {
     log.info('Add plugin:', plugin.id)
-    configManager.setConfigItem('Registering plugin: ' + plugin.id, false, "plugins")
+    configManager.initItem('Registering plugin: ' + plugin.id, TaskState.started, "plugins")
     if (this.plugins[plugin.id]) {
       throw new Error(`Plugin "${plugin.id}" already exists`)
     }
     this.plugins[plugin.id] = plugin
     setTimeout(() => {
-      configManager.setConfigItem('Registering plugin: ' + plugin.id, true, "plugins")
+      configManager.initItem('Registering plugin: ' + plugin.id, TaskState.finished, "plugins")
     }, 0)
     return this
   }
@@ -204,16 +213,30 @@ class HawtioCore {
    * Adds a URL for discovering plugins.
    */
   addUrl(url: string): HawtioCore {
+    if (URL.canParse(url)) {
+      // assume it's absolute URL
+    } else {
+      // assume it's relative URL
+      url = new URL(url, document.baseURI).href
+    }
     log.info('Add URL:', url)
     this.urls.push(url)
     return this
   }
 
   /**
-   * Bootstraps Hawtio.
+   * Bootstraps Hawtio. This method needs to be called by all applications that are bundled with `webpack` (or
+   * similar web bundler).
+   *
+   * This method returns a Promise. When resolved we can take the `<Hawtio>` React/Patternfly component
+   * and render it in React root node.
    */
   async bootstrap() {
     log.info('Bootstrapping Hawtio...')
+
+    // Load configuration to be used by all other services (login service, jolokia service, session service,
+    // user service, ...)
+    await configManager.initialize()
 
     // Load plugins
     await this.loadPlugins()
@@ -224,10 +247,16 @@ class HawtioCore {
     log.info('Branding applied:', brandingApplied)
 
     log.info('Bootstrapped Hawtio')
-    configManager.setConfigItem("Finish", false, "finish")
+    configManager.initItem("Finish", TaskState.finished, "finish")
 
+    // return a promise that waits for configManager to finish all its initialization items
     return configManager.ready().then(() => {
       log.debug("configManager.ready() resolved")
+      // return new Promise((resolve, _reject) => {
+      //   setTimeout(() => {
+      //     resolve(true)
+      //   }, 4000)
+      // })
       return true
     })
   }
@@ -268,37 +297,58 @@ class HawtioCore {
   private async loadExternalPlugins(url: string) {
     log.debug('Trying url:', url)
     try {
-      configManager.setConfigItem('Loading plugins descriptor from URL "' + url + '"', false, "plugins")
+      configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.started, "plugins")
       const res = await fetch(url)
       if (!res.ok) {
+        configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.error, "plugins")
         log.error('Failed to fetch url:', url, '-', res.status, res.statusText)
         return
       }
 
       const remotes = (await res.json()) as HawtioRemote[]
-      log.debug('Loaded remotes from url:', url, '=', remotes)
-      configManager.setConfigItem('Loading plugins descriptor from URL "' + url + '"', true, "plugins")
+      log.info('Loaded remotes from url:', url, '=', remotes)
+      configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.finished, "plugins")
 
       // Load plugins
       await Promise.all(
         remotes.map(async remote => {
-          log.debug('Loading remote', remote)
+          let url: string
+          if (typeof remote.url === 'function') {
+            url = await remote.url()
+          } else {
+            url = remote.url
+          }
+          if (!url.endsWith('/')) {
+            url += '/'
+          }
+          if (URL.canParse(url)) {
+            // should be absolute URL
+            url += remote.remoteEntryFileName ?? DEFAULT_REMOTE_ENTRY_FILE
+          } else {
+            url = new URL(url + (remote.remoteEntryFileName ?? DEFAULT_REMOTE_ENTRY_FILE), document.baseURI).href
+          }
+          log.info('Loading remote', remote)
           try {
-            configManager.setConfigItem('Importing plugin from: ' + remote.url, false, "plugins")
+            configManager.initItem('Importing plugin from: ' + url, TaskState.started, "plugins")
+            // call @module-federation/utilities method which helps us to deal with
+            // webpack's Module Federation (like container.init(__webpack_share_scopes__['default']) call)
             const plugin = await importRemote<{ [entry: string]: HawtioPlugin }>(remote)
             const entryFn = plugin[remote.pluginEntry || DEFAULT_PLUGIN_ENTRY]
             if (!entryFn) {
               throw new Error(`Plugin entry not found: ${remote.pluginEntry || DEFAULT_PLUGIN_ENTRY}`)
             }
             entryFn()
-            configManager.setConfigItem('Importing plugin from: ' + remote.url, true, "plugins")
-            log.debug('Loaded remote', remote)
+            configManager.initItem('Importing plugin from: ' + url, TaskState.finished, "plugins")
+            // configManager.initItem('Importing plugin from: ' + remote.url, true, "plugins")
+            log.info('Loaded remote', remote)
           } catch (err) {
+            configManager.initItem('Importing plugin from: ' + url, TaskState.error, "plugins")
             log.error('Error loading remote:', remote, '-', err)
           }
         }),
       )
     } catch (err) {
+      configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.error, "plugins")
       log.error('Error fetching url:', url, '-', err)
     }
   }

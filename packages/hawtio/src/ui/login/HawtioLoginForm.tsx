@@ -1,4 +1,3 @@
-import { useUser } from '@hawtiosrc/auth/hooks'
 import { humanizeSeconds } from '@hawtiosrc/util/dates'
 import { LoginForm, LoginFormProps } from '@patternfly/react-core'
 import { ExclamationCircleIcon } from '@patternfly/react-icons'
@@ -6,8 +5,9 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { log } from './globals'
 import { loginService } from './login-service'
+import { FormAuthenticationMethod } from '@hawtiosrc/core'
 
-export const HawtioLoginForm: React.FunctionComponent = () => {
+export const HawtioLoginForm: React.FunctionComponent<{method: FormAuthenticationMethod}> = ({method}) => {
   const navigate = useNavigate()
 
   let loginFailedInitialMessage = ''
@@ -20,7 +20,6 @@ export const HawtioLoginForm: React.FunctionComponent = () => {
     }
   }
 
-  const { isLogin } = useUser()
   const [username, setUsername] = useState(loginService.getUser())
   const [isValidUsername, setIsValidUsername] = useState(!loginFailedInitial)
   const [password, setPassword] = useState('')
@@ -30,7 +29,7 @@ export const HawtioLoginForm: React.FunctionComponent = () => {
   const [loginFailedMessage, setLoginFailedMessage] = useState(loginFailedInitialMessage)
   const [isEnabled, setIsEnabled] = useState(true)
 
-  log.debug('Login state: username =', username, 'isLogin =', isLogin)
+  log.debug('Login state: username =', username)
 
   const reset = () => {
     setIsValidUsername(true)
@@ -59,7 +58,7 @@ export const HawtioLoginForm: React.FunctionComponent = () => {
       return
     }
 
-    loginService.login(username, password, rememberMe).then(result => {
+    loginService.login(username, password, rememberMe, method as FormAuthenticationMethod).then(result => {
       switch (result.type) {
         case 'success':
           navigate('/')
@@ -90,6 +89,7 @@ export const HawtioLoginForm: React.FunctionComponent = () => {
 
   return (
     <LoginForm
+      noAutoFocus={true}
       showHelperText={loginFailed}
       helperText={loginFailedMessage}
       helperTextIcon={<ExclamationCircleIcon />}

@@ -1,6 +1,6 @@
 {
   "name": "@hawtio/react",
-  "version": "1.9.2",
+  "version": "1.9.6",
   "description": "A Hawtio reimplementation based on TypeScript + React.",
   "main": "./dist/index.js",
   "exports": {
@@ -23,7 +23,6 @@
       "default": "./dist/index.css"
     }
   },
-  "types": "./dist/index.d.ts",
   "author": "Hawtio developer team",
   "license": "Apache-2.0",
   "files": [

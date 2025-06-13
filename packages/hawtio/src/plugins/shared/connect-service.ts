@@ -1,10 +1,11 @@
-import { eventService, hawtio } from '@hawtiosrc/core'
+import { configManager, eventService, hawtio, TaskState } from '@hawtiosrc/core'
 import { decrypt, encrypt, generateKey, toBase64, toByteArray } from '@hawtiosrc/util/crypto'
 import { basicAuthHeaderValue, getCookie } from '@hawtiosrc/util/https'
 import { toString } from '@hawtiosrc/util/strings'
 import { joinPaths } from '@hawtiosrc/util/urls'
 import Jolokia, { IJolokiaSimple } from '@jolokia.js/simple'
 import { log } from './globals'
+import { isActive } from '@hawtiosrc/plugins/connect/init'
 
 export type Connections = {
   // key is ID, not name, so we can alter the name
@@ -92,6 +93,9 @@ class ConnectService implements IConnectService {
 
   constructor() {
     this.currentConnectionId = this.initCurrentConnectionId()
+
+    // check "enabled" flag
+    isActive().then(() => true)
   }
 
   /**
@@ -131,7 +135,7 @@ class ConnectService implements IConnectService {
     // Processing preset connections should come at last to prevent processing
     // them multiple times, because it may open new tab(s)/session(s) with `?con=`
     // to auto-connect to them later.
-    this.loadPresetConnections()
+    this.loadPresetConnections().then(() => true)
 
     return null
   }
@@ -149,9 +153,11 @@ class ConnectService implements IConnectService {
    */
   private async loadPresetConnections(): Promise<void> {
     try {
+      configManager.initItem("Checking preset connections", TaskState.started, "config")
       const path = this.getPresetConnectionsPath()
       const res = await fetch(path)
       if (!res.ok) {
+        configManager.initItem("Checking preset connections", TaskState.skipped, "config")
         log.debug('Failed to load preset connections:', res.status, res.statusText)
         return
       }
@@ -189,6 +195,8 @@ class ConnectService implements IConnectService {
       })
       this.saveConnections(connections)
 
+      configManager.initItem("Checking preset connections", TaskState.finished, "config")
+
       // Open the first connection in the current tab
       // and open the rest in new tabs
       const first = toOpen.shift()
@@ -198,6 +206,7 @@ class ConnectService implements IConnectService {
       }
     } catch (err) {
       // Silently ignore errors
+      configManager.initItem("Checking preset connections", TaskState.skipped, "config")
       log.debug('Error loading preset connections:', err)
     }
   }
