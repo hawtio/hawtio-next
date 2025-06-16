@@ -93,6 +93,7 @@ export const Jobs: React.FunctionComponent = () => {
       <PanelMain>
         <PanelMainBody>
           <FilteredTable
+            classPrefix='quartz-jobs'
             rows={jobs}
             highlightSearch={true}
             tableColumns={[
