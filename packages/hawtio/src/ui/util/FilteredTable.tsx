@@ -56,6 +56,7 @@ interface Props<T> {
   onClick?: (value: T) => void
   onClearAllFilters?: () => void
   highlightSearch?: boolean
+  classPrefix?: string
 }
 
 function numberOrString(value: unknown): string | number {
@@ -75,6 +76,7 @@ export function FilteredTable<T>({
   searchCategories,
   onClick,
   onClearAllFilters,
+  classPrefix,
   highlightSearch = false,
 }: Props<T>) {
   const defaultSearchCategory = searchCategories[0]?.key
@@ -305,7 +307,7 @@ export function FilteredTable<T>({
             deleteChip={(_e, filter) => onDeleteFilter(filter as string)}
             deleteChipGroup={clearFilters}
             categoryName='Filters'
-            className='searchToolbar'
+            className={(classPrefix && classPrefix + '-') + 'searchToolbar'}
           >
             <SearchInput
               key='table-search-input'
