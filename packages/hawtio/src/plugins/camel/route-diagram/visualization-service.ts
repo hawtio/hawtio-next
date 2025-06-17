@@ -28,13 +28,6 @@ export type CamelNodeData = {
   nodeClicked?: (node: Node) => void
 }
 
-export type Bounds = {
-  x: number
-  y: number
-  width: number
-  height: number
-}
-
 class VisualizationService {
   dagreGraph: dagre.graphlib.Graph
   nodeWidth = 250
@@ -53,7 +46,6 @@ class VisualizationService {
   getLayoutedElements(
     nodes: Node[],
     edges: Edge[],
-    bounds: Bounds,
     direction = 'TB',
   ): { layoutedNodes: Node[]; layoutedEdges: Edge[] } {
     const isHorizontal = direction === 'LR'
@@ -76,17 +68,9 @@ class VisualizationService {
       // We are shifting the dagre node position (anchor=center center) to the top left
       // so it matches the React Flow node anchor point (top left).
 
-      let posX = bounds.width / 2 - this.margin.left
-      let posY = nodeWithPosition.y - this.nodeHeight / 2 + this.margin.top
-
-      if (isHorizontal) {
-        posX = nodeWithPosition.x - this.nodeWidth / 2 + this.margin.left
-        posY = bounds.height / 2 - this.margin.top
-      }
-
       node.position = {
-        x: posX,
-        y: posY,
+        x: nodeWithPosition.x - this.nodeWidth / 2 + this.margin.left,
+        y: nodeWithPosition.y - this.nodeHeight / 2 + this.margin.top,
       }
     })
 

@@ -7,9 +7,14 @@
 }
 #camel-content {
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 #camel-content-header > #camel-contexts-toolbar {
   float: right;
   padding-top: 0;
   padding-bottom: 0.5em;
+}
+#camel-content-main {
+  flex-grow: 1;
 }

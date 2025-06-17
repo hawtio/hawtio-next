@@ -124,13 +124,16 @@
   text-align: right;
 }
 
+#camel-route-diagram-outer-div {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
 .camel-route-diagram {
   flex-grow: 1;
   position: relative;
-  /* 230px representss size of hawtio bar, panel header,tab  navigation,and footer  */
-  height: calc(100vh - 230px);
-  min-height: 50vh;
-  max-height: calc(100vh - 230px);
   width: 100%;
 }
 
