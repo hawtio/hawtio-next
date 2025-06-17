@@ -3,7 +3,7 @@ import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import { parseXML } from '@hawtiosrc/util/xml'
 import { ReactNode } from 'react'
 import * as camelService from './camel-service'
-import { contextNodeType, log, routeXmlNodeType, xmlNodeLocalName } from './globals'
+import { contextNodeType, log, routeXmlNodeType, routesType, xmlNodeLocalName } from './globals'
 import * as icons from './icons'
 import { schemaService } from './schema-service'
 
@@ -211,7 +211,35 @@ class RoutesService {
     }
   }
 
-  async dumpRoutesStatsXML(routesNode: MBeanNode): Promise<string | null> {
+  async dumpRoutesStatsXML(routesOrRouteNode: MBeanNode): Promise<string | null> {
+    // Find the nearest routes node
+    let routesNode: MBeanNode | null = routesOrRouteNode
+    let iterations = 0
+    const maxIterations = 1000 // reasonable limit to protect against cyclic tree
+
+    try {
+      while (routesNode && routesNode.getType() !== routesType) {
+        if (iterations++ > maxIterations) {
+          throw new Error('Exceeded maximum iterations. Possible cyclical tree structure.')
+        }
+
+        routesNode = routesNode.parent
+      }
+
+      if (!routesNode) {
+        throw new Error(`Cannot find a 'routes' type ancestor for ${routesOrRouteNode.id}`)
+      }
+    } catch (error) {
+      throw new Error(`Failed to dump routes stats from mbean ${routesOrRouteNode.id}: ${error}`)
+    }
+
+    /*
+     * The routesNode should now be of type routes regardless
+     * of whether the selected node was a routes node already
+     * or was a sub route diagram from an application with
+     * multiple routes.
+     */
+
     let xml = null
     const mbeanName = routesNode.getMetadata(contextNodeType)
     const mbeanToQuery = mbeanName ? mbeanName : (routesNode.parent?.getMetadata(contextNodeType) ?? '')
