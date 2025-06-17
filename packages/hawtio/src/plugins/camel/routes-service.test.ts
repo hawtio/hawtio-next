@@ -1,15 +1,40 @@
 import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
-import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
+import { MBeanNode, MBeanTree } from '@hawtiosrc/plugins/shared/tree'
 import { parseXML } from '@hawtiosrc/util/xml'
 import { render, screen } from '@testing-library/react'
 import fs from 'fs'
 import path from 'path'
 import React from 'react'
-import { xmlNodeLocalName } from './globals'
+import { contextNodeType, routeNodeType, xmlNodeLocalName } from './globals'
 import { IconNames } from './icons'
-import { routesService } from './routes-service'
+import { ROUTE_OPERATIONS, routesService } from './routes-service'
+import { workspace } from '../shared'
+import { camelTreeProcessor } from './tree-processor'
+import { userService } from '@hawtiosrc/auth'
 
 jest.mock('@hawtiosrc/plugins/shared/jolokia-service')
+
+const SAMPLE_CAMEL_MBEAN = 'org.apache.camel:context=SampleCamel,type=context,name="SampleCamel"'
+
+function mockJolokiaDumpRoutesAsXml(targetMbean: string, routesXml: string, statsXml?: string) {
+  const fn = async (mbean: string, operation: string, args?: unknown[]): Promise<unknown> => {
+    if (mbean !== targetMbean) return ''
+
+    switch (operation) {
+      case ROUTE_OPERATIONS.dumpRoutesAsXml:
+        return routesXml
+      case ROUTE_OPERATIONS.dumpRoutesStatsAsXml:
+        return statsXml
+      default:
+        return ''
+    }
+  }
+
+  return jest.fn(fn)
+}
+
+const routesXmlPath = path.resolve(__dirname, 'testdata', 'camel-sample-app-routes.xml')
+const sampleRoutesXml = fs.readFileSync(routesXmlPath, { encoding: 'utf8', flag: 'r' })
 
 describe('routes-service', () => {
   let contextNode: MBeanNode
@@ -17,22 +42,12 @@ describe('routes-service', () => {
   let simpleRouteNode: MBeanNode
 
   const testRouteId = 'simple'
-  const routesXmlPath = path.resolve(__dirname, 'testdata', 'camel-sample-app-routes.xml')
-  const sampleRoutesXml = fs.readFileSync(routesXmlPath, { encoding: 'utf8', flag: 'r' })
+
   const routesDoc: XMLDocument = parseXML(sampleRoutesXml as string)
   // eslint-disable-next-line testing-library/no-node-access
   const simpleRouteXml = routesDoc.getElementById(testRouteId) as Element
 
-  jolokiaService.execute = jest.fn(async (mbean: string, operation: string, args?: unknown[]): Promise<unknown> => {
-    if (
-      mbean === 'org.apache.camel:context=SampleCamel,type=context,name="SampleCamel"' &&
-      operation === 'dumpRoutesAsXml()'
-    ) {
-      return sampleRoutesXml
-    }
-
-    return ''
-  })
+  jolokiaService.execute = mockJolokiaDumpRoutesAsXml(SAMPLE_CAMEL_MBEAN, sampleRoutesXml)
 
   beforeEach(() => {
     contextNode = new MBeanNode(null, 'sample-camel-1', true)
@@ -111,5 +126,100 @@ describe('routes-service', () => {
 
     expect(screen.getAllByAltText(IconNames.EndpointIcon).length).toBe(3)
     expect(screen.getByAltText(IconNames.SetBodyIcon)).toBeInTheDocument()
+  })
+})
+
+describe('routes-service.dumpRoutesStatsXML', () => {
+  const routesStatsXmlPath = path.resolve(__dirname, 'testdata', 'camel-routes-stats.xml')
+  const sampleRoutesStatsXml = fs.readFileSync(routesStatsXmlPath, { encoding: 'utf8', flag: 'r' })
+
+  let tree: MBeanTree
+
+  beforeAll(async () => {
+    // Set up the test to be under login state
+    await userService.fetchUser()
+  })
+
+  beforeEach(async () => {
+    tree = await workspace.getTree()
+    workspace.refreshTree()
+  })
+
+  test('dumpRoutes', async () => {
+    jolokiaService.execute = mockJolokiaDumpRoutesAsXml(SAMPLE_CAMEL_MBEAN, sampleRoutesXml, sampleRoutesStatsXml)
+
+    expect(tree.isEmpty()).toBeFalsy()
+
+    await camelTreeProcessor(tree)
+
+    const contextNode = tree.find(node => {
+      return node.getType() === contextNodeType && node.name === 'SampleCamel'
+    }) as MBeanNode
+    expect(contextNode).not.toBeNull()
+    expect(contextNode.getType()).toBe(contextNodeType)
+
+    const routesNode = contextNode.get('routes', true) as MBeanNode
+    expect(routesNode).not.toBeNull()
+
+    const cronRoute = routesNode.get('cron', false) as MBeanNode
+    expect(cronRoute.getType()).toBe(routeNodeType)
+
+    const simpleRoute = routesNode.get('simple', false) as MBeanNode
+    expect(simpleRoute.getType()).toBe(routeNodeType)
+
+    const routesXml = (await routesService.dumpRoutesStatsXML(routesNode)) as string
+    expect(routesXml).not.toBeNull()
+    expect(routesXml).toMatch(sampleRoutesStatsXml)
+
+    const cronRouteXml = (await routesService.dumpRoutesStatsXML(cronRoute)) as string
+    expect(cronRouteXml).toMatch(routesXml)
+
+    const simpleRouteXml = (await routesService.dumpRoutesStatsXML(simpleRoute)) as string
+    expect(simpleRouteXml).toMatch(routesXml)
+  })
+
+  test('dumpRoutesWithGroups', async () => {
+    const routesXmlWithGroupsXmlPath = path.resolve(__dirname, 'testdata', 'camel-sample-app-routes-with-groups.xml')
+    const sampleRoutesWithGroupsXml = fs.readFileSync(routesXmlWithGroupsXmlPath, { encoding: 'utf8', flag: 'r' })
+    jolokiaService.execute = mockJolokiaDumpRoutesAsXml(
+      SAMPLE_CAMEL_MBEAN,
+      sampleRoutesWithGroupsXml,
+      sampleRoutesStatsXml,
+    )
+
+    expect(tree.isEmpty()).toBeFalsy()
+
+    await camelTreeProcessor(tree)
+
+    const contextNode = tree.find(node => {
+      return node.getType() === contextNodeType && node.name === 'SampleCamel'
+    }) as MBeanNode
+    expect(contextNode).not.toBeNull()
+    expect(contextNode.getType()).toBe(contextNodeType)
+
+    const routesNode = contextNode.get('routes', true) as MBeanNode
+    expect(routesNode).not.toBeNull()
+
+    const group1Node = routesNode.get('group1', true) as MBeanNode
+    expect(group1Node).not.toBeNull()
+
+    const cronRoute = group1Node.get('cron', false) as MBeanNode
+    expect(cronRoute.getType()).toBe(routeNodeType)
+
+    const group2Node = routesNode.get('group2', true) as MBeanNode
+    expect(group2Node).not.toBeNull()
+
+    const simpleRoute = group2Node.get('simple', false) as MBeanNode
+    expect(simpleRoute.getType()).toBe(routeNodeType)
+
+    const routesXml = (await routesService.dumpRoutesStatsXML(routesNode)) as string
+    expect(routesXml).not.toBeNull()
+    expect(routesXml).toMatch(sampleRoutesStatsXml)
+
+    const cronRouteXml = (await routesService.dumpRoutesStatsXML(cronRoute)) as string
+    expect(cronRouteXml).toMatch(routesXml)
+
+    const simpleRouteXml = (await routesService.dumpRoutesStatsXML(simpleRoute)) as string
+    expect(simpleRouteXml).toMatch(routesXml)
   })
 })
