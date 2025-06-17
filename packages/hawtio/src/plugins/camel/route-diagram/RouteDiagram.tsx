@@ -13,88 +13,155 @@ import {
   useEdgesState,
   useNodesState,
   ReactFlowProvider,
-  NodeMouseHandler,
-  OnConnect,
-  OnEdgesChange,
-  OnNodesChange,
-  NodeTypes,
-  Edge,
-  ReactFlowInstance,
+  useNodesInitialized,
+  useReactFlow,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 import { camelPreferencesService } from '../camel-preferences-service'
 import { CamelContext } from '../context'
 import { routesService } from '../routes-service'
+import { log } from '../globals'
 import './RouteDiagram.css'
 import { Annotation, RouteDiagramContext } from './context'
 import { CamelNodeData, visualizationService } from './visualization-service'
+import { MBeanNode } from '@hawtiosrc/plugins/shared'
 
 export const RouteDiagram: React.FunctionComponent = () => {
-  const { selectedNode } = useContext(CamelContext)
-  const { setGraphNodeData, graphSelection, setGraphSelection } = useContext(RouteDiagramContext)
-  const [nodes, setNodes, onNodesChange] = useNodesState([])
-  const [edges, setEdges, onEdgesChange] = useEdgesState([])
-  const [statsXml, setStatsXml] = useState('')
-  const nodeTypes = useMemo(() => ({ camel: CamelNode }), [])
   const canvasRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    if (!selectedNode) {
-      return
-    }
+  return (
+    <div id='camel-route-diagram-outer-div' ref={canvasRef}>
+      <ReactFlowProvider>
+        <ReactFlowRouteDiagram parent={canvasRef} />
+      </ReactFlowProvider>
+    </div>
+  )
+}
 
-    const xml = selectedNode.getMetadata('xml')
-    if (!xml) {
-      return
-    }
+type ReactFlowRouteDiagramProps = {
+  parent: RefObject<HTMLDivElement>
+}
 
-    visualizationService.loadRouteXmlNodes(selectedNode, xml).then(({ camelNodes, edges }) => {
-      setGraphNodeData(camelNodes.map(camelNode => camelNode.data))
+const ReactFlowRouteDiagram: React.FunctionComponent<ReactFlowRouteDiagramProps> = props => {
+  const { selectedNode } = useContext(CamelContext)
+  const { setGraphNodeData, graphSelection, setGraphSelection } = useContext(RouteDiagramContext)
+  const previousSelectedNodeRef = useRef<MBeanNode | null>(null)
 
-      if (statsXml) {
-        visualizationService.updateStats(statsXml, camelNodes)
-      }
-      const boundingRect = canvasRef.current
-        ? canvasRef.current.getBoundingClientRect()
-        : { x: 0, y: 0, width: 100, height: 100 }
-      const { layoutedNodes, layoutedEdges } = visualizationService.getLayoutedElements(camelNodes, edges, boundingRect)
-
-      layoutedNodes.forEach(node => {
-        node.selected = graphSelection === node.data.cid
-      })
-
-      setEdges([...layoutedEdges])
-
-      if (statsXml) {
-        const nodesWithStats = visualizationService.updateStats(statsXml, layoutedNodes)
-        setNodes(nodesWithStats)
-      } else {
-        setNodes([...layoutedNodes])
-      }
-    })
-  }, [selectedNode, setEdges, setNodes, statsXml, setGraphNodeData, graphSelection])
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      if (selectedNode) {
-        const xml = await routesService.dumpRoutesStatsXML(selectedNode)
-        if (xml) {
-          setStatsXml(xml)
-        }
-      }
-    }
-    // fetch for the first time
-    fetchStats()
-    // fetch periodically
-    const interval = setInterval(() => fetchStats(), 2000)
-    return () => clearInterval(interval)
-  }, [selectedNode])
+  const [nodes, setNodes, onNodesChange] = useNodesState([])
+  const [edges, setEdges, onEdgesChange] = useEdgesState([])
+  const nodesInitialized = useNodesInitialized({ includeHiddenNodes: false })
+  const [wrapperDimensions, setWrapperDimensions] = useState({ width: 0, height: 0 })
+  const { fitView } = useReactFlow()
+  const [statsXml, setStatsXml] = useState('')
+  const nodeTypes = useMemo(() => ({ camel: CamelNode }), [])
 
   const onConnect = useCallback(
     (params: Connection) =>
       setEdges(eds => addEdge({ ...params, type: ConnectionLineType.SmoothStep, animated: true }, eds)),
     [setEdges],
   )
+
+  /*
+   * Finds the dimensions of the parent div and assigns the
+   * width and height to state for use with fitView useEffect
+   */
+  useEffect(() => {
+    if (props.parent.current) {
+      const { width, height } = props.parent.current.getBoundingClientRect()
+      setWrapperDimensions({ width, height })
+    }
+  }, [props.parent])
+
+  /*
+   * Only when we are sure the nodes have properly initialized
+   * (nodes have dimensions), should fitView be called on the
+   * viewport of the graph.
+   * see https://github.com/xyflow/xyflow/issues/533
+   */
+  useEffect(() => {
+    let timer: NodeJS.Timeout
+
+    // Ensure nodes have been rendered and wrapper dimensions are valid
+    if (nodesInitialized && wrapperDimensions.width > 0 && wrapperDimensions.height > 0) {
+      timer = setTimeout(() => {
+        // Don't pass the wrapperDimensions to fitView directly.
+        // React Flow implicitly uses the dimensions of its parent container.
+
+        fitView({
+          padding: 0.25, // Keep some padding around the nodes
+          duration: 500, // Smooth transition
+        })
+      }, 100) // Small delay to ensure rendering has completed
+      return // No change in fundamental route, no need to refit
+    }
+
+    return () => clearTimeout(timer)
+  }, [selectedNode, nodesInitialized, fitView, wrapperDimensions.width, wrapperDimensions.height])
+
+  // Tracks if selectedNode did change
+  useEffect(() => {
+    // Only proceed if selectedNode has actually changed (not just a re-render with same node)
+    if (selectedNode === previousSelectedNodeRef.current) {
+      return // No change in fundamental route, no need to refit
+    }
+    previousSelectedNodeRef.current = selectedNode // Update ref for next render
+
+    const xml = selectedNode?.getMetadata('xml')
+    if (!selectedNode || !xml) {
+      setNodes([])
+      setEdges([])
+      return
+    }
+
+    visualizationService
+      .loadRouteXmlNodes(selectedNode, xml)
+      .then(({ camelNodes, edges }) => {
+        setGraphNodeData(camelNodes.map(camelNode => camelNode.data))
+
+        const { layoutedNodes, layoutedEdges } = visualizationService.getLayoutedElements(camelNodes, edges)
+
+        layoutedNodes.forEach(node => {
+          node.selected = graphSelection === node.data.cid
+        })
+
+        setEdges(layoutedEdges)
+        setNodes(layoutedNodes)
+      })
+      .catch(error => {
+        log.error(`Error loading the diagram route for ${selectedNode}:`, error)
+        setNodes([])
+        setEdges([])
+      })
+  }, [selectedNode, setEdges, setNodes, setGraphNodeData, graphSelection])
+
+  // The useEffect specifically for updating stats within existing nodes
+  useEffect(() => {
+    if (!selectedNode) return
+
+    const fetchStats = async () => {
+      try {
+        const xml = await routesService.dumpRoutesStatsXML(selectedNode)
+        if (xml) {
+          setStatsXml(xml)
+        }
+      } catch (error) {
+        log.error(`Error fetching stats in the diagram route for ${selectedNode}:`, error)
+      }
+    }
+
+    fetchStats() // Fetch on initial load/selectedNode change
+    const interval = setInterval(fetchStats, 2000) // Fetch periodically
+    return () => clearInterval(interval) // Cleanup interval
+  }, [selectedNode])
+
+  // useEffect for applying stats to nodes (when statsXml changes)
+  useEffect(() => {
+    if (statsXml && nodes.length > 0) {
+      // Only update stats if we have nodes and statsXml is available
+      // Ensure you're not recreating all nodes if only stats change
+      setNodes(nds => visualizationService.updateStats(statsXml, nds))
+    }
+  }, [statsXml, setNodes, nodes.length])
 
   if (!selectedNode) {
     return null
@@ -105,64 +172,17 @@ export const RouteDiagram: React.FunctionComponent = () => {
   }
 
   return (
-    <div id='camel-route-diagram-outer-div' ref={canvasRef}>
-      <ReactFlowProvider>
-        <ReactFlowRouteDiagram
-          parent={canvasRef}
-          nodeTypes={nodeTypes}
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          onNodeClick={onNodeClick}
-        />
-      </ReactFlowProvider>
-    </div>
-  )
-}
-
-type ReactFlowRouteDiagramProps = {
-  parent: RefObject<HTMLDivElement>
-  onNodeClick: NodeMouseHandler | undefined
-  onConnect: OnConnect | undefined
-  onEdgesChange: OnEdgesChange | undefined
-  onNodesChange: OnNodesChange | undefined
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  edges: Edge<any>[] | undefined
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  nodes: Node<any, string | undefined>[] | undefined
-  nodeTypes: NodeTypes | undefined
-}
-
-const ReactFlowRouteDiagram: React.FunctionComponent<ReactFlowRouteDiagramProps> = props => {
-  const onLoad = (reactFlowInstance: ReactFlowInstance) => {
-    if (props.parent && props.parent.current) {
-      const boundingRect = props.parent.current.getBoundingClientRect()
-      reactFlowInstance.fitBounds({
-        width: boundingRect.width,
-        height: boundingRect.height,
-        x: 0,
-        y: 0,
-      })
-    }
-
-    reactFlowInstance.fitView()
-  }
-
-  return (
     <div className='camel-route-diagram'>
       <ReactFlow
-        nodeTypes={props.nodeTypes}
-        nodes={props.nodes}
-        edges={props.edges}
+        nodeTypes={nodeTypes}
+        nodes={nodes}
+        edges={edges}
         connectionLineType={ConnectionLineType.SmoothStep}
-        onNodesChange={props.onNodesChange}
-        onEdgesChange={props.onEdgesChange}
-        onConnect={props.onConnect}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
         elementsSelectable={true}
-        onNodeClick={props.onNodeClick}
-        onInit={onLoad}
+        onNodeClick={onNodeClick}
       />
     </div>
   )
