@@ -184,8 +184,12 @@ export type AuthenticationKind =
 
 /** Base type for authentication methods supported by Hawtio */
 export type AuthenticationMethod = {
+  /** One of the supported methods. If a plugin augments given method, we should have one such method only */
   method: AuthenticationKind,
-  name: string
+  /** Name to be presented at login page for login method selection */
+  name: string,
+  /** Plugin specific method for performing login. For now it's for OAuth2/OIDC/Keycloak. This field is set up by auth plugin */
+  login?: (() => Promise<boolean>)
 }
 
 /** Configuration of Basic Authentication */
@@ -221,13 +225,9 @@ export type FormAuthenticationMethod = AuthenticationMethod & {
 
 /**
  * OpenID Connect authentication method configuration.
- * All details are specified in a type defined in OIDC plugin, but here we define fields which are required
- * by components that need to build some generic information - like OAuth2/OIDC redirect URL for a "Log in with OIDC"
- * link button.
+ * All details are specified in a type defined in OIDC plugin, but here we may define some generic fields
  */
 export type OidcAuthenticationMethod = AuthenticationMethod & {
-  /** A function that returns a link for GET request that initiates authorization flow */
-  authorizationUrl: () => string
 }
 
 export const HAWTCONFIG_JSON = 'hawtconfig.json'
@@ -342,6 +342,10 @@ class ConfigManager {
    */
   getAuthenticationConfig(): AuthenticationMethod[] {
     return this.authenticationConfig
+  }
+
+  getAuthenticationMethod(method: string): AuthenticationMethod | undefined {
+    return this.authenticationConfig.find(am => am.method === method)
   }
 
   private async loadConfig(): Promise<Hawtconfig> {
