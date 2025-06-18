@@ -1,5 +1,4 @@
 import { eventService, FormAuthenticationMethod } from '@hawtiosrc/core'
-import { PATH_LOGIN } from '@hawtiosrc/auth/globals'
 import { log } from './globals'
 
 const STORAGE_KEY_LOGIN = 'login'

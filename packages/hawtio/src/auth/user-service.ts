@@ -156,6 +156,7 @@ class UserService implements IUserService {
 
     // First, let logout hooks to log out in a special way
     for (const [name, logout] of Object.entries(this.logoutHooks)) {
+      // only logout when current login method matches given authenticator
       if (name !== login.loginMethod) {
         continue
       }
