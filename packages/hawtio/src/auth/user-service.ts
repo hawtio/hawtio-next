@@ -7,6 +7,8 @@ export type User = {
   username: string
   /** Flag for actual user (`false` means guest or public user) */
   isLogin: boolean
+  /** Identifier of authentication method used to fetch the user, so we can later use correct logout */
+  loginMethod: string
 }
 
 /** User resolving function that resolves user promise */
@@ -23,6 +25,7 @@ export interface IUserService {
   fetchUser(retry?: boolean, proceed?: () => boolean): Promise<void>
   getUsername(): Promise<string>
   isLogin(): Promise<boolean>
+  getLoginMethod(): Promise<string>
   getToken(): string | null
   setToken(token: string): void
   logout(): Promise<void>
@@ -102,20 +105,20 @@ class UserService implements IUserService {
           return this.defaultFetchUser(false, proceed)
         }
 
-        this.resolveUser({ username: PUBLIC_USER, isLogin: false })
+        this.resolveUser({ username: PUBLIC_USER, isLogin: false, loginMethod: 'form' })
         return
       }
 
       const username = await res.json()
       log.info('Logged in as:', username)
-      this.resolveUser({ username, isLogin: true })
+      this.resolveUser({ username, isLogin: true, loginMethod: 'form' })
 
       // Send login event
       eventService.login()
     } catch (err) {
       // Silently ignore as mostly it's just not logged-in yet
       log.debug('Failed to get logged-in user from', PATH_USER, '-', err)
-      this.resolveUser({ username: PUBLIC_USER, isLogin: false })
+      this.resolveUser({ username: PUBLIC_USER, isLogin: false, loginMethod: 'form' })
     }
   }
 
@@ -125,6 +128,10 @@ class UserService implements IUserService {
 
   async isLogin(): Promise<boolean> {
     return (await this.user).isLogin
+  }
+
+  async getLoginMethod(): Promise<string> {
+    return (await this.user).loginMethod
   }
 
   getToken(): string | null {
@@ -142,13 +149,16 @@ class UserService implements IUserService {
       return
     }
 
-    log.info('Log out:', login.username)
+    log.info('Log out:', login.username, ', Login method:', login.loginMethod)
 
     // Send logout event
     eventService.logout()
 
     // First, let logout hooks to log out in a special way
     for (const [name, logout] of Object.entries(this.logoutHooks)) {
+      if (name !== login.loginMethod) {
+        continue
+      }
       const result = await logout()
       log.debug('Invoke logout hook', name, ': result =', result)
       if (result) {

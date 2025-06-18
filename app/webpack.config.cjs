@@ -279,7 +279,7 @@ module.exports = (_, args) => {
 
         /* OpenID Connect */
 
-        const oidcEnabled = false
+        const oidcEnabled = true
         // const entraIDOidcConfig = {
         //   method: 'oidc',
         //   provider: 'https://login.microsoftonline.com/11111111-2222-3333-4444-555555555555/v2.0',
@@ -301,6 +301,7 @@ module.exports = (_, args) => {
           code_challenge_method: 'S256',
           prompt: null,
           // prompt: 'login',
+          "openid-configuration": null,
         }
         devServer.app.get(`${publicPath}/auth/config/oidc`, (_, res) => {
           res.type('application/json')
@@ -320,17 +321,10 @@ module.exports = (_, args) => {
             "realm": "Hawtio Realm"
           },
           {
-            // TODO: for now this one is duplicated with /auth/config/oidc
+            // Actual configuration of OIDC provider will be added from
+            // /auth/config/oidc endpoint
             "method": "oidc",
-            "name": "OpenID Connect (Keycloak)",
-            "provider": "http://localhost:18080/realms/hawtio-demo",
-            "openid-configuration": null,
-            "client_id": "hawtio-client",
-            "redirect_uri": "http://localhost:3000/hawtio/",
-            "scope": "openid email profile",
-            "response_mode": "fragment",
-            "code_challenge_method": "S256",
-            "prompt": null
+            "name": "OpenID Connect (Keycloak)"
           },
           // {
           //   "method": "form",
