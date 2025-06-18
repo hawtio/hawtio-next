@@ -32,11 +32,11 @@ import {
 
 import { BarsIcon, HelpIcon } from '@patternfly/react-icons'
 import React, { useContext, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import './HawtioHeader.css'
 import { PageContext } from './context'
 
-export const HawtioHeader: React.FunctionComponent = () => {
+export const HawtioHeader: React.FunctionComponent<{loginMethod: string}> = ({ loginMethod }) => {
   const { hawtconfig, hawtconfigLoaded } = useHawtconfig()
   const [navOpen, setNavOpen] = useState(preferencesService.isShowVerticalNavByDefault())
 
@@ -71,7 +71,7 @@ export const HawtioHeader: React.FunctionComponent = () => {
         </MastheadMain>
       )}
       <MastheadContent>
-        <HawtioHeaderToolbar hawtconfig={hawtconfig} />
+        <HawtioHeaderToolbar hawtconfig={hawtconfig} loginMethod={loginMethod} />
       </MastheadContent>
     </Masthead>
   )
@@ -100,12 +100,12 @@ const HawtioBrand: React.FunctionComponent<HawtioBrandProps> = props => {
 
 type HawtioHeaderToolbarProps = {
   hawtconfig: Hawtconfig
+  loginMethod: string
 }
 
 const HawtioHeaderToolbar: React.FunctionComponent<HawtioHeaderToolbarProps> = props => {
   const { username, plugins } = useContext(PageContext)
   const location = useLocation()
-  const navigate = useNavigate()
 
   const isPublic = username === PUBLIC_USER
 

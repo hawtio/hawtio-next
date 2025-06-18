@@ -3,7 +3,7 @@ import { helpRegistry } from '@hawtiosrc/help/registry'
 import help from './help.md'
 import { oidcService } from './oidc-service'
 
-const oidc: HawtioPlugin = () => {
+export const oidc: HawtioPlugin = () => {
   let helpRegistered = false
   oidcService.registerUserHooks(() => {
     if (!helpRegistered) {
@@ -12,5 +12,3 @@ const oidc: HawtioPlugin = () => {
     }
   })
 }
-
-export { oidc, oidcService }

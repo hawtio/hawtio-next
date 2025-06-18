@@ -29,7 +29,7 @@ import './HawtioPage.css'
  * One of two _main_ components to be displayed in `<Hawtio>` component. It is displayed when user is logged in.
  */
 export const HawtioPage: React.FunctionComponent = () => {
-  const { username, isLogin, userLoaded } = useUser()
+  const { username, isLogin, userLoaded, loginMethod } = useUser()
   const { plugins, pluginsLoaded } = usePlugins()
   const { hawtconfig, hawtconfigLoaded } = useHawtconfig()
   const navigate = useNavigate()
@@ -76,7 +76,7 @@ export const HawtioPage: React.FunctionComponent = () => {
       <BackgroundImage src={background} />
       <Page
         id='hawtio-main-page'
-        header={headerShown && <HawtioHeader />}
+        header={headerShown && <HawtioHeader loginMethod={loginMethod} />}
         sidebar={sideBarShown && <HawtioSidebar />}
         isManagedSidebar={sideBarShown}
         defaultManagedSidebarIsOpen={showVerticalNavByDefault}

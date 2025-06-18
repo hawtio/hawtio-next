@@ -225,7 +225,7 @@ class JolokiaService implements IJolokiaService {
           },
           error => log.error('Failed to fetch Jolokia version:', error),
         ),
-      )
+      ).then(() => true)
       // Start Jolokia
       const updateRate = this.loadUpdateRate()
       jolokia.start(updateRate)
@@ -402,7 +402,9 @@ class JolokiaService implements IJolokiaService {
           // just logout
           userService.isLogin().then(login => {
             log.debug('Logging out due to fetch() error: status =', response.status)
-            if (login) userService.logout()
+            if (login) {
+              userService.logout().then(() => true)
+            }
           })
         }
       } else {
@@ -748,7 +750,7 @@ class JolokiaService implements IJolokiaService {
         // Reuse the list options other than success and error functions
         listOptions as SimpleRequestOptions,
       ),
-    )
+    ).then(() => true)
   }
 
   private mergeDomains(source: OptimisedJmxDomains, target: OptimisedJmxDomains): OptimisedJmxDomains {

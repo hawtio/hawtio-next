@@ -55,10 +55,7 @@ export const HawtioLogin: React.FunctionComponent = () => {
   const configureLoginFragment = (method: AuthenticationMethod, multi: boolean, idx: number): ReactNode => {
     if (multi) {
       if (method.method === "oidc") {
-        // // just a link
-        // new URLSearchParams({
-        //
-        // })
+        // a button with onCLick that navigates to OIDC specific link, which takes user to IdP login page
         return <Button component="a" variant="secondary" size="sm" isBlock className="idp">{method.name}</Button>
       } else {
         // a button with onClick

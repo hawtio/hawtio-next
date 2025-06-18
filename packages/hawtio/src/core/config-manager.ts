@@ -219,52 +219,15 @@ export type FormAuthenticationMethod = AuthenticationMethod & {
   passwordField: string
 }
 
-/** OpenID Connect authentication method configuration */
+/**
+ * OpenID Connect authentication method configuration.
+ * All details are specified in a type defined in OIDC plugin, but here we define fields which are required
+ * by components that need to build some generic information - like OAuth2/OIDC redirect URL for a "Log in with OIDC"
+ * link button.
+ */
 export type OidcAuthenticationMethod = AuthenticationMethod & {
-  /**
-   * Authentication provider URL - should be a _base_ address for the endpoints and for `/.well-known/openid-configuration`
-   * discovery.
-   */
-  provider: string | URL
-
-  /**
-   * OpenID Connnect configuration obtained from [/.well-known/openid-configuration](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfigurationRequest)
-   * endpoint.
-   *
-   * If not available, We should hit the `/.well-known/openid-configuration` at {@link provider}.
-   */
-  "openid-configuration"?: Record<string, unknown>
-
-  /**
-   * Client ID to send to authorization endpoint
-   */
-  client_id: string
-
-  /**
-   * URL to redirect to after OIDC Authentication. Should be known (valid) at provider side
-   */
-  redirect_uri: string | URL
-
-  /**
-   * Scope parameter to choose - if not provided from the server side, should be determined at Hawtio side
-   */
-  scope?: string
-
-  /**
-   * Mode of response from `response_modes_supported` of OIDC metadata
-   */
-  response_mode: string
-
-  /**
-   * Code challenge type from `code_challenge_methods_supported	` of OIDC metadata
-   */
-  code_challenge_method?: "S256" | "plain"
-
-  /**
-   * (Type of prompt](https://openid.net/specs/openid-connect-prompt-create-1_0-07.html#section-4.2) to use.
-   * Supported values are from `prompt_values_supported` OIDC metadata.
-   */
-  prompt?: string
+  /** A function that returns a link for GET request that initiates authorization flow */
+  authorizationUrl: () => string
 }
 
 export const HAWTCONFIG_JSON = 'hawtconfig.json'
@@ -280,6 +243,10 @@ class ConfigManager {
   private authRetryFlag = false
 
   private authenticationConfig: AuthenticationMethod[] = []
+  private authenticationConfigReady: (ready: boolean | PromiseLike<boolean>) => void = () => true
+  private authenticationConfigPromise = new Promise<boolean>(resolve => {
+    this.authenticationConfigReady = resolve
+  })
 
   get authRetry() {
     return this.authRetryFlag
@@ -320,9 +287,35 @@ class ConfigManager {
           return [defaultConfiguration]
         })
 
+    // configuration is ready - resolve the promise. but plugins may still call
+    // configureAuthenticationMethod() to alter the generic list of methods
+    this.authenticationConfigReady(true)
     this.initItem("Checking authentication providers", TaskState.finished, "config")
 
     return true
+  }
+
+  /**
+   * Called by plugins to augment generic authentication method. Plugins may provide additional information
+   * for given authentication method
+   * @param config
+   */
+  async configureAuthenticationMethod(config: AuthenticationMethod): Promise<void> {
+    // plugin-specific configuration can be applied to generic configuration from /auth/config/login
+    // only when it's already fetched
+    return this.authenticationConfigPromise.then(() => {
+      // search generic login configurations and alter the one which matches passed `config` by `method` field
+      for (const idx in this.authenticationConfig) {
+        if (this.authenticationConfig[idx]?.method === config.method) {
+          // a plugin provided the remaining part of given authentication method
+          this.authenticationConfig[idx] = {
+            ...config,
+            name: this.authenticationConfig[idx]!.name
+          }
+          break
+        }
+      }
+    })
   }
 
   reset() {
@@ -342,6 +335,11 @@ class ConfigManager {
     return this.config
   }
 
+  /**
+   * Get configured authentication methods - possibly augmented by plugins. This method should
+   * be called from hooks and React components, so can be done only after hawtio.bootstrap() promise is
+   * resolved. This ensures that plugins already finished their configuration
+   */
   getAuthenticationConfig(): AuthenticationMethod[] {
     return this.authenticationConfig
   }
