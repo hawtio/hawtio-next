@@ -293,7 +293,7 @@ module.exports = (_, args) => {
         // }
         const keycloakOidcConfig = {
           method: 'oidc',
-          provider: 'http://localhost:18080/realms/hawtio-demo',
+          provider: 'http://127.0.0.1:18080/realms/hawtio-demo',
           client_id: 'hawtio-client',
           response_mode: 'fragment',
           scope: 'openid email profile',

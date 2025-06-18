@@ -1,6 +1,7 @@
 import { ResolveUser, userService } from '@hawtiosrc/auth/user-service'
 import {
   configManager,
+  hawtio,
   Logger,
   OidcAuthenticationMethod,
   TaskState
@@ -74,6 +75,7 @@ type UserInfo = {
   user: string | null
   access_token: string | null | undefined
   refresh_token: string | null | undefined
+  id_token: string | null | undefined
   at_exp: number
 }
 
@@ -127,8 +129,8 @@ class OidcService implements IOidcService {
               const c = await this.config
               // assign IDP details - noop if the details where fetched initially
               c!['openid-configuration'] = md!
-              // prepare authorizationUrl for links when user clicks "Log in with OIDC"
-              c!.authorizationUrl = () => "http://localhost"
+              // prepare login function to be used by HawtioLogin UI
+              c!.login = this.oidcLogin
               // add the information to augment template configuration in configManager
               configManager.configureAuthenticationMethod(c!).then(() => {
                 configManager.initItem("OIDC Configuration", TaskState.finished, "config")
@@ -251,73 +253,6 @@ class OidcService implements IOidcService {
       return null
     }
 
-    /* This will be performed only on user demand
-    if (!oauthSuccess) {
-      // there are no query/fragment params in the URL, so we're logging for the first time
-      const code_challenge_method = config!.code_challenge_method
-      const code_verifier = oidc.generateRandomCodeVerifier()
-      // TODO: - this method calls crypto.subtle.digest('SHA-256', buf(codeVerifier)) so we need secure context
-      if (!window.isSecureContext) {
-        log.error("Can't perform OpenID Connect authentication in non-secure context")
-        return null
-      }
-      const code_challenge = await oidc.calculatePKCECodeChallenge(code_verifier)
-
-      const state = oidc.generateRandomState()
-      const nonce = oidc.generateRandomNonce()
-
-      // put some data to localStorage, so we can verify the OAuth2 response after redirect
-      localStorage.removeItem('hawtio-oidc-login')
-      localStorage.setItem(
-        'hawtio-oidc-login',
-        JSON.stringify({
-          st: state,
-          cv: code_verifier,
-          n: nonce,
-          h: window.location.href,
-        }),
-      )
-      log.info('Added to local storage', localStorage.getItem('hawtio-oidc-login'))
-
-      const authorizationUrl = new URL(as!.authorization_endpoint!)
-      authorizationUrl.searchParams.set('response_type', 'code')
-      authorizationUrl.searchParams.set('response_mode', config.response_mode)
-      authorizationUrl.searchParams.set('client_id', config.client_id)
-      authorizationUrl.searchParams.set('redirect_uri', config.redirect_uri)
-      const basePath = hawtio.getBasePath()
-      const u = new URL(window.location.href)
-      u.hash = ''
-      let redirect = u.pathname
-      if (basePath && redirect.startsWith(basePath)) {
-        redirect = redirect.slice(basePath.length)
-        if (redirect.startsWith('/')) {
-          redirect = redirect.slice(1)
-        }
-      }
-      // we have to use react-router to do client-redirect to connect/login if necessary
-      // and we can't do full redirect to URL that's not configured on OIDC provider
-      // and Entra ID can't use redirect_uri with wildcards... (Keycloak can do it)
-      sessionStorage.setItem('connect-login-redirect', redirect)
-      authorizationUrl.searchParams.set('scope', config.scope)
-      if (code_challenge_method) {
-        authorizationUrl.searchParams.set('code_challenge_method', code_challenge_method)
-        authorizationUrl.searchParams.set('code_challenge', code_challenge)
-      }
-      authorizationUrl.searchParams.set('state', state)
-      authorizationUrl.searchParams.set('nonce', nonce)
-      // do not take 'prompt' option, leave the default non-set version, as it works best with Hawtio and redirects
-
-      log.info('Redirecting to ', authorizationUrl)
-
-      // point of no return
-      window.location.assign(authorizationUrl)
-      // return unresolvable promise to wait for redirect
-      return new Promise((_resolve, _reject) => {
-        log.debug('Waiting for redirect')
-      })
-    }
-    */
-
     if (!oauthSuccess) {
       // no user information in URI/webStorage, so OidcService stays at _inactive_ state, waiting to start
       // Authorization FLow on user demand
@@ -344,7 +279,7 @@ class OidcService implements IOidcService {
 
     log.info('Getting localStore data, because we have params', urlParams)
     const loginDataString = localStorage.getItem('hawtio-oidc-login')
-    // localStorage.removeItem("hawtio-oidc-login")
+    localStorage.removeItem('hawtio-oidc-login')
     if (!loginDataString) {
       log.warn("No local data, can't proceed with OpenID authorization grant")
       return null
@@ -385,8 +320,8 @@ class OidcService implements IOidcService {
 
     const access_token = tokenResponse['access_token']
     const refresh_token = tokenResponse['refresh_token']
+    const id_token = tokenResponse["id_token"]
     let at_exp: number = 0
-    // const id_token = tokenResponse["id_token"]
 
     // we have to parse (though we shouldn't according to MS) access_token to get it's validity
     try {
@@ -406,7 +341,7 @@ class OidcService implements IOidcService {
       log.warn('No ID token returned')
       return null
     }
-    const user = (claims.preferred_username ?? claims.sub) as string
+    const user = (claims.name ?? claims.preferred_username ?? claims.sub) as string
 
     // clear the URL bar
     window.history.replaceState(null, '', loginData.h)
@@ -418,8 +353,77 @@ class OidcService implements IOidcService {
       user,
       access_token,
       refresh_token,
+      id_token,
       at_exp,
     }
+  }
+
+  /**
+   * This is a method made available to `<HawtioLogin>` UI when user clicks "Login with OIDC" button
+   */
+  private oidcLogin = async (): Promise<boolean> => {
+    const config = await this.config
+    const as = await this.oidcMetadata
+    if (!config || !as) {
+      return false
+    }
+
+    // there are no query/fragment params in the URL, so we're logging for the first time
+    const code_challenge_method = config!.code_challenge_method
+    const code_verifier = oidc.generateRandomCodeVerifier()
+    // TODO: this method calls crypto.subtle.digest('SHA-256', buf(codeVerifier)) so we need secure context
+    if (!window.isSecureContext) {
+      log.error("Can't perform OpenID Connect authentication in non-secure context")
+      return false
+    }
+
+    const code_challenge = await oidc.calculatePKCECodeChallenge(code_verifier)
+
+    const state = oidc.generateRandomState()
+    const nonce = oidc.generateRandomNonce()
+
+    // put some data to localStorage, so we can verify the OAuth2 response after redirect
+    const verifyData = JSON.stringify({ st: state, cv: code_verifier, n: nonce, h: window.location.href })
+    localStorage.setItem('hawtio-oidc-login', verifyData)
+
+    log.info('Added to local storage', verifyData)
+
+    const authorizationUrl = new URL(as!.authorization_endpoint!)
+    authorizationUrl.searchParams.set('response_type', 'code')
+    authorizationUrl.searchParams.set('response_mode', config.response_mode)
+    authorizationUrl.searchParams.set('client_id', config.client_id)
+    authorizationUrl.searchParams.set('redirect_uri', config.redirect_uri)
+    const basePath = hawtio.getBasePath()
+    const u = new URL(window.location.href)
+    u.hash = ''
+    let redirect = u.pathname
+    if (basePath && redirect.startsWith(basePath)) {
+      redirect = redirect.slice(basePath.length)
+      if (redirect.startsWith('/')) {
+        redirect = redirect.slice(1)
+      }
+    }
+    // we have to use react-router to do client-redirect to connect/login if necessary
+    // and we can't do full redirect to URL that's not configured on OIDC provider
+    // and Entra ID can't use redirect_uri with wildcards... (Keycloak can do it)
+    // sessionStorage.setItem('connect-login-redirect', redirect)
+    authorizationUrl.searchParams.set('scope', config.scope)
+    if (code_challenge_method) {
+      authorizationUrl.searchParams.set('code_challenge_method', code_challenge_method)
+      authorizationUrl.searchParams.set('code_challenge', code_challenge)
+    }
+    authorizationUrl.searchParams.set('state', state)
+    authorizationUrl.searchParams.set('nonce', nonce)
+    // do not take 'prompt' option, leave the default non-set version, as it works best with Hawtio and redirects
+
+    log.info('Redirecting to ', authorizationUrl)
+
+    // point of no return
+    window.location.assign(authorizationUrl)
+    // return unresolvable promise to wait for redirect
+    return new Promise((_resolve, _reject) => {
+      log.debug('Waiting for redirect')
+    })
   }
 
   /**
@@ -441,6 +445,9 @@ class OidcService implements IOidcService {
     // user fetching hook - either we find logged in user (because we're at the stage where IdP redirects
     // to Hawtio with code/state in fragment URI or we don't find the user.
     // we never initiate Authorization FLow without user interaction
+    // note - finding proper state/session_state/iss/code after redirect may still cause issues when
+    // exchanging code for token (timeouts, errors, session/cookie issues, ...). In this case
+    // fetchUser should actually fetch the user, but with some error information
     const fetchUser = async (resolveUser: ResolveUser, proceed?: () => boolean) => {
       if (proceed && !proceed()) {
         return false
@@ -465,7 +472,12 @@ class OidcService implements IOidcService {
     const logout = async () => {
       const md = await this.oidcMetadata
       if (md?.end_session_endpoint) {
-        window.location.replace(md?.end_session_endpoint)
+        // for Keycloak, with id_token_hint we don't see logout consent
+        // const user = await this.userInfo
+        // window.location.replace(`${md?.end_session_endpoint}?post_logout_redirect_uri=${document.baseURI}&id_token_hint=${user!.id_token}`)
+        // for Keycloak, with client_id passed here, we're logged out automatically and get redirected to Hawtio
+        const c = await this.config
+        window.location.replace(`${md?.end_session_endpoint}?post_logout_redirect_uri=${document.baseURI}&client_id=${c!.client_id}`)
         return true
       }
       return false
