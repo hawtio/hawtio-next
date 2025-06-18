@@ -256,6 +256,22 @@ class OidcService implements IOidcService {
     if (!oauthSuccess) {
       // no user information in URI/webStorage, so OidcService stays at _inactive_ state, waiting to start
       // Authorization FLow on user demand
+
+      // however to let user refresh the browser we may have to perform silent login - but only when
+      // there's no error and there's no state in URI
+      const ts = localStorage.getItem("core.auth.oidc")
+      localStorage.removeItem("core.auth.oidc")
+      if (ts) {
+        const exp_at = parseInt(ts)
+        const now = Date.now()
+        if (!isNaN(exp_at) && now < exp_at * 1000) {
+          // we're still before access_token expiration time, so we can do the silent login
+          // to not show <HawtioInitialization> twice, we'll set another flag
+          localStorage.setItem("core.auth.silentLogin", "1")
+          this.oidcLogin(true).then(() => true)
+        }
+      }
+
       return null
     }
 
@@ -343,8 +359,18 @@ class OidcService implements IOidcService {
     }
     const user = (claims.name ?? claims.preferred_username ?? claims.sub) as string
 
-    // clear the URL bar
+    // clear the URL bar getting back to client-side URI we had before
     window.history.replaceState(null, '', loginData.h)
+
+    // mark successful authentication method. When user refreshes the browser we have to attempt
+    // authorization flow with prompt=none to do "silent login"
+    // Keycloak.js uses check_session_iframe parameter from OIDC metadata to manage hidden iframe
+    // to do the silent login, but with modern browsers, tracking prevention and 3rd party cookie policies
+    // we can't actually rely on it.
+    // instead we'll simply add a flag to be checked on refresh and to be cleared on logout
+    // we'll use access_token expiration time as the hint - if user refreshes before the expiration
+    // we start silent login
+    localStorage.setItem("core.auth.oidc", `${at_exp}`)
 
     this.setupFetch().then(() => true)
 
@@ -361,7 +387,7 @@ class OidcService implements IOidcService {
   /**
    * This is a method made available to `<HawtioLogin>` UI when user clicks "Login with OIDC" button
    */
-  private oidcLogin = async (): Promise<boolean> => {
+  private oidcLogin = async (silent = false): Promise<boolean> => {
     const config = await this.config
     const as = await this.oidcMetadata
     if (!config || !as) {
@@ -406,7 +432,7 @@ class OidcService implements IOidcService {
     // we have to use react-router to do client-redirect to connect/login if necessary
     // and we can't do full redirect to URL that's not configured on OIDC provider
     // and Entra ID can't use redirect_uri with wildcards... (Keycloak can do it)
-    // sessionStorage.setItem('connect-login-redirect', redirect)
+    // TODO: sessionStorage.setItem('connect-login-redirect', redirect)
     authorizationUrl.searchParams.set('scope', config.scope)
     if (code_challenge_method) {
       authorizationUrl.searchParams.set('code_challenge_method', code_challenge_method)
@@ -414,7 +440,12 @@ class OidcService implements IOidcService {
     }
     authorizationUrl.searchParams.set('state', state)
     authorizationUrl.searchParams.set('nonce', nonce)
-    // do not take 'prompt' option, leave the default non-set version, as it works best with Hawtio and redirects
+    // do not take 'prompt' option from configuration,
+    // leave the default non-set version, as it works best with Hawtio and redirects
+    // but use none for explicit silent login
+    if (silent) {
+      authorizationUrl.searchParams.set('prompt', 'none')
+    }
 
     log.info('Redirecting to ', authorizationUrl)
 
@@ -459,6 +490,8 @@ class OidcService implements IOidcService {
       }
       resolveUser({ username: userInfo.user!, isLogin: true, loginMethod: "oidc" })
       userService.setToken(userInfo.access_token!)
+      // silent login finished
+      localStorage.removeItem("core.auth.silentLogin")
 
       // only now register help tab for OIDC
       helpRegistration()
@@ -472,6 +505,8 @@ class OidcService implements IOidcService {
     const logout = async () => {
       const md = await this.oidcMetadata
       if (md?.end_session_endpoint) {
+        // no more silent login allowed on refresh
+        localStorage.removeItem("core.auth.oidc")
         // for Keycloak, with id_token_hint we don't see logout consent
         // const user = await this.userInfo
         // window.location.replace(`${md?.end_session_endpoint}?post_logout_redirect_uri=${document.baseURI}&id_token_hint=${user!.id_token}`)

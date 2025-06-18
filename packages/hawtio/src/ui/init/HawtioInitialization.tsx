@@ -23,6 +23,13 @@ export const HawtioInitialization: React.FC = () => {
     }
   }, [])
 
+  const silentLogin = localStorage.getItem("core.auth.silentLogin")
+  if (silentLogin === "1") {
+    return <div className="hwt-loading">
+      <h4 className="not-ready">Verifying user...</h4>
+    </div>
+  }
+
   const items: { item: string, ready: TaskState }[] = []
   const plugins: { item: string, ready: TaskState }[] = []
   let finish = false
