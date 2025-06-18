@@ -450,6 +450,12 @@ class ConfigManager {
   }
 
   getInitializationTasks(): InitializationTasks {
+    const silentLogin = localStorage.getItem("core.auth.silentLogin")
+    if (silentLogin === "1") {
+      // special state - don't feed <HawtioInitialization> with items, because we're in the process
+      // of silent OIDC authentication
+      return {}
+    }
     return this.initTasks
   }
 
