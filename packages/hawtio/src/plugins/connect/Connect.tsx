@@ -14,13 +14,14 @@ import {
 } from '@patternfly/react-core'
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons'
 import React from 'react'
-import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom-v5-compat'
+import { NavLink, Redirect, Route, Switch, useLocation } from 'react-router-dom' // includes NavLink
 import './Connect.css'
 import { ConnectContext, useConnections } from './context'
 import { Discover } from './discover/Discover'
 import { pluginPath } from './globals'
 import { ConnectLogin } from './login/ConnectLogin'
 import { Remote } from './remote/Remote'
+import { hawtio } from '@hawtiosrc/core'
 
 export const Connect: React.FunctionComponent = () => {
   const { connections, dispatch } = useConnections()
@@ -34,17 +35,18 @@ export const Connect: React.FunctionComponent = () => {
   const nav = (
     <Nav aria-label='Connect Nav' variant='tertiary'>
       <NavList>
-        {navItems.map(({ id, title }) => (
-          <NavItem key={id} isActive={pathname === `${pluginPath}/${id}`}>
-            <NavLink to={{ pathname: id, search }}>{title}</NavLink>
+        {navItems.map(({ id, title }) => {
+          return (
+          <NavItem key={id} isActive={hawtio.fullPath(pathname) === `${hawtio.fullPath(pluginPath, id)}`}>
+            <NavLink to={{ pathname: hawtio.fullPath(pluginPath, id), search }}>{title}</NavLink>
           </NavItem>
-        ))}
+        )})}
       </NavList>
     </Nav>
   )
 
   const routes = navItems.map(({ id, component }) => (
-    <Route key={id} path={id} element={React.createElement(component)} />
+    <Route key={id} path={hawtio.fullPath(pluginPath, id)}>{React.createElement(component)}</Route>
   ))
 
   const secure = window.isSecureContext
@@ -91,12 +93,12 @@ export const Connect: React.FunctionComponent = () => {
         <Divider />
       </PageGroup>
       <PageSection id='connect-main' variant={PageSectionVariants.light}>
-        <Routes>
+        <Switch>
           {routes}
           {/* connect/login should be hidden to nav */}
-          <Route key='login' path='login' element={<ConnectLogin />} />
-          <Route key='root' path='/' element={<Navigate to={navItems[0]?.id ?? ''} />} />
-        </Routes>
+          <Route key='login' path={hawtio.fullPath(pluginPath, 'login')}><ConnectLogin /></Route>
+          <Route key='root' exact path={hawtio.fullPath(pluginPath, '/')}><Redirect to={navItems[0]?.id ?? ''} /></Route>
+        </Switch>
       </PageSection>
     </ConnectContext.Provider>
   )
