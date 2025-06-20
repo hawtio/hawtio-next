@@ -91,13 +91,14 @@ type AuthData = {
 }
 
 class OidcService implements IOidcService {
-  // promises created during construction - should be already resolved in fetchUser and are related
-  // only to configuration - not user/session fetching and checking
+  // promises created during construction
+  // configuration from Hawtio backend - should include provider URL
   private readonly config: Promise<OidcConfig | null>
+  // OIDC plugin is enabled when there's provider URL in the config - may not be reachable though
   private readonly enabled: Promise<boolean>
-  // OIDC metadata may be given together with configuration, but if it's null, it has to be fetched
-  // from the client
-  private readonly oidcMetadata: Promise<AuthorizationServer | null>
+  // OIDC metadata may come with config. When not provided we have to get it from .well-known/openid-configuration
+  // if we can't access it during initialization, we have to try on login
+  private oidcMetadata: Promise<AuthorizationServer | null>
 
   // promise related to logged-in user. contains user name and tokens. This promise is resolved
   // after completing OAuth2 authorization flow or retrieving existing user using OIDC session
@@ -125,17 +126,8 @@ class OidcService implements IOidcService {
     this.oidcMetadata = this.enabled
         .then(enabled => {
           if (enabled) {
-            return this.fetchOidcMetadata().then(async (md) => {
-              const c = await this.config
-              // assign IDP details - noop if the details where fetched initially
-              c!['openid-configuration'] = md!
-              // prepare login function to be used by HawtioLogin UI
-              c!.login = this.oidcLogin
-              // add the information to augment template configuration in configManager
-              configManager.configureAuthenticationMethod(c!).then(() => {
-                configManager.initItem("OIDC Configuration", TaskState.finished, "config")
-              })
-              return md
+            return this.fetchOidcMetadata().then((md) => {
+              return this.processOidcMetadata(md, true)
             })
           } else {
             configManager.initItem("OIDC Configuration", TaskState.skipped, "config")
@@ -148,6 +140,33 @@ class OidcService implements IOidcService {
     this.userInfo = this.initialize()
 
     this.originalFetch = fetch
+  }
+
+  /**
+   * This should happen during initialization, but when OIDC is enabled and we fetch OIDC metadata initially
+   * we'll be trying to do it during login
+   * @param md
+   * @param initial
+   * @private
+   */
+  private async processOidcMetadata(md: AuthorizationServer | null, initial: boolean = false): Promise<AuthorizationServer | null> {
+    const c = await this.config
+    // if OIDC is enabled we'll have all the config except maybe "openid-configuration"
+    // prepare login function to be used by HawtioLogin UI
+    if (md) {
+      // assign IDP details - noop if the details where fetched initially
+      c!['openid-configuration'] = md!
+    }
+    if (initial) {
+      c!.login = this.oidcLogin
+      // add the information to augment template configuration in configManager
+      // we don't need "openid-configuration" here
+      configManager.configureAuthenticationMethod(c!).then(() => {
+        configManager.initItem("OIDC Configuration", TaskState.finished, "config")
+      })
+    }
+
+    return md
   }
 
   /**
@@ -389,9 +408,21 @@ class OidcService implements IOidcService {
    */
   private oidcLogin = async (silent = false): Promise<boolean> => {
     const config = await this.config
-    const as = await this.oidcMetadata
-    if (!config || !as) {
+    if (!config) {
       return false
+    }
+
+    let as = await this.oidcMetadata
+    if (!as) {
+      // we have the config, OIDC is enabled, but somehow we didn't get the metadata - let's try it now
+      this.oidcMetadata = this.fetchOidcMetadata().then((md) => {
+        return this.processOidcMetadata(md, false)
+      })
+      as = await this.oidcMetadata
+      if (!as) {
+        // we tried, but we still don't have the metadata - we can only show user login error
+        return false
+      }
     }
 
     // there are no query/fragment params in the URL, so we're logging for the first time
@@ -512,6 +543,7 @@ class OidcService implements IOidcService {
         // window.location.replace(`${md?.end_session_endpoint}?post_logout_redirect_uri=${document.baseURI}&id_token_hint=${user!.id_token}`)
         // for Keycloak, with client_id passed here, we're logged out automatically and get redirected to Hawtio
         const c = await this.config
+        // here we can't verify connection to IdP - we'll simply get browser error. Nothing we can do at this stage
         window.location.replace(`${md?.end_session_endpoint}?post_logout_redirect_uri=${document.baseURI}&client_id=${c!.client_id}`)
         return true
       }

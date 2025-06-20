@@ -60,9 +60,12 @@ export const HawtioLogin: React.FunctionComponent = () => {
       oidcComponent = <Button component="a" variant="secondary" size="sm" isBlock className="idp" onClick={async () => {
         const loginMethod = configManager.getAuthenticationMethod(method.method)?.login
         if (!loginMethod) {
-          setLoginError(`Plugin "${method.method}" doesn't define login method`)
+          setLoginError(`Invalid configuration of "${method.method}" plugin`)
         } else {
-          await loginMethod()
+          const loggedIn = await loginMethod()
+          if (!loggedIn) {
+            setLoginError(`Problem while authenticating using "${method.method}" plugin`)
+          }
         }
       }}>{method.name}</Button>
     }
