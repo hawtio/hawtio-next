@@ -300,7 +300,8 @@ module.exports = (_, args) => {
           redirect_uri: 'http://localhost:3000/hawtio/',
           code_challenge_method: 'S256',
           prompt: null,
-          // prompt: 'login',
+          // Hawtio (oidc plugin) will fetch this configuration from .well-known/openid-configuration
+          // with Hawtio Java it may already be part of this response
           "openid-configuration": null,
         }
         devServer.app.get(`${publicPath}/auth/config/oidc`, (_, res) => {
