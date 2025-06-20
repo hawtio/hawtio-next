@@ -1,5 +1,5 @@
 import { useUser } from '@hawtiosrc/auth/hooks'
-import { useHawtconfig, usePlugins } from '@hawtiosrc/core'
+import { hawtio, useHawtconfig, usePlugins } from '@hawtiosrc/core'
 import { HawtioHelp } from '@hawtiosrc/help/ui'
 import { background } from '@hawtiosrc/img'
 import { PluginNodeSelectionContext, usePluginNodeSelected } from '@hawtiosrc/plugins'
@@ -15,7 +15,7 @@ import {
 } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons/dist/esm/icons/cubes-icon'
 import React, { useEffect } from 'react'
-import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom-v5-compat'
+import { Redirect, Route, Switch, useLocation, useHistory } from 'react-router-dom' // includes NavLink
 import { HawtioNotification } from '@hawtiosrc/ui/notification'
 import { HawtioHeader } from './HawtioHeader'
 import { HawtioLoadingPage } from './HawtioLoadingPage'
@@ -23,6 +23,7 @@ import { HawtioSidebar } from './HawtioSidebar'
 import { PageContext } from './context'
 import { log } from './globals'
 import { sessionService, SessionMonitor } from '@hawtiosrc/ui/session'
+import { HELP, INDEX, INDEX_KEY, PREFERENCES, ROOT, WILDCARD } from '@hawtiosrc/RouteConstants'
 import './HawtioPage.css'
 
 /**
@@ -32,7 +33,7 @@ export const HawtioPage: React.FunctionComponent = () => {
   const { username, isLogin, userLoaded, loginMethod } = useUser()
   const { plugins, pluginsLoaded } = usePlugins()
   const { hawtconfig, hawtconfigLoaded } = useHawtconfig()
-  const navigate = useNavigate()
+  const navigate = useHistory()
   const { search } = useLocation()
   const { selectedNode, setSelectedNode } = usePluginNodeSelected()
 
@@ -40,7 +41,7 @@ export const HawtioPage: React.FunctionComponent = () => {
   // otherwise "Cannot update a component (`BrowserRouter`) while rendering a different component" is thrown
   useEffect(() => {
     if (!isLogin && userLoaded) {
-      navigate('/login')
+      navigate.push('login')
     }
   }, [isLogin, userLoaded, navigate])
 
@@ -51,13 +52,17 @@ export const HawtioPage: React.FunctionComponent = () => {
   log.debug(`Login state: username = ${username}, isLogin = ${isLogin}`)
 
   const defaultPlugin = plugins[0] ?? null
-  let defaultPage = defaultPlugin ? <Navigate to={{ pathname: defaultPlugin.path, search }} /> : <HawtioHome />
+  let defaultPage = defaultPlugin ? (
+    <Redirect to={{ pathname: hawtio.fullPath(defaultPlugin.path!), search }} />
+  ) : (
+    <HawtioHome />
+  )
   const tr = sessionStorage.getItem('connect-login-redirect')
   if (tr) {
     // this is required for OIDC, because we can't have redirect_uri with
     // wildcard on EntraID...
     // this session storage item is removed after successful login at connect/login page
-    defaultPage = <Navigate to={{ pathname: tr, search }} />
+    defaultPage = <Redirect to={{ pathname: tr, search }} />
   }
 
   const showVerticalNavByDefault = preferencesService.isShowVerticalNavByDefault()
@@ -83,24 +88,28 @@ export const HawtioPage: React.FunctionComponent = () => {
       >
         {/* Provider for handling selected node shared between the plugins */}
         <PluginNodeSelectionContext.Provider value={{ selectedNode, setSelectedNode }}>
-          <Routes>
+          <Switch>
             {/* plugins */}
             {plugins
               .filter(plugin => plugin.path != null && plugin.component != null)
               .map(plugin => (
-                <Route key={plugin.id} path={`${plugin.path}`} element={React.createElement(plugin.component!)}>
-                  <Route path='*' element={React.createElement(plugin.component!)} />
+                <Route key={plugin.id} path={`${hawtio.fullPath(plugin.path!, WILDCARD)}`}>
+                  {React.createElement(plugin.component!)}
                 </Route>
               ))}
-            <Route key='help' path='/help' element={<HawtioHelp />}>
-              <Route path='*' element={<HawtioHelp />} />
+            <Route key={HELP} path={hawtio.fullPath(HELP, WILDCARD)}>
+              <HawtioHelp />
             </Route>
-            <Route key='preferences' path='/preferences' element={<HawtioPreferences />}>
-              <Route path='*' element={<HawtioPreferences />} />
+            <Route key={PREFERENCES} path={hawtio.fullPath(PREFERENCES, WILDCARD)}>
+              <HawtioPreferences />
             </Route>
-            <Route key='index' path='index.html' element={<Navigate to='/' />} />
-            <Route key='root' index element={defaultPage} />
-          </Routes>
+            <Route key={INDEX_KEY} path={hawtio.fullPath('index.html')}>
+              <Redirect to={hawtio.fullPath(INDEX)} />
+            </Route>
+            <Route key={ROOT} exact path={`${hawtio.fullPath(INDEX)}`}>
+              {defaultPage}
+            </Route>
+          </Switch>
         </PluginNodeSelectionContext.Provider>
         <HawtioNotification />
         <SessionMonitor />

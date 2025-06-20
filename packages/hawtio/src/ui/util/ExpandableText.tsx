@@ -5,7 +5,6 @@ import { c_expandable_section_m_truncate__content_LineClamp as lineClamp } from 
 import { debounce, getResizeObserver, getUniqueId, PickOptional } from '@patternfly/react-core'
 import { isString } from '@hawtiosrc/util/objects'
 import { AngleRightIcon } from '@patternfly/react-icons/dist/esm/icons/angle-right-icon'
-import { PropsWithChildren } from 'react'
 
 export enum ExpandableSectionVariant {
   default = 'default',

@@ -1,10 +1,12 @@
 import { Divider, Nav, NavItem, NavList, PageGroup, PageSection, Title } from '@patternfly/react-core'
 import React from 'react'
 
-import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom-v5-compat'
+import { NavLink, Redirect, Route, Switch, useLocation } from 'react-router-dom' // includes NavLink
 import { Metrics } from './Metrics'
 import { SysProps } from './SysProps'
 import { Threads } from './Threads'
+import { pluginPath } from './globals'
+import { hawtio } from '@hawtiosrc/core'
 
 type NavItem = {
   id: string
@@ -31,8 +33,11 @@ export const Runtime: React.FunctionComponent = () => {
           <Nav aria-label='Runtime Nav' variant='tertiary'>
             <NavList>
               {navItems.map(navItem => (
-                <NavItem key={navItem.id} isActive={location.pathname === `/runtime/${navItem.id}`}>
-                  <NavLink to={navItem.id}>{navItem.title}</NavLink>
+                <NavItem
+                  key={navItem.id}
+                  isActive={hawtio.fullPath(location.pathname) === hawtio.fullPath(pluginPath, navItem.id)}
+                >
+                  <NavLink to={hawtio.fullPath(pluginPath, navItem.id)}>{navItem.title}</NavLink>
                 </NavItem>
               ))}
             </NavList>
@@ -44,12 +49,16 @@ export const Runtime: React.FunctionComponent = () => {
         variant={location.pathname.includes('metrics') ? 'default' : 'light'}
         padding={{ default: location.pathname.includes('metrics') ? 'padding' : 'noPadding' }}
       >
-        <Routes>
+        <Switch>
           {navItems.map(navItem => (
-            <Route key={navItem.id} path={navItem.id} element={navItem.component} />
+            <Route key={navItem.id} path={hawtio.fullPath(pluginPath, navItem.id)}>
+              {navItem.component}
+            </Route>
           ))}
-          <Route path='/' element={<Navigate to='sysprops' />} />
-        </Routes>
+          <Route path={hawtio.fullPath(pluginPath)}>
+            <Redirect to={hawtio.fullPath(pluginPath, navItems[0]?.id ?? '')} />
+          </Route>
+        </Switch>
       </PageSection>
     </React.Fragment>
   )

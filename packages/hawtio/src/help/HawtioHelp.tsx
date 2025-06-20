@@ -11,12 +11,13 @@ import {
 } from '@patternfly/react-core'
 import React, { useMemo } from 'react'
 import Markdown from 'react-markdown'
-import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom-v5-compat'
+import { NavLink, Redirect, Route, Switch, useLocation } from 'react-router-dom' // includes NavLink
 import help from './help.md'
 import { helpRegistry } from './registry'
 import { hawtio, usePlugins } from '@hawtiosrc/core'
+import { HELP, INDEX, HOME } from '@hawtiosrc/RouteConstants'
 
-helpRegistry.add('home', 'Home', help, 1)
+helpRegistry.add(HOME, 'Home', help, 1)
 
 export const HawtioHelp: React.FunctionComponent = () => {
   const location = useLocation()
@@ -44,8 +45,8 @@ export const HawtioHelp: React.FunctionComponent = () => {
         <Nav aria-label='Nav' variant='tertiary'>
           <NavList>
             {helps.map(help => (
-              <NavItem key={help.id} isActive={location.pathname === `/help/${help.id}`}>
-                <NavLink to={help.id}>{help.title}</NavLink>
+              <NavItem key={help.id} isActive={location.pathname === hawtio.fullPath(HELP, help.id)}>
+                <NavLink to={hawtio.fullPath(HELP, help.id)}>{help.title}</NavLink>
               </NavItem>
             ))}
           </NavList>
@@ -53,22 +54,20 @@ export const HawtioHelp: React.FunctionComponent = () => {
       </PageSection>
       <Divider />
       <PageSection variant={PageSectionVariants.light}>
-        <Routes>
+        <Switch>
           {helpRegistry.getHelps().map(help => (
-            <Route
-              key={help.id}
-              path={help.id}
-              element={
-                <CardBody>
-                  <TextContent>
-                    <Markdown>{help.content}</Markdown>
-                  </TextContent>
-                </CardBody>
-              }
-            />
+            <Route key={help.id} path={hawtio.fullPath(HELP, help.id)}>
+              <CardBody>
+                <TextContent>
+                  <Markdown>{help.content}</Markdown>
+                </TextContent>
+              </CardBody>
+            </Route>
           ))}
-          <Route path='/' element={<Navigate to='home' />} />
-        </Routes>
+          <Route path={INDEX}>
+            <Redirect to={hawtio.fullPath(HELP, HOME)} />
+          </Route>
+        </Switch>
       </PageSection>
     </React.Fragment>
   )

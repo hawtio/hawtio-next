@@ -4,6 +4,7 @@ import { importRemote, ImportRemoteOptions } from '@module-federation/utilities'
 import { configManager, TaskState } from './config-manager'
 import { eventService } from './event-service'
 import { log } from './globals'
+import { joinPaths } from '@hawtiosrc/util/urls'
 
 const DEFAULT_REMOTE_ENTRY_FILE = 'remoteEntry.js'
 const DEFAULT_PLUGIN_ORDER = 100
@@ -323,6 +324,20 @@ export class HawtioCore implements IHawtio {
     resolved.sort((a, b) => (a.order ?? DEFAULT_PLUGIN_ORDER) - (b.order ?? DEFAULT_PLUGIN_ORDER))
 
     return resolved
+  }
+
+  fullPath(...subPaths: string[]): string {
+    const lastPath = subPaths.slice(-1).pop()
+    if (!lastPath?.endsWith('*')) {
+      subPaths.push('/')
+    }
+
+    const basePath = this.getBasePath() ?? '/'
+    let path = joinPaths(...subPaths)
+    if (path.startsWith(basePath)) return path // path already starts with base path
+
+    path = joinPaths(basePath, path)
+    return path
   }
 
   /**
