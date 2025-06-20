@@ -50,6 +50,12 @@
     "typescript": "^5.4.5",
     "typescript-eslint": "^8.34.1"
   },
+  "resolutions": {
+    "@types/react": "^17.0.37",
+    "@types/react-dom": "^17.0.26",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  },
   "config": {
     "commitizen": {
       "path": "cz-conventional-changelog",
