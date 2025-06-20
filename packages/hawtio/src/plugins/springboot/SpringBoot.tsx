@@ -1,12 +1,14 @@
 import { Divider, Nav, NavItem, NavList, PageSection, PageSectionVariants, Title } from '@patternfly/react-core'
 import React, { useEffect, useState } from 'react'
 
-import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom-v5-compat'
+import { NavLink, Redirect, Route, Switch, useLocation } from 'react-router-dom' // includes NavLink
 import { Health } from './Health'
 import { Info } from './Info'
 import { Loggers } from './Loggers'
 import { TraceView } from './TraceView'
 import { springbootService } from './springboot-service'
+import { hawtio } from '@hawtiosrc/core'
+import { pluginPath } from './globals'
 
 type NavItem = {
   id: string
@@ -57,8 +59,8 @@ export const SpringBoot: React.FunctionComponent = () => {
         <Nav aria-label='Spring-boot Nav' variant='tertiary'>
           <NavList>
             {navItems.map(navItem => (
-              <NavItem key={navItem.id} isActive={location.pathname === `/springboot/${navItem.id}`}>
-                <NavLink to={navItem.id}>{navItem.title}</NavLink>
+              <NavItem key={navItem.id} isActive={hawtio.fullPath(location.pathname) === hawtio.fullPath(pluginPath, navItem.id)}>
+                <NavLink to={hawtio.fullPath(pluginPath, navItem.id)}>{navItem.title}</NavLink>
               </NavItem>
             ))}
           </NavList>
@@ -70,12 +72,12 @@ export const SpringBoot: React.FunctionComponent = () => {
         variant={PageSectionVariants.light}
         padding={{ default: 'noPadding' }}
       >
-        <Routes>
+        <Switch>
           {navItems.map(navItem => (
-            <Route key={navItem.id} path={navItem.id} element={navItem.component} />
+            <Route key={navItem.id} path={hawtio.fullPath(pluginPath, navItem.id)}>{navItem.component}</Route>
           ))}
-          <Route path='/' element={<Navigate to='health' />} />
-        </Routes>
+          <Route exact path={hawtio.fullPath(pluginPath)}><Redirect to={hawtio.fullPath(pluginPath, navItems[0]?.id ?? '')} /></Route>
+        </Switch>
       </PageSection>
     </React.Fragment>
   )
