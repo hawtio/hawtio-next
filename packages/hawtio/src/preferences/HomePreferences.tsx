@@ -15,19 +15,31 @@ import {
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { preferencesService } from './preferences-service'
+import { useHawtconfig } from '@hawtiosrc/core'
+import { HawtioLoadingPage } from '@hawtiosrc/ui'
 
-export const HomePreferences: React.FunctionComponent = () => (
-  <CardBody>
-    <Form isHorizontal>
-      <FormSection title='UI' titleElement='h2'>
-        <UIForm />
-      </FormSection>
-      <FormSection title='Reset' titleElement='h2'>
-        <ResetForm />
-      </FormSection>
-    </Form>
-  </CardBody>
-)
+export const HomePreferences: React.FunctionComponent = () => {
+  const { hawtconfig, hawtconfigLoaded } = useHawtconfig()
+
+  if (!hawtconfigLoaded) return <HawtioLoadingPage />
+
+  const sideBarShown = hawtconfig.appearance?.showSideBar ?? true
+
+  return (
+    <CardBody>
+      <Form isHorizontal>
+        {sideBarShown && (
+          <FormSection title='UI' titleElement='h2'>
+            <UIForm />
+          </FormSection>
+        )}
+        <FormSection title='Reset' titleElement='h2'>
+          <ResetForm />
+        </FormSection>
+      </Form>
+    </CardBody>
+  )
+}
 
 const UIForm: React.FunctionComponent = () => {
   const [showVerticalNav, setShowVerticalNav] = useState(preferencesService.isShowVerticalNavByDefault())
