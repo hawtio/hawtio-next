@@ -182,6 +182,17 @@ export type AuthenticationKind =
    */
   "oauth2"
 
+export enum AuthenticationResult {
+  /** successful authentication */
+  ok,
+  /** error due to initial configuration of the plugin */
+  configuration_error,
+  /** error due to communication error with IdP (for OIDC) */
+  connect_error,
+  /** error due to `window.isSecureContext` */
+  security_context_error,
+}
+
 /** Base type for authentication methods supported by Hawtio */
 export type AuthenticationMethod = {
   /** One of the supported methods. If a plugin augments given method, we should have one such method only */
@@ -189,7 +200,7 @@ export type AuthenticationMethod = {
   /** Name to be presented at login page for login method selection */
   name: string,
   /** Plugin specific method for performing login. For now it's for OAuth2/OIDC/Keycloak. This field is set up by auth plugin */
-  login?: (() => Promise<boolean>)
+  login?: (() => Promise<AuthenticationResult>)
 }
 
 /** Configuration of Basic Authentication */
