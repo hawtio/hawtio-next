@@ -7,6 +7,10 @@ export type User = {
   username: string
   /** Flag for actual user (`false` means guest or public user) */
   isLogin: boolean
+  /** Flag for attempted, but failed login (for example problems with OIDC login) */
+  isLoginError: boolean
+  /** For error logins, message provides some details */
+  errorMessage?: string
   /** Identifier of authentication method used to fetch the user, so we can later use correct logout */
   loginMethod: string
 }
@@ -28,7 +32,7 @@ export interface IUserService {
   getLoginMethod(): Promise<string>
   getToken(): string | null
   setToken(token: string): void
-  logout(): Promise<void>
+  logout(): Promise<boolean>
 }
 
 class UserService implements IUserService {
@@ -105,20 +109,21 @@ class UserService implements IUserService {
           return this.defaultFetchUser(false, proceed)
         }
 
-        this.resolveUser({ username: PUBLIC_USER, isLogin: false, loginMethod: 'form' })
+        this.resolveUser({ username: PUBLIC_USER, isLogin: false, isLoginError: false, loginMethod: 'form' })
         return
       }
 
       const username = await res.json()
       log.info('Logged in as:', username)
-      this.resolveUser({ username, isLogin: true, loginMethod: 'form' })
+      this.resolveUser({ username, isLogin: true, isLoginError: false, loginMethod: 'form' })
 
       // Send login event
       eventService.login()
     } catch (err) {
       // Silently ignore as mostly it's just not logged-in yet
       log.debug('Failed to get logged-in user from', PATH_USER, '-', err)
-      this.resolveUser({ username: PUBLIC_USER, isLogin: false, loginMethod: 'form' })
+      this.resolveUser({ username: PUBLIC_USER, isLogin: false, isLoginError: true,
+        errorMessage: err?.toString() ?? "Login error", loginMethod: 'form' })
     }
   }
 
@@ -128,6 +133,14 @@ class UserService implements IUserService {
 
   async isLogin(): Promise<boolean> {
     return (await this.user).isLogin
+  }
+
+  async isLoginError(): Promise<boolean> {
+    return (await this.user).isLoginError
+  }
+
+  async loginError(): Promise<string | undefined> {
+    return (await this.user).errorMessage
   }
 
   async getLoginMethod(): Promise<string> {
@@ -142,17 +155,17 @@ class UserService implements IUserService {
     this.token = token
   }
 
-  async logout() {
+  async logout(): Promise<boolean> {
     const login = await this.user
     if (!login.isLogin) {
       log.debug('Not logged in')
-      return
+      return false
     }
 
-    log.info('Log out:', login.username, ', Login method:', login.loginMethod)
+    log.info('Log out:', login.username, 'Login method:', login.loginMethod)
 
-    // Send logout event
-    eventService.logout()
+    let attempted = false
+    let proceed = false
 
     // First, let logout hooks to log out in a special way
     for (const [name, logout] of Object.entries(this.logoutHooks)) {
@@ -160,17 +173,32 @@ class UserService implements IUserService {
       if (name !== login.loginMethod) {
         continue
       }
+      attempted = true
       const result = await logout()
       log.debug('Invoke logout hook', name, ': result =', result)
       if (result) {
-        // Logout succeeded
-        return
+        proceed = true
+        break
+      }
+    }
+
+    if (attempted) {
+      if (proceed) {
+        // Send logout event.
+        eventService.logout()
+        return true
+      } else {
+        // we should logout using some plugin, but there was some problem
+        return false
       }
     }
 
     // Default logout logic
+    eventService.logout()
     log.debug('Redirect to:', PATH_LOGOUT)
     window.location.href = PATH_LOGOUT
+    // not used, but required
+    return true
   }
 }
 
