@@ -22,7 +22,7 @@ import { log } from './globals'
 export const HawtioLogin: React.FunctionComponent = () => {
   const navigate = useNavigate()
 
-  const { isLogin, userLoaded } = useUser()
+  const { isLogin, userLoaded, isLoginError, loginError: loginErrorMessage } = useUser()
   const { hawtconfig, hawtconfigLoaded } = useHawtconfig()
   const { plugins, pluginsLoaded } = usePlugins()
   const [ authenticationMethods, setAuthenticationMethods ] = useState<AuthenticationMethod[]>([])
@@ -33,8 +33,10 @@ export const HawtioLogin: React.FunctionComponent = () => {
   useEffect(() => {
     if (isLogin) {
       navigate('/')
+    } else if (isLoginError) {
+      setLoginError(loginErrorMessage)
     }
-  }, [isLogin, navigate])
+  }, [isLogin, navigate, isLoginError, loginErrorMessage])
 
   useEffect(() => {
     const methods = configManager.getAuthenticationConfig()
@@ -64,7 +66,7 @@ export const HawtioLogin: React.FunctionComponent = () => {
         } else {
           const loggedIn = await loginMethod()
           if (!loggedIn) {
-            setLoginError(`Problem while authenticating using "${method.method}" plugin`)
+            setLoginError(`"${method.method}" plugin is not configured correctly`)
           }
         }
       }}>{method.name}</Button>
