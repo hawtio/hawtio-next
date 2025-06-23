@@ -1,13 +1,15 @@
 import { useUser } from '@hawtiosrc/auth/hooks'
 import {
   AuthenticationMethod,
+  AuthenticationResult,
   configManager,
   DEFAULT_APP_NAME,
-  DEFAULT_LOGIN_TITLE, FormAuthenticationMethod,
+  DEFAULT_LOGIN_TITLE,
+  FormAuthenticationMethod,
   useHawtconfig,
   usePlugins
 } from '@hawtiosrc/core'
-import { hawtioLogo, background } from '@hawtiosrc/img'
+import { background, hawtioLogo } from '@hawtiosrc/img'
 import { Alert, Button, ListItem, ListVariant, LoginFooterItem, LoginPage } from '@patternfly/react-core'
 import React, { ReactNode, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -61,12 +63,28 @@ export const HawtioLogin: React.FunctionComponent = () => {
       // same for multi and single selection
       oidcComponent = <Button component="a" variant="secondary" size="sm" isBlock className="idp" onClick={async () => {
         const loginMethod = configManager.getAuthenticationMethod(method.method)?.login
+        let ok
+        let result
         if (!loginMethod) {
-          setLoginError(`Invalid configuration of "${method.method}" plugin`)
+          result = AuthenticationResult.configuration_error
+          ok = false
         } else {
-          const loggedIn = await loginMethod()
-          if (!loggedIn) {
-            setLoginError(`"${method.method}" plugin is not configured correctly`)
+          result = await loginMethod()
+          ok = result === AuthenticationResult.ok
+        }
+        if (!ok) {
+          switch (result) {
+            case AuthenticationResult.connect_error:
+              setLoginError(`"${method.method}" plugin error: Connection Error`)
+              break
+            case AuthenticationResult.security_context_error:
+              setLoginError(`"${method.method}" plugin error: Insecure Browser Context`)
+              break
+            case AuthenticationResult.configuration_error:
+            default:
+              setLoginError(`"${method.method}" plugin error: Invalid Configuration`)
+              break
+
           }
         }
       }}>{method.name}</Button>

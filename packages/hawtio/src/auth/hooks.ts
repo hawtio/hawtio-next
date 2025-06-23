@@ -32,13 +32,14 @@ export function useUser() {
       // Try syncing the login status with the server here
       await userService.fetchUser(configManager.authRetry, () => isProceed())
 
-      const username = await userService.getUsername()
-      const isLogin = await userService.isLogin()
+      const loginMethod = await userService.getLoginMethod()
       const isLoginError = await userService.isLoginError()
       const loginError = isLoginError ? await userService.loginError() : ''
-      const loginMethod = await userService.getLoginMethod()
+      // check username only if there's no error - userService resolves `user` promise only once
+      const username = isLoginError ? '' : await userService.getUsername()
+      const isLogin = isLoginError ? false : await userService.isLogin()
       if (isProceed()) {
-        setUsername(username)
+        setUsername(username ?? '')
         setIsLogin(isLogin)
         setIsLoginError(isLoginError)
         setLoginMethod(loginMethod)

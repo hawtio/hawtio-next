@@ -7,10 +7,18 @@ export type User = {
   username: string
   /** Flag for actual user (`false` means guest or public user) */
   isLogin: boolean
-  /** Flag for attempted, but failed login (for example problems with OIDC login) */
-  isLoginError: boolean
+  /** Identifier of authentication method used to fetch the user, so we can later use correct logout */
+  loginMethod: string
+}
+
+/** Information about attempt to login a user. Only if it indicates success we have `user` promise resolved */
+export type UserAuthResult = {
+  /** Should the result be ignored? */
+  isIgnore: boolean
+  /** Was authentication successful? */
+  isError: boolean
   /** For error logins, message provides some details */
-  errorMessage?: string
+  errorMessage?: string | null
   /** Identifier of authentication method used to fetch the user, so we can later use correct logout */
   loginMethod: string
 }
@@ -19,7 +27,7 @@ export type User = {
 export type ResolveUser = (user: User) => void
 
 /** A function that may be registered by authentication plugin used to get information about logged-in user */
-export type FetchUserHook = (resolve: ResolveUser, proceed?: () => boolean) => Promise<boolean>
+export type FetchUserHook = (resolve: ResolveUser, proceed?: () => boolean) => Promise<UserAuthResult>
 /** A function that may be registered by authentication plugin used to log out a user */
 export type LogoutHook = () => Promise<boolean>
 
@@ -27,8 +35,10 @@ export interface IUserService {
   addFetchUserHook(name: string, hook: FetchUserHook): void
   addLogoutHook(name: string, hook: LogoutHook): void
   fetchUser(retry?: boolean, proceed?: () => boolean): Promise<void>
-  getUsername(): Promise<string>
+  getUsername(): Promise<string | null>
   isLogin(): Promise<boolean>
+  isLoginError(): Promise<boolean>
+  loginError(): Promise<string | null>
   getLoginMethod(): Promise<string>
   getToken(): string | null
   setToken(token: string): void
@@ -42,6 +52,8 @@ class UserService implements IUserService {
   private resolveUser: ResolveUser = () => {
     // no-op
   }
+  /** Result of fetching user with plugins. When it indicates an error `user` promise won't be resolved */
+  private userAuthResult: UserAuthResult | null = null
 
   /** Named authentication hooks used to fetch information about actual user logged into Hawtio. */
   private fetchUserHooks: { [name: string]: FetchUserHook } = {}
@@ -73,14 +85,18 @@ class UserService implements IUserService {
   async fetchUser(retry = true, proceed?: () => boolean): Promise<void> {
     // First, let fetch user hooks to resolve the user in a special way
     for (const [name, fetchUser] of Object.entries(this.fetchUserHooks)) {
-      const resolved = await fetchUser(this.resolveUser, proceed)
+      const result = await fetchUser(this.resolveUser, proceed)
       if (proceed && !proceed()) {
+        // don't even check the result
         return
       }
-      log.debug('Invoke fetch user hook', name, ': resolved =', resolved)
-      if (resolved) {
-        // Login succeeded - only with resolved=true the passed promise-resolving method was called
-        eventService.login()
+      this.userAuthResult = result
+      log.debug('Invoke fetch user hook', name, ': resolved =', result)
+      if (!result.isIgnore) {
+        if (!result.isError) {
+          // Login succeeded - only with resolved=true the passed promise-resolving method was called
+          eventService.login()
+        }
         return
       }
     }
@@ -109,42 +125,42 @@ class UserService implements IUserService {
           return this.defaultFetchUser(false, proceed)
         }
 
-        this.resolveUser({ username: PUBLIC_USER, isLogin: false, isLoginError: false, loginMethod: 'form' })
+        this.resolveUser({ username: PUBLIC_USER, isLogin: false, loginMethod: 'form' })
         return
       }
 
       const username = await res.json()
       log.info('Logged in as:', username)
-      this.resolveUser({ username, isLogin: true, isLoginError: false, loginMethod: 'form' })
+      this.resolveUser({ username, isLogin: true, loginMethod: 'form' })
 
       // Send login event
       eventService.login()
     } catch (err) {
       // Silently ignore as mostly it's just not logged-in yet
       log.debug('Failed to get logged-in user from', PATH_USER, '-', err)
-      this.resolveUser({ username: PUBLIC_USER, isLogin: false, isLoginError: true,
-        errorMessage: err?.toString() ?? "Login error", loginMethod: 'form' })
+      // special default "resolved" user - no userError in defaultFetchUser
+      this.resolveUser({ username: PUBLIC_USER, isLogin: false, loginMethod: 'form' })
     }
   }
 
-  async getUsername(): Promise<string> {
-    return (await this.user).username
+  async getUsername(): Promise<string | null> {
+    return this.userAuthResult == null || !this.userAuthResult.isError ? (await this.user).username : null
   }
 
   async isLogin(): Promise<boolean> {
-    return (await this.user).isLogin
+    return this.userAuthResult == null || !this.userAuthResult.isError ? (await this.user).isLogin : false
   }
 
   async isLoginError(): Promise<boolean> {
-    return (await this.user).isLoginError
+    return this.userAuthResult != null && this.userAuthResult.isError
   }
 
-  async loginError(): Promise<string | undefined> {
-    return (await this.user).errorMessage
+  async loginError(): Promise<string | null> {
+    return this.userAuthResult != null && this.userAuthResult.isError ? this.userAuthResult.errorMessage! : null
   }
 
   async getLoginMethod(): Promise<string> {
-    return (await this.user).loginMethod
+    return this.userAuthResult != null ? this.userAuthResult.loginMethod : (await this.user).loginMethod
   }
 
   getToken(): string | null {
