@@ -140,11 +140,11 @@ class KeycloakService implements IKeycloakService {
       }
 
       if (userProfile.username && userProfile.token) {
-        resolve({ username: userProfile.username, isLogin: true, loginMethod: "keycloak" })
+        resolve({ username: userProfile.username, isLogin: true, isLoginError: false, loginMethod: "keycloak" })
         userService.setToken(userProfile.token)
       }
 
-      this.setupFetch()
+      this.setupFetch().then(() => true)
 
       // only now register help tab for OIDC
       helpRegistration()

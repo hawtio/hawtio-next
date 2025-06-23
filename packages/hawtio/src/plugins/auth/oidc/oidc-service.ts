@@ -72,11 +72,14 @@ export interface IOidcService {
 }
 
 type UserInfo = {
-  user: string | null
-  access_token: string | null | undefined
-  refresh_token: string | null | undefined
-  id_token: string | null | undefined
-  at_exp: number
+  user?: string
+  access_token?: string
+  refresh_token?: string
+  id_token?: string
+  at_exp?: number
+  error?: string
+  error_description?: string
+  error_uri?: string
 }
 
 type AuthData = {
@@ -269,7 +272,7 @@ class OidcService implements IOidcService {
         error_uri: urlParams?.get('error_uri') as string,
       }
       log.error('OpenID Connect error', error)
-      return null
+      return error
     }
 
     if (!oauthSuccess) {
@@ -425,6 +428,13 @@ class OidcService implements IOidcService {
       }
     }
 
+    // at this stage we can log in, but still - IdP may be down, so it'd be nice to check its reachable with
+    // fetch() instead of getting "Unable to connect" displayed by browser after window.location.assign/replace
+    const available = await this.checkAvailability()
+    if (!available) {
+      return false
+    }
+
     // there are no query/fragment params in the URL, so we're logging for the first time
     const code_challenge_method = config!.code_challenge_method
     const code_verifier = oidc.generateRandomCodeVerifier()
@@ -481,11 +491,31 @@ class OidcService implements IOidcService {
     log.info('Redirecting to ', authorizationUrl)
 
     // point of no return
-    window.location.assign(authorizationUrl)
+    // use "location.replace" to prevent user from going back in history
+    window.location.replace(authorizationUrl)
     // return unresolvable promise to wait for redirect
     return new Promise((_resolve, _reject) => {
       log.debug('Waiting for redirect')
     })
+  }
+
+  /**
+   * Attempt to communicate with IdP before login/logout using window.location.assign/replace
+   * @private
+   */
+  private async checkAvailability(): Promise<boolean> {
+    try {
+      const cfg = await this.config
+      if (cfg) {
+        const provider = cfg!.provider
+        return this.originalFetch.bind(window)(provider)
+            .then(_r => true)
+            .catch(_e => false)
+      }
+      return false
+    } catch {
+      return false
+    }
   }
 
   /**
@@ -517,9 +547,17 @@ class OidcService implements IOidcService {
 
       const userInfo = await this.userInfo
       if (!userInfo) {
+        // no login attempt
         return false
       }
-      resolveUser({ username: userInfo.user!, isLogin: true, loginMethod: "oidc" })
+      if (!userInfo.error) {
+        // successful login attempt
+        resolveUser({ username: userInfo.user!, isLogin: true, isLoginError: false, loginMethod: "oidc" })
+      } else {
+        // OIDC error
+        const errorMessage = "\"oidc\" plugin error: " + (userInfo.error_description ?? userInfo.error)
+        resolveUser({ username: '', isLogin: false, isLoginError: true, errorMessage: errorMessage, loginMethod: "oidc" })
+      }
       userService.setToken(userInfo.access_token!)
       // silent login finished
       localStorage.removeItem("core.auth.silentLogin")
@@ -536,15 +574,20 @@ class OidcService implements IOidcService {
     const logout = async () => {
       const md = await this.oidcMetadata
       if (md?.end_session_endpoint) {
+        const available = await this.checkAvailability()
+        if (!available) {
+          return false
+        }
         // no more silent login allowed on refresh
         localStorage.removeItem("core.auth.oidc")
         // for Keycloak, with id_token_hint we don't see logout consent
         // const user = await this.userInfo
-        // window.location.replace(`${md?.end_session_endpoint}?post_logout_redirect_uri=${document.baseURI}&id_token_hint=${user!.id_token}`)
+        // window.location.assign(`${md?.end_session_endpoint}?post_logout_redirect_uri=${document.baseURI}&id_token_hint=${user!.id_token}`)
         // for Keycloak, with client_id passed here, we're logged out automatically and get redirected to Hawtio
         const c = await this.config
         // here we can't verify connection to IdP - we'll simply get browser error. Nothing we can do at this stage
-        window.location.replace(`${md?.end_session_endpoint}?post_logout_redirect_uri=${document.baseURI}&client_id=${c!.client_id}`)
+        // use "location.assign" to let user browse back
+        window.location.assign(`${md?.end_session_endpoint}?post_logout_redirect_uri=${document.baseURI}&client_id=${c!.client_id}`)
         return true
       }
       return false
@@ -624,7 +667,7 @@ class OidcService implements IOidcService {
     window.fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
       const logPrefix = 'Fetch -'
 
-      if (userInfo && (!userInfo.access_token || this.isTokenExpiring(userInfo.at_exp))) {
+      if (userInfo && (!userInfo.access_token || this.isTokenExpiring(userInfo.at_exp!))) {
         log.debug(logPrefix, 'Refreshing access token')
         return new Promise((resolve, reject) => {
           this.updateToken(

@@ -9,6 +9,8 @@ import { configManager } from '@hawtiosrc/core'
  * This hook holds:
  * * a state for user name
  * * a state for a flag indicating user is correctly logged in (is not a guest/public user)
+ * * a state for a flag indicating failed login attempt
+ * * a state for a flag indicating error message if there was a login error
  * * a state for a flag indicating userService finished its async operation (user retrieval)
  * * a state for selected login method - dependening on which plugin successfuly fetched the user
  * * an effect that synchronizes with `userService` to alter the state
@@ -18,6 +20,8 @@ import { configManager } from '@hawtiosrc/core'
 export function useUser() {
   const [username, setUsername] = useState('')
   const [isLogin, setIsLogin] = useState(false)
+  const [isLoginError, setIsLoginError] = useState(false)
+  const [loginError, setLoginError] = useState('')
   const [userLoaded, setUserLoaded] = useState(false)
   const [loginMethod, setLoginMethod] = useState('')
 
@@ -30,11 +34,15 @@ export function useUser() {
 
       const username = await userService.getUsername()
       const isLogin = await userService.isLogin()
+      const isLoginError = await userService.isLoginError()
+      const loginError = isLoginError ? await userService.loginError() : ''
       const loginMethod = await userService.getLoginMethod()
       if (isProceed()) {
         setUsername(username)
         setIsLogin(isLogin)
+        setIsLoginError(isLoginError)
         setLoginMethod(loginMethod)
+        setLoginError(loginError!)
         setUserLoaded(true)
       }
     }
@@ -45,5 +53,5 @@ export function useUser() {
     }
   }, [])
 
-  return { username, isLogin, userLoaded, loginMethod }
+  return { username, isLogin, userLoaded, loginMethod, isLoginError, loginError }
 }
