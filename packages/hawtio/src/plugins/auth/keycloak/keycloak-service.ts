@@ -32,6 +32,8 @@ export interface IKeycloakService {
   validateSubjectMatches(user: string): Promise<boolean>
 }
 
+const AUTH_METHOD = 'keycloak'
+
 class KeycloakService implements IKeycloakService {
   private readonly enabled: Promise<boolean>
   private readonly config: Promise<HawtioKeycloakConfig | null>
@@ -136,11 +138,11 @@ class KeycloakService implements IKeycloakService {
       const keycloak = await this.keycloak
       const userProfile = await this.userProfile
       if (!keycloak || !userProfile) {
-        return false
+        return { isIgnore: true, isError: false, loginMethod: AUTH_METHOD }
       }
 
       if (userProfile.username && userProfile.token) {
-        resolve({ username: userProfile.username, isLogin: true, isLoginError: false, loginMethod: "keycloak" })
+        resolve({ username: userProfile.username, isLogin: true, loginMethod: AUTH_METHOD })
         userService.setToken(userProfile.token)
       }
 
@@ -149,9 +151,9 @@ class KeycloakService implements IKeycloakService {
       // only now register help tab for OIDC
       helpRegistration()
 
-      return true
+      return { isIgnore: false, isError: false, loginMethod: AUTH_METHOD }
     }
-    userService.addFetchUserHook('keycloak', fetchUser)
+    userService.addFetchUserHook(AUTH_METHOD, fetchUser)
 
     const logout = async () => {
       const keycloak = await this.keycloak
@@ -167,7 +169,7 @@ class KeycloakService implements IKeycloakService {
       }
       return true
     }
-    userService.addLogoutHook('keycloak', logout)
+    userService.addLogoutHook(AUTH_METHOD, logout)
   }
 
   private async setupFetch() {

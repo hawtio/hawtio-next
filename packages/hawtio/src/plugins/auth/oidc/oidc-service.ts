@@ -1,5 +1,6 @@
-import { ResolveUser, userService } from '@hawtiosrc/auth/user-service'
+import { type ResolveUser, type UserAuthResult, userService } from '@hawtiosrc/auth/user-service'
 import {
+  AuthenticationResult,
   configManager,
   hawtio,
   Logger,
@@ -12,6 +13,7 @@ import { AuthorizationResponseError, AuthorizationServer, Client, ClientAuth, OA
 import { getCookie } from '@hawtiosrc/util/https'
 
 const pluginName = 'hawtio-oidc'
+const AUTH_METHOD = 'oidc'
 
 const log = Logger.get(pluginName)
 
@@ -178,7 +180,7 @@ class OidcService implements IOidcService {
    */
   private async isOidcEnabled(): Promise<boolean> {
     const cfg = await this.config
-    return cfg?.method === 'oidc' && cfg?.provider != null
+    return cfg?.method === AUTH_METHOD && cfg?.provider != null
   }
 
   /**
@@ -275,7 +277,7 @@ class OidcService implements IOidcService {
       return error
     }
 
-    if (!oauthSuccess) {
+    if (!oauthSuccess /* && !oauthError */) {
       // no user information in URI/webStorage, so OidcService stays at _inactive_ state, waiting to start
       // Authorization FLow on user demand
 
@@ -311,7 +313,7 @@ class OidcService implements IOidcService {
     } catch (e) {
       if (e instanceof AuthorizationResponseError) {
         log.error('OpenID Authorization error', e)
-        return null
+        return { error: e.message }
       }
     }
 
@@ -338,8 +340,9 @@ class OidcService implements IOidcService {
         return null
       })
     if (!res) {
-      log.warn('No authorization code grant response available')
-      return null
+      const msg = 'No authorization code grant response available'
+      log.warn(msg)
+      return { error: msg }
     }
 
     // process response from token endpoint
@@ -353,7 +356,7 @@ class OidcService implements IOidcService {
         return null
       })
     if (!tokenResponse) {
-      return null
+      return { error: 'Problem processing OpenID token response' }
     }
 
     const access_token = tokenResponse['access_token']
@@ -376,8 +379,9 @@ class OidcService implements IOidcService {
 
     const claims = oidc.getValidatedIdTokenClaims(tokenResponse)
     if (!claims) {
-      log.warn('No ID token returned')
-      return null
+      const msg = 'No ID token returned'
+      log.warn(msg)
+      return { error: msg }
     }
     const user = (claims.name ?? claims.preferred_username ?? claims.sub) as string
 
@@ -407,12 +411,16 @@ class OidcService implements IOidcService {
   }
 
   /**
-   * This is a method made available to `<HawtioLogin>` UI when user clicks "Login with OIDC" button
+   * This is a method made available to `<HawtioLogin>` UI when user clicks "Login with OIDC" button.
+   *
+   * @param silent whether to start _silen_ (`prompt=none`) Authorization Flow
+   * @return `false` (a promise resolving to `false`) if the login process can't proceed - login screen should
+   * display generic error
    */
-  private oidcLogin = async (silent = false): Promise<boolean> => {
+  private oidcLogin = async (silent = false): Promise<AuthenticationResult> => {
     const config = await this.config
     if (!config) {
-      return false
+      return AuthenticationResult.configuration_error
     }
 
     let as = await this.oidcMetadata
@@ -424,7 +432,7 @@ class OidcService implements IOidcService {
       as = await this.oidcMetadata
       if (!as) {
         // we tried, but we still don't have the metadata - we can only show user login error
-        return false
+        return AuthenticationResult.configuration_error
       }
     }
 
@@ -432,7 +440,7 @@ class OidcService implements IOidcService {
     // fetch() instead of getting "Unable to connect" displayed by browser after window.location.assign/replace
     const available = await this.checkAvailability()
     if (!available) {
-      return false
+      return AuthenticationResult.connect_error
     }
 
     // there are no query/fragment params in the URL, so we're logging for the first time
@@ -441,7 +449,7 @@ class OidcService implements IOidcService {
     // TODO: this method calls crypto.subtle.digest('SHA-256', buf(codeVerifier)) so we need secure context
     if (!window.isSecureContext) {
       log.error("Can't perform OpenID Connect authentication in non-secure context")
-      return false
+      return AuthenticationResult.security_context_error
     }
 
     const code_challenge = await oidc.calculatePKCECodeChallenge(code_verifier)
@@ -483,7 +491,7 @@ class OidcService implements IOidcService {
     authorizationUrl.searchParams.set('nonce', nonce)
     // do not take 'prompt' option from configuration,
     // leave the default non-set version, as it works best with Hawtio and redirects
-    // but use none for explicit silent login
+    // but use 'none' for explicit silent login
     if (silent) {
       authorizationUrl.searchParams.set('prompt', 'none')
     }
@@ -540,34 +548,35 @@ class OidcService implements IOidcService {
     // note - finding proper state/session_state/iss/code after redirect may still cause issues when
     // exchanging code for token (timeouts, errors, session/cookie issues, ...). In this case
     // fetchUser should actually fetch the user, but with some error information
-    const fetchUser = async (resolveUser: ResolveUser, proceed?: () => boolean) => {
+    const fetchUser = async (resolveUser: ResolveUser, proceed?: () => boolean): Promise<UserAuthResult> => {
       if (proceed && !proceed()) {
-        return false
+        return { isIgnore: true, isError: false, loginMethod: AUTH_METHOD }
       }
 
       const userInfo = await this.userInfo
       if (!userInfo) {
         // no login attempt
-        return false
+        return { isIgnore: true, isError: false, loginMethod: AUTH_METHOD }
       }
+      // silent login finished - whether it's successful or not
+      localStorage.removeItem("core.auth.silentLogin")
+
       if (!userInfo.error) {
         // successful login attempt
-        resolveUser({ username: userInfo.user!, isLogin: true, isLoginError: false, loginMethod: "oidc" })
+        resolveUser({ username: userInfo.user!, isLogin: true, loginMethod: AUTH_METHOD })
       } else {
         // OIDC error
         const errorMessage = "\"oidc\" plugin error: " + (userInfo.error_description ?? userInfo.error)
-        resolveUser({ username: '', isLogin: false, isLoginError: true, errorMessage: errorMessage, loginMethod: "oidc" })
+        return { isIgnore: false, isError: true, errorMessage: errorMessage, loginMethod: AUTH_METHOD }
       }
       userService.setToken(userInfo.access_token!)
-      // silent login finished
-      localStorage.removeItem("core.auth.silentLogin")
 
       // only now register help tab for OIDC
       helpRegistration()
 
-      return true
+      return { isIgnore: false, isError: false, loginMethod: AUTH_METHOD }
     }
-    userService.addFetchUserHook('oidc', fetchUser)
+    userService.addFetchUserHook(AUTH_METHOD, fetchUser)
 
     // logout hook which implements
     // https://openid.net/specs/openid-connect-rpinitiated-1_0.html
@@ -592,7 +601,7 @@ class OidcService implements IOidcService {
       }
       return false
     }
-    userService.addLogoutHook('oidc', logout)
+    userService.addLogoutHook(AUTH_METHOD, logout)
   }
 
   private async updateToken(success: (userInfo: UserInfo) => void, failure?: () => void) {
@@ -660,7 +669,7 @@ class OidcService implements IOidcService {
    */
   private async setupFetch() {
     let userInfo = await this.userInfo
-    if (!userInfo) {
+    if (!userInfo || userInfo.error || userInfo.error_description) {
       return
     }
 
