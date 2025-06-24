@@ -280,28 +280,30 @@ export function FilteredTable<T>({
         ))}
         {extraToolbarLeft}
         <ToolbarGroup>
-          <Dropdown
-            data-testid='attribute-select'
-            onSelect={() => {
-              setIsDropdownOpen(false)
-              addToFilters()
-            }}
-            onOpenChange={setIsDropdownOpen}
-            defaultValue='Name'
-            toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-              <MenuToggle
-                ref={toggleRef}
-                data-testid='attribute-select-toggle'
-                id='toggle-basic'
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              >
-                {attributeMenuItem?.name}
-              </MenuToggle>
-            )}
-            isOpen={isDropdownOpen}
-          >
-            <DropdownList>{filterDropdownItems}</DropdownList>
-          </Dropdown>
+          {searchCategories.length > 1 && (
+            <Dropdown
+              data-testid='attribute-select'
+              onSelect={() => {
+                setIsDropdownOpen(false)
+                addToFilters()
+              }}
+              onOpenChange={setIsDropdownOpen}
+              defaultValue='Name'
+              toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                <MenuToggle
+                  ref={toggleRef}
+                  data-testid='attribute-select-toggle'
+                  id='toggle-basic'
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                >
+                  {attributeMenuItem?.name}
+                </MenuToggle>
+              )}
+              isOpen={isDropdownOpen}
+            >
+              <DropdownList>{filterDropdownItems}</DropdownList>
+            </Dropdown>
+          )}
           <ToolbarFilter
             chips={getFilterChips()}
             deleteChip={(_e, filter) => onDeleteFilter(filter as string)}
