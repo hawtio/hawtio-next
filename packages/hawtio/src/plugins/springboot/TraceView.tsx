@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, CodeBlock, CodeBlockCode, Flex, Label, Modal, PageSection, Icon } from '@patternfly/react-core'
+import { Button, CodeBlock, CodeBlockCode, Flex, Label, Modal, Icon } from '@patternfly/react-core'
 import { CheckCircleIcon, ExclamationCircleIcon } from '@patternfly/react-icons'
 import { Trace } from './types'
 import { springbootService } from './springboot-service'
@@ -69,7 +69,7 @@ export const TraceView: React.FunctionComponent = () => {
   }, [])
 
   return (
-    <PageSection>
+    <React.Fragment>
       <TraceDetails isOpen={isTraceDetailsOpen} setIsOpen={setIsTraceDetailsOpen} traceInfo={traceDetails} />
       <FilteredTable
         rows={traces}
@@ -139,6 +139,6 @@ export const TraceView: React.FunctionComponent = () => {
           { key: 'timeTaken', name: 'Time Taken' },
         ]}
       />
-    </PageSection>
+    </React.Fragment>
   )
 }
