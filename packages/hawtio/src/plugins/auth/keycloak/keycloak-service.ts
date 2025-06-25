@@ -2,17 +2,33 @@ import { userService } from '@hawtiosrc/auth'
 import { ResolveUser } from '@hawtiosrc/auth/user-service'
 import { fetchPath } from '@hawtiosrc/util/fetch'
 import { basicAuthHeaderValue, getCookie } from '@hawtiosrc/util/https'
-import Keycloak, { KeycloakConfig, KeycloakInitOptions, KeycloakPkceMethod, KeycloakProfile } from 'keycloak-js'
-import { UserProfile } from '../types'
-import { log, PATH_KEYCLOAK_CLIENT_CONFIG, PATH_KEYCLOAK_ENABLED, PATH_KEYCLOAK_VALIDATE } from './globals'
-import { configManager, TaskState } from '@hawtiosrc/core'
+import Keycloak, {
+  type KeycloakConfig,
+  type KeycloakInitOptions,
+  KeycloakLoginOptions,
+  type KeycloakPkceMethod,
+  type KeycloakProfile
+} from 'keycloak-js'
+import { PATH_KEYCLOAK_CLIENT_CONFIG, PATH_KEYCLOAK_ENABLED, PATH_KEYCLOAK_VALIDATE } from './globals'
+import { AuthenticationResult, configManager, Logger, TaskState } from '@hawtiosrc/core'
+
+const pluginName = 'hawtio-keycloak'
+const AUTH_METHOD = 'keycloak'
+
+const log = Logger.get(pluginName)
+
+export type UserProfile = {
+  token?: string
+}
 
 export type KeycloakUserProfile = UserProfile & KeycloakProfile
 
 export type HawtioKeycloakConfig = KeycloakConfig & {
   /**
    * Hawtio custom option to instruct whether to use JAAS authentication or not.
-   * Default: true
+   * When `true`, JWT token is sent as password with `Authorization: Basic base64(user:<token>)`
+   * When `false`, the token is sent with `Authorization: Bearer <token>`
+   * Default: `true`
    */
   jaas?: boolean
 
@@ -32,30 +48,55 @@ export interface IKeycloakService {
   validateSubjectMatches(user: string): Promise<boolean>
 }
 
-const AUTH_METHOD = 'keycloak'
-
 class KeycloakService implements IKeycloakService {
-  private readonly enabled: Promise<boolean>
+  // promises created during construction
+  // configuration from Hawtio backend - should include provider URL and realm. defined in keycloak.js
   private readonly config: Promise<HawtioKeycloakConfig | null>
+  // Keycloak is enabled when /keycloak/client-config endpoint returns `true`
+  private readonly enabled: Promise<boolean>
+  // Keycloak instance - from keycloak.js which performs all Keycloak interaction
   private readonly keycloak: Promise<Keycloak | null>
+
+  // promise related to logged-in user. Contains JWT access_token from Keycloak and information about
+  // user from id_token.
   private readonly userProfile: Promise<KeycloakUserProfile | null>
 
+  // when user is logged in, the credentials are represented by the token (usually JWT), which has to
+  // be sent with every HTTP request using built-in fetch, which we wrap
+  private readonly originalFetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
+
   constructor() {
-    log.debug('Initialising Keycloak')
+    // is keycloak enabled at server side? (/keycloak/enabled endpoint)
     this.enabled = this.loadKeycloakEnabled()
+    // Keycloak configuration to be passed to Keycloak instance (/keycloak/client-config)
+    // with some additional information used in this service
     this.config = this.loadKeycloakConfig()
+    // create Keycloak instance we'll be using for Authorization Flow and getting user profile
+    // but this will not start the flow yet
     this.keycloak = this.createKeycloak()
+
+    // the Keycloak instance we've created can be used to perform silent login, but we never start
+    // implicit login - it should be started only at user request
     this.userProfile = this.loadUserProfile()
+
+    this.originalFetch = fetch
   }
 
-  private loadKeycloakEnabled(): Promise<boolean> {
+  /**
+   * Simply checks if Keycloak plugin should be enabled in _native_ mode (using `keycloak.js` library)
+   * using `/keycloak/enabled` endpoint
+   * @private
+   */
+  private async loadKeycloakEnabled(): Promise<boolean> {
     configManager.initItem("Keycloak Configuration", TaskState.started, "config")
     return fetch(PATH_KEYCLOAK_ENABLED)
         .then(response => response.ok && response.status == 200 ? response.text() : null)
         .then(data => {
           // Enable Keycloak only when explicitly enabled
           const enabled = data ? data.trim() === 'true' : false
-          configManager.initItem("Keycloak Configuration", enabled ? TaskState.finished : TaskState.skipped, "config")
+          if (!enabled) {
+            configManager.initItem("Keycloak Configuration", TaskState.skipped, "config")
+          }
           log.debug('Keycloak enabled:', enabled)
           return enabled
         })
@@ -65,29 +106,76 @@ class KeycloakService implements IKeycloakService {
         })
   }
 
+  /**
+   * Load Keycloak Client configuration required by `keycloak.js`
+   * @private
+   */
   private async loadKeycloakConfig(): Promise<HawtioKeycloakConfig | null> {
     const enabled = await this.enabled
     if (!enabled) {
       return null
     }
-    return fetchPath<HawtioKeycloakConfig | null>(PATH_KEYCLOAK_CLIENT_CONFIG, {
-      success: (data: string) => {
-        log.debug('Loaded', PATH_KEYCLOAK_CLIENT_CONFIG, ':', data)
-        return JSON.parse(data)
-      },
-      error: () => null,
-    })
+    return fetch(PATH_KEYCLOAK_CLIENT_CONFIG)
+        .then(response => response.ok && response.status == 200 ? response.json() : null)
+        .then(json => {
+          if (json) {
+            log.debug('Loaded', PATH_KEYCLOAK_CLIENT_CONFIG, ':', json)
+            return json as HawtioKeycloakConfig
+          } else {
+            // no client config and there's no (by design) chance to get the config later
+            configManager.initItem("Keycloak Configuration", TaskState.skipped, "config")
+          }
+          return null
+        })
+        .catch(() => {
+          configManager.initItem("Keycloak Configuration", TaskState.skipped, "config")
+          return null
+        })
   }
 
+  /**
+   * Create Keycloak object to communicate with Identity Provider
+   * @private
+   */
   private async createKeycloak(): Promise<Keycloak | null> {
     const enabled = await this.enabled
     const config = await this.config
+
     if (!enabled || !config) {
       log.debug('Keycloak disabled')
       return null
     }
 
+    // add a method, so user can explicitly initiate Keycloak login
+    configManager.configureAuthenticationMethod({
+      method: AUTH_METHOD,
+      login: this.keycloakLogin
+    }).then(() => {
+      // only now finish the initialization task
+      configManager.initItem("Keycloak Configuration", TaskState.finished, "config")
+    })
+
+    // we use keycloak.js in the old way, so we don't pass 'oidcProvider', but these 3 properties:
+    // 'url', 'realm', 'clientId'
     return new Keycloak(config)
+  }
+
+  private keycloakLogin = async (silent = false): Promise<AuthenticationResult> => {
+    const keycloak = await this.keycloak
+    if (!keycloak) {
+      return AuthenticationResult.configuration_error
+    }
+
+    const options: KeycloakLoginOptions = {}
+    if (silent) {
+      options.prompt = 'none'
+    }
+
+    // this will cause redirect, so there's nothing to await for
+    // after redirect we'll go through constructor(), init() and loadUserProfile() again
+    await keycloak.login(options)
+
+    return AuthenticationResult.ok
   }
 
   private async loadUserProfile(): Promise<KeycloakUserProfile | null> {
@@ -99,9 +187,10 @@ class KeycloakService implements IKeycloakService {
     const initOptions = await this.getKeycloakInitOptions()
     try {
       const authenticated = await keycloak.init(initOptions)
-      log.debug('Initialised Keycloak: authenticated =', authenticated)
+      log.info('Initialised Keycloak: authenticated =', authenticated)
       if (!authenticated) {
-        keycloak.login({ redirectUri: window.location.href })
+        // do NOT invoke keycloak.login() - we want to give user explicit option
+        // keycloak.login({ redirectUri: window.location.href })
         return null
       }
 
@@ -119,14 +208,26 @@ class KeycloakService implements IKeycloakService {
     return null
   }
 
+  /**
+   * Options for `Keycloak.init()`
+   * @private
+   */
   private async getKeycloakInitOptions(): Promise<KeycloakInitOptions> {
     const config = await this.config
     const pkceMethod = config?.pkceMethod
-    const initOptions: KeycloakInitOptions = {
-      onLoad: 'login-required',
+    return {
+      // safer than 'query'
+      responseMode: 'fragment',
+      // means responseType = 'code'
+      flow: 'standard',
+      // check silent login by default
+      onLoad: 'check-sso',
+      // onLoad: 'login-required',
       pkceMethod,
+      // this may be reset to false by Keycloak in check3pCookiesSupported()
+      // reason may be strict cookie policy. But we'll use this option for silent SSO login
+      checkLoginIframe: true
     }
-    return initOptions
   }
 
   isKeycloakEnabled(): Promise<boolean> {
