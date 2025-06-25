@@ -215,17 +215,19 @@ class JolokiaService implements IJolokiaService {
     // Initialising Jolokia instance
     this.jolokia = this.createJolokia(jolokia => {
       // Checking versions
-      jolokia.version(
-        onVersionSuccessAndError(
-          (version: JolokiaResponseValue) => {
-            log.info('Jolokia version:', {
-              client: jolokia.CLIENT_VERSION,
-              agent: (version as VersionResponseValue).agent,
-            })
-          },
-          error => log.error('Failed to fetch Jolokia version:', error),
-        ),
-      ).then(() => true)
+      jolokia
+        .version(
+          onVersionSuccessAndError(
+            (version: JolokiaResponseValue) => {
+              log.info('Jolokia version:', {
+                client: jolokia.CLIENT_VERSION,
+                agent: (version as VersionResponseValue).agent,
+              })
+            },
+            error => log.error('Failed to fetch Jolokia version:', error),
+          ),
+        )
+        .then(() => true)
       // Start Jolokia
       const updateRate = this.loadUpdateRate()
       jolokia.start(updateRate)
@@ -728,29 +730,31 @@ class JolokiaService implements IJolokiaService {
         .reduce((merged, response) => this.mergeDomains(response, merged), {})
       listOptions.success?.(domains)
     }
-    jolokia.request(
-      requests,
-      onBulkSuccessAndError(
-        (response: JolokiaSuccessResponse, _index: number) => {
-          // Response can never be string in Hawtio's setup of Jolokia
-          bulkResponse.push(response as JolokiaSuccessResponse)
-          // Resolve only when all the responses from the bulk request are collected
-          if (bulkResponse.length === requests.length) {
-            mergeResponses()
-          }
-        },
-        error => {
-          log.error('Error during bulk list:', error)
-          bulkResponse.push(error)
-          // Resolve only when all the responses from the bulk request are collected
-          if (bulkResponse.length === requests.length) {
-            mergeResponses()
-          }
-        },
-        // Reuse the list options other than success and error functions
-        listOptions as SimpleRequestOptions,
-      ),
-    ).then(() => true)
+    jolokia
+      .request(
+        requests,
+        onBulkSuccessAndError(
+          (response: JolokiaSuccessResponse, _index: number) => {
+            // Response can never be string in Hawtio's setup of Jolokia
+            bulkResponse.push(response as JolokiaSuccessResponse)
+            // Resolve only when all the responses from the bulk request are collected
+            if (bulkResponse.length === requests.length) {
+              mergeResponses()
+            }
+          },
+          error => {
+            log.error('Error during bulk list:', error)
+            bulkResponse.push(error)
+            // Resolve only when all the responses from the bulk request are collected
+            if (bulkResponse.length === requests.length) {
+              mergeResponses()
+            }
+          },
+          // Reuse the list options other than success and error functions
+          listOptions as SimpleRequestOptions,
+        ),
+      )
+      .then(() => true)
   }
 
   private mergeDomains(source: OptimisedJmxDomains, target: OptimisedJmxDomains): OptimisedJmxDomains {

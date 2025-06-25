@@ -1,1 +1,1 @@
-export { RemotePlugin } from "./Remote"
+export { RemotePlugin } from './Remote'

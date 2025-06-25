@@ -1,10 +1,10 @@
 import { type HawtioPlugin } from '@hawtio/react'
 
 export const registerRemote: HawtioPlugin = () => {
-  import("@hawtio/react").then(m => {
+  import('@hawtio/react').then(m => {
     const log = m.Logger.get('remote')
     log.info('Loaded')
-    import("./Remote").then(r => {
+    import('./Remote').then(r => {
       m.hawtio.addPlugin({
         id: 'remote2',
         title: 'Remote plugin 2 (static)',

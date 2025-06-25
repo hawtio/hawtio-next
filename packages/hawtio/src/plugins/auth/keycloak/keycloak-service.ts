@@ -7,7 +7,7 @@ import Keycloak, {
   type KeycloakInitOptions,
   KeycloakLoginOptions,
   type KeycloakPkceMethod,
-  type KeycloakProfile
+  type KeycloakProfile,
 } from 'keycloak-js'
 import { PATH_KEYCLOAK_CLIENT_CONFIG, PATH_KEYCLOAK_ENABLED, PATH_KEYCLOAK_VALIDATE } from './globals'
 import { AuthenticationResult, configManager, Logger, TaskState } from '@hawtiosrc/core'
@@ -88,22 +88,22 @@ class KeycloakService implements IKeycloakService {
    * @private
    */
   private async loadKeycloakEnabled(): Promise<boolean> {
-    configManager.initItem("Keycloak Configuration", TaskState.started, "config")
+    configManager.initItem('Keycloak Configuration', TaskState.started, 'config')
     return fetch(PATH_KEYCLOAK_ENABLED)
-        .then(response => response.ok && response.status == 200 ? response.text() : null)
-        .then(data => {
-          // Enable Keycloak only when explicitly enabled
-          const enabled = data ? data.trim() === 'true' : false
-          if (!enabled) {
-            configManager.initItem("Keycloak Configuration", TaskState.skipped, "config")
-          }
-          log.debug('Keycloak enabled:', enabled)
-          return enabled
-        })
-        .catch(() => {
-          configManager.initItem("Keycloak Configuration", TaskState.skipped, "config")
-          return false
-        })
+      .then(response => (response.ok && response.status == 200 ? response.text() : null))
+      .then(data => {
+        // Enable Keycloak only when explicitly enabled
+        const enabled = data ? data.trim() === 'true' : false
+        if (!enabled) {
+          configManager.initItem('Keycloak Configuration', TaskState.skipped, 'config')
+        }
+        log.debug('Keycloak enabled:', enabled)
+        return enabled
+      })
+      .catch(() => {
+        configManager.initItem('Keycloak Configuration', TaskState.skipped, 'config')
+        return false
+      })
   }
 
   /**
@@ -116,21 +116,21 @@ class KeycloakService implements IKeycloakService {
       return null
     }
     return fetch(PATH_KEYCLOAK_CLIENT_CONFIG)
-        .then(response => response.ok && response.status == 200 ? response.json() : null)
-        .then(json => {
-          if (json) {
-            log.debug('Loaded', PATH_KEYCLOAK_CLIENT_CONFIG, ':', json)
-            return json as HawtioKeycloakConfig
-          } else {
-            // no client config and there's no (by design) chance to get the config later
-            configManager.initItem("Keycloak Configuration", TaskState.skipped, "config")
-          }
-          return null
-        })
-        .catch(() => {
-          configManager.initItem("Keycloak Configuration", TaskState.skipped, "config")
-          return null
-        })
+      .then(response => (response.ok && response.status == 200 ? response.json() : null))
+      .then(json => {
+        if (json) {
+          log.debug('Loaded', PATH_KEYCLOAK_CLIENT_CONFIG, ':', json)
+          return json as HawtioKeycloakConfig
+        } else {
+          // no client config and there's no (by design) chance to get the config later
+          configManager.initItem('Keycloak Configuration', TaskState.skipped, 'config')
+        }
+        return null
+      })
+      .catch(() => {
+        configManager.initItem('Keycloak Configuration', TaskState.skipped, 'config')
+        return null
+      })
   }
 
   /**
@@ -147,13 +147,15 @@ class KeycloakService implements IKeycloakService {
     }
 
     // add a method, so user can explicitly initiate Keycloak login
-    configManager.configureAuthenticationMethod({
-      method: AUTH_METHOD,
-      login: this.keycloakLogin
-    }).then(() => {
-      // only now finish the initialization task
-      configManager.initItem("Keycloak Configuration", TaskState.finished, "config")
-    })
+    configManager
+      .configureAuthenticationMethod({
+        method: AUTH_METHOD,
+        login: this.keycloakLogin,
+      })
+      .then(() => {
+        // only now finish the initialization task
+        configManager.initItem('Keycloak Configuration', TaskState.finished, 'config')
+      })
 
     // we use keycloak.js in the old way, so we don't pass 'oidcProvider', but these 3 properties:
     // 'url', 'realm', 'clientId'
@@ -230,7 +232,7 @@ class KeycloakService implements IKeycloakService {
       pkceMethod,
       // this may be reset to false by Keycloak in check3pCookiesSupported()
       // reason may be strict cookie policy. But we'll use this option for silent SSO login
-      checkLoginIframe: true
+      checkLoginIframe: true,
     }
   }
 

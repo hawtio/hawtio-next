@@ -8,7 +8,7 @@ import { hawtio, HawtioPlugin } from '@hawtio/react'
 // webpack + swc-loader
 
 export const registerRemoteExamplesStatically: HawtioPlugin = () => {
-  import("static-remotes/remote1").then(m => {
+  import('static-remotes/remote1').then(m => {
     // this module exports the component, so we register it manually
     hawtio.addPlugin({
       id: 'exampleStaticRemote1',
@@ -18,7 +18,7 @@ export const registerRemoteExamplesStatically: HawtioPlugin = () => {
       isActive: async () => true,
     })
   })
-  import("static-remotes/remote2").then(m => {
+  import('static-remotes/remote2').then(m => {
     // this module exports a function which registers own component using Hawtio API
     m.registerRemote()
   })

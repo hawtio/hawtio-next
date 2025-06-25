@@ -6,10 +6,13 @@ export const RemotePlugin: React.FunctionComponent = () => (
     <TextContent>
       <Text component='h1'>Remote Plugin 1</Text>
       <Text component='p'>
-        This is a remote plugin that is imported like normal JavaScript module, but its name/path <code>static-remotes/remote1</code>
-        is actually handled by webpack at build time with this config of <code>ModuleFederationPlugin</code>:</Text>
+        This is a remote plugin that is imported like normal JavaScript module, but its name/path{' '}
+        <code>static-remotes/remote1</code>
+        is actually handled by webpack at build time with this config of <code>ModuleFederationPlugin</code>:
+      </Text>
       <CodeBlock>
-        <CodeBlockCode>{`name: 'app',
+        <CodeBlockCode>
+          {`name: 'app',
 filename: 'remoteEntry.js',
 ...
 exposes: {
@@ -26,7 +29,8 @@ remotes: {
         This is handled in JavaScript by normal <code>import()</code> statements:
       </Text>
       <CodeBlock>
-        <CodeBlockCode>{`import("static-remotes/remote1").then(m => {
+        <CodeBlockCode>
+          {`import("static-remotes/remote1").then(m => {
   // this module exports the component, so we register it manually
   hawtio.addPlugin({
     id: 'exampleStaticRemote1',

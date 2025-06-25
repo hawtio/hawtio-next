@@ -198,13 +198,13 @@ class HawtioCore {
    */
   addPlugin(plugin: Plugin): HawtioCore {
     log.info('Add plugin:', plugin.id)
-    configManager.initItem('Registering plugin: ' + plugin.id, TaskState.started, "plugins")
+    configManager.initItem('Registering plugin: ' + plugin.id, TaskState.started, 'plugins')
     if (this.plugins[plugin.id]) {
       throw new Error(`Plugin "${plugin.id}" already exists`)
     }
     this.plugins[plugin.id] = plugin
     setTimeout(() => {
-      configManager.initItem('Registering plugin: ' + plugin.id, TaskState.finished, "plugins")
+      configManager.initItem('Registering plugin: ' + plugin.id, TaskState.finished, 'plugins')
     }, 0)
     return this
   }
@@ -247,11 +247,11 @@ class HawtioCore {
     log.info('Branding applied:', brandingApplied)
 
     log.info('Bootstrapped Hawtio')
-    configManager.initItem("Finish", TaskState.finished, "finish")
+    configManager.initItem('Finish', TaskState.finished, 'finish')
 
     // return a promise that waits for configManager to finish all its initialization items
     return configManager.ready().then(() => {
-      log.debug("configManager.ready() resolved")
+      log.debug('configManager.ready() resolved')
       // return new Promise((resolve, _reject) => {
       //   setTimeout(() => {
       //     resolve(true)
@@ -297,17 +297,17 @@ class HawtioCore {
   private async loadExternalPlugins(url: string) {
     log.debug('Trying url:', url)
     try {
-      configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.started, "plugins")
+      configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.started, 'plugins')
       const res = await fetch(url)
       if (!res.ok) {
-        configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.error, "plugins")
+        configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.error, 'plugins')
         log.error('Failed to fetch url:', url, '-', res.status, res.statusText)
         return
       }
 
       const remotes = (await res.json()) as HawtioRemote[]
       log.info('Loaded remotes from url:', url, '=', remotes)
-      configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.finished, "plugins")
+      configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.finished, 'plugins')
 
       // Load plugins
       await Promise.all(
@@ -329,7 +329,7 @@ class HawtioCore {
           }
           log.info('Loading remote', remote)
           try {
-            configManager.initItem('Importing plugin from: ' + url, TaskState.started, "plugins")
+            configManager.initItem('Importing plugin from: ' + url, TaskState.started, 'plugins')
             // call @module-federation/utilities method which helps us to deal with
             // webpack's Module Federation (like container.init(__webpack_share_scopes__['default']) call)
             const plugin = await importRemote<{ [entry: string]: HawtioPlugin }>(remote)
@@ -338,17 +338,17 @@ class HawtioCore {
               throw new Error(`Plugin entry not found: ${remote.pluginEntry || DEFAULT_PLUGIN_ENTRY}`)
             }
             entryFn()
-            configManager.initItem('Importing plugin from: ' + url, TaskState.finished, "plugins")
+            configManager.initItem('Importing plugin from: ' + url, TaskState.finished, 'plugins')
             // configManager.initItem('Importing plugin from: ' + remote.url, true, "plugins")
             log.info('Loaded remote', remote)
           } catch (err) {
-            configManager.initItem('Importing plugin from: ' + url, TaskState.error, "plugins")
+            configManager.initItem('Importing plugin from: ' + url, TaskState.error, 'plugins')
             log.error('Error loading remote:', remote, '-', err)
           }
         }),
       )
     } catch (err) {
-      configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.error, "plugins")
+      configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.error, 'plugins')
       log.error('Error fetching url:', url, '-', err)
     }
   }
