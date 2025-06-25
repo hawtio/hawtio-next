@@ -1,6 +1,6 @@
 import { CamelContext } from '@hawtiosrc/plugins/camel/context'
 import { HawtioEmptyCard, HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
-import { Panel, PanelHeader, PanelMain, PanelMainBody, Title } from '@patternfly/react-core'
+import { Card, CardBody, CardTitle, Title } from '@patternfly/react-core'
 import { Table, Tbody, Th, Td, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useState } from 'react'
 import * as exs from './exchanges-service'
@@ -55,36 +55,34 @@ export const InflightExchanges: React.FunctionComponent = () => {
   }
 
   return (
-    <Panel>
-      <PanelHeader>
+    <Card>
+      <CardTitle>
         <Title headingLevel='h3'> Inflight Exchanges</Title>
-      </PanelHeader>
-      <PanelMain>
-        <PanelMainBody>
-          <Table data-testid='exchange-table' aria-label='Inflight Exchanges' variant='compact'>
-            <Thead>
-              <Tr>
-                <Th modifier='wrap'>Exchange ID</Th>
-                <Th modifier='wrap'>Route ID</Th>
-                <Th modifier='wrap'>Node ID</Th>
-                <Th modifier='wrap'>Duration (ms)</Th>
-                <Th modifier='wrap'>Elapsed (ms)</Th>
+      </CardTitle>
+      <CardBody>
+        <Table data-testid='exchange-table' aria-label='Inflight Exchanges' variant='compact'>
+          <Thead>
+            <Tr>
+              <Th modifier='wrap'>Exchange ID</Th>
+              <Th modifier='wrap'>Route ID</Th>
+              <Th modifier='wrap'>Node ID</Th>
+              <Th modifier='wrap'>Duration (ms)</Th>
+              <Th modifier='wrap'>Elapsed (ms)</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {exchanges.map(ex => (
+              <Tr key={ex.exchangeId}>
+                <Td>{ex.exchangeId}</Td>
+                <Td>{ex.routeId}</Td>
+                <Td>{ex.nodeId}</Td>
+                <Td>{ex.duration}</Td>
+                <Td>{ex.elapsed}</Td>
               </Tr>
-            </Thead>
-            <Tbody>
-              {exchanges.map(ex => (
-                <Tr key={ex.exchangeId}>
-                  <Td>{ex.exchangeId}</Td>
-                  <Td>{ex.routeId}</Td>
-                  <Td>{ex.nodeId}</Td>
-                  <Td>{ex.duration}</Td>
-                  <Td>{ex.elapsed}</Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </PanelMainBody>
-      </PanelMain>
-    </Panel>
+            ))}
+          </Tbody>
+        </Table>
+      </CardBody>
+    </Card>
   )
 }

@@ -1,15 +1,6 @@
 import { CamelContext } from '@hawtiosrc/plugins/camel/context'
 import { HawtioEmptyCard, HawtioLoadingCard, MBeanNode } from '@hawtiosrc/plugins/shared'
-import {
-  Button,
-  Modal,
-  ModalVariant,
-  Panel,
-  PanelHeader,
-  PanelMain,
-  PanelMainBody,
-  Title,
-} from '@patternfly/react-core'
+import { Button, Card, CardBody, CardTitle, Modal, ModalVariant, Title } from '@patternfly/react-core'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import * as exs from './exchanges-service'
@@ -100,42 +91,40 @@ export const BlockedExchanges: React.FunctionComponent = () => {
   )
 
   return (
-    <Panel>
-      <PanelHeader>
+    <Card>
+      <CardTitle>
         <Title headingLevel='h3'>Blocked Exchanges</Title>
-      </PanelHeader>
-      <PanelMain>
-        <PanelMainBody>
-          <Table variant={'compact'} data-testid='exchange-table' aria-label='Blocked Exchanges'>
-            <Thead>
-              <Tr>
-                <Th modifier='wrap'>Exchange ID</Th>
-                <Th modifier='wrap'>Route ID</Th>
-                <Th modifier='wrap'>Node ID</Th>
-                <Th modifier='wrap'>Duration (ms)</Th>
-                <Th modifier='wrap'>Elapsed (ms)</Th>
-                <Th dataLabel='Action' wrap=''></Th>
+      </CardTitle>
+      <CardBody>
+        <Table variant={'compact'} data-testid='exchange-table' aria-label='Blocked Exchanges'>
+          <Thead>
+            <Tr>
+              <Th modifier='wrap'>Exchange ID</Th>
+              <Th modifier='wrap'>Route ID</Th>
+              <Th modifier='wrap'>Node ID</Th>
+              <Th modifier='wrap'>Duration (ms)</Th>
+              <Th modifier='wrap'>Elapsed (ms)</Th>
+              <Th dataLabel='Action' wrap=''></Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {exchanges.map((ex, index) => (
+              <Tr key={ex.exchangeId + '-' + index}>
+                <Td>{ex.exchangeId}</Td>g <Td>{ex.routeId}</Td>
+                <Td>{ex.nodeId}</Td>
+                <Td>{ex.duration}</Td>
+                <Td>{ex.elapsed}</Td>
+                <Td>
+                  <Button variant='link' onClick={() => onUnblockClicked(ex)}>
+                    Unblock
+                  </Button>
+                </Td>
               </Tr>
-            </Thead>
-            <Tbody>
-              {exchanges.map((ex, index) => (
-                <Tr key={ex.exchangeId + '-' + index}>
-                  <Td>{ex.exchangeId}</Td>g <Td>{ex.routeId}</Td>
-                  <Td>{ex.nodeId}</Td>
-                  <Td>{ex.duration}</Td>
-                  <Td>{ex.elapsed}</Td>
-                  <Td>
-                    <Button variant='link' onClick={() => onUnblockClicked(ex)}>
-                      Unblock
-                    </Button>
-                  </Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-          <ConfirmUnblockModal />
-        </PanelMainBody>
-      </PanelMain>
-    </Panel>
+            ))}
+          </Tbody>
+        </Table>
+        <ConfirmUnblockModal />
+      </CardBody>
+    </Card>
   )
 }

@@ -113,13 +113,14 @@ export const MessageDrawer: React.FunctionComponent<MessageDrawerProps> = (props
   }
 
   const panelContent = (
-    <DrawerPanelContent minSize={'50%'}>
-      <DrawerHead>
+    <DrawerPanelContent id='message-drawer-panel-content' minSize={'50%'}>
+      <DrawerHead id='message-drawer-panel-content-head'>
         <div tabIndex={props.expanded ? 0 : -1} ref={panelRef}>
           <Text>
             <em>UID: {props.messages && props.messages.length > 0 ? props.messages[0]?.uid : ''}</em>
           </Text>
           <Nav
+            id='message-drawer-panel-content-head-nav'
             onSelect={(_event, result: { itemId: number | string }) => onSelectTab(result)}
             variant='horizontal'
             theme='light'
@@ -129,13 +130,13 @@ export const MessageDrawer: React.FunctionComponent<MessageDrawerProps> = (props
           </Nav>
           <Divider />
         </div>
-        <DrawerActions>
+        <DrawerActions id='message-drawer-panel-content-head-actions'>
           <DrawerCloseButton onClick={onPanelCloseClick} />
         </DrawerActions>
       </DrawerHead>
-      <Panel>
-        <PanelMain>
-          <PanelMainBody>
+      <Panel id='message-drawer-panel-content-panel'>
+        <PanelMain id='message-drawer-panel-content-panel-main'>
+          <PanelMainBody id='message-drawer-panel-content-panel-main-body'>
             <div style={{ height: '100%', overflow: 'auto' }}>
               {drawerPanels().map(panel => activePanelTab === panel.id && panel.panelFn())}
             </div>
@@ -146,9 +147,9 @@ export const MessageDrawer: React.FunctionComponent<MessageDrawerProps> = (props
   )
 
   return (
-    <Drawer isExpanded={props.expanded} onExpand={onPanelExpand} position='right'>
-      <DrawerContent panelContent={panelContent}>
-        <DrawerContentBody>{props.children}</DrawerContentBody>
+    <Drawer id='message-drawer' isExpanded={props.expanded} onExpand={onPanelExpand} position='right'>
+      <DrawerContent id='message-drawer-content' panelContent={panelContent}>
+        <DrawerContentBody id='message-drawer-content-body'>{props.children}</DrawerContentBody>
       </DrawerContent>
     </Drawer>
   )
