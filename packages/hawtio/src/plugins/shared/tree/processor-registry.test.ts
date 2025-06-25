@@ -13,7 +13,7 @@ describe('treeProcessorRegistry', () => {
     const tree = MBeanTree.createEmpty('test')
 
     // Processing without processors should not throw an error
-    expect(() => treeProcessorRegistry.process(tree)).not.toThrowError()
+    expect(() => treeProcessorRegistry.process(tree)).not.toThrow()
 
     // Add a processor
     const testProcessor1 = jest.fn()
