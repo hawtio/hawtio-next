@@ -165,6 +165,10 @@ class KeycloakService implements IKeycloakService {
     if (!keycloak) {
       return AuthenticationResult.configuration_error
     }
+    if (!window.isSecureContext) {
+      log.error("Can't perform Keycloak authentication in non-secure context")
+      return AuthenticationResult.security_context_error
+    }
 
     const options: KeycloakLoginOptions = {}
     if (silent) {
