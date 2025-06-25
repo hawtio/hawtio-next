@@ -59,7 +59,7 @@ export const HawtioLogin: React.FunctionComponent = () => {
    */
   const configureLoginFragment = (method: AuthenticationMethod, multi: boolean, idx: number): ReactNode => {
     let oidcComponent = null
-    if (method.method === 'oidc') {
+    if (method.method === 'oidc' || method.method === 'keycloak') {
       // same for multi and single selection
       oidcComponent = <Button component="a" variant="secondary" size="sm" isBlock className="idp" onClick={async () => {
         const loginMethod = configManager.getAuthenticationMethod(method.method)?.login
@@ -91,7 +91,7 @@ export const HawtioLogin: React.FunctionComponent = () => {
     }
 
     if (multi) {
-      if (method.method === "oidc") {
+      if (method.method === 'oidc' || method.method === 'keycloak') {
         // here we don't have to change UI to another button which starts Authorization Flow.
         // we can do it already
         return oidcComponent

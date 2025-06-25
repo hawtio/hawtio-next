@@ -177,6 +177,11 @@ export type AuthenticationKind =
   "oidc" |
 
   /**
+   * _Native_ Keycloak authentication using `keycloak.js` library
+   */
+  "keycloak" |
+
+  /**
    * Probably less standardized than `.well-known/openid-configuration`, but similar. We need to know the endpoints
    * to use for OAuth2 auth.
    */
@@ -198,7 +203,7 @@ export type AuthenticationMethod = {
   /** One of the supported methods. If a plugin augments given method, we should have one such method only */
   method: AuthenticationKind,
   /** Name to be presented at login page for login method selection */
-  name: string,
+  name?: string,
   /** Plugin specific method for performing login. For now it's for OAuth2/OIDC/Keycloak. This field is set up by auth plugin */
   login?: (() => Promise<AuthenticationResult>)
 }
