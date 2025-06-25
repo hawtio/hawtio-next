@@ -19,20 +19,20 @@ describe('EventService', () => {
     const mockListener = jest.fn()
     eventService.onLogin(mockListener)
     eventService.login()
-    expect(mockListener).toBeCalled()
+    expect(mockListener).toHaveBeenCalled()
   })
 
   test('logout', () => {
     const mockListener = jest.fn()
     eventService.onLogout(mockListener)
     eventService.logout()
-    expect(mockListener).toBeCalled()
+    expect(mockListener).toHaveBeenCalled()
   })
 
   test('plugins updated', () => {
     const mockListener = jest.fn()
     eventService.onPluginsUpdated(mockListener)
     eventService.pluginsUpdated()
-    expect(mockListener).toBeCalled()
+    expect(mockListener).toHaveBeenCalled()
   })
 })

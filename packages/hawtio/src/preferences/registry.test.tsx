@@ -14,7 +14,7 @@ describe('preferencesRegistry', () => {
     expect(preferencesRegistry.getPreferences()[0]?.component).not.toBeNull()
 
     // duplicate preferences not allowed
-    expect(() => preferencesRegistry.add('test', 'Test', () => <React.Fragment />)).toThrowError(
+    expect(() => preferencesRegistry.add('test', 'Test', () => <React.Fragment />)).toThrow(
       /Preferences 'test' already registered/,
     )
   })
