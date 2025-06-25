@@ -47,7 +47,6 @@ export const HawtioLogin: React.FunctionComponent = () => {
   }, [])
 
   if (isLogin || !userLoaded || !hawtconfigLoaded || !pluginsLoaded || !authenticationMethodsLoaded) {
-    log.info('Loading (<HawtioLogin>):', 'user =', userLoaded, ', hawtconfig =', hawtconfigLoaded, ', pluginsLoaded =', pluginsLoaded)
     return <HawtioLoadingPage />
   }
 
