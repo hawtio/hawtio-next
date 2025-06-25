@@ -259,7 +259,7 @@ module.exports = (_, args) => {
 
         /* Keycloak */
 
-        const keycloakEnabled = false
+        const keycloakEnabled = true
         const keycloakClientConfig = {
           realm: 'hawtio-demo',
           clientId: 'hawtio-client',
@@ -324,8 +324,15 @@ module.exports = (_, args) => {
           {
             // Actual configuration of OIDC provider will be added from
             // /auth/config/oidc endpoint
+            // TODO: support more OIDC methods - like Keycloak, Azure and Spring Authorization Server at the same time
             "method": "oidc",
             "name": "OpenID Connect (Keycloak)"
+          },
+          {
+            // Actual configuration of Keycloak provider will be added from
+            // /keycloak/client-config endpoint
+            "method": "keycloak",
+            "name": "Keycloak (keycloak.js)"
           },
           // {
           //   "method": "form",

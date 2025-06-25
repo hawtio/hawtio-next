@@ -73,6 +73,7 @@ export interface IOidcService {
   registerUserHooks(helpRegistration: () => void): void
 }
 
+/** Full information about authorization attempt */
 type UserInfo = {
   user?: string
   access_token?: string
@@ -84,6 +85,7 @@ type UserInfo = {
   error_uri?: string
 }
 
+/** Information stored in localStorage during Authorization Flow */
 type AuthData = {
   // state
   st: string
@@ -148,8 +150,8 @@ class OidcService implements IOidcService {
   }
 
   /**
-   * This should happen during initialization, but when OIDC is enabled and we fetch OIDC metadata initially
-   * we'll be trying to do it during login
+   * This should happen during initialization, but when OIDC is enabled and we can't fetch OIDC metadata initially,
+   * we'll be trying to do it during login until we get the metadata.
    * @param md
    * @param initial
    * @private
@@ -166,6 +168,7 @@ class OidcService implements IOidcService {
       c!.login = this.oidcLogin
       // add the information to augment template configuration in configManager
       // we don't need "openid-configuration" here
+      // and we have to finish the "OIDC Configuration" init item
       configManager.configureAuthenticationMethod(c!).then(() => {
         configManager.initItem("OIDC Configuration", TaskState.finished, "config")
       })
