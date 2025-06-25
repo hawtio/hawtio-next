@@ -37,7 +37,7 @@ import { Link, useLocation } from 'react-router-dom'
 import './HawtioHeader.css'
 import { PageContext } from './context'
 
-export const HawtioHeader: React.FunctionComponent<{loginMethod: string}> = ({ loginMethod }) => {
+export const HawtioHeader: React.FunctionComponent<{ loginMethod: string }> = ({ loginMethod }) => {
   const { hawtconfig, hawtconfigLoaded } = useHawtconfig()
   const [navOpen, setNavOpen] = useState(preferencesService.isShowVerticalNavByDefault())
 

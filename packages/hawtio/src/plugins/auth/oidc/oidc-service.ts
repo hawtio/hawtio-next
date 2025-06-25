@@ -5,7 +5,7 @@ import {
   hawtio,
   Logger,
   OidcAuthenticationMethod,
-  TaskState
+  TaskState,
 } from '@hawtiosrc/core'
 import { jwtDecode } from 'jwt-decode'
 import * as oidc from 'oauth4webapi'
@@ -49,7 +49,7 @@ export type OidcConfig = OidcAuthenticationMethod & {
   redirect_uri: string
 
   /** PKCE method for Authorization grant, according to https://datatracker.ietf.org/doc/html/rfc7636#section-4.3 */
-  code_challenge_method: "S256" | "plain" | null
+  code_challenge_method: 'S256' | 'plain' | null
 
   /**
    * Prompt type according to https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
@@ -66,7 +66,7 @@ export type OidcConfig = OidcAuthenticationMethod & {
    *
    * Type of this field is defined in `oauth4webapi` package
    */
-  "openid-configuration"?: oidc.AuthorizationServer
+  'openid-configuration'?: oidc.AuthorizationServer
 }
 
 export interface IOidcService {
@@ -118,29 +118,28 @@ class OidcService implements IOidcService {
   private readonly originalFetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
 
   constructor() {
-    configManager.initItem("OIDC Configuration", TaskState.started, "config")
+    configManager.initItem('OIDC Configuration', TaskState.started, 'config')
     this.config = fetch('auth/config/oidc')
-        .then(response => response.ok && response.status == 200 ? response.json() : null)
-        .then(json => {
-          return json as OidcConfig
-        })
-        .catch(() => {
-          configManager.initItem("OIDC Configuration", TaskState.skipped, "config")
-          return null
-        })
+      .then(response => (response.ok && response.status == 200 ? response.json() : null))
+      .then(json => {
+        return json as OidcConfig
+      })
+      .catch(() => {
+        configManager.initItem('OIDC Configuration', TaskState.skipped, 'config')
+        return null
+      })
 
     this.enabled = this.isOidcEnabled()
-    this.oidcMetadata = this.enabled
-        .then(enabled => {
-          if (enabled) {
-            return this.fetchOidcMetadata().then((md) => {
-              return this.processOidcMetadata(md, true)
-            })
-          } else {
-            configManager.initItem("OIDC Configuration", TaskState.skipped, "config")
-            return null
-          }
+    this.oidcMetadata = this.enabled.then(enabled => {
+      if (enabled) {
+        return this.fetchOidcMetadata().then(md => {
+          return this.processOidcMetadata(md, true)
         })
+      } else {
+        configManager.initItem('OIDC Configuration', TaskState.skipped, 'config')
+        return null
+      }
+    })
 
     // Initialize the state of OidcService based on what we have (in URI/storage), but
     // without initiating any OIDC Flow
@@ -156,7 +155,10 @@ class OidcService implements IOidcService {
    * @param initial
    * @private
    */
-  private async processOidcMetadata(md: AuthorizationServer | null, initial: boolean = false): Promise<AuthorizationServer | null> {
+  private async processOidcMetadata(
+    md: AuthorizationServer | null,
+    initial: boolean = false,
+  ): Promise<AuthorizationServer | null> {
     const c = await this.config
     // if OIDC is enabled we'll have all the config except maybe "openid-configuration"
     // prepare login function to be used by HawtioLogin UI
@@ -170,7 +172,7 @@ class OidcService implements IOidcService {
       // we don't need "openid-configuration" here
       // and we have to finish the "OIDC Configuration" init item
       configManager.configureAuthenticationMethod(c!).then(() => {
-        configManager.initItem("OIDC Configuration", TaskState.finished, "config")
+        configManager.initItem('OIDC Configuration', TaskState.finished, 'config')
       })
     }
 
@@ -286,15 +288,15 @@ class OidcService implements IOidcService {
 
       // however to let user refresh the browser we may have to perform silent login - but only when
       // there's no error and there's no state in URI
-      const ts = localStorage.getItem("core.auth.oidc")
-      localStorage.removeItem("core.auth.oidc")
+      const ts = localStorage.getItem('core.auth.oidc')
+      localStorage.removeItem('core.auth.oidc')
       if (ts) {
         const exp_at = parseInt(ts)
         const now = Date.now()
         if (!isNaN(exp_at) && now < exp_at * 1000) {
           // we're still before access_token expiration time, so we can do the silent login
           // to not show <HawtioInitialization> twice, we'll set another flag
-          localStorage.setItem("core.auth.silentLogin", "1")
+          localStorage.setItem('core.auth.silentLogin', '1')
           this.oidcLogin(true).then(() => true)
         }
       }
@@ -364,7 +366,7 @@ class OidcService implements IOidcService {
 
     const access_token = tokenResponse['access_token']
     const refresh_token = tokenResponse['refresh_token']
-    const id_token = tokenResponse["id_token"]
+    const id_token = tokenResponse['id_token']
     let at_exp: number = 0
 
     // we have to parse (though we shouldn't according to MS) access_token to get it's validity
@@ -399,7 +401,7 @@ class OidcService implements IOidcService {
     // instead we'll simply add a flag to be checked on refresh and to be cleared on logout
     // we'll use access_token expiration time as the hint - if user refreshes before the expiration
     // we start silent login
-    localStorage.setItem("core.auth.oidc", `${at_exp}`)
+    localStorage.setItem('core.auth.oidc', `${at_exp}`)
 
     this.setupFetch().then(() => true)
 
@@ -429,7 +431,7 @@ class OidcService implements IOidcService {
     let as = await this.oidcMetadata
     if (!as) {
       // we have the config, OIDC is enabled, but somehow we didn't get the metadata - let's try it now
-      this.oidcMetadata = this.fetchOidcMetadata().then((md) => {
+      this.oidcMetadata = this.fetchOidcMetadata().then(md => {
         return this.processOidcMetadata(md, false)
       })
       as = await this.oidcMetadata
@@ -519,9 +521,10 @@ class OidcService implements IOidcService {
       const cfg = await this.config
       if (cfg) {
         const provider = cfg!.provider
-        return this.originalFetch.bind(window)(provider)
-            .then(_r => true)
-            .catch(_e => false)
+        return this.originalFetch
+          .bind(window)(provider)
+          .then(_r => true)
+          .catch(_e => false)
       }
       return false
     } catch {
@@ -562,14 +565,14 @@ class OidcService implements IOidcService {
         return { isIgnore: true, isError: false, loginMethod: AUTH_METHOD }
       }
       // silent login finished - whether it's successful or not
-      localStorage.removeItem("core.auth.silentLogin")
+      localStorage.removeItem('core.auth.silentLogin')
 
       if (!userInfo.error) {
         // successful login attempt
         resolveUser({ username: userInfo.user!, isLogin: true, loginMethod: AUTH_METHOD })
       } else {
         // OIDC error
-        const errorMessage = "\"oidc\" plugin error: " + (userInfo.error_description ?? userInfo.error)
+        const errorMessage = '"oidc" plugin error: ' + (userInfo.error_description ?? userInfo.error)
         return { isIgnore: false, isError: true, errorMessage: errorMessage, loginMethod: AUTH_METHOD }
       }
       userService.setToken(userInfo.access_token!)
@@ -591,7 +594,7 @@ class OidcService implements IOidcService {
           return false
         }
         // no more silent login allowed on refresh
-        localStorage.removeItem("core.auth.oidc")
+        localStorage.removeItem('core.auth.oidc')
         // for Keycloak, with id_token_hint we don't see logout consent
         // const user = await this.userInfo
         // window.location.assign(`${md?.end_session_endpoint}?post_logout_redirect_uri=${document.baseURI}&id_token_hint=${user!.id_token}`)
@@ -599,7 +602,9 @@ class OidcService implements IOidcService {
         const c = await this.config
         // here we can't verify connection to IdP - we'll simply get browser error. Nothing we can do at this stage
         // use "location.assign" to let user browse back
-        window.location.assign(`${md?.end_session_endpoint}?post_logout_redirect_uri=${document.baseURI}&client_id=${c!.client_id}`)
+        window.location.assign(
+          `${md?.end_session_endpoint}?post_logout_redirect_uri=${document.baseURI}&client_id=${c!.client_id}`,
+        )
         return true
       }
       return false

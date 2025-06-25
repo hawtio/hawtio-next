@@ -1,7 +1,7 @@
 import { hawtio, HawtioPlugin } from '@hawtio/react'
 
 export const registerExample3: HawtioPlugin = () => {
-  import("./ui").then(m => {
+  import('./ui').then(m => {
     hawtio.addPlugin({
       id: 'example3',
       title: 'Example 3',

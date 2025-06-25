@@ -8,7 +8,7 @@ import help from './help.md'
 const order = 13
 
 export const jmx: HawtioPlugin = () => {
-  import("./ui").then(m => {
+  import('./ui').then(m => {
     hawtio.addPlugin({
       id: 'jmx',
       title: 'JMX',

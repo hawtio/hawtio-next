@@ -13,14 +13,22 @@ export interface ILoginService {
 }
 
 class LoginService implements ILoginService {
-  async login(username: string, password: string, remember: boolean, method: FormAuthenticationMethod): Promise<LoginResult> {
+  async login(
+    username: string,
+    password: string,
+    remember: boolean,
+    method: FormAuthenticationMethod,
+  ): Promise<LoginResult> {
     try {
       const res = await fetch(method.url, {
         method: 'POST',
         headers: {
           'Content-Type': method.type === 'json' ? 'application/json' : 'application/x-www-form-urlencoded',
         },
-        body: method.type === 'json' ? JSON.stringify({ [method.userField]: username, [method.passwordField]: password }) : '',
+        body:
+          method.type === 'json'
+            ? JSON.stringify({ [method.userField]: username, [method.passwordField]: password })
+            : '',
       })
       if (!res.ok) {
         // Login failed

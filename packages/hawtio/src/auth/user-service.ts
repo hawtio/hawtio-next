@@ -72,7 +72,7 @@ class UserService implements IUserService {
 
   addFetchUserHook(name: string, hook: FetchUserHook) {
     this.fetchUserHooks[name] = hook
-    configManager.initItem(`Registration of ${name} auth hook`, TaskState.finished, "config")
+    configManager.initItem(`Registration of ${name} auth hook`, TaskState.finished, 'config')
   }
 
   addLogoutHook(name: string, hook: LogoutHook) {

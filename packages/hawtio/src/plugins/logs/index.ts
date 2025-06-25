@@ -9,7 +9,7 @@ import { LogsPreferences } from './LogsPreferences'
 const order = 14
 
 export const logs: HawtioPlugin = () => {
-  import("./ui").then(m => {
+  import('./ui').then(m => {
     hawtio.addPlugin({
       id: pluginId,
       title: 'Logs',

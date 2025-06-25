@@ -8,7 +8,7 @@ import { springbootService } from './springboot-service'
 const order = 17
 
 export const springboot: HawtioPlugin = () => {
-  import("./ui").then(m => {
+  import('./ui').then(m => {
     hawtio.addPlugin({
       id: pluginId,
       title: 'Spring Boot',

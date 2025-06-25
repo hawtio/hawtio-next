@@ -9,7 +9,7 @@ import { pluginId, pluginPath, pluginTitle } from './globals'
  * Will communicate this to the user with a notice component.
  */
 export const consoleStatus: HawtioPlugin = () => {
-  import("./ui").then(m => {
+  import('./ui').then(m => {
     hawtio.addPlugin({
       id: pluginId,
       title: pluginTitle,

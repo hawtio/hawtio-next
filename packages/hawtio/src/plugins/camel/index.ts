@@ -10,7 +10,7 @@ import { camelTreeProcessor } from './tree-processor'
 const order = 12
 
 export const camel: HawtioPlugin = () => {
-  import("./ui").then(m => {
+  import('./ui').then(m => {
     hawtio.addPlugin({
       id: 'camel',
       title: 'Camel',

@@ -7,7 +7,7 @@ import { log } from './globals'
 import { loginService } from './login-service'
 import { FormAuthenticationMethod } from '@hawtiosrc/core'
 
-export const HawtioLoginForm: React.FunctionComponent<{method: FormAuthenticationMethod}> = ({method}) => {
+export const HawtioLoginForm: React.FunctionComponent<{ method: FormAuthenticationMethod }> = ({ method }) => {
   const navigate = useNavigate()
 
   let loginFailedInitialMessage = ''

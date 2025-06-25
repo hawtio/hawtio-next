@@ -142,50 +142,55 @@ export type OnlineConfig = {
 }
 
 /** Stages of initialization tasks performed by Hawtio and presented in <HawtioInitialization> component */
-export enum TaskState { started, skipped, finished, error }
-export type InitializationTasks = Record<string, { ready: TaskState, group: string }>
+export enum TaskState {
+  started,
+  skipped,
+  finished,
+  error,
+}
+export type InitializationTasks = Record<string, { ready: TaskState; group: string }>
 
 /** Supported authentication methods */
 export type AuthenticationKind =
   /**
    * Basic authentication - requires preparation of `Authorization: Basic <base64(user:password)>` HTTP header
    */
-  "basic" |
+  | 'basic'
 
   /**
    * Digest authentication - [Digest Access Authentication Scheme](https://www.rfc-editor.org/rfc/rfc2617#section-3),
    * uses several challenge parameters (realm, nonces, ...)
    */
-  "digest" |
+  | 'digest'
 
   /**
    * Form authentication - we need to know the URI to send the credentials to. It may be
    * `application/x-www-form-urlencoded` content (then we need to know the fields to use) or JSON with some schema.
    */
-  "form" |
+  | 'form'
 
   /**
    * This may be tricky, because we can't control it at JavaScript level...
    */
-  "clientcert" |
+  | 'clientcert'
 
   /**
    * This is universal OpenID connect login type, so we need some information - should be configured
    * using `.well-known/openid-configuration` endpoint, but with additional parameters (to choose supported values
    * for some operations).
    */
-  "oidc" |
+  | 'oidc'
 
   /**
    * _Native_ Keycloak authentication using `keycloak.js` library
    */
-  "keycloak" |
+  | 'keycloak'
 
   /**
    * Probably less standardized than `.well-known/openid-configuration`, but similar. We need to know the endpoints
    * to use for OAuth2 auth.
    */
-  "oauth2"
+  | 'oauth2'
 
 export enum AuthenticationResult {
   /** successful authentication */
@@ -201,11 +206,11 @@ export enum AuthenticationResult {
 /** Base type for authentication methods supported by Hawtio */
 export type AuthenticationMethod = {
   /** One of the supported methods. If a plugin augments given method, we should have one such method only */
-  method: AuthenticationKind,
+  method: AuthenticationKind
   /** Name to be presented at login page for login method selection */
-  name?: string,
+  name?: string
   /** Plugin specific method for performing login. For now it's for OAuth2/OIDC/Keycloak. This field is set up by auth plugin */
-  login?: (() => Promise<AuthenticationResult>)
+  login?: () => Promise<AuthenticationResult>
 }
 
 /** Configuration of Basic Authentication */
@@ -225,7 +230,7 @@ export type FormAuthenticationMethod = AuthenticationMethod & {
   /**
    * `application/x-www-form-urlencoded` or `application/json`. For JSON it's just object with two configurable fields
    */
-  type: "form" | "json",
+  type: 'form' | 'json'
 
   /**
    * Field name for user name
@@ -243,8 +248,7 @@ export type FormAuthenticationMethod = AuthenticationMethod & {
  * OpenID Connect authentication method configuration.
  * All details are specified in a type defined in OIDC plugin, but here we may define some generic fields
  */
-export type OidcAuthenticationMethod = AuthenticationMethod & {
-}
+export type OidcAuthenticationMethod = AuthenticationMethod & {}
 
 export const HAWTCONFIG_JSON = 'hawtconfig.json'
 
@@ -277,36 +281,36 @@ class ConfigManager {
    * configuration is loaded
    */
   async initialize(): Promise<boolean> {
-    this.initItem("Checking authentication providers", TaskState.started, "config")
+    this.initItem('Checking authentication providers', TaskState.started, 'config')
 
     const defaultConfiguration: FormAuthenticationMethod = {
-      "method": 'form',
-      "name": "Form Authentication",
-      "url": PATH_LOGIN,
-      "logoutUrl": PATH_LOGOUT,
-      "type": "json",
-      "userField": "username",
-      "passwordField": "password",
+      method: 'form',
+      name: 'Form Authentication',
+      url: PATH_LOGIN,
+      logoutUrl: PATH_LOGOUT,
+      type: 'json',
+      userField: 'username',
+      passwordField: 'password',
     }
 
     this.authenticationConfig = await fetch('auth/config/login')
-        .then(response => response.ok ? response.json() : [])
-        .then((json: AuthenticationMethod[]) => {
-          if (Array.isArray(json)) {
-            return json.length == 0 ? [defaultConfiguration] : json
-          } else {
-            return [defaultConfiguration]
-          }
-        })
-        .catch(e => {
-          log.error("Problem fetching authentication providers", e)
+      .then(response => (response.ok ? response.json() : []))
+      .then((json: AuthenticationMethod[]) => {
+        if (Array.isArray(json)) {
+          return json.length == 0 ? [defaultConfiguration] : json
+        } else {
           return [defaultConfiguration]
-        })
+        }
+      })
+      .catch(e => {
+        log.error('Problem fetching authentication providers', e)
+        return [defaultConfiguration]
+      })
 
     // configuration is ready - resolve the promise. but plugins may still call
     // configureAuthenticationMethod() to alter the generic list of methods
     this.authenticationConfigReady(true)
-    this.initItem("Checking authentication providers", TaskState.finished, "config")
+    this.initItem('Checking authentication providers', TaskState.finished, 'config')
 
     return true
   }
@@ -326,7 +330,7 @@ class ConfigManager {
           // a plugin provided the remaining part of given authentication method
           this.authenticationConfig[idx] = {
             ...config,
-            name: this.authenticationConfig[idx]!.name
+            name: this.authenticationConfig[idx]!.name,
           }
           break
         }
@@ -367,14 +371,14 @@ class ConfigManager {
   private async loadConfig(): Promise<Hawtconfig> {
     log.info('Loading', HAWTCONFIG_JSON)
 
-    this.initItem("Loading " + HAWTCONFIG_JSON, TaskState.started, "config")
+    this.initItem('Loading ' + HAWTCONFIG_JSON, TaskState.started, 'config')
     try {
       const res = await fetch(HAWTCONFIG_JSON)
       if (!res.ok) {
         log.error('Failed to fetch', HAWTCONFIG_JSON, '-', res.status, res.statusText)
         return {}
       }
-      this.initItem("Loading " + HAWTCONFIG_JSON, TaskState.finished, "config")
+      this.initItem('Loading ' + HAWTCONFIG_JSON, TaskState.finished, 'config')
 
       const config = await res.json()
       log.debug(HAWTCONFIG_JSON, '=', config)
@@ -398,7 +402,7 @@ class ConfigManager {
     }
 
     log.info('Apply branding', branding)
-    this.initItem("Applying branding", TaskState.started, "config")
+    this.initItem('Applying branding', TaskState.started, 'config')
     let applied = false
     if (branding.appName) {
       log.info('Updating title -', branding.appName)
@@ -414,7 +418,7 @@ class ConfigManager {
       this.updateHref('#favicon', branding.favicon)
       applied = true
     }
-    this.initItem("Applying branding", applied ? TaskState.finished : TaskState.skipped, "config")
+    this.initItem('Applying branding', applied ? TaskState.finished : TaskState.skipped, 'config')
     return applied
   }
 
@@ -466,8 +470,8 @@ class ConfigManager {
   }
 
   getInitializationTasks(): InitializationTasks {
-    const silentLogin = localStorage.getItem("core.auth.silentLogin")
-    if (silentLogin === "1") {
+    const silentLogin = localStorage.getItem('core.auth.silentLogin')
+    if (silentLogin === '1') {
       // special state - don't feed <HawtioInitialization> with items, because we're in the process
       // of silent OIDC authentication
       return {}
@@ -505,7 +509,9 @@ class ConfigManager {
   async ready(): Promise<boolean> {
     return new Promise((resolve, _reject) => {
       const h: NodeJS.Timeout = setInterval(() => {
-        const result = Object.values(this.initTasks!).find(v => v.ready == TaskState.started || v.ready == TaskState.error) == undefined
+        const result =
+          Object.values(this.initTasks!).find(v => v.ready == TaskState.started || v.ready == TaskState.error) ==
+          undefined
         if (result) {
           resolve(true)
           clearInterval(h)

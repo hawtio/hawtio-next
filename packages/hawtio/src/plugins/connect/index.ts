@@ -10,7 +10,7 @@ const order = 11
 export const connect: HawtioPlugin = () => {
   registerUserHooks()
 
-  import("./ui").then(m => {
+  import('./ui').then(m => {
     hawtio.addPlugin({
       id: pluginId,
       title: pluginTitle,

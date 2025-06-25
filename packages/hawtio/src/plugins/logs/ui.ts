@@ -1,2 +1,2 @@
-export * from "./Logs"
-export * from "./LogsPreferences"
+export * from './Logs'
+export * from './LogsPreferences'
