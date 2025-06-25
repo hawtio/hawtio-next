@@ -7,7 +7,7 @@ import help from './help.md'
 const order = 16
 
 export const runtime: HawtioPlugin = () => {
-  import("./ui").then(m => {
+  import('./ui').then(m => {
     hawtio.addPlugin({
       id: pluginId,
       title: 'Runtime',

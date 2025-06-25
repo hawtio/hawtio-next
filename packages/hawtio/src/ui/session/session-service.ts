@@ -24,7 +24,6 @@ class SessionService {
   private sessionConfig: SessionConfig | null = null
   private sessionTimeout = -1
 
-
   constructor() {
     this.fetchConfiguration().then(() => true)
   }
@@ -107,29 +106,29 @@ class SessionService {
 
   private async fetchConfiguration(): Promise<void> {
     this.sessionTimeout = -1
-    configManager.initItem("Checking session support", TaskState.started, "config")
+    configManager.initItem('Checking session support', TaskState.started, 'config')
 
     this.sessionConfig = await fetch('auth/config/session-timeout?t=' + Date.now())
-        .then(response => {
-          if (!response.ok) {
-            configManager.initItem("Checking session support", TaskState.skipped, "config")
-            return { timeout: -1 }
-          }
-          return response.json()
-        })
-        .then((json: SessionConfig) => {
-          if (!json.timeout || json.timeout <= 0) {
-            json.timeout = -1
-          }
-          json.res = Date.now()
-          log.debug('Session configuration', json)
-          configManager.initItem("Checking session support", TaskState.finished, "config")
-          return json
-        })
-        .catch(() => {
-          configManager.initItem("Checking session support", TaskState.skipped, "config")
+      .then(response => {
+        if (!response.ok) {
+          configManager.initItem('Checking session support', TaskState.skipped, 'config')
           return { timeout: -1 }
-        })
+        }
+        return response.json()
+      })
+      .then((json: SessionConfig) => {
+        if (!json.timeout || json.timeout <= 0) {
+          json.timeout = -1
+        }
+        json.res = Date.now()
+        log.debug('Session configuration', json)
+        configManager.initItem('Checking session support', TaskState.finished, 'config')
+        return json
+      })
+      .catch(() => {
+        configManager.initItem('Checking session support', TaskState.skipped, 'config')
+        return { timeout: -1 }
+      })
 
     if (this.sessionConfig.timeout > 0) {
       // session expires at "current server time + session timeout". Subtracting current client time we roughly

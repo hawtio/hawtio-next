@@ -153,11 +153,11 @@ class ConnectService implements IConnectService {
    */
   private async loadPresetConnections(): Promise<void> {
     try {
-      configManager.initItem("Checking preset connections", TaskState.started, "config")
+      configManager.initItem('Checking preset connections', TaskState.started, 'config')
       const path = this.getPresetConnectionsPath()
       const res = await fetch(path)
       if (!res.ok) {
-        configManager.initItem("Checking preset connections", TaskState.skipped, "config")
+        configManager.initItem('Checking preset connections', TaskState.skipped, 'config')
         log.debug('Failed to load preset connections:', res.status, res.statusText)
         return
       }
@@ -195,7 +195,7 @@ class ConnectService implements IConnectService {
       })
       this.saveConnections(connections)
 
-      configManager.initItem("Checking preset connections", TaskState.finished, "config")
+      configManager.initItem('Checking preset connections', TaskState.finished, 'config')
 
       // Open the first connection in the current tab
       // and open the rest in new tabs
@@ -206,7 +206,7 @@ class ConnectService implements IConnectService {
       }
     } catch (err) {
       // Silently ignore errors
-      configManager.initItem("Checking preset connections", TaskState.skipped, "config")
+      configManager.initItem('Checking preset connections', TaskState.skipped, 'config')
       log.debug('Error loading preset connections:', err)
     }
   }
