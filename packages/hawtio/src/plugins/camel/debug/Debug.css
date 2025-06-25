@@ -1,6 +1,30 @@
+#message-drawer-content-body {
+  display: flex;
+  flex-direction: column;
+}
+
 #route-diagram-breakpoint-view {
   overflow: auto;
   margin-top: 1.5em;
+
+  /*
+   * This is the key fix. It tells this div to grow and take up all available
+   * vertical space within its parent flex container (the DrawerContentBody).
+   */
+  flex-grow: 1;
+
+  /*
+   * Make this div a flex container itself, so its own children
+   * (like the RouteDiagram) can be sized correctly within it.
+   */
+  display: flex;
+  flex-direction: column;
+
+  /*
+   * A best-practice for nested flex containers. It prevents the container from
+   * expanding beyond its parent if the content is too large.
+   */
+  min-height: 0;
 }
 #debug-header-container {
   display: flex;

@@ -15,6 +15,12 @@
   padding-top: 0;
   padding-bottom: 0.5em;
 }
-#camel-content-main {
+#camel-content-main,
+#camel-content-main > .pf-v5-c-panel,
+#camel-content-main > .pf-v5-c-panel .pf-v5-c-panel__main,
+#camel-content-main > .pf-v5-c-panel .pf-v5-c-panel__main > .pf-v5-c-panel__main-body {
   flex-grow: 1;
+
+  display: flex;
+  flex-direction: column;
 }
