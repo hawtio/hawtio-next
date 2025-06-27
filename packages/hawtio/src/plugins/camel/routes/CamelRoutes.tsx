@@ -20,7 +20,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { CamelContext } from '../context'
 import { CamelRoute } from './route'
 import { routesService } from './routes-service'
-import EllipsisVIcon from '@patternfly/react-icons/dist/js/icons/ellipsis-v-icon'
+import { EllipsisVIcon } from '@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon'
 
 const ROUTES_REFRESH_INTERVAL = 10000 // milliseconds
 

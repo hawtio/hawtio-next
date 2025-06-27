@@ -1,7 +1,7 @@
 import { eventService } from '@hawtiosrc/core'
 import { stringSorter } from '@hawtiosrc/util/strings'
 import { log } from '../globals'
-import { OptimisedMBeanOperation, OptimisedMBeanOperations } from '../tree'
+import { type OptimisedMBeanOperation, type OptimisedMBeanOperations } from '../tree'
 
 /**
  * Factory function for Operation objects.

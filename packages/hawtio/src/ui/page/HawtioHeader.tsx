@@ -1,10 +1,11 @@
 import { PUBLIC_USER, userService } from '@hawtiosrc/auth'
 import {
   DEFAULT_APP_NAME,
+  eventService,
+  Hawtconfig,
+  isUniversalHeaderItem,
   useHawtconfig,
   UniversalHeaderItem,
-  isUniversalHeaderItem,
-  Hawtconfig,
 } from '@hawtiosrc/core'
 import { hawtioLogo, userAvatar } from '@hawtiosrc/img'
 import { preferencesService } from '@hawtiosrc/preferences/preferences-service'
@@ -36,7 +37,7 @@ import { Link, useLocation } from 'react-router-dom'
 import './HawtioHeader.css'
 import { PageContext } from './context'
 
-export const HawtioHeader: React.FunctionComponent = () => {
+export const HawtioHeader: React.FunctionComponent<{ loginMethod: string }> = ({ loginMethod }) => {
   const { hawtconfig, hawtconfigLoaded } = useHawtconfig()
   const [navOpen, setNavOpen] = useState(preferencesService.isShowVerticalNavByDefault())
 
@@ -71,7 +72,7 @@ export const HawtioHeader: React.FunctionComponent = () => {
         </MastheadMain>
       )}
       <MastheadContent>
-        <HawtioHeaderToolbar hawtconfig={hawtconfig} />
+        <HawtioHeaderToolbar hawtconfig={hawtconfig} loginMethod={loginMethod} />
       </MastheadContent>
     </Masthead>
   )
@@ -100,6 +101,7 @@ const HawtioBrand: React.FunctionComponent<HawtioBrandProps> = props => {
 
 type HawtioHeaderToolbarProps = {
   hawtconfig: Hawtconfig
+  loginMethod: string
 }
 
 const HawtioHeaderToolbar: React.FunctionComponent<HawtioHeaderToolbarProps> = props => {
@@ -116,7 +118,18 @@ const HawtioHeaderToolbar: React.FunctionComponent<HawtioHeaderToolbarProps> = p
   const onUserSelect = () => setUserOpen(!userOpen)
   const onAboutToggle = () => setAboutOpen(!aboutOpen)
 
-  const logout = () => userService.logout()
+  const logout = async () => {
+    const success = await userService.logout()
+    // true means we're logged out - probably using redirect, so we don't bother
+    // but false means that intended logout method failed
+    if (!success) {
+      eventService.notify({
+        type: 'danger',
+        message: 'Logout failed. Please check console logs.',
+        duration: 3000,
+      })
+    }
+  }
 
   // If not defined then assume the default of shown
   const userHeaderShown = props.hawtconfig.appearance?.showUserHeader ?? true

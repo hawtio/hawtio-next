@@ -15,7 +15,6 @@ export const SessionMonitor: React.FunctionComponent = () => {
     let ticker: NodeJS.Timeout | null = null
     // run immediate timeout, so we can use await
     const configureSession = setTimeout(async () => {
-      await sessionService.fetchConfiguration()
       const sessionTimeout = sessionService.getSessionTimeout()
       if (sessionTimeout > 0) {
         setTime(sessionTimeout)
