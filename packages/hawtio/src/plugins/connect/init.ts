@@ -43,6 +43,7 @@ async function isProxyEnabled(): Promise<boolean> {
 
     const data = await res.text()
     // Disable proxy only when explicitly disabled
+    // TODO: verify default value for proxyEnabled
     proxyEnabled = data.trim() !== 'false'
     configManager.initItem('Checking proxy', proxyEnabled ? TaskState.finished : TaskState.skipped, 'config')
     log.debug('Proxy enabled:', proxyEnabled)
