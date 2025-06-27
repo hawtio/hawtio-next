@@ -215,19 +215,17 @@ class JolokiaService implements IJolokiaService {
     // Initialising Jolokia instance
     this.jolokia = this.createJolokia(jolokia => {
       // Checking versions
-      jolokia
-        .version(
-          onVersionSuccessAndError(
-            (version: JolokiaResponseValue) => {
-              log.info('Jolokia version:', {
-                client: jolokia.CLIENT_VERSION,
-                agent: (version as VersionResponseValue).agent,
-              })
-            },
-            error => log.error('Failed to fetch Jolokia version:', error),
-          ),
-        )
-        .then(() => true)
+      jolokia.version(
+        onVersionSuccessAndError(
+          (version: JolokiaResponseValue) => {
+            log.info('Jolokia version:', {
+              client: jolokia.CLIENT_VERSION,
+              agent: (version as VersionResponseValue).agent,
+            })
+          },
+          error => log.error('Failed to fetch Jolokia version:', error),
+        ),
+      )
       // Start Jolokia
       const updateRate = this.loadUpdateRate()
       jolokia.start(updateRate)

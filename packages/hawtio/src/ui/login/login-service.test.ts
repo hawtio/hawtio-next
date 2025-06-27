@@ -1,7 +1,18 @@
 import fetchMock from 'jest-fetch-mock'
 import { loginService } from './login-service'
+import { FormAuthenticationMethod } from '@hawtiosrc/core'
+import { PATH_LOGIN, PATH_LOGOUT } from '@hawtiosrc/auth/globals'
 
 describe('LoginService', () => {
+  const method: FormAuthenticationMethod = {
+    method: 'form',
+    url: PATH_LOGIN,
+    logoutUrl: PATH_LOGOUT,
+    type: 'json',
+    userField: 'username',
+    passwordField: 'password',
+  }
+
   beforeEach(() => {
     fetchMock.resetMocks()
   })
@@ -21,7 +32,7 @@ describe('LoginService', () => {
   test('login with remembering username', async () => {
     fetchMock.mockResponse('true')
 
-    const result = await loginService.login('test-user', 'password!', true)
+    const result = await loginService.login('test-user', 'password!', true, method)
     expect(result.type).toBe('success')
     expect(loginService.getUser()).toEqual('test-user')
   })
@@ -29,7 +40,7 @@ describe('LoginService', () => {
   test('login without remembering username', async () => {
     fetchMock.mockResponse('true')
 
-    const result = await loginService.login('test-user', 'password!', false)
+    const result = await loginService.login('test-user', 'password!', false, method)
     expect(result.type).toBe('success')
     expect(loginService.getUser()).toEqual('')
   })
@@ -37,14 +48,14 @@ describe('LoginService', () => {
   test('login failed', async () => {
     fetchMock.mockResponse('', { status: 403 })
 
-    const result = await loginService.login('test-user', 'password!', false)
+    const result = await loginService.login('test-user', 'password!', false, method)
     expect(result.type).toBe('failure')
   })
 
   test('login throttled', async () => {
     fetchMock.mockResponse('', { status: 429, headers: { 'Retry-After': '60' } })
 
-    const result = await loginService.login('test-user', 'password!', false)
+    const result = await loginService.login('test-user', 'password!', false, method)
     expect(result.type).toBe('throttled')
     expect(result.type === 'throttled' && result.retryAfter).toBe(60)
   })

@@ -3,6 +3,10 @@ import { BrowserRouter } from 'react-router-dom'
 import { HawtioLogin } from './HawtioLogin'
 
 describe('HawtioLogin', () => {
+  beforeEach(() => {
+    fetchMock.mockResponse('')
+  })
+
   test('renders page', async () => {
     render(
       <BrowserRouter>

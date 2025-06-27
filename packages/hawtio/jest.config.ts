@@ -1,5 +1,5 @@
 import type { Config } from 'jest'
-import path from 'path'
+import * as path from 'path'
 
 const config: Config = {
   preset: 'ts-jest',
@@ -19,6 +19,10 @@ const config: Config = {
     'monaco-editor': path.resolve(__dirname, './src/__mocks__/monacoEditor.js'),
     '@monaco-editor/react': path.resolve(__dirname, './src/__mocks__/monacoEditor.js'),
     '@patternfly/react-code-editor': path.resolve(__dirname, './src/__mocks__/codeEditorMock.js'),
+    '@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon': path.resolve(
+      __dirname,
+      './src/__mocks__/ellipsis-v-icon.js',
+    ),
     oauth4webapi: path.resolve(__dirname, './src/__mocks__/oauth4webapi.js'),
   },
 
