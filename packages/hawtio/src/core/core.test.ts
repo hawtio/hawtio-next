@@ -50,17 +50,16 @@ describe('HawtioCore', () => {
   test('bootstrap', async () => {
     // response for fetching 'plugin'
     fetchMock.mockResponse(async req => {
-      switch (req.url) {
-        case 'plugin':
-          return JSON.stringify([
-            {
-              url: 'http://localhost:3001',
-              scope: 'plugin1',
-              module: './plugin',
-            },
-          ])
-        default:
-          return '{}'
+      if (req.url.endsWith('/plugin')) {
+        return JSON.stringify([
+          {
+            url: 'http://localhost:3001',
+            scope: 'plugin1',
+            module: './plugin',
+          },
+        ])
+      } else {
+        return '{}'
       }
     })
     importRemoteMock.mockResolvedValue({

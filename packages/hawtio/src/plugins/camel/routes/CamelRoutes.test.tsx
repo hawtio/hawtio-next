@@ -14,6 +14,11 @@ function getMockedRoutes(): CamelRoute[] {
   ]
 }
 
+// needed despite of being mocked globally
+jest.mock('@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon', () => ({
+  EllipsisVIcon: jest.fn(),
+}))
+
 describe('CamelRoutes.tsx', () => {
   beforeEach(() => {
     jest.spyOn(routesService, 'getRoutesAttributes').mockResolvedValue(getMockedRoutes())
