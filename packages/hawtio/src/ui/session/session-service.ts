@@ -22,9 +22,15 @@ class SessionService {
   private refresh = true
 
   private sessionConfig: SessionConfig | null = null
+  private readonly sessionConfigReadyPromise: Promise<boolean>
+  private sessionConfigReady: ((ready: boolean) => void) | null = null
+
   private sessionTimeout = -1
 
   constructor() {
+    this.sessionConfigReadyPromise = new Promise(resolve => {
+      this.sessionConfigReady = resolve
+    })
     this.fetchConfiguration().then(() => true)
   }
 
@@ -104,6 +110,10 @@ class SessionService {
     this.resetTimer = false
   }
 
+  public async configReady(): Promise<boolean> {
+    return this.sessionConfigReadyPromise
+  }
+
   private async fetchConfiguration(): Promise<void> {
     this.sessionTimeout = -1
     configManager.initItem('Checking session support', TaskState.started, 'config')
@@ -123,10 +133,12 @@ class SessionService {
         json.res = Date.now()
         log.debug('Session configuration', json)
         configManager.initItem('Checking session support', TaskState.finished, 'config')
+        this.sessionConfigReady!(true)
         return json
       })
       .catch(() => {
         configManager.initItem('Checking session support', TaskState.skipped, 'config')
+        this.sessionConfigReady!(false)
         return { timeout: -1 }
       })
 
