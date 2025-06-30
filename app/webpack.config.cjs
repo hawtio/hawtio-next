@@ -259,7 +259,7 @@ module.exports = (_, args) => {
 
           /* Keycloak */
 
-          const keycloakEnabled = true
+          const keycloakEnabled = false
           const keycloakClientConfig = {
             realm: 'hawtio-demo',
             clientId: 'hawtio-client',
@@ -279,7 +279,7 @@ module.exports = (_, args) => {
 
           /* OpenID Connect */
 
-          const oidcEnabled = true
+          const oidcEnabled = false
           // const entraIDOidcConfig = {
           //   method: 'oidc',
           //   provider: 'https://login.microsoftonline.com/11111111-2222-3333-4444-555555555555/v2.0',
@@ -354,7 +354,8 @@ module.exports = (_, args) => {
             },
           ]
           devServer.app.get(`${publicPath}/auth/config/login`, (_, res) => {
-            res.json(authLoginConfig)
+            res.json([])
+            // res.json(authLoginConfig)
           })
 
           // Hawtio backend middleware should be run before other middlewares (thus 'unshift')
