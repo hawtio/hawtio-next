@@ -8,6 +8,7 @@ export const SessionMonitor: React.FunctionComponent = () => {
   const [sessionAlertVisible, setSessionAlertVisible] = useState(false)
   // state for time till (server-side) session end. When -1, we don't track session
   const [time, setTime] = useState(-1)
+  const [configured, setConfigured] = useState(false)
 
   // configuration effect (no deps)
   useEffect(() => {
@@ -15,9 +16,11 @@ export const SessionMonitor: React.FunctionComponent = () => {
     let ticker: NodeJS.Timeout | null = null
     // run immediate timeout, so we can use await
     const configureSession = setTimeout(async () => {
+      await sessionService.configReady()
       const sessionTimeout = sessionService.getSessionTimeout()
       if (sessionTimeout > 0) {
         setTime(sessionTimeout)
+        setConfigured(true)
         // a ticker that'll decrease time-left and store it in this component's state
         ticker = setInterval(() => {
           if (sessionService.shouldResetTimer()) {
@@ -53,6 +56,9 @@ export const SessionMonitor: React.FunctionComponent = () => {
   //  - logout the user when session ends
   //  - reset the timer, when session was just refreshed by some user activity
   useEffect(() => {
+    if (!configured) {
+      return
+    }
     if (sessionService.sessionEnding(time)) {
       sessionService.setRefresh(false)
       setSessionAlertVisible(true)
@@ -62,7 +68,7 @@ export const SessionMonitor: React.FunctionComponent = () => {
         userService.logout()
       }, 1000)
     }
-  }, [time])
+  }, [time, configured])
 
   // called when user closes the alert dialog. Session should be kept alive
   const keepSessionAlive = () => {
