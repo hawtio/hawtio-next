@@ -110,7 +110,7 @@ class SessionService {
     this.resetTimer = false
   }
 
-  public async configReady(): Promise<boolean> {
+  async configReady(): Promise<boolean> {
     return this.sessionConfigReadyPromise
   }
 
