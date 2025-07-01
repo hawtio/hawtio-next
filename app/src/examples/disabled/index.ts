@@ -1,12 +1,13 @@
-import { hawtio, HawtioPlugin } from '@hawtio/react'
-import { DisabledExample } from './Disabled'
+import { hawtio, type HawtioPlugin } from '@hawtio/react'
 
 export const registerDisabled: HawtioPlugin = () => {
-  hawtio.addPlugin({
-    id: 'disabled',
-    title: 'Disabled',
-    path: '/disabled',
-    component: DisabledExample,
-    isActive: async () => true,
+  import('./Disabled').then(m => {
+    hawtio.addPlugin({
+      id: 'disabled',
+      title: 'Disabled',
+      path: '/disabled',
+      component: m.DisabledExample,
+      isActive: async () => true,
+    })
   })
 }

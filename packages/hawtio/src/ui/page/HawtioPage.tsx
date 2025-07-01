@@ -1,9 +1,9 @@
 import { useUser } from '@hawtiosrc/auth/hooks'
 import { useHawtconfig, usePlugins } from '@hawtiosrc/core'
-import { HawtioHelp } from '@hawtiosrc/help/HawtioHelp'
+import { HawtioHelp } from '@hawtiosrc/help/ui'
 import { background } from '@hawtiosrc/img'
 import { PluginNodeSelectionContext, usePluginNodeSelected } from '@hawtiosrc/plugins'
-import { HawtioPreferences } from '@hawtiosrc/preferences/HawtioPreferences'
+import { HawtioPreferences } from '@hawtiosrc/preferences/ui'
 import { preferencesService } from '@hawtiosrc/preferences/preferences-service'
 import {
   BackgroundImage,
@@ -16,7 +16,7 @@ import {
 import { CubesIcon } from '@patternfly/react-icons'
 import React, { useEffect } from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
-import { HawtioNotification } from '../notification'
+import { HawtioNotification } from '@hawtiosrc/ui/notification'
 import { HawtioHeader } from './HawtioHeader'
 import { HawtioLoadingPage } from './HawtioLoadingPage'
 import { HawtioSidebar } from './HawtioSidebar'
@@ -25,8 +25,11 @@ import { log } from './globals'
 import { sessionService, SessionMonitor } from '@hawtiosrc/ui/session'
 import './HawtioPage.css'
 
+/**
+ * One of two _main_ components to be displayed in `<Hawtio>` component. It is displayed when user is logged in.
+ */
 export const HawtioPage: React.FunctionComponent = () => {
-  const { username, isLogin, userLoaded, userLoading } = useUser()
+  const { username, isLogin, userLoaded, loginMethod } = useUser()
   const { plugins, pluginsLoaded } = usePlugins()
   const { hawtconfig, hawtconfigLoaded } = useHawtconfig()
   const navigate = useNavigate()
@@ -36,13 +39,12 @@ export const HawtioPage: React.FunctionComponent = () => {
   // navigate should be used in effect
   // otherwise "Cannot update a component (`BrowserRouter`) while rendering a different component" is thrown
   useEffect(() => {
-    if (!isLogin && !userLoading) {
+    if (!isLogin && userLoaded) {
       navigate('/login')
     }
-  }, [isLogin, navigate, userLoading])
+  }, [isLogin, userLoaded, navigate])
 
-  if (!userLoaded || !pluginsLoaded || userLoading || !hawtconfigLoaded) {
-    log.debug('Loading:', 'user =', userLoaded, ', plugins =', pluginsLoaded)
+  if (!isLogin || !userLoaded || !pluginsLoaded || !hawtconfigLoaded) {
     return <HawtioLoadingPage />
   }
 
@@ -73,7 +75,7 @@ export const HawtioPage: React.FunctionComponent = () => {
       <BackgroundImage src={background} />
       <Page
         id='hawtio-main-page'
-        header={headerShown && <HawtioHeader />}
+        header={headerShown && <HawtioHeader loginMethod={loginMethod} />}
         sidebar={sideBarShown && <HawtioSidebar />}
         isManagedSidebar={sideBarShown}
         defaultManagedSidebarIsOpen={showVerticalNavByDefault}

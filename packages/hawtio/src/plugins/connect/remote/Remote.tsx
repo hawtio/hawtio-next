@@ -33,7 +33,7 @@ import { ConnectContext } from '../context'
 import { log } from '../globals'
 import { ConnectionModal } from './ConnectionModal'
 import { ImportModal } from './ImportModal'
-import EllipsisVIcon from '@patternfly/react-icons/dist/js/icons/ellipsis-v-icon'
+import { EllipsisVIcon } from '@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon'
 
 export const Remote: React.FunctionComponent = () => {
   const { connections } = useContext(ConnectContext)

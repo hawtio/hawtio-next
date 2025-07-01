@@ -1,5 +1,7 @@
-import { fetchPath } from '@hawtiosrc/util/fetch'
 import { log } from './globals'
+import { configManager, TaskState } from '@hawtiosrc/core'
+
+// TODO: should be outside of "ui" package?
 
 type SessionConfig = {
   req?: number
@@ -20,7 +22,17 @@ class SessionService {
   private refresh = true
 
   private sessionConfig: SessionConfig | null = null
+  private readonly sessionConfigReadyPromise: Promise<boolean>
+  private sessionConfigReady: ((ready: boolean) => void) | null = null
+
   private sessionTimeout = -1
+
+  constructor() {
+    this.sessionConfigReadyPromise = new Promise(resolve => {
+      this.sessionConfigReady = resolve
+    })
+    this.fetchConfiguration().then(() => true)
+  }
 
   /**
    * Calling this method means that user performed some action and is expecting to keep the (server-side) session
@@ -58,10 +70,7 @@ class SessionService {
       return false
     }
     // no need to ping server otherwise
-    fetchPath('refresh', {
-      success: () => true,
-      error: () => false,
-    }).catch(_ => false)
+    fetch('refresh').catch(() => false)
 
     // clear the flag, so next refresh happens only after user clicks anything
     this.keepAlive = false
@@ -101,27 +110,38 @@ class SessionService {
     this.resetTimer = false
   }
 
-  async fetchConfiguration(): Promise<void> {
+  async configReady(): Promise<boolean> {
+    return this.sessionConfigReadyPromise
+  }
+
+  private async fetchConfiguration(): Promise<void> {
     this.sessionTimeout = -1
-    this.sessionConfig = await fetchPath<SessionConfig>('auth/config/session-timeout?t=' + Date.now(), {
-      success: data => {
-        let cfg
-        try {
-          cfg = JSON.parse(data) as SessionConfig
-        } catch {
+    configManager.initItem('Checking session support', TaskState.started, 'config')
+
+    this.sessionConfig = await fetch('auth/config/session-timeout?t=' + Date.now())
+      .then(response => {
+        if (!response.ok) {
+          configManager.initItem('Checking session support', TaskState.skipped, 'config')
           return { timeout: -1 }
         }
-        if (!cfg.timeout || cfg.timeout <= 0) {
-          cfg.timeout = -1
+        return response.json()
+      })
+      .then((json: SessionConfig) => {
+        if (!json.timeout || json.timeout <= 0) {
+          json.timeout = -1
         }
-        cfg.res = Date.now()
-        log.info('Session configuration', cfg)
-        return cfg
-      },
-      error: () => {
+        json.res = Date.now()
+        log.debug('Session configuration', json)
+        configManager.initItem('Checking session support', TaskState.finished, 'config')
+        this.sessionConfigReady!(true)
+        return json
+      })
+      .catch(() => {
+        configManager.initItem('Checking session support', TaskState.skipped, 'config')
+        this.sessionConfigReady!(false)
         return { timeout: -1 }
-      },
-    })
+      })
+
     if (this.sessionConfig.timeout > 0) {
       // session expires at "current server time + session timeout". Subtracting current client time we roughly
       // get session end time from client point of view

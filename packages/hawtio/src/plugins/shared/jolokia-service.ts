@@ -248,6 +248,7 @@ class JolokiaService implements IJolokiaService {
     }
 
     // Discover Jolokia
+    // TODO: should not check both 'jolokia' and '/hawtio/jolokia' if base path is '/hawtio/'
     for (const path of JOLOKIA_PATHS) {
       log.debug('Checking Jolokia path:', path)
       try {
@@ -401,7 +402,9 @@ class JolokiaService implements IJolokiaService {
           // just logout
           userService.isLogin().then(login => {
             log.debug('Logging out due to fetch() error: status =', response.status)
-            if (login) userService.logout()
+            if (login) {
+              userService.logout().then(() => true)
+            }
           })
         }
       } else {
@@ -725,29 +728,31 @@ class JolokiaService implements IJolokiaService {
         .reduce((merged, response) => this.mergeDomains(response, merged), {})
       listOptions.success?.(domains)
     }
-    jolokia.request(
-      requests,
-      onBulkSuccessAndError(
-        (response: JolokiaSuccessResponse, _index: number) => {
-          // Response can never be string in Hawtio's setup of Jolokia
-          bulkResponse.push(response as JolokiaSuccessResponse)
-          // Resolve only when all the responses from the bulk request are collected
-          if (bulkResponse.length === requests.length) {
-            mergeResponses()
-          }
-        },
-        error => {
-          log.error('Error during bulk list:', error)
-          bulkResponse.push(error)
-          // Resolve only when all the responses from the bulk request are collected
-          if (bulkResponse.length === requests.length) {
-            mergeResponses()
-          }
-        },
-        // Reuse the list options other than success and error functions
-        listOptions as SimpleRequestOptions,
-      ),
-    )
+    jolokia
+      .request(
+        requests,
+        onBulkSuccessAndError(
+          (response: JolokiaSuccessResponse, _index: number) => {
+            // Response can never be string in Hawtio's setup of Jolokia
+            bulkResponse.push(response as JolokiaSuccessResponse)
+            // Resolve only when all the responses from the bulk request are collected
+            if (bulkResponse.length === requests.length) {
+              mergeResponses()
+            }
+          },
+          error => {
+            log.error('Error during bulk list:', error)
+            bulkResponse.push(error)
+            // Resolve only when all the responses from the bulk request are collected
+            if (bulkResponse.length === requests.length) {
+              mergeResponses()
+            }
+          },
+          // Reuse the list options other than success and error functions
+          listOptions as SimpleRequestOptions,
+        ),
+      )
+      .then(() => true)
   }
 
   private mergeDomains(source: OptimisedJmxDomains, target: OptimisedJmxDomains): OptimisedJmxDomains {
