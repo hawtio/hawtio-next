@@ -78,7 +78,7 @@
     "@simbathesailor/use-what-changed": "^2.0.0",
     "commit-and-tag-version": "^12.5.1",
     "jest": "^30.0.0",
-    "jest-environment-jsdom": "^30.0.0",
+    "jest-environment-jsdom": "^30.0.2",
     "jest-fetch-mock": "^3.0.3",
     "jest-watch-typeahead": "^2.2.2",
     "replace": "^1.2.2",
