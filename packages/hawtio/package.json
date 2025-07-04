@@ -1,6 +1,6 @@
 {
   "name": "@hawtio/react",
-  "version": "1.9.6-react17.memoryrouter.dev.4",
+  "version": "1.9.6-react17.memoryrouter.dev.5",
   "description": "A Hawtio reimplementation based on TypeScript + React.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
