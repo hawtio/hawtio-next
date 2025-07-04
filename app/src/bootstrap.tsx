@@ -10,19 +10,16 @@
 // us to provide user feedback as soon as possible
 
 import React from 'react'
-import ReactDOM from 'react-dom/client'
+import ReactDOM from 'react-dom'
 
 import { configManager, hawtio, HawtioInitialization, TaskState } from '@hawtio/react/init'
 
 // Hawtio itself creates and tracks initialization tasks, but we can add our own.
 configManager.initItem('Loading UI', TaskState.started, 'config')
 
-// Create root for rendering React components. More React components can be rendered in single root.
-const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
-
 // Basic UI that shows initialization progress without depending on PatternFly.
 // It is imported and rendered in fully synchronous way.
-root.render(<HawtioInitialization verbose={true} />)
+ReactDOM.render(<HawtioInitialization verbose={true} />, document.getElementById('root'))
 
 // Configure the console
 configManager.addProductInfo('Test App', '1.0.0')
@@ -62,10 +59,11 @@ import('@hawtio/react').then(async m => {
   //  - rendering of <Hawtio> React component after bootstrap() finishes
   m.hawtio.bootstrap().then(() => {
     import('@hawtio/react/ui').then(m => {
-      root.render(
+      ReactDOM.render(
         <React.StrictMode>
           <m.Hawtio />
         </React.StrictMode>,
+        document.getElementById('root'),
       )
     })
   })
