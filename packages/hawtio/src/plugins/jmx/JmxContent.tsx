@@ -18,7 +18,7 @@ import {
 } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons'
 import React, { useContext } from 'react'
-import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom-v5-compat'
 import './JmxContent.css'
 import { MBeanTreeContext } from './context'
 import { pluginPath } from '@hawtiosrc/plugins/jmx/globals'

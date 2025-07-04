@@ -5,6 +5,7 @@ import { c_expandable_section_m_truncate__content_LineClamp as lineClamp } from 
 import { debounce, getResizeObserver, getUniqueId, PickOptional } from '@patternfly/react-core'
 import { isString } from '@hawtiosrc/util/objects'
 import { AngleRightIcon } from '@patternfly/react-icons'
+import { PropsWithChildren } from 'react'
 
 export enum ExpandableSectionVariant {
   default = 'default',
@@ -286,8 +287,16 @@ class ExpandableSection extends React.Component<ExpandableSectionProps, Expandab
   }
 }
 
-export const ExpandableText: React.FunctionComponent<{ children: React.ReactNode }> = ({ children }) => {
-  if (isString(children)) {
+interface ExpandableTextProps {
+}
+
+// export const Routes: React.FunctionComponent<PropsWithChildren<RoutesProps>> = props => {
+export const ExpandableText: React.FunctionComponent<PropsWithChildren<ExpandableTextProps>> = props => {
+  if (!props.children) {
+    return <></>
+  }
+
+  if (isString(props.children)) {
     return (
       <ExpandableSection
         onClick={e => {
@@ -300,9 +309,14 @@ export const ExpandableText: React.FunctionComponent<{ children: React.ReactNode
         toggleTextExpanded='Show less'
         toggleTextCollapsed='Show more'
       >
-        {children}
+        {props.children}
       </ExpandableSection>
     )
   }
-  return children
+
+  return (
+    <React.Fragment>
+      {props.children}
+    </React.Fragment>
+  )
 }
