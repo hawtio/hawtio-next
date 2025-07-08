@@ -17,7 +17,7 @@ import { configManager, hawtio, HawtioInitialization, TaskState } from '@hawtio/
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
 // basic UI showing initialization progress without dependencies on Patternfly
-root.render(<HawtioInitialization />)
+root.render(<HawtioInitialization verbose={false} />)
 
 configManager.initItem('Loading UI', TaskState.started, 'config')
 

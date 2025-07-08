@@ -32,3 +32,19 @@
 .hwt-loading li.ready {
   color: black;
 }
+
+.tick {
+  padding: 0
+}
+.tick-skipped {
+  color: black;
+}
+.tick-finished {
+  color: green;
+}
+.tick-error {
+  color: red;
+}
+.tick-started {
+  color: #adafb6;
+}

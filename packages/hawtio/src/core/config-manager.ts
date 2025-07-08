@@ -376,6 +376,7 @@ class ConfigManager {
       const res = await fetch(HAWTCONFIG_JSON)
       if (!res.ok) {
         log.error('Failed to fetch', HAWTCONFIG_JSON, '-', res.status, res.statusText)
+        this.initItem('Loading ' + HAWTCONFIG_JSON, TaskState.skipped, 'config')
         return {}
       }
       this.initItem('Loading ' + HAWTCONFIG_JSON, TaskState.finished, 'config')
@@ -385,6 +386,7 @@ class ConfigManager {
       log.info('Loaded', HAWTCONFIG_JSON)
       return config
     } catch (err) {
+      this.initItem('Loading ' + HAWTCONFIG_JSON, TaskState.skipped, 'config')
       log.error('Error fetching', HAWTCONFIG_JSON, '-', err)
       return {}
     }
