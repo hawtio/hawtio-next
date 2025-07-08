@@ -2401,7 +2401,7 @@ __metadata:
     dompurify: "npm:^3.2.6"
     eventemitter3: "npm:^5.0.1"
     jest: "npm:^30.0.3"
-    jest-environment-jsdom: "npm:^30.0.2"
+    jest-environment-jsdom: "npm:^30.0.4"
     jest-fetch-mock: "npm:^3.0.3"
     jest-watch-typeahead: "npm:^3.0.1"
     jolokia.js: "npm:^2.2.4"
@@ -2578,12 +2578,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jest/environment-jsdom-abstract@npm:30.0.2":
-  version: 30.0.2
-  resolution: "@jest/environment-jsdom-abstract@npm:30.0.2"
+"@jest/environment-jsdom-abstract@npm:30.0.4":
+  version: 30.0.4
+  resolution: "@jest/environment-jsdom-abstract@npm:30.0.4"
   dependencies:
-    "@jest/environment": "npm:30.0.2"
-    "@jest/fake-timers": "npm:30.0.2"
+    "@jest/environment": "npm:30.0.4"
+    "@jest/fake-timers": "npm:30.0.4"
     "@jest/types": "npm:30.0.1"
     "@types/jsdom": "npm:^21.1.7"
     "@types/node": "npm:*"
@@ -2595,7 +2595,7 @@ __metadata:
   peerDependenciesMeta:
     canvas:
       optional: true
-  checksum: 10/7be2483eb7f7167eaab91f9c9dfbda5c4b64bc441b9f5158f3266b144a116f076955fe162477bfd80a00696f34013f06f207287a1ba254fd4730df32e1674955
+  checksum: 10/d2f3688075bfbaf5c6b7a3a484ee534fcba774d3606480307a9f88229b8a7b691734a9809c9000779592ad251f010e2edbbfb84054df0e38f252412d0c5ed3f0
   languageName: node
   linkType: hard
 
@@ -2608,6 +2608,18 @@ __metadata:
     "@types/node": "npm:*"
     jest-mock: "npm:30.0.2"
   checksum: 10/1494352b70b5e33c50692ccd45b506db019709dada33b8600d43c09e6ec29476aab3ea200221adec359f57556903c5ad0a36c66528c6be5bca06c2e7ca5157d4
+  languageName: node
+  linkType: hard
+
+"@jest/environment@npm:30.0.4":
+  version: 30.0.4
+  resolution: "@jest/environment@npm:30.0.4"
+  dependencies:
+    "@jest/fake-timers": "npm:30.0.4"
+    "@jest/types": "npm:30.0.1"
+    "@types/node": "npm:*"
+    jest-mock: "npm:30.0.2"
+  checksum: 10/d3fbb1f8263928d110a87ac6ab5a33221a54609fd56b2ce60bffadf7ea9cf2f4e3ae7929c5072d25b55fd4bf672dc785339443963860cc0ceeb269e74e8bd4c4
   languageName: node
   linkType: hard
 
@@ -2650,6 +2662,20 @@ __metadata:
     jest-mock: "npm:30.0.2"
     jest-util: "npm:30.0.2"
   checksum: 10/16956bf92fde69378273e4a107e5534876a336350732e43ffd2265690649ebe524ffa47ca4deffc8f807d36d64fcaf98b98102d91282038055d4b16530d2dad4
+  languageName: node
+  linkType: hard
+
+"@jest/fake-timers@npm:30.0.4":
+  version: 30.0.4
+  resolution: "@jest/fake-timers@npm:30.0.4"
+  dependencies:
+    "@jest/types": "npm:30.0.1"
+    "@sinonjs/fake-timers": "npm:^13.0.0"
+    "@types/node": "npm:*"
+    jest-message-util: "npm:30.0.2"
+    jest-mock: "npm:30.0.2"
+    jest-util: "npm:30.0.2"
+  checksum: 10/42b1e05c1e06a16e3964643f22cfa06a34fef282f3cb43f18b66caf6b1fa04a8a2ce79bb047f81b51007dc48efabd8200c0805bc394ca4fcbbe55f069419775b
   languageName: node
   linkType: hard
 
@@ -10956,12 +10982,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-environment-jsdom@npm:^30.0.2":
-  version: 30.0.2
-  resolution: "jest-environment-jsdom@npm:30.0.2"
+"jest-environment-jsdom@npm:^30.0.4":
+  version: 30.0.4
+  resolution: "jest-environment-jsdom@npm:30.0.4"
   dependencies:
-    "@jest/environment": "npm:30.0.2"
-    "@jest/environment-jsdom-abstract": "npm:30.0.2"
+    "@jest/environment": "npm:30.0.4"
+    "@jest/environment-jsdom-abstract": "npm:30.0.4"
     "@types/jsdom": "npm:^21.1.7"
     "@types/node": "npm:*"
     jsdom: "npm:^26.1.0"
@@ -10970,7 +10996,7 @@ __metadata:
   peerDependenciesMeta:
     canvas:
       optional: true
-  checksum: 10/34e67fb4a2b4cdfcfba4ce25401f83f704a1a05596e00d08415b9868a5d03a122d5b4f5ba2bc9c9c0d40933da845b789c50aeb718e8908871a11dafd49cb808e
+  checksum: 10/7bfc08b02b230cec7d006a5985d514c9ec10c3c884044c00bb8fa796153ea449d6175064ea18921591c84cc9bd7d2da564292c80b73d839ab3728c55b0742dee
   languageName: node
   linkType: hard
 
