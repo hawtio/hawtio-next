@@ -12,7 +12,8 @@ import {
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core'
-import { RedoIcon, TrendUpIcon } from '@patternfly/react-icons'
+import { RedoIcon } from '@patternfly/react-icons/dist/esm/icons/redo-icon'
+import { TrendUpIcon } from '@patternfly/react-icons/dist/esm/icons/trend-up-icon'
 import React, { useContext, useEffect, useState } from 'react'
 import * as tcs from './type-converters-service'
 

@@ -2,13 +2,15 @@ import { escapeHtmlId, escapeTags } from '@hawtiosrc/util/htmls'
 import { isEmpty } from '@hawtiosrc/util/objects'
 import { matchWithWildcard, stringSorter, trimQuotes } from '@hawtiosrc/util/strings'
 import { type TreeViewDataItem } from '@patternfly/react-core'
-import { CubeIcon, FolderIcon, FolderOpenIcon, LockIcon } from '@patternfly/react-icons'
+import { CubeIcon } from '@patternfly/react-icons/dist/esm/icons/cube-icon'
+import { FolderIcon } from '@patternfly/react-icons/dist/esm/icons/folder-icon'
+import { FolderOpenIcon } from '@patternfly/react-icons/dist/esm/icons/folder-open-icon'
+import { LockIcon } from '@patternfly/react-icons/dist/esm/icons/lock-icon'
 import { MBeanAttribute, MBeanInfo, MBeanInfoError, MBeanOperation } from 'jolokia.js'
 import React from 'react'
 import { array, define, is, nullable, object, optional, record, string, type, union } from 'superstruct'
 import { log } from './globals'
 
-// TODO: move to ui/Patternfly related packagee?
 export const Icons = {
   folder: React.createElement(FolderIcon),
   folderOpen: React.createElement(FolderOpenIcon),

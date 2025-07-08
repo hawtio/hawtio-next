@@ -2,7 +2,8 @@ import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import { Button, Form, FormGroup, Modal, ModalVariant, Popover, Radio, TextInput } from '@patternfly/react-core'
 import { useState } from 'react'
 import { ConditionalBreakpoint, debugService as ds } from './debug-service'
-import { ExclamationCircleIcon, HelpIcon } from '@patternfly/react-icons'
+import { ExclamationCircleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon'
+import { HelpIcon } from '@patternfly/react-icons/dist/esm/icons/help-icon'
 
 interface CondBkpsProps {
   selectedNode: MBeanNode

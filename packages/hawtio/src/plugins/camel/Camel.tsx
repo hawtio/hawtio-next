@@ -7,7 +7,7 @@ import {
   Spinner,
   EmptyStateHeader,
 } from '@patternfly/react-core'
-import { CubesIcon } from '@patternfly/react-icons'
+import { CubesIcon } from '@patternfly/react-icons/dist/esm/icons/cubes-icon'
 import React from 'react'
 import Split from 'react-split'
 import './Camel.css'

@@ -32,7 +32,7 @@ import {
   TextInput,
   Title,
 } from '@patternfly/react-core'
-import { LockIcon } from '@patternfly/react-icons'
+import { LockIcon } from '@patternfly/react-icons/dist/esm/icons/lock-icon'
 import React, { createContext, useContext, useState } from 'react'
 import './OperationForm.css'
 import { Operation, OperationArgument } from './operation'

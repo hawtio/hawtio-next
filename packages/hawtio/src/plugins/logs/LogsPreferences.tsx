@@ -12,7 +12,7 @@ import {
 } from '@patternfly/react-core'
 import React, { useState } from 'react'
 import { LogsOptions, logsService } from './logs-service'
-import { ExclamationCircleIcon } from '@patternfly/react-icons'
+import { ExclamationCircleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon'
 
 export const LogsPreferences: React.FunctionComponent = () => {
   const [options, setOptions] = useState(logsService.loadOptions())

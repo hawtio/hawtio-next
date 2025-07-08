@@ -26,7 +26,9 @@ import {
   ToolbarItem,
 } from '@patternfly/react-core'
 import './Remote.css'
-import { PluggedIcon, PlusIcon, UnpluggedIcon } from '@patternfly/react-icons'
+import { PluggedIcon } from '@patternfly/react-icons/dist/esm/icons/plugged-icon'
+import { PlusIcon } from '@patternfly/react-icons/dist/esm/icons/plus-icon'
+import { UnpluggedIcon } from '@patternfly/react-icons/dist/esm/icons/unplugged-icon'
 import React, { useContext, useEffect, useState } from 'react'
 import { DELETE } from '../connections'
 import { ConnectContext } from '../context'

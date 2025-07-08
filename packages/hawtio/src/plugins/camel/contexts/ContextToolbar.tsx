@@ -14,7 +14,9 @@ import {
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core'
-import { AsleepIcon, PlayIcon, Remove2Icon } from '@patternfly/react-icons'
+import { AsleepIcon } from '@patternfly/react-icons/dist/esm/icons/asleep-icon'
+import { PlayIcon } from '@patternfly/react-icons/dist/esm/icons/play-icon'
+import { Remove2Icon } from '@patternfly/react-icons/dist/esm/icons/remove2-icon'
 import { EllipsisVIcon } from '@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon'
 import React, { useState } from 'react'
 import {
