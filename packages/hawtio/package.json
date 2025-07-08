@@ -55,7 +55,7 @@
     "@hawtio/camel-model-v4_10": "npm:@hawtio/camel-model@~4.10.2",
     "@hawtio/camel-model-v4_8": "npm:@hawtio/camel-model@~4.8.5",
     "@jolokia.js/simple": "^2.2.4",
-    "@module-federation/utilities": "^3.1.59",
+    "@module-federation/utilities": "^3.1.60",
     "@monaco-editor/react": "^4.7.0",
     "@patternfly/react-charts": "~7.4.9",
     "@patternfly/react-code-editor": "~5.4.18",
