@@ -17,7 +17,7 @@ import {
   Text,
   Title,
 } from '@patternfly/react-core'
-import { InfoCircleIcon } from '@patternfly/react-icons'
+import { InfoCircleIcon } from '@patternfly/react-icons/dist/esm/icons/info-circle-icon'
 import { JolokiaSuccessResponse, JolokiaErrorResponse, ReadRequest } from 'jolokia.js'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { HawtioEmptyCard, HawtioLoadingCard } from '@hawtiosrc/plugins/shared'

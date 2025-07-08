@@ -5,13 +5,11 @@ import { HealthComponentDetail, HealthData } from './types'
 import { Table, Tbody, Td, Tr } from '@patternfly/react-table'
 import { humanizeLabels } from '@hawtiosrc/util/strings'
 import { ChartDonutUtilization } from '@patternfly/react-charts'
-import {
-  CheckCircleIcon,
-  ExclamationCircleIcon,
-  ExclamationTriangleIcon,
-  InfoCircleIcon,
-  QuestionCircleIcon,
-} from '@patternfly/react-icons'
+import { CheckCircleIcon } from '@patternfly/react-icons/dist/esm/icons/check-circle-icon'
+import { ExclamationCircleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon'
+import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon'
+import { InfoCircleIcon } from '@patternfly/react-icons/dist/esm/icons/info-circle-icon'
+import { QuestionCircleIcon } from '@patternfly/react-icons/dist/esm/icons/question-circle-icon'
 import './Health.css'
 
 const SPAN_6_COMPONENTS = ['diskSpace', 'camelHealth', 'camel']

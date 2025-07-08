@@ -12,7 +12,7 @@ import {
   TextContent,
   Title,
 } from '@patternfly/react-core'
-import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons'
+import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons/dist/esm/icons/outlined-question-circle-icon'
 import React from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import './Connect.css'

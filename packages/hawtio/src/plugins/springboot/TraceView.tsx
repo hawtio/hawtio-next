@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Button, CodeBlock, CodeBlockCode, Flex, Label, Modal, Icon } from '@patternfly/react-core'
-import { CheckCircleIcon, ExclamationCircleIcon } from '@patternfly/react-icons'
+import { CheckCircleIcon } from '@patternfly/react-icons/dist/esm/icons/check-circle-icon'
+import { ExclamationCircleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon'
 import { Trace } from './types'
 import { springbootService } from './springboot-service'
 import { FilteredTable } from '@hawtiosrc/ui'

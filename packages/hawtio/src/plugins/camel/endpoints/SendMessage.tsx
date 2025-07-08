@@ -20,7 +20,7 @@ import {
   Title,
 } from '@patternfly/react-core'
 
-import { TrashIcon } from '@patternfly/react-icons'
+import { TrashIcon } from '@patternfly/react-icons/dist/esm/icons/trash-icon'
 import * as monacoEditor from 'monaco-editor'
 import React, { FormEvent, useContext, useRef, useState } from 'react'
 import xmlFormat from 'xml-formatter'

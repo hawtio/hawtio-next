@@ -14,17 +14,15 @@ import {
   Panel,
   Title,
 } from '@patternfly/react-core'
-import {
-  BanIcon,
-  BarsIcon,
-  ExclamationCircleIcon,
-  LongArrowAltDownIcon,
-  MinusIcon,
-  PlayIcon,
-  PlusCircleIcon,
-  PlusIcon,
-  TimesCircleIcon,
-} from '@patternfly/react-icons'
+import { BanIcon } from '@patternfly/react-icons/dist/esm/icons/ban-icon'
+import { BarsIcon, } from '@patternfly/react-icons/dist/esm/icons/bars-icon'
+import { ExclamationCircleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon'
+import { LongArrowAltDownIcon } from '@patternfly/react-icons/dist/esm/icons/long-arrow-alt-down-icon'
+import { MinusIcon } from '@patternfly/react-icons/dist/esm/icons/minus-icon'
+import { PlayIcon } from '@patternfly/react-icons/dist/esm/icons/play-icon'
+import { PlusCircleIcon } from '@patternfly/react-icons/dist/esm/icons/plus-circle-icon'
+import { PlusIcon } from '@patternfly/react-icons/dist/esm/icons/plus-icon'
+import { TimesCircleIcon } from '@patternfly/react-icons/dist/esm/icons/times-circle-icon'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import Jolokia, { JolokiaSuccessResponse, JolokiaErrorResponse } from 'jolokia.js'
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'

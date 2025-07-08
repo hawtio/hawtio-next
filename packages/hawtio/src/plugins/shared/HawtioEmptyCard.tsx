@@ -1,5 +1,5 @@
 import { Card, CardBody, CardTitle, Text } from '@patternfly/react-core'
-import { InfoCircleIcon } from '@patternfly/react-icons'
+import { InfoCircleIcon } from '@patternfly/react-icons/dist/esm/icons/info-circle-icon'
 import React from 'react'
 
 export const HawtioEmptyCard: React.FunctionComponent<{ title?: string; message: string; testid?: string }> = ({

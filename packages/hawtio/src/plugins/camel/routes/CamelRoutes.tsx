@@ -14,7 +14,9 @@ import {
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core'
-import { AsleepIcon, PlayIcon, Remove2Icon } from '@patternfly/react-icons'
+import { AsleepIcon } from '@patternfly/react-icons/dist/esm/icons/asleep-icon'
+import { PlayIcon } from '@patternfly/react-icons/dist/esm/icons/play-icon'
+import { Remove2Icon } from '@patternfly/react-icons/dist/esm/icons/remove2-icon'
 import { Table, Tbody, Td, Th, ThProps, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useState } from 'react'
 import { CamelContext } from '../context'

@@ -1,5 +1,5 @@
 import { Tooltip } from '@patternfly/react-core'
-import { InfoCircleIcon } from '@patternfly/react-icons'
+import { InfoCircleIcon } from '@patternfly/react-icons/dist/esm/icons/info-circle-icon'
 import React, { useRef } from 'react'
 import './Properties.css'
 import { Property } from './property'

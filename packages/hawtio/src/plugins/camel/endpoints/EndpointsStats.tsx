@@ -24,7 +24,7 @@ import {
 } from '@patternfly/react-core'
 
 import { Table, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
-import { SearchIcon } from '@patternfly/react-icons'
+import { SearchIcon } from '@patternfly/react-icons/dist/esm/icons/search-icon'
 import { objectSorter } from '@hawtiosrc/util/objects'
 
 export const EndpointStats: React.FunctionComponent = () => {
