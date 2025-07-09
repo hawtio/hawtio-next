@@ -47,7 +47,7 @@ export function useUser() {
         setUserLoaded(true)
       }
     }
-    fetchUser().then(() => true)
+    fetchUser()
 
     return () => {
       proceed = false

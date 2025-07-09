@@ -37,8 +37,8 @@ describe('UserService', () => {
 
     const userService = new __testing__.UserService()
     userService.addFetchUserHook('user-service-test', async resolve => {
-      resolve({ username: 'user2', isLogin: true })
-      return true
+      resolve({ username: 'user2', isLogin: true, loginMethod: 'form' })
+      return { isError: false, isIgnore: false, loginMethod: 'form' }
     })
     await userService.fetchUser()
     await expect(userService.getUsername()).resolves.toBe('user2')

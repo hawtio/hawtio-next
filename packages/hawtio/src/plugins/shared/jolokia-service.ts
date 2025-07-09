@@ -403,7 +403,7 @@ class JolokiaService implements IJolokiaService {
           userService.isLogin().then(login => {
             log.debug('Logging out due to fetch() error: status =', response.status)
             if (login) {
-              userService.logout().then(() => true)
+              userService.logout()
             }
           })
         }
@@ -752,7 +752,6 @@ class JolokiaService implements IJolokiaService {
           listOptions as SimpleRequestOptions,
         ),
       )
-      .then(() => true)
   }
 
   private mergeDomains(source: OptimisedJmxDomains, target: OptimisedJmxDomains): OptimisedJmxDomains {

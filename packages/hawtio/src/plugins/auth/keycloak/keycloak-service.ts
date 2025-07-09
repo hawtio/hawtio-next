@@ -253,7 +253,7 @@ class KeycloakService implements IKeycloakService {
         userService.setToken(userProfile.token)
       }
 
-      this.setupFetch().then(() => true)
+      this.setupFetch()
 
       // only now register help tab for OIDC
       helpRegistration()

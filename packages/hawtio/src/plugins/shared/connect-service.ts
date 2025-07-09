@@ -95,7 +95,7 @@ class ConnectService implements IConnectService {
     this.currentConnectionId = this.initCurrentConnectionId()
 
     // check "enabled" flag
-    isActive().then(() => true)
+    isActive()
   }
 
   /**
@@ -135,7 +135,7 @@ class ConnectService implements IConnectService {
     // Processing preset connections should come at last to prevent processing
     // them multiple times, because it may open new tab(s)/session(s) with `?con=`
     // to auto-connect to them later.
-    this.loadPresetConnections().then(() => true)
+    this.loadPresetConnections()
 
     return null
   }

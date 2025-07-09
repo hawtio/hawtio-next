@@ -54,7 +54,7 @@ export const HawtioInitialization: React.FC<{ verbose: boolean }> = ({ verbose =
         <div className='hwt-loading'>
           <h4>
             {dots.map((el: TaskState) => (
-                <span className={tickClass(el)}>#</span>
+                <span className={tickClass(el)}>&#9679;</span>
             ))}
           </h4>
         </div>
