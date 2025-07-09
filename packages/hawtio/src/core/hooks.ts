@@ -27,7 +27,7 @@ export function usePlugins() {
       setPlugins(enabledPlugins)
       setPluginsLoaded(true)
     }
-    loadPlugins().then(() => true)
+    loadPlugins()
 
     // Reload plugins when they are updated elsewhere
     eventService.onPluginsUpdated(loadPlugins)
@@ -54,7 +54,7 @@ export function useHawtconfig() {
       setHawtconfig(await configManager.getHawtconfig())
       setHawtconfigLoaded(true)
     }
-    loadHawtconfig().then(() => true)
+    loadHawtconfig()
   }, [])
 
   return { hawtconfig, hawtconfigLoaded }

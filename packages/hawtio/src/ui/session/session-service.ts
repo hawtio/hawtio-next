@@ -31,7 +31,7 @@ class SessionService {
     this.sessionConfigReadyPromise = new Promise(resolve => {
       this.sessionConfigReady = resolve
     })
-    this.fetchConfiguration().then(() => true)
+    this.fetchConfiguration()
   }
 
   /**

@@ -38,15 +38,15 @@ async function isProxyEnabled(): Promise<boolean> {
     if (!res.ok) {
       configManager.initItem('Checking proxy', TaskState.skipped, 'config')
       log.debug('Failed to fetch', PATH_PROXY_ENABLED, ':', res.status, res.statusText)
-      return false
+      proxyEnabled = false
+    } else {
+      const data = await res.text()
+      // Disable proxy only when explicitly disabled
+      // TODO: verify default value for proxyEnabled
+      proxyEnabled = data.trim() !== 'false'
+      configManager.initItem('Checking proxy', proxyEnabled ? TaskState.finished : TaskState.skipped, 'config')
+      log.debug('Proxy enabled:', proxyEnabled)
     }
-
-    const data = await res.text()
-    // Disable proxy only when explicitly disabled
-    // TODO: verify default value for proxyEnabled
-    proxyEnabled = data.trim() !== 'false'
-    configManager.initItem('Checking proxy', proxyEnabled ? TaskState.finished : TaskState.skipped, 'config')
-    log.debug('Proxy enabled:', proxyEnabled)
   } catch (err) {
     // Silently ignore and enable it when the path is not available
     configManager.initItem('Checking proxy', TaskState.skipped, 'config')

@@ -297,7 +297,7 @@ class OidcService implements IOidcService {
           // we're still before access_token expiration time, so we can do the silent login
           // to not show <HawtioInitialization> twice, we'll set another flag
           localStorage.setItem('core.auth.silentLogin', '1')
-          this.oidcLogin(true).then(() => true)
+          this.oidcLogin(true)
         }
       }
 
@@ -403,7 +403,7 @@ class OidcService implements IOidcService {
     // we start silent login
     localStorage.setItem('core.auth.oidc', `${at_exp}`)
 
-    this.setupFetch().then(() => true)
+    this.setupFetch()
 
     // return information about the user to be processed by userService
     return {

@@ -104,6 +104,9 @@ type Plugins = Record<string, Plugin>
  */
 export type HawtioPlugin = () => void
 
+/**
+ * Extension of Module Federation {@link ImportRemoteOptions} for single federated module.
+ */
 export interface HawtioRemote extends ImportRemoteOptions {
   pluginEntry?: string
 }
@@ -122,7 +125,7 @@ const PATTERNFLY_THEME_CLASS = 'pf-v5-theme-dark'
  * - Plugin loader and discovery mechanism
  * - Bootstrapping the application
  */
-class HawtioCore {
+export class HawtioCore {
   /**
    * Hawtio base path.
    */
@@ -210,7 +213,11 @@ class HawtioCore {
   }
 
   /**
-   * Adds a URL for discovering plugins.
+   * Adds a URL for discovering plugins. Single URL defines an endpoint that returns an array of modules/plugins
+   * defined by {@link HawtioRemote} type.
+   *
+   * @param url An URL to fetch the plugin information from. When the URL is relative, it it's using `document.baseURI`
+   *  as the base.
    */
   addUrl(url: string): HawtioCore {
     if (URL.canParse(url)) {
@@ -252,11 +259,6 @@ class HawtioCore {
     // return a promise that waits for configManager to finish all its initialization items
     return configManager.ready().then(() => {
       log.debug('configManager.ready() resolved')
-      // return new Promise((resolve, _reject) => {
-      //   setTimeout(() => {
-      //     resolve(true)
-      //   }, 4000)
-      // })
       return true
     })
   }

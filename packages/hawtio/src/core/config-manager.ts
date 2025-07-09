@@ -87,6 +87,9 @@ export type LoginConfig = {
   links?: LoginLink[]
 }
 
+/**
+ * Configuration of a single link at the login page
+ */
 export type LoginLink = {
   url: string
   text: string
@@ -104,11 +107,17 @@ export type AboutConfig = {
   copyright?: string
 }
 
+/**
+ * Information about single _product_ or _component_ added to Hawtio application
+ */
 export type AboutProductInfo = {
   name: string
   value: string
 }
 
+/**
+ * List of routes which should be disabled in a Hawtio application
+ */
 export type DisabledRoutes = string[]
 
 /**
@@ -141,16 +150,24 @@ export type OnlineConfig = {
   projectSelector?: string
 }
 
-/** Stages of initialization tasks performed by Hawtio and presented in <HawtioInitialization> component */
+/**
+ * Stages of initialization tasks performed by Hawtio and presented in `<HawtioInitialization>` component
+ */
 export enum TaskState {
   started,
   skipped,
   finished,
   error,
 }
+
+/**
+ * A structure to hold information about initialization tasks performed by Hawtio
+ */
 export type InitializationTasks = Record<string, { ready: TaskState; group: string }>
 
-/** Supported authentication methods */
+/**
+ * Supported authentication methods
+ */
 export type AuthenticationKind =
   /**
    * Basic authentication - requires preparation of `Authorization: Basic <base64(user:password)>` HTTP header
@@ -192,6 +209,9 @@ export type AuthenticationKind =
    */
   | 'oauth2'
 
+/**
+ * State of authentication result which is used at login screen to show specific error message
+ */
 export enum AuthenticationResult {
   /** successful authentication */
   ok,
@@ -203,7 +223,9 @@ export enum AuthenticationResult {
   security_context_error,
 }
 
-/** Base type for authentication methods supported by Hawtio */
+/**
+ * Base type for authentication methods supported by Hawtio
+ */
 export type AuthenticationMethod = {
   /** One of the supported methods. If a plugin augments given method, we should have one such method only */
   method: AuthenticationKind
@@ -213,18 +235,22 @@ export type AuthenticationMethod = {
   login?: () => Promise<AuthenticationResult>
 }
 
-/** Configuration of Basic Authentication */
+/**
+ * Configuration of Basic Authentication
+ */
 export type BasicAuthenticationMethod = AuthenticationMethod & {
   /** Basic Authentication Realm - not sent with `Authorization`, but user should see it */
   realm: string
 }
 
-/** Configuration of FORM-based login configuration */
+/**
+ * Configuration of FORM-based login configuration
+ */
 export type FormAuthenticationMethod = AuthenticationMethod & {
   /** POST URL to send the credentials to */
   url: string | URL
 
-  /** POST URL for logout endoint */
+  /** POST URL for logout endpoint */
   logoutUrl: string | URL
 
   /**
@@ -252,7 +278,38 @@ export type OidcAuthenticationMethod = AuthenticationMethod & {}
 
 export const HAWTCONFIG_JSON = 'hawtconfig.json'
 
-class ConfigManager {
+/**
+ * Interface through which `ConfigManager` should be available to users of `@hawtio/react` package.
+ *
+ * We should keep public methods of this class available to other parts of `@hawtio/react`, but other NPM packages
+ * which use `@hawtio/react` should rather import `init` entry point and get access to a subset of available
+ * methods.
+ */
+export interface IConfigManager {
+  /**
+   * Add information about product that builds on `@hawtio/react`. It may be full application or part of the
+   * application
+   *
+   * @param name Name of the component
+   * @param value Value to show for the component name - usually a version
+   */
+  addProductInfo(name: string, value: string): Promise<void>
+
+  /**
+   * Track initialization task at selected {@link TaskState}. For proper usage, all tasks should first be
+   * registered with `started` and finally with one of:
+   *  * `finished`
+   *  * `skipped`
+   *  * `error`
+   *
+   * @param item Initialization task name
+   * @param state Initialization task state
+   * @param group One of supported initialization task groups
+   */
+  initItem(item: string, state: TaskState, group: 'config'|'plugins'|'finish'): void
+}
+
+class ConfigManager implements IConfigManager {
   private config?: Promise<Hawtconfig>
 
   /** List of initialization tasks to be presented in <HawtioInitialization> */
@@ -268,6 +325,36 @@ class ConfigManager {
     this.authenticationConfigReady = resolve
   })
 
+  // --- External public API (IConfigManager)
+
+  async addProductInfo(name: string, value: string) {
+    const config = await this.getHawtconfig()
+    if (!config.about) {
+      config.about = {}
+    }
+    if (!config.about.productInfo) {
+      config.about.productInfo = []
+    }
+    config.about.productInfo.push({ name, value })
+  }
+
+  /**
+   * Pass information about initialization item
+   * @param item name of the item
+   * @param ready is it ready/started/finished/error?
+   * @param group a group of the initialization item for grouping in the UI
+   */
+  initItem(item: string, ready: TaskState, group: 'config'|'plugins'|'finish') {
+    this.initTasks[item] = { ready, group }
+    setTimeout(() => {
+      for (const l of this.initListeners) {
+        l(this.initTasks)
+      }
+    }, 0)
+  }
+
+  // --- Public API
+
   get authRetry() {
     return this.authRetryFlag
   }
@@ -277,7 +364,7 @@ class ConfigManager {
   }
 
   /**
-   * This method is called by hawtio.bootstrap, so we have a single point where global (not plugin-specific)
+   * This method is called by `hawtio.bootstrap()`, so we have a single point where global (not plugin-specific)
    * configuration is loaded
    */
   async initialize(): Promise<boolean> {
@@ -460,17 +547,6 @@ class ConfigManager {
     return enabledPlugins
   }
 
-  async addProductInfo(name: string, value: string) {
-    const config = await this.getHawtconfig()
-    if (!config.about) {
-      config.about = {}
-    }
-    if (!config.about.productInfo) {
-      config.about.productInfo = []
-    }
-    config.about.productInfo.push({ name, value })
-  }
-
   getInitializationTasks(): InitializationTasks {
     const silentLogin = localStorage.getItem('core.auth.silentLogin')
     if (silentLogin === '1') {
@@ -487,21 +563,6 @@ class ConfigManager {
 
   removeInitListener(f: (tasks: InitializationTasks) => void) {
     this.initListeners.splice(this.initListeners.indexOf(f), 1)
-  }
-
-  /**
-   * Pass information about initialization iteam
-   * @param item name of the item
-   * @param ready is it ready/started/finished/error?
-   * @param group a group of the initialization item for groupping in the UI
-   */
-  initItem(item: string, ready: TaskState, group: string) {
-    this.initTasks[item] = { ready, group }
-    setTimeout(() => {
-      for (const l of this.initListeners) {
-        l(this.initTasks)
-      }
-    }, 0)
   }
 
   /**

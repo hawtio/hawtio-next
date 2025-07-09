@@ -3,7 +3,7 @@
 // - statically imports Hawtio services
 // - statically imports <HawtioInitialization> React component (which doesn't use Patternfly)
 // - configures Hawtio synchronously (adding plugins and product info)
-// - calls asynchronous hawtio.bootstrap() and on fulfulled promise, dynamically (with "import()") imports
+// - calls asynchronous hawtio.bootstrap() and on fulfilled promise, dynamically (with "import()") imports
 //   @hawtio/react/ui and it's <Hawtio> React/Patternfly component
 //
 // The separation of statically loaded <HawtioInitialization> and dynamically loaded <Hawtio> components allows
@@ -14,19 +14,20 @@ import ReactDOM from 'react-dom/client'
 
 import { configManager, hawtio, HawtioInitialization, TaskState } from '@hawtio/react/init'
 
+// Create root for rendering React components. More React components can be rendered in single root.
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
-// basic UI showing initialization progress without dependencies on Patternfly
+// Basic UI that shows initialization progress without depending on Patternfly.
+// It is imported and rendered in fully synchronous way.
 root.render(<HawtioInitialization verbose={false} />)
 
+// Hawtio itself creates and tracks initialization tasks, but we can add our own.
 configManager.initItem('Loading UI', TaskState.started, 'config')
-
-// TODO: decide where to allow custom configuration
-configManager.authRetry = false
 
 // Configure the console
 configManager.addProductInfo('Test App', '1.0.0')
 
+// Add relative URL from which plugin definitions will be loaded. Relative URIs are resolved against document.baseURI.
 hawtio.addUrl('plugin')
 
 import('@hawtio/react').then(async m => {
