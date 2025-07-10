@@ -6,6 +6,10 @@ import { eventService } from './event-service'
 import { log } from './globals'
 
 const DEFAULT_REMOTE_ENTRY_FILE = 'remoteEntry.js'
+const DEFAULT_PLUGIN_ORDER = 100
+const DEFAULT_PLUGIN_ENTRY = 'plugin'
+const HAWTIO_DISABLE_THEME_LISTENER = 'hawtio.disableThemeListener'
+const PATTERNFLY_THEME_CLASS = 'pf-v5-theme-dark'
 
 /**
  * Components to be added to the header navbar
@@ -33,17 +37,29 @@ export interface UniversalHeaderItem {
   universal: boolean
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type HeaderItem = React.ComponentType<any> | UniversalHeaderItem
+export type HeaderItem = React.ComponentType | UniversalHeaderItem
 
 export function isUniversalHeaderItem(item: HeaderItem): item is UniversalHeaderItem {
   return 'component' in item && 'universal' in item && typeof item.universal === 'boolean'
 }
 
 /**
+ * Type definition of the entry point for a Hawtio plugin. Such plugin (method) should use Hawtio API
+ * to register plugin details with name, paths and components.
+ *
+ * This method is synchronous and should synchronously call one of the plugin registration methods:
+ * * `addPlugin`: add `Plugin` object directly
+ * * `addDeferredPlugin`: add a function returning a Promise resolving to a `Plugin` object
+ * * `addUrl`: add a URL for an endpoint returning an array of `HawtioRemote` objects representing remote modules
+ * loaded using Module Federation utilities
+ */
+export type HawtioPlugin = () => void
+export type HawtioAsyncPlugin = () => Promise<unknown>
+
+/**
  * Internal representation of a Hawtio plugin.
  */
-export interface Plugin {
+export type Plugin = {
   /**
    * Mandatory, unique plugin identifier
    */
@@ -76,11 +92,13 @@ export interface Plugin {
   isLogin?: boolean
 
   /**
-   * Plugins main component to be displayed
+   * Plugin's main component to be displayed inside `<HawtioPage>`
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  component?: React.ComponentType<any>
+  component?: React.ComponentType
 
+  /**
+   * Plugin's components to be added to `<HawtioHeaderToolbar>`
+   */
   headerItems?: HeaderItem[]
 
   /**
@@ -92,17 +110,15 @@ export interface Plugin {
   isActive: () => Promise<boolean>
 }
 
-const DEFAULT_PLUGIN_ORDER = 100
-
 /**
  * A collection of internal Hawtio plugins with IDs as keys.
  */
 type Plugins = Record<string, Plugin>
 
 /**
- * Type definition of the entry point for a Hawtio plugin.
+ * A collection of asynchronous functions returning Hawtio plugins
  */
-export type HawtioPlugin = () => void
+type DeferredPlugins = Record<string, () => Promise<Plugin>>
 
 /**
  * Extension of Module Federation {@link ImportRemoteOptions} for single federated module.
@@ -111,11 +127,45 @@ export interface HawtioRemote extends ImportRemoteOptions {
   pluginEntry?: string
 }
 
-const DEFAULT_PLUGIN_ENTRY = 'plugin'
+/**
+ * Interface through which `HawtioCore` should be available when importing it through `@hawtio/core/init` entry point.
+ *
+ * All the public methods of the implementing class will be available to other parts of `@hawtio/react`, but when
+ * accessed through `IHawtio`, only part of the public API will be available.
+ */
+export interface IHawtio {
+  /**
+   * Adds a Hawtio plugin directly using `Plugin` object. The plugin will be added to a list of plugins processed
+   * at bootstrap time
+   * @param plugin
+   */
+  addPlugin(plugin: Plugin): IHawtio
 
-const HAWTIO_DISABLE_THEME_LISTENER = 'hawtio.disableThemeListener'
+  /**
+   * Adds a Hawtio plugin in a deferred way. Instead of passing `Plugin` object directly, we pass a function that
+   * returns a Promise resolving (for example after `import()`) to actual `Plugin`.
+   * @param id Plugin ID
+   * @param deferred a function returning a Promise resolving to a `Plugin`
+   */
+  addDeferredPlugin(id: string, deferred: () => Promise<Plugin>): IHawtio
 
-const PATTERNFLY_THEME_CLASS = 'pf-v5-theme-dark'
+  /**
+   * Adds a URL for discovering plugins. Single URL defines an endpoint that returns an array of modules/plugins
+   * defined by {@link HawtioRemote} type.
+   *
+   * @param url An URL to fetch the plugin information from. When the URL is relative, it is using
+   * `document.baseURI` as the base.
+   */
+  addUrl(url: string): IHawtio
+
+  /**
+   * Bootstraps Hawtio. This method needs to be called by all applications that are bundled with `webpack` (or
+   * similar web bundler).
+   *
+   * This method returns a Promise. When resolved we can finally render the `<Hawtio>` React/Patternfly component
+   */
+  bootstrap(): Promise<boolean>
+}
 
 /**
  * Hawtio core service.
@@ -125,7 +175,7 @@ const PATTERNFLY_THEME_CLASS = 'pf-v5-theme-dark'
  * - Plugin loader and discovery mechanism
  * - Bootstrapping the application
  */
-export class HawtioCore {
+export class HawtioCore implements IHawtio {
   /**
    * Hawtio base path.
    */
@@ -142,6 +192,11 @@ export class HawtioCore {
   private plugins: Plugins = {}
 
   /**
+   * Holds all of the Hawtio plugins which will be evaluated in deferred way.
+   */
+  private deferredPlugins: DeferredPlugins = {}
+
+  /**
    * The Window Theme Listener callback function
    */
   private windowThemeListener = () => {
@@ -153,52 +208,8 @@ export class HawtioCore {
    */
   private windowListenerAdded = false
 
-  /**
-   * Sets the base path of the Hawtio console.
-   * If the given path includes trailing '/', it will be trimmed.
-   */
-  setBasePath(path: string) {
-    if (path.length > 1 && path.endsWith('/')) {
-      // Remove trailing '/'
-      this.basePath = path.slice(0, -1)
-    } else {
-      this.basePath = path
-    }
-  }
+  // --- External Public API (IHawtio)
 
-  /**
-   * Returns the base path of the Hawtio console without trailing '/'.
-   */
-  getBasePath(): string | undefined {
-    if (!this.basePath) {
-      const basePath = this.documentBase()
-      log.info('Base path from html head:', basePath)
-      if (basePath && basePath.length > 1 && basePath.endsWith('/')) {
-        // Remove trailing '/'
-        this.basePath = basePath.slice(0, -1)
-      } else {
-        this.basePath = basePath
-      }
-    }
-    return this.basePath
-  }
-
-  /**
-   * Returns the base URL specified in html/head/base element, href attribute. It should end with trailing '/'.
-   * Specified base affects how `fetch()` global function works.
-   * @private
-   */
-  private documentBase(): string | undefined {
-    const base = document.querySelector('head base')
-    if (base) {
-      return base.getAttribute('href') ?? undefined
-    }
-    return undefined
-  }
-
-  /**
-   * Adds a module to the list of modules to bootstrap.
-   */
   addPlugin(plugin: Plugin): HawtioCore {
     log.info('Add plugin:', plugin.id)
     configManager.initItem('Registering plugin: ' + plugin.id, TaskState.started, 'plugins')
@@ -212,13 +223,19 @@ export class HawtioCore {
     return this
   }
 
-  /**
-   * Adds a URL for discovering plugins. Single URL defines an endpoint that returns an array of modules/plugins
-   * defined by {@link HawtioRemote} type.
-   *
-   * @param url An URL to fetch the plugin information from. When the URL is relative, it it's using `document.baseURI`
-   *  as the base.
-   */
+  addDeferredPlugin(id: string, deferred: () => Promise<Plugin>): HawtioCore {
+    log.info('Add deferred plugin:', id)
+    configManager.initItem('Registering deferred plugin: ' + id, TaskState.started, 'plugins')
+    if (this.deferredPlugins[id]) {
+      throw new Error(`Deferred plugin "${id}" already exists`)
+    }
+    if (this.plugins[id]) {
+      throw new Error(`Conflict registering a deferred plugin with id="${id}". Plugin already registered.`)
+    }
+    this.deferredPlugins[id] = deferred
+    return this
+  }
+
   addUrl(url: string): HawtioCore {
     if (URL.canParse(url)) {
       // assume it's absolute URL
@@ -231,14 +248,7 @@ export class HawtioCore {
     return this
   }
 
-  /**
-   * Bootstraps Hawtio. This method needs to be called by all applications that are bundled with `webpack` (or
-   * similar web bundler).
-   *
-   * This method returns a Promise. When resolved we can take the `<Hawtio>` React/Patternfly component
-   * and render it in React root node.
-   */
-  async bootstrap() {
+  async bootstrap(): Promise<boolean> {
     log.info('Bootstrapping Hawtio...')
 
     // Load configuration to be used by all other services (login service, jolokia service, session service,
@@ -263,106 +273,19 @@ export class HawtioCore {
     })
   }
 
-  /**
-   * Downloads plugins from any configured URLs and load them.
-   * It is invoked at Hawtio's bootstrapping.
-   *
-   * This plugin mechanism is implemented based on Webpack Module Federation.
-   * https://module-federation.github.io/
-   */
-  private async loadPlugins() {
-    if (this.urls.length === 0) {
-      log.info('No URLs provided to load external plugins')
-      return
-    }
-
-    const numBefore = Object.keys(this.plugins).length
-    log.info(numBefore, 'plugins before loading:', { ...this.plugins })
-
-    // Load external plugins from all URLs
-    await Promise.all(this.urls.map(this.loadExternalPlugins))
-
-    const numAfter = Object.keys(this.plugins).length
-    log.info(numAfter, 'plugins after loaded:', this.plugins)
-
-    // Notify plugins update
-    if (numBefore !== numAfter) {
-      log.debug('Notify plugins update')
-      eventService.pluginsUpdated()
-    }
-  }
+  // --- Public API
 
   /**
-   * Loads external plugins from the given URL. The URL endpoint is expected to
-   * return an array of HawtioRemote objects.
+   * Returns all plugins registered using different plugin registration methods.
    */
-  private async loadExternalPlugins(url: string) {
-    log.debug('Trying url:', url)
-    try {
-      configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.started, 'plugins')
-      const res = await fetch(url)
-      if (!res.ok) {
-        configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.error, 'plugins')
-        log.error('Failed to fetch url:', url, '-', res.status, res.statusText)
-        return
-      }
-
-      const remotes = (await res.json()) as HawtioRemote[]
-      log.info('Loaded remotes from url:', url, '=', remotes)
-      configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.finished, 'plugins')
-
-      // Load plugins
-      await Promise.all(
-        remotes.map(async remote => {
-          let url: string
-          if (typeof remote.url === 'function') {
-            url = await remote.url()
-          } else {
-            url = remote.url
-          }
-          if (!url.endsWith('/')) {
-            url += '/'
-          }
-          if (URL.canParse(url)) {
-            // should be absolute URL
-            url += remote.remoteEntryFileName ?? DEFAULT_REMOTE_ENTRY_FILE
-          } else {
-            url = new URL(url + (remote.remoteEntryFileName ?? DEFAULT_REMOTE_ENTRY_FILE), document.baseURI).href
-          }
-          log.info('Loading remote', remote)
-          try {
-            configManager.initItem('Importing plugin from: ' + url, TaskState.started, 'plugins')
-            // call @module-federation/utilities method which helps us to deal with
-            // webpack's Module Federation (like container.init(__webpack_share_scopes__['default']) call)
-            const plugin = await importRemote<{ [entry: string]: HawtioPlugin }>(remote)
-            const entryFn = plugin[remote.pluginEntry || DEFAULT_PLUGIN_ENTRY]
-            if (!entryFn) {
-              throw new Error(`Plugin entry not found: ${remote.pluginEntry || DEFAULT_PLUGIN_ENTRY}`)
-            }
-            entryFn()
-            configManager.initItem('Importing plugin from: ' + url, TaskState.finished, 'plugins')
-            // configManager.initItem('Importing plugin from: ' + remote.url, true, "plugins")
-            log.info('Loaded remote', remote)
-          } catch (err) {
-            configManager.initItem('Importing plugin from: ' + url, TaskState.error, 'plugins')
-            log.error('Error loading remote:', remote, '-', err)
-          }
-        }),
-      )
-    } catch (err) {
-      configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.error, 'plugins')
-      log.error('Error fetching url:', url, '-', err)
-    }
-  }
-
   getPlugins(): Plugin[] {
     return Object.values(this.plugins)
   }
 
   /**
-   * Resolves which of registered plugins are active with the current environment.
+   * Resolves which of registered plugins are active in current environment.
    *
-   * There are two types of plugin: normal plugin and login plugin.
+   * There are two types of plugins: normal plugins and login plugins.
    * If it's normal, it's only resolved when the user is already logged in.
    * If it's login, it's only resolved when the user is not logged in yet, and thus
    * can only affects the login page.
@@ -396,29 +319,34 @@ export class HawtioCore {
     return resolved
   }
 
-  // Actual window theme query
-  private themeList() {
-    return window.matchMedia('(prefers-color-scheme: dark)')
-  }
-
   /**
-   * Detect what theme the browser has been set to and
-   * return 'dark' | 'light'
+   * Sets the base path of the Hawtio console.
+   * If the given path includes trailing '/', it will be trimmed.
    */
-  private windowTheme() {
-    return this.themeList().matches ? 'dark' : 'light'
-  }
-
-  /**
-   * Update the document root with the patternfly dark class
-   * see https://www.patternfly.org/developer-resources/dark-theme-handbook
-   */
-  private updateFromTheme() {
-    if (this.windowTheme() === 'dark') {
-      document.documentElement.classList.add(PATTERNFLY_THEME_CLASS)
+  setBasePath(path: string) {
+    if (path.length > 1 && path.endsWith('/')) {
+      // Remove trailing '/'
+      this.basePath = path.slice(0, -1)
     } else {
-      document.documentElement.classList.remove(PATTERNFLY_THEME_CLASS)
+      this.basePath = path
     }
+  }
+
+  /**
+   * Returns the base path of the Hawtio console without trailing '/'.
+   */
+  getBasePath(): string | undefined {
+    if (!this.basePath) {
+      const basePath = this.documentBase()
+      log.info('Base path from html head:', basePath)
+      if (basePath && basePath.length > 1 && basePath.endsWith('/')) {
+        // Remove trailing '/'
+        this.basePath = basePath.slice(0, -1)
+      } else {
+        this.basePath = basePath
+      }
+    }
+    return this.basePath
   }
 
   /**
@@ -451,9 +379,199 @@ export class HawtioCore {
     this.themeList().removeEventListener('change', this.windowThemeListener)
     this.windowListenerAdded = false
   }
+
+  // --- private methods
+
+  /**
+   * Returns the base URL specified in html/head/base element, href attribute. It should end with trailing '/'.
+   * Specified base affects how `fetch()` global function works.
+   * @private
+   */
+  private documentBase(): string | undefined {
+    const base = document.querySelector('head base')
+    if (base) {
+      return base.getAttribute('href') ?? undefined
+    }
+    return undefined
+  }
+
+  /**
+   * Downloads plugins from any configured URLs and loads them.
+   * It is invoked at Hawtio's bootstrapping.
+   *
+   * This plugin mechanism is implemented using [Webpack Module Federation](https://module-federation.github.io/).
+   */
+  private async loadPlugins() {
+    if (this.urls.length === 0) {
+      log.info('No URLs provided to load external plugins')
+      return
+    }
+
+    const numBefore = Object.keys(this.plugins).length
+    log.info(numBefore, 'plugins before loading:', { ...this.plugins })
+
+    // Load external plugins from all URLs
+    await Promise.all(this.urls.map(this.loadExternalPlugins))
+
+    // Load deferred plugins - only now, because some external plugins may
+    // have registered additional deferred plugins
+    configManager.initItem('Loading deferred plugins', TaskState.started, 'plugins')
+    await this.loadDeferredPlugins()
+    configManager.initItem('Loading deferred plugins', TaskState.finished, 'plugins')
+
+    const numAfter = Object.keys(this.plugins).length
+    log.info(numAfter, 'plugins after loaded:', this.plugins)
+
+    // Notify plugins update
+    if (numBefore !== numAfter) {
+      log.debug('Notify plugins update')
+      eventService.pluginsUpdated()
+    }
+  }
+
+  /**
+   * Loads external plugins from the given URL. The URL endpoint is expected to
+   * return an array of HawtioRemote objects. These are not strictly "Hawtio plugins", but rather
+   * "remote entry points" that when called may register Hawtio plugins (with `hawtio.addPlugin()` or
+   * `hawtio.addDeferredPlugin()`).
+   */
+  private async loadExternalPlugins(url: string) {
+    log.debug('Trying url:', url)
+    try {
+      configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.started, 'plugins')
+      const res = await fetch(url)
+      if (!res.ok) {
+        configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.error, 'plugins')
+        log.error('Failed to fetch url:', url, '-', res.status, res.statusText)
+        return
+      }
+
+      const remotes = (await res.json()) as HawtioRemote[]
+      log.info('Loaded remotes from url:', url, '=', remotes)
+      configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.finished, 'plugins')
+
+      // Load plugins - map all remote plugin descriptions and add them to Promise.all - Hawtio will await
+      // for all promises representing remote entry points
+      return Promise.all(
+        remotes.map(async remote => {
+          let url: string
+          if (typeof remote.url === 'function') {
+            url = await remote.url()
+          } else {
+            url = remote.url
+          }
+          if (!url.endsWith('/')) {
+            url += '/'
+          }
+          if (URL.canParse(url)) {
+            // should be absolute URL
+            url += remote.remoteEntryFileName ?? DEFAULT_REMOTE_ENTRY_FILE
+          } else {
+            url = new URL(url + (remote.remoteEntryFileName ?? DEFAULT_REMOTE_ENTRY_FILE), document.baseURI).href
+          }
+          log.info('Loading remote', remote)
+          try {
+            configManager.initItem('Importing plugin from: ' + url, TaskState.started, 'plugins')
+            // call @module-federation/utilities method which helps us to deal with
+            // webpack's Module Federation (like container.init(__webpack_share_scopes__['default']) call)
+            const plugin = await importRemote<{ [entry: string]: HawtioAsyncPlugin }>(remote)
+            const entryFn = plugin[remote.pluginEntry || DEFAULT_PLUGIN_ENTRY]
+            if (!entryFn) {
+              configManager.initItem('Importing plugin from: ' + url, TaskState.skipped, 'plugins')
+              log.info('Ignored remote', remote, '(no entry point available)')
+              return Promise.resolve(true)
+            } else {
+              // we should be flexible when using a result of the entry point function. Well behaving plugins
+              // (actually plugin entry point functions) should return a promise resolved after the remote plugin
+              // function actually registers a Hawtio plugin.
+              // If such entry point function doesn't return a promise, we can't be sure when hawtio.addPlugin()
+              // will actually be called.
+              // We generally expect the plugin to call addPlugin() or addDeferredPlugin(), but plugins may simply
+              // alter the branding or customize login hooks.
+              // We definitely won't expect this such entry point functions to return a Plugin object to be registered
+              // by Hawtio.
+              // That's why fully dynamic Module Federation plugins are a bit less flexible than plugins declared
+              // in "remotes" field of ModuleFederationPlugin in Webpack configuration
+              const result = entryFn()
+              let resultPromise: Promise<unknown>
+              if (result instanceof Promise) {
+                resultPromise = result
+              } else {
+                resultPromise = Promise.resolve(result)
+              }
+              return resultPromise.then(() => {
+                configManager.initItem('Importing plugin from: ' + url, TaskState.finished, 'plugins')
+                log.info('Loaded remote', remote)
+              })
+            }
+          } catch (err) {
+            configManager.initItem('Importing plugin from: ' + url, TaskState.error, 'plugins')
+            log.error('Error loading remote:', remote, '-', err)
+            return Promise.resolve(false)
+          }
+        }),
+      )
+    } catch (err) {
+      configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.error, 'plugins')
+      log.error('Error fetching url:', url, '-', err)
+      return
+    }
+  }
+
+  /**
+   * Evaluate all deferred plugins, so they are added to `plugins` array of available plugins
+   * @private
+   */
+  private async loadDeferredPlugins() {
+    log.debug('Loading deferred plugins')
+
+    // each "deferred plugin" is a function returning a Promise resolving to a Plugin
+    return Promise.all(Object.entries(this.deferredPlugins).map(async (e) => {
+      const [ id, deferred ] = e
+
+      // call the async method returning Promise<Plugin>
+      return deferred()
+          .then(plugin => {
+            // now we can treat it as direct plugin
+            if (this.plugins[plugin.id]) {
+              throw new Error(`Plugin "${plugin.id}" already exists`)
+            }
+            this.plugins[plugin.id] = plugin
+
+            // when deferred plugin was registered, we started dedicated initialization task. We can finish it now.
+            configManager.initItem('Registering deferred plugin: ' + id, TaskState.finished, 'plugins')
+          })
+          .catch(err => {
+            log.error('Error registering deferred plugin:', id, '-', err)
+            configManager.initItem('Registering deferred plugin: ' + id, TaskState.error, 'plugins')
+          })
+    }))
+  }
+
+  // Actual window theme query
+  private themeList() {
+    return window.matchMedia('(prefers-color-scheme: dark)')
+  }
+
+  /**
+   * Detect what theme the browser has been set to and
+   * return 'dark' | 'light'
+   */
+  private windowTheme(): string {
+    return this.themeList().matches ? 'dark' : 'light'
+  }
+
+  /**
+   * Update the document root with the patternfly dark class
+   * see https://www.patternfly.org/developer-resources/dark-theme-handbook
+   */
+  private updateFromTheme() {
+    if (this.windowTheme() === 'dark') {
+      document.documentElement.classList.add(PATTERNFLY_THEME_CLASS)
+    } else {
+      document.documentElement.classList.remove(PATTERNFLY_THEME_CLASS)
+    }
+  }
 }
 
-/**
- * Hawtio core singleton instance.
- */
 export const hawtio = new HawtioCore()

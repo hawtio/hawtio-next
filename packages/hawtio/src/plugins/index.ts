@@ -1,4 +1,3 @@
-import type { HawtioPlugin } from '@hawtiosrc/core'
 import { keycloak } from './auth/keycloak'
 import { oidc } from './auth/oidc'
 import { camel } from './camel'
@@ -16,7 +15,7 @@ import { consoleStatus } from './console-status'
  *
  * The order of loading the builtin plugins is defined by this function.
  */
-export const registerPlugins: HawtioPlugin = () => {
+export const registerPlugins = () => {
   // Auth plugins should be loaded before other plugins
   keycloak()
   oidc()

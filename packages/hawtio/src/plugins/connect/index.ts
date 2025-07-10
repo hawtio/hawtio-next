@@ -1,4 +1,4 @@
-import { hawtio, HawtioPlugin, UniversalHeaderItem } from '@hawtiosrc/core'
+import { hawtio, type HawtioPlugin, type UniversalHeaderItem } from '@hawtiosrc/core'
 import { helpRegistry } from '@hawtiosrc/help/registry'
 import { preferencesRegistry } from '@hawtiosrc/preferences/registry'
 import { pluginId, pluginPath, pluginTitle, statusPluginId } from './globals'

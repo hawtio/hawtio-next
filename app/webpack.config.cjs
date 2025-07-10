@@ -28,14 +28,14 @@ module.exports = (_, args) => {
       plugins: [
         new ModuleFederationPlugin({
           // _host_ is an application that can:
-          //  - consume modules from "remotes" (ContainerReferencePlugin)
-          //  - provide modules from "exposes" (ContainerPlugin)
+          //  - consume modules from "remotes" provided by other _hosts_ (ContainerReferencePlugin)
+          //  - provide modules from "exposes" to be consumed by other _hosts_ (ContainerPlugin).
           //
           // "name" is required only if the _host_ uses "exposes" and it creates:
           // "webpack/container/entry/app" module
           name: 'app',
-          // "filename" is only for ContainerPlugin (for "exposes") - regardles of the number of exposed modules
-          // we have single "remoteEntry.js" file
+          // "filename" is only for ContainerPlugin (for "exposes").
+          // there's a single "remoteEntry.js" for any number of exposed modules
           filename: 'remoteEntry.js',
           exposes: {
             './remote1': './src/examples/remote1',
@@ -43,9 +43,11 @@ module.exports = (_, args) => {
           },
           // keys in this map are used in `webpack/container/reference/${key}` pattern
           // the part before "@" should match "name" of some (could be different, but also this very same, as here)
-          // ModuleFederationPlugin configuration. We could simply have this webpack.config.cjs provide more
-          // configurations - each with own ModuleFederationPluginConfiguration
-          // so here "app" maatches our own ModuleFederationPlugin config's "name"
+          // ModuleFederationPlugin configuration.
+          // This webpack.config.cjs provides one more configuration with own ModuleFederationPlugin configuration
+          // so here "app" matches our own ModuleFederationPlugin config's "name"
+          // All declared entries in "remotes" can be imported using `import` or `import()` in JavaScript code.
+          // When an entry is not declared here, we can still consume such module using @module-federation/utilities
           remotes: {
             'static-remotes': 'app@http://localhost:3000/hawtio/remoteEntry.js',
           },
@@ -252,6 +254,13 @@ module.exports = (_, args) => {
               remoteEntryFileName: 'remoteExternalEntry.js',
               pluginEntry: 'registerRemote',
             },
+            {
+              url: 'http://localhost:3000/hawtio',
+              scope: 'appRemote',
+              module: './remote3-deferred',
+              remoteEntryFileName: 'remoteExternalEntry.js',
+              pluginEntry: 'registerRemoteDeferred',
+            },
           ]
           devServer.app.get(`${publicPath}/plugin`, (_, res) => {
             res.send(JSON.stringify(plugin))
@@ -374,7 +383,7 @@ module.exports = (_, args) => {
       },
     },
     // this is a very slim configuration which only builds a file used as exposed entry point for ModuleFederation plugin
-    // which will be loaded dynamically by Hawtio using @module-federation/utiliites
+    // which will be loaded dynamically by Hawtio using @module-federation/utilities
     {
       entry: './src/examples/remote3',
       devtool: false,
@@ -384,6 +393,7 @@ module.exports = (_, args) => {
           filename: 'remoteExternalEntry.js',
           exposes: {
             './remote3': './src/examples/remote3',
+            './remote3-deferred': './src/examples/remote3-deferred',
           },
           shared: {
             ...dependencies,

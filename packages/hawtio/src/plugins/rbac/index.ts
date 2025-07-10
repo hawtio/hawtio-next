@@ -1,4 +1,4 @@
-import { HawtioPlugin } from '@hawtiosrc/core'
+import { type HawtioPlugin } from '@hawtiosrc/core'
 import { treeProcessorRegistry } from '@hawtiosrc/plugins/shared'
 import { rbacTreeProcessor } from './tree-processor'
 

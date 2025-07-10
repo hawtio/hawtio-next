@@ -1,4 +1,4 @@
-import { Plugin } from './core'
+import { type Plugin } from './core'
 import { Logger } from './logging'
 import { PATH_LOGIN, PATH_LOGOUT } from '@hawtiosrc/auth/globals'
 
@@ -6,6 +6,7 @@ const log = Logger.get('hawtio-core-config')
 
 export const DEFAULT_APP_NAME = 'Hawtio Management Console'
 export const DEFAULT_LOGIN_TITLE = 'Log in to your account'
+export const HAWTCONFIG_JSON = 'hawtconfig.json'
 
 /**
  * The single user-customisable entrypoint for the Hawtio console configurations.
@@ -276,14 +277,12 @@ export type FormAuthenticationMethod = AuthenticationMethod & {
  */
 export type OidcAuthenticationMethod = AuthenticationMethod & {}
 
-export const HAWTCONFIG_JSON = 'hawtconfig.json'
-
 /**
- * Interface through which `ConfigManager` should be available to users of `@hawtio/react` package.
+ * Interface through which `ConfigManager` should be available when importing it through `@hawtio/core/init` entry point.
  *
- * We should keep public methods of this class available to other parts of `@hawtio/react`, but other NPM packages
- * which use `@hawtio/react` should rather import `init` entry point and get access to a subset of available
- * methods.
+ * We should keep public methods of the implementing class available to other parts of `@hawtio/react`,
+ * but other NPM packages which use `@hawtio/react` should rather import `init` entry point and get access to
+ * a subset of available methods.
  */
 export interface IConfigManager {
   /**
@@ -309,23 +308,31 @@ export interface IConfigManager {
   initItem(item: string, state: TaskState, group: 'config'|'plugins'|'finish'): void
 }
 
-class ConfigManager implements IConfigManager {
+/**
+ * This class provides API for configuration of `@hawtio/react` package
+ */
+export class ConfigManager implements IConfigManager {
+  /** Configuration object read from `hawtconfig.json` and/or built programmatically */
   private config?: Promise<Hawtconfig>
 
-  /** List of initialization tasks to be presented in <HawtioInitialization> */
+  /** List of initialization tasks to be presented in `<HawtioInitialization>` component */
   private initTasks: InitializationTasks = {}
 
+  /** Listeners notified about initialization task state changes */
   private initListeners: ((tasks: InitializationTasks) => void)[] = []
 
-  private authRetryFlag = false
-
+  /** Configuration of available authentication methods, used by login-related components */
   private authenticationConfig: AuthenticationMethod[] = []
+
+  /** Resolution method for `authenticationConfigPromise` */
   private authenticationConfigReady: (ready: boolean | PromiseLike<boolean>) => void = () => true
+
+  /** Promise resolved when authentication config is already read from external source */
   private authenticationConfigPromise = new Promise<boolean>(resolve => {
     this.authenticationConfigReady = resolve
   })
 
-  // --- External public API (IConfigManager)
+  // --- External Public API (IConfigManager)
 
   async addProductInfo(name: string, value: string) {
     const config = await this.getHawtconfig()
@@ -338,12 +345,6 @@ class ConfigManager implements IConfigManager {
     config.about.productInfo.push({ name, value })
   }
 
-  /**
-   * Pass information about initialization item
-   * @param item name of the item
-   * @param ready is it ready/started/finished/error?
-   * @param group a group of the initialization item for grouping in the UI
-   */
   initItem(item: string, ready: TaskState, group: 'config'|'plugins'|'finish') {
     this.initTasks[item] = { ready, group }
     setTimeout(() => {
@@ -354,14 +355,6 @@ class ConfigManager implements IConfigManager {
   }
 
   // --- Public API
-
-  get authRetry() {
-    return this.authRetryFlag
-  }
-
-  set authRetry(flag: boolean) {
-    this.authRetryFlag = flag
-  }
 
   /**
    * This method is called by `hawtio.bootstrap()`, so we have a single point where global (not plugin-specific)
@@ -394,7 +387,7 @@ class ConfigManager implements IConfigManager {
         return [defaultConfiguration]
       })
 
-    // configuration is ready - resolve the promise. but plugins may still call
+    // configuration is ready - resolve the promise. But plugins may still call
     // configureAuthenticationMethod() to alter the generic list of methods
     this.authenticationConfigReady(true)
     this.initItem('Checking authentication providers', TaskState.finished, 'config')
@@ -403,8 +396,8 @@ class ConfigManager implements IConfigManager {
   }
 
   /**
-   * Called by plugins to augment generic authentication method. Plugins may provide additional information
-   * for given authentication method
+   * Called by plugins to augment generic authentication method config.
+   * Plugins may provide additional details, like location of OIDC provider.
    * @param config
    */
   async configureAuthenticationMethod(config: AuthenticationMethod): Promise<void> {
@@ -414,7 +407,7 @@ class ConfigManager implements IConfigManager {
       // search generic login configurations and alter the one which matches passed `config` by `method` field
       for (const idx in this.authenticationConfig) {
         if (this.authenticationConfig[idx]?.method === config.method) {
-          // a plugin provided the remaining part of given authentication method
+          // a plugin provides the remaining part of given authentication method (except the name)
           this.authenticationConfig[idx] = {
             ...config,
             name: this.authenticationConfig[idx]!.name,
@@ -425,15 +418,35 @@ class ConfigManager implements IConfigManager {
     })
   }
 
-  reset() {
-    this.config = undefined
+  /**
+   * Get configured authentication methods - possibly augmented by plugins. This method should
+   * be called from hooks and React components, so can be done only after hawtio.bootstrap() promise is
+   * resolved. This ensures that plugins already finished their configuration.
+   */
+  getAuthenticationConfig(): AuthenticationMethod[] {
+    return this.authenticationConfig
   }
 
+  /**
+   * Returns selected authentication method by name
+   * @param method
+   */
+  getAuthenticationMethod(method: string): AuthenticationMethod | undefined {
+    return this.authenticationConfig.find(am => am.method === method)
+  }
+
+  /**
+   * Set new `Hawtconfig` object as the configuration
+   * @param config
+   */
   setHawtconfig(config: Hawtconfig) {
     this.config = Promise.resolve(config)
   }
 
-  getHawtconfig(): Promise<Hawtconfig> {
+  /**
+   * Returns currently configured `Hawtconfig` object
+   */
+  async getHawtconfig(): Promise<Hawtconfig> {
     if (this.config) {
       return this.config
     }
@@ -443,18 +456,16 @@ class ConfigManager implements IConfigManager {
   }
 
   /**
-   * Get configured authentication methods - possibly augmented by plugins. This method should
-   * be called from hooks and React components, so can be done only after hawtio.bootstrap() promise is
-   * resolved. This ensures that plugins already finished their configuration
+   * Resets current `Hawtconfig` object to undefined state
    */
-  getAuthenticationConfig(): AuthenticationMethod[] {
-    return this.authenticationConfig
+  reset() {
+    this.config = undefined
   }
 
-  getAuthenticationMethod(method: string): AuthenticationMethod | undefined {
-    return this.authenticationConfig.find(am => am.method === method)
-  }
-
+  /**
+   * Loads configuration from `hawtconfig.json`.
+   * @private
+   */
   private async loadConfig(): Promise<Hawtconfig> {
     log.info('Loading', HAWTCONFIG_JSON)
 
@@ -466,32 +477,41 @@ class ConfigManager implements IConfigManager {
         this.initItem('Loading ' + HAWTCONFIG_JSON, TaskState.skipped, 'config')
         return {}
       }
-      this.initItem('Loading ' + HAWTCONFIG_JSON, TaskState.finished, 'config')
 
       const config = await res.json()
       log.debug(HAWTCONFIG_JSON, '=', config)
       log.info('Loaded', HAWTCONFIG_JSON)
+
+      this.initItem('Loading ' + HAWTCONFIG_JSON, TaskState.finished, 'config')
       return config
     } catch (err) {
-      this.initItem('Loading ' + HAWTCONFIG_JSON, TaskState.skipped, 'config')
       log.error('Error fetching', HAWTCONFIG_JSON, '-', err)
+      this.initItem('Loading ' + HAWTCONFIG_JSON, TaskState.skipped, 'config')
       return {}
     }
   }
 
+  /**
+   * Plugins may use this method to change parts, or entire `hawtconfig.json` configuration.
+   * @param configurer
+   */
   async configure(configurer: (config: Hawtconfig) => void) {
     const config = await this.getHawtconfig()
     configurer(config)
   }
 
+  /**
+   * Apply loaded configuration to application (titles, links, icons). Should be called during Hawtio bootstrap.
+   */
   async applyBranding(): Promise<boolean> {
+    this.initItem('Applying branding', TaskState.started, 'config')
+
     const { branding } = await this.getHawtconfig()
     if (!branding) {
       return false
     }
 
     log.info('Apply branding', branding)
-    this.initItem('Applying branding', TaskState.started, 'config')
     let applied = false
     if (branding.appName) {
       log.info('Updating title -', branding.appName)
@@ -507,10 +527,18 @@ class ConfigManager implements IConfigManager {
       this.updateHref('#favicon', branding.favicon)
       applied = true
     }
+
     this.initItem('Applying branding', applied ? TaskState.finished : TaskState.skipped, 'config')
     return applied
   }
 
+  /**
+   * Alters `href` attribute of selected DOM element (for icons, styles)
+   * @param id
+   * @param path
+   * @param moveToLast
+   * @private
+   */
   private updateHref(id: string, path: string, moveToLast: boolean = false): void {
     log.info('Updating href for', id, '-', path, moveToLast)
     const elm = document.querySelector(id) as HTMLInputElement
@@ -530,15 +558,16 @@ class ConfigManager implements IConfigManager {
     }
   }
 
-  async isRouteEnabled(path: string): Promise<boolean> {
-    const { disabledRoutes } = await this.getHawtconfig()
-    return !disabledRoutes || !disabledRoutes.includes(path)
-  }
-
+  /**
+   * Filter loaded plugins, so only plugins which are not explicitly disabled in `hawtconfig.json` are used.
+   * @param plugins
+   */
   async filterEnabledPlugins(plugins: Plugin[]): Promise<Plugin[]> {
+    // await the config only once - not for each of the checked plugins
+    const { disabledRoutes } = await this.getHawtconfig()
     const enabledPlugins: Plugin[] = []
     for (const plugin of plugins) {
-      if ((plugin.path == null && (await plugin.isActive())) || (await this.isRouteEnabled(plugin.path!))) {
+      if ((plugin.path == null && (await plugin.isActive())) || (!disabledRoutes || !disabledRoutes.includes(plugin.path!))) {
         enabledPlugins.push(plugin)
       } else {
         log.debug(`Plugin "${plugin.id}" disabled by hawtconfig.json`)
@@ -547,34 +576,41 @@ class ConfigManager implements IConfigManager {
     return enabledPlugins
   }
 
+  /**
+   * Returns current state of initialization tasks
+   */
   getInitializationTasks(): InitializationTasks {
-    const silentLogin = localStorage.getItem('core.auth.silentLogin')
-    if (silentLogin === '1') {
-      // special state - don't feed <HawtioInitialization> with items, because we're in the process
-      // of silent OIDC authentication
-      return {}
-    }
     return this.initTasks
   }
 
-  addInitListener(f: (tasks: InitializationTasks) => void) {
-    this.initListeners.push(f)
+  /**
+   * Register a listener to be notified about state changes of initialization tasks
+   * @param listener
+   */
+  addInitListener(listener: (tasks: InitializationTasks) => void) {
+    this.initListeners.push(listener)
   }
 
-  removeInitListener(f: (tasks: InitializationTasks) => void) {
-    this.initListeners.splice(this.initListeners.indexOf(f), 1)
+  /**
+   * Unregister previously registered listener for state changes of initialization tasks
+   * @param listener
+   */
+  removeInitListener(listener: (tasks: InitializationTasks) => void) {
+    this.initListeners.splice(this.initListeners.indexOf(listener), 1)
   }
 
   /**
    * Are all the initialization items completed? The returned promise will be asynchronously resolved when
-   * initialization is complete
+   * initialization is finished.
+   *
+   * When the configuration is _ready_, Hawtio may proceed to rendering UI.
    */
   async ready(): Promise<boolean> {
     return new Promise((resolve, _reject) => {
       const h: NodeJS.Timeout = setInterval(() => {
         const result =
-          Object.values(this.initTasks!).find(v => v.ready == TaskState.started || v.ready == TaskState.error) ==
-          undefined
+          Object.values(this.initTasks!)
+              .find(v => v.ready == TaskState.started || v.ready == TaskState.error) == undefined
         if (result) {
           resolve(true)
           clearInterval(h)
