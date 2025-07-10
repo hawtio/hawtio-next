@@ -8,14 +8,16 @@ import { springbootService } from './springboot-service'
 const order = 17
 
 export const springboot: HawtioPlugin = () => {
-  import('./ui').then(m => {
-    hawtio.addPlugin({
-      id: pluginId,
-      title: 'Spring Boot',
-      path: pluginPath,
-      order,
-      component: m.SpringBoot,
-      isActive: springbootService.isActive,
+  hawtio.addDeferredPlugin(pluginId, async () => {
+    return import('./ui').then(m => {
+      return {
+        id: pluginId,
+        title: 'Spring Boot',
+        path: pluginPath,
+        order,
+        component: m.SpringBoot,
+        isActive: springbootService.isActive,
+      }
     })
   })
   helpRegistry.add(pluginId, 'Spring Boot', help, order)

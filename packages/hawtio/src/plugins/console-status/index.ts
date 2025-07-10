@@ -9,21 +9,23 @@ import { pluginId, pluginPath, pluginTitle } from './globals'
  * Will communicate this to the user with a notice component.
  */
 export const consoleStatus: HawtioPlugin = () => {
-  import('./ui').then(m => {
-    hawtio.addPlugin({
-      id: pluginId,
-      title: pluginTitle,
-      path: pluginPath,
-      component: m.ConsoleStatus,
-      isActive: async () => {
-        const connection = await connectService.getCurrentConnection()
-        const beans = await workspace.hasMBeans()
-        const errors = await workspace.hasErrors()
+  hawtio.addDeferredPlugin(pluginId, async () => {
+    return import('./ui').then(m => {
+      return {
+        id: pluginId,
+        title: pluginTitle,
+        path: pluginPath,
+        component: m.ConsoleStatus,
+        isActive: async () => {
+          const connection = await connectService.getCurrentConnection()
+          const beans = await workspace.hasMBeans()
+          const errors = await workspace.hasErrors()
 
-        if (!connection) return false // no connection yet so no beans in workspace
+          if (!connection) return false // no connection yet so no beans in workspace
 
-        return !beans || errors // either no beans or workspace has errors
-      },
+          return !beans || errors // either no beans or workspace has errors
+        },
+      }
     })
   })
 }
