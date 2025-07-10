@@ -37,7 +37,7 @@
   padding: 0 2px;
 }
 .tick-skipped {
-  color: #d4d4d4;
+  color: #dddfe6;
 }
 .tick-finished {
   color: green;

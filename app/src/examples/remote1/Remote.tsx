@@ -30,19 +30,25 @@ remotes: {
       </Text>
       <CodeBlock>
         <CodeBlockCode>
-          {`import("static-remotes/remote1").then(m => {
-  // this module exports the component, so we register it manually
-  hawtio.addPlugin({
-    id: 'exampleStaticRemote1',
-    title: 'Example Remote 1 (static/webpack)',
-    path: '/remote1',
-    component: m.RemotePlugin,
-    isActive: async () => true,
+          {`hawtio.addDeferredPlugin('exampleStaticRemote1', async () => {
+  return import('static-remotes/remote1').then(m => {
+    // this module exports only the React/Patternfly component, so we register it ourselves
+    return {
+      id: 'exampleStaticRemote1',
+      title: 'Remote plugin 1 (static)',
+      path: '/remote1',
+      component: m.RemotePlugin,
+      isActive: async () => true,
+    }
   })
 })
-import("static-remotes/remote2").then(m => {
-  // this module exports a function which registers own component using Hawtio API, so we call this function
-  m.registerRemote()
+
+hawtio.addDeferredPlugin('remote2', async () => {
+  return import('static-remotes/remote2').then(m => {
+    // this module exports a function which returns a plugin definition (object),
+    // which we can return as chained promise - Hawtio will eventually await for the definition
+    return m.remotePlugin()
+  })
 })`}
         </CodeBlockCode>
       </CodeBlock>

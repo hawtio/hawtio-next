@@ -1,4 +1,4 @@
-import { hawtio, HawtioPlugin } from '@hawtiosrc/core'
+import { hawtio, type HawtioPlugin } from '@hawtiosrc/core'
 import { pluginId, pluginPath } from './globals'
 import { workspace } from '@hawtiosrc/plugins'
 import { helpRegistry } from '@hawtiosrc/help'

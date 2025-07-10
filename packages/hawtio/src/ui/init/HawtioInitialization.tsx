@@ -3,7 +3,9 @@ import React, { useEffect, useState } from 'react'
 import { configManager, type InitializationTasks, TaskState } from '@hawtiosrc/core/config-manager'
 
 export const HawtioInitialization: React.FC<{ verbose: boolean }> = ({ verbose = false }) => {
-  const [tasks, setTasks] = useState<InitializationTasks>(configManager.getInitializationTasks())
+  const silentLogin = localStorage.getItem('core.auth.silentLogin') === '1'
+
+  const [tasks, setTasks] = useState<InitializationTasks>(silentLogin ? {} : configManager.getInitializationTasks())
 
   useEffect(() => {
     const listener = (tasks: InitializationTasks) => {
@@ -22,8 +24,7 @@ export const HawtioInitialization: React.FC<{ verbose: boolean }> = ({ verbose =
     }
   }, [])
 
-  const silentLogin = localStorage.getItem('core.auth.silentLogin')
-  if (silentLogin === '1') {
+  if (silentLogin) {
     return (
       <div className='hwt-loading'>
         <h4 className='not-ready'>Verifying user...</h4>

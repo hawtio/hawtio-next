@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { userService } from './user-service'
-import { configManager } from '@hawtiosrc/core'
 
 /**
  * Custom React hook for accessing information about currently logged in user and
@@ -12,7 +11,7 @@ import { configManager } from '@hawtiosrc/core'
  * * a state for a flag indicating failed login attempt
  * * a state for a flag indicating error message if there was a login error
  * * a state for a flag indicating userService finished its async operation (user retrieval)
- * * a state for selected login method - dependening on which plugin successfuly fetched the user
+ * * a state for selected login method - depending on which plugin successfully fetched the user
  * * an effect that synchronizes with `userService` to alter the state
  *
  * This hook synchronizes with information retrieved from `userService` (which in turn may use auth hooks).
@@ -30,7 +29,7 @@ export function useUser() {
     const isProceed = () => proceed
     const fetchUser = async () => {
       // Try syncing the login status with the server here
-      await userService.fetchUser(configManager.authRetry, () => isProceed())
+      await userService.fetchUser(false, () => isProceed())
 
       const loginMethod = await userService.getLoginMethod()
       const isLoginError = await userService.isLoginError()

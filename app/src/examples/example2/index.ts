@@ -1,19 +1,21 @@
-import { configManager, hawtio, HawtioPlugin } from '@hawtio/react'
+import { configManager, hawtio, type Hawtconfig, type HawtioPlugin } from '@hawtio/react'
 
 export const registerExample2: HawtioPlugin = () => {
-  import('./Example2').then(m => {
-    hawtio.addPlugin({
-      id: 'example2',
-      title: 'Example 2',
-      path: '/example2',
-      component: m.Example2,
-      isActive: async () => true,
+  hawtio.addDeferredPlugin('example2', async () => {
+    return import('./Example2').then(m => {
+      return {
+        id: 'example2',
+        title: 'Example 2',
+        path: '/example2',
+        component: m.Example2,
+        isActive: async () => true,
+      }
     })
   })
 }
 
-// Plugin can extend Hawtconfig
-configManager.configure(config => {
+// Plugin can extend Hawtconfig and we can do it in a synchronous way
+configManager.configure((config: Hawtconfig) => {
   if (!config.about) {
     config.about = {}
   }

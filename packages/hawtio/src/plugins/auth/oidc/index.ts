@@ -1,4 +1,4 @@
-import { HawtioPlugin } from '@hawtiosrc/core'
+import { type HawtioPlugin } from '@hawtiosrc/core'
 import { helpRegistry } from '@hawtiosrc/help/registry'
 import help from './help.md'
 import { oidcService } from './oidc-service'
