@@ -305,7 +305,7 @@ export interface IConfigManager {
    * @param state Initialization task state
    * @param group One of supported initialization task groups
    */
-  initItem(item: string, state: TaskState, group: 'config'|'plugins'|'finish'): void
+  initItem(item: string, state: TaskState, group: 'config' | 'plugins' | 'finish'): void
 }
 
 /**
@@ -345,7 +345,7 @@ export class ConfigManager implements IConfigManager {
     config.about.productInfo.push({ name, value })
   }
 
-  initItem(item: string, ready: TaskState, group: 'config'|'plugins'|'finish') {
+  initItem(item: string, ready: TaskState, group: 'config' | 'plugins' | 'finish') {
     this.initTasks[item] = { ready, group }
     setTimeout(() => {
       for (const l of this.initListeners) {
@@ -567,7 +567,11 @@ export class ConfigManager implements IConfigManager {
     const { disabledRoutes } = await this.getHawtconfig()
     const enabledPlugins: Plugin[] = []
     for (const plugin of plugins) {
-      if ((plugin.path == null && (await plugin.isActive())) || (!disabledRoutes || !disabledRoutes.includes(plugin.path!))) {
+      if (
+        (plugin.path == null && (await plugin.isActive())) ||
+        !disabledRoutes ||
+        !disabledRoutes.includes(plugin.path!)
+      ) {
         enabledPlugins.push(plugin)
       } else {
         log.debug(`Plugin "${plugin.id}" disabled by hawtconfig.json`)
@@ -609,8 +613,8 @@ export class ConfigManager implements IConfigManager {
     return new Promise((resolve, _reject) => {
       const h: NodeJS.Timeout = setInterval(() => {
         const result =
-          Object.values(this.initTasks!)
-              .find(v => v.ready == TaskState.started || v.ready == TaskState.error) == undefined
+          Object.values(this.initTasks!).find(v => v.ready == TaskState.started || v.ready == TaskState.error) ==
+          undefined
         if (result) {
           resolve(true)
           clearInterval(h)

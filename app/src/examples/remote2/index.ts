@@ -8,7 +8,7 @@ import { type HawtioAsyncPlugin } from '@hawtio/react'
 export const remotePluginName = 'remote2'
 
 export const remotePlugin: HawtioAsyncPlugin = async () => {
-  return import('@hawtio/react').then(async (m) => {
+  return import('@hawtio/react').then(async m => {
     const log = m.Logger.get('remote')
     log.info('Loaded')
     return import('./Remote').then(r => {

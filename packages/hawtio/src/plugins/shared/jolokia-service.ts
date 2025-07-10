@@ -728,30 +728,29 @@ class JolokiaService implements IJolokiaService {
         .reduce((merged, response) => this.mergeDomains(response, merged), {})
       listOptions.success?.(domains)
     }
-    jolokia
-      .request(
-        requests,
-        onBulkSuccessAndError(
-          (response: JolokiaSuccessResponse, _index: number) => {
-            // Response can never be string in Hawtio's setup of Jolokia
-            bulkResponse.push(response as JolokiaSuccessResponse)
-            // Resolve only when all the responses from the bulk request are collected
-            if (bulkResponse.length === requests.length) {
-              mergeResponses()
-            }
-          },
-          error => {
-            log.error('Error during bulk list:', error)
-            bulkResponse.push(error)
-            // Resolve only when all the responses from the bulk request are collected
-            if (bulkResponse.length === requests.length) {
-              mergeResponses()
-            }
-          },
-          // Reuse the list options other than success and error functions
-          listOptions as SimpleRequestOptions,
-        ),
-      )
+    jolokia.request(
+      requests,
+      onBulkSuccessAndError(
+        (response: JolokiaSuccessResponse, _index: number) => {
+          // Response can never be string in Hawtio's setup of Jolokia
+          bulkResponse.push(response as JolokiaSuccessResponse)
+          // Resolve only when all the responses from the bulk request are collected
+          if (bulkResponse.length === requests.length) {
+            mergeResponses()
+          }
+        },
+        error => {
+          log.error('Error during bulk list:', error)
+          bulkResponse.push(error)
+          // Resolve only when all the responses from the bulk request are collected
+          if (bulkResponse.length === requests.length) {
+            mergeResponses()
+          }
+        },
+        // Reuse the list options other than success and error functions
+        listOptions as SimpleRequestOptions,
+      ),
+    )
   }
 
   private mergeDomains(source: OptimisedJmxDomains, target: OptimisedJmxDomains): OptimisedJmxDomains {

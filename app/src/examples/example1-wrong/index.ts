@@ -10,7 +10,7 @@ import { hawtio, type HawtioPlugin } from '@hawtio/react'
 // hawtio.bootstrap() before import("./Example1") is even resolved! This will result in `addPlugin()` being called
 // after Hawtio has already bootstrapped.
 export const registerExample1Wrong: HawtioPlugin = () => {
-  import("./Example1").then(m => {
+  import('./Example1').then(m => {
     hawtio.addPlugin({
       id: 'example1c',
       title: 'Example 1 (wrong)',

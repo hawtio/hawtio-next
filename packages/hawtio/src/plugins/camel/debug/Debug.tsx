@@ -15,7 +15,7 @@ import {
   Title,
 } from '@patternfly/react-core'
 import { BanIcon } from '@patternfly/react-icons/dist/esm/icons/ban-icon'
-import { BarsIcon, } from '@patternfly/react-icons/dist/esm/icons/bars-icon'
+import { BarsIcon } from '@patternfly/react-icons/dist/esm/icons/bars-icon'
 import { ExclamationCircleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon'
 import { LongArrowAltDownIcon } from '@patternfly/react-icons/dist/esm/icons/long-arrow-alt-down-icon'
 import { MinusIcon } from '@patternfly/react-icons/dist/esm/icons/minus-icon'
