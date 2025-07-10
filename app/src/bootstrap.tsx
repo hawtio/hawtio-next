@@ -3,7 +3,7 @@
 // - statically imports Hawtio services
 // - statically imports <HawtioInitialization> React component (which doesn't use Patternfly)
 // - configures Hawtio synchronously (adding plugins and product info)
-// - calls asynchronous hawtio.bootstrap() and on fulfilled promise, dynamically (with "import()") imports
+// - calls asynchronous hawtio.bootstrap() and on fulfilled promise, dynamically (with 'import()') imports
 //   @hawtio/react/ui and it's <Hawtio> React/Patternfly component
 //
 // The separation of statically loaded <HawtioInitialization> and dynamically loaded <Hawtio> components allows

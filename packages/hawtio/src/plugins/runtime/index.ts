@@ -7,14 +7,16 @@ import help from './help.md'
 const order = 16
 
 export const runtime: HawtioPlugin = () => {
-  import('./ui').then(m => {
-    hawtio.addPlugin({
-      id: pluginId,
-      title: 'Runtime',
-      path: pluginPath,
-      order,
-      component: m.Runtime,
-      isActive: async () => workspace.hasMBeans(),
+  hawtio.addDeferredPlugin(pluginId, async () => {
+    return import('./ui').then(m => {
+      return {
+        id: pluginId,
+        title: 'Runtime',
+        path: pluginPath,
+        order,
+        component: m.Runtime,
+        isActive: async () => workspace.hasMBeans(),
+      }
     })
   })
   helpRegistry.add(pluginId, 'Runtime', help, order)

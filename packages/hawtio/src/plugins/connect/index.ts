@@ -10,24 +10,30 @@ const order = 11
 export const connect: HawtioPlugin = () => {
   registerUserHooks()
 
-  import('./ui').then(m => {
-    hawtio.addPlugin({
-      id: pluginId,
-      title: pluginTitle,
-      path: pluginPath,
-      order,
-      component: m.Connect,
-      isActive,
+  hawtio.addDeferredPlugin(pluginId, async () => {
+    return import('./ui').then(m => {
+      preferencesRegistry.add(pluginId, pluginTitle, m.ConnectPreferences, order)
+      return {
+        id: pluginId,
+        title: pluginTitle,
+        path: pluginPath,
+        order,
+        component: m.Connect,
+        isActive,
+      }
     })
-    preferencesRegistry.add(pluginId, pluginTitle, m.ConnectPreferences, order)
-    const connectStatusItem: UniversalHeaderItem = {
-      component: m.ConnectionStatus,
-      universal: true,
-    }
-    hawtio.addPlugin({
-      id: statusPluginId,
-      headerItems: [connectStatusItem],
-      isActive: isConnectionStatusActive,
+  })
+  hawtio.addDeferredPlugin(statusPluginId, async () => {
+    return import('./ui').then(m => {
+      const connectStatusItem: UniversalHeaderItem = {
+        component: m.ConnectionStatus,
+        universal: true,
+      }
+      return {
+        id: statusPluginId,
+        headerItems: [connectStatusItem],
+        isActive: isConnectionStatusActive,
+      }
     })
   })
   helpRegistry.add(pluginId, pluginTitle, help, order)

@@ -7,14 +7,16 @@ import { quartzService } from './quartz-service'
 const order = 15
 
 export const quartz: HawtioPlugin = () => {
-  import('./ui').then(m => {
-    hawtio.addPlugin({
-      id: pluginId,
-      title: 'Quartz',
-      path: pluginPath,
-      order,
-      component: m.Quartz,
-      isActive: () => quartzService.isActive(),
+  hawtio.addDeferredPlugin(pluginId, async () => {
+    return import('./ui').then(m => {
+      return {
+        id: pluginId,
+        title: 'Quartz',
+        path: pluginPath,
+        order,
+        component: m.Quartz,
+        isActive: () => quartzService.isActive(),
+      }
     })
   })
 

@@ -10,18 +10,20 @@ import { camelTreeProcessor } from './tree-processor'
 const order = 12
 
 export const camel: HawtioPlugin = () => {
-  import('./ui').then(m => {
-    hawtio.addPlugin({
-      id: 'camel',
-      title: 'Camel',
-      path: pluginPath,
-      order,
-      component: m.Camel,
-      isActive: async () => {
-        return workspace.treeContainsDomainAndProperties(jmxDomain)
-      },
+  hawtio.addDeferredPlugin('camel', async () => {
+    return import('./ui').then(m => {
+      preferencesRegistry.add('camel', 'Camel', m.CamelPreferences, order)
+      return {
+        id: 'camel',
+        title: 'Camel',
+        path: pluginPath,
+        order,
+        component: m.Camel,
+        isActive: async () => {
+          return workspace.treeContainsDomainAndProperties(jmxDomain)
+        },
+      }
     })
-    preferencesRegistry.add('camel', 'Camel', m.CamelPreferences, order)
   })
 
   treeProcessorRegistry.add('camel', camelTreeProcessor)
