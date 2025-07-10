@@ -5,14 +5,14 @@ export const Example1: React.FunctionComponent = () => (
   <PageSection variant={PageSectionVariants.light}>
     <TextContent>
       <Text component='h1'>Example 1</Text>
-      <Text component='p'>This is an example plugin registered using <code>hawtio.addDeferredPlugin()</code>.</Text>
       <Text component='p'>
-        This plugin doesn't import <code>./Example1</code> file using <em>static</em> <code>import</code> statement,
-        but with <em>dynamic</em> <code>import()</code> operator.
+        This is an example plugin registered using <code>hawtio.addDeferredPlugin()</code>.
       </Text>
       <Text component='p'>
-        Here's the preferred, asynchronous, Hawtio plugin registration code:
+        This plugin doesn't import <code>./Example1</code> file using <em>static</em> <code>import</code> statement, but
+        with <em>dynamic</em> <code>import()</code> operator.
       </Text>
+      <Text component='p'>Here's the preferred, asynchronous, Hawtio plugin registration code:</Text>
       <CodeBlock>
         <CodeBlockCode>
           {`import { hawtio, type HawtioPlugin } from '@hawtio/react'

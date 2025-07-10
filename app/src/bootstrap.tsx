@@ -37,7 +37,6 @@ hawtio.addUrl('plugin')
 // From now on, we use dynamic `import()` instead of static `import` and we can import _full_ Hawtio packages:
 // '@hawtio/react' and '@hawtio/react/ui'
 import('@hawtio/react').then(async m => {
-
   // The heavier non-UI part of Hawtio was loaded/evaluated, so we have access to built-in plugins
   // We can register all default (built-in) Hawtio plugins
   m.registerPlugins()

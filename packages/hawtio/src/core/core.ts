@@ -526,11 +526,12 @@ export class HawtioCore implements IHawtio {
     log.debug('Loading deferred plugins')
 
     // each "deferred plugin" is a function returning a Promise resolving to a Plugin
-    return Promise.all(Object.entries(this.deferredPlugins).map(async (e) => {
-      const [ id, deferred ] = e
+    return Promise.all(
+      Object.entries(this.deferredPlugins).map(async e => {
+        const [id, deferred] = e
 
-      // call the async method returning Promise<Plugin>
-      return deferred()
+        // call the async method returning Promise<Plugin>
+        return deferred()
           .then(plugin => {
             // now we can treat it as direct plugin
             if (this.plugins[plugin.id]) {
@@ -545,7 +546,8 @@ export class HawtioCore implements IHawtio {
             log.error('Error registering deferred plugin:', id, '-', err)
             configManager.initItem('Registering deferred plugin: ' + id, TaskState.error, 'plugins')
           })
-    }))
+      }),
+    )
   }
 
   // Actual window theme query
