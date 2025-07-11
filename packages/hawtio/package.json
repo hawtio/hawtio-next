@@ -72,7 +72,7 @@
     "@types/dagre": "^0.7.53",
     "@types/dagre-layout": "^0.8.5",
     "@types/jest": "^30.0.0",
-    "@types/node": "^24.0.8",
+    "@types/node": "^24.0.13",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@types/react-router-dom": "^5.3.3",
