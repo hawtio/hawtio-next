@@ -2323,7 +2323,7 @@ __metadata:
     "@bitauth/libauth": "npm:^3.0.0"
     "@types/express": "npm:^5.0.3"
     "@types/jest": "npm:^30.0.0"
-    "@types/node": "npm:^24.0.8"
+    "@types/node": "npm:^24.0.13"
     axios: "npm:^1.10.0"
     commit-and-tag-version: "npm:^12.5.1"
     concurrently: "npm:^9.2.0"
@@ -2395,7 +2395,7 @@ __metadata:
     "@types/dagre": "npm:^0.7.53"
     "@types/dagre-layout": "npm:^0.8.5"
     "@types/jest": "npm:^30.0.0"
-    "@types/node": "npm:^24.0.8"
+    "@types/node": "npm:^24.0.13"
     "@types/react": "npm:^18.3.12"
     "@types/react-dom": "npm:^18.3.1"
     "@types/react-router-dom": "npm:^5.3.3"
@@ -4375,12 +4375,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^24.0.8":
-  version: 24.0.10
-  resolution: "@types/node@npm:24.0.10"
+"@types/node@npm:^24.0.13":
+  version: 24.0.13
+  resolution: "@types/node@npm:24.0.13"
   dependencies:
     undici-types: "npm:~7.8.0"
-  checksum: 10/ff8921c515d72fbc0a11ff282096e2d2e11ac04a2e9c7f765bcec5cb69cd367a88ab5dd556dc162ac98b9212957939b7ae80f12f3fc90db10c82135affd6d120
+  checksum: 10/e438734b2f1ec1cbb88ca47134389e074fc8392f747dd1a81b9432b7d0503113c07f4238ff98a512101d576652e6cddb5faf9bc9a79dd602ce2dfc36602a365b
   languageName: node
   linkType: hard
 
