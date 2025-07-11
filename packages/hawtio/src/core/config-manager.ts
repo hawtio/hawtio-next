@@ -508,6 +508,7 @@ export class ConfigManager implements IConfigManager {
 
     const { branding } = await this.getHawtconfig()
     if (!branding) {
+      this.initItem('Applying branding', TaskState.skipped, 'config')
       return false
     }
 
@@ -556,6 +557,11 @@ export class ConfigManager implements IConfigManager {
     if ('disabled' in elm) {
       elm.disabled = false
     }
+  }
+
+  async isRouteEnabled(path: string): Promise<boolean> {
+    const { disabledRoutes } = await this.getHawtconfig()
+    return !disabledRoutes || !disabledRoutes.includes(path)
   }
 
   /**
