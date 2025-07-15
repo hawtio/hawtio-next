@@ -2385,7 +2385,7 @@ __metadata:
     "@patternfly/react-icons": "npm:~5.4.2"
     "@patternfly/react-styles": "npm:~5.4.1"
     "@patternfly/react-table": "npm:~5.4.16"
-    "@patternfly/react-tokens": "npm:~5.4.1"
+    "@patternfly/react-tokens": "npm:~6.2.2"
     "@simbathesailor/use-what-changed": "npm:^2.0.0"
     "@testing-library/dom": "npm:^10.4.0"
     "@testing-library/jest-dom": "npm:^6.6.3"
@@ -3157,10 +3157,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-tokens@npm:^5.4.1, @patternfly/react-tokens@npm:~5.4.1":
+"@patternfly/react-tokens@npm:^5.4.1":
   version: 5.4.1
   resolution: "@patternfly/react-tokens@npm:5.4.1"
   checksum: 10/042fc56f37b15c6f21b16eec6f6ffbff23299942324039d39ca6b5f346be6b13fe2952de816b72603fafd93afc640d383aad4d118d56a9bb678585d542076f3b
+  languageName: node
+  linkType: hard
+
+"@patternfly/react-tokens@npm:~6.2.2":
+  version: 6.2.2
+  resolution: "@patternfly/react-tokens@npm:6.2.2"
+  checksum: 10/1066728401f6a51e65342881e46ac6b2ead11cf1d59d94b205ccf81defff9c8e5dc770d119deeab7e6f7ff6418787ae887f59039f89f2746df4c4b7ebca06ebb
   languageName: node
   linkType: hard
 
