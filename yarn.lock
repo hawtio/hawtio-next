@@ -2383,7 +2383,7 @@ __metadata:
     "@patternfly/react-code-editor": "npm:~5.4.18"
     "@patternfly/react-core": "npm:~5.4.14"
     "@patternfly/react-icons": "npm:~5.4.2"
-    "@patternfly/react-styles": "npm:~5.4.1"
+    "@patternfly/react-styles": "npm:~6.2.2"
     "@patternfly/react-table": "npm:~5.4.16"
     "@patternfly/react-tokens": "npm:~5.4.1"
     "@simbathesailor/use-what-changed": "npm:^2.0.0"
@@ -3133,10 +3133,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-styles@npm:^5.4.1, @patternfly/react-styles@npm:~5.4.1":
+"@patternfly/react-styles@npm:^5.4.1":
   version: 5.4.1
   resolution: "@patternfly/react-styles@npm:5.4.1"
   checksum: 10/414a55c31a90d4619f13085d043d90e93b3e563cde88ba72b485ed3e334e99f442cc43030b8de61712a5ace498e9e83acd5bd76ebe00098d0e0319fcc048fc8e
+  languageName: node
+  linkType: hard
+
+"@patternfly/react-styles@npm:~6.2.2":
+  version: 6.2.2
+  resolution: "@patternfly/react-styles@npm:6.2.2"
+  checksum: 10/060cea589933778af3920171ba6c34b3e532c1706aa8a20fb7486645755c131f5cd5c160d32f789c48f1e63d141585b2bfe4ad982d27ccb43bb0de4642989162
   languageName: node
   linkType: hard
 
