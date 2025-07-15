@@ -14,3 +14,4 @@ dist
 
 # Ignore selected configuration files for clarity
 packages/hawtio/jest.config.ts
+app/webpack.config.cjs

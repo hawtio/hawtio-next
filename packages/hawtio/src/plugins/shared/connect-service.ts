@@ -625,6 +625,8 @@ class ConnectService implements IConnectService {
     link.href = url
     link.download = `hawtio-connections-${Date.now()}.json`
     document.body.appendChild(link)
+    // weird... it's a DOM method, not Node.js
+    // eslint-disable-next-line testing-library/no-node-access
     link.click()
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
