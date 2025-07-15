@@ -104,13 +104,14 @@ export const BlockedExchanges: React.FunctionComponent = () => {
               <Th modifier='wrap'>Node ID</Th>
               <Th modifier='wrap'>Duration (ms)</Th>
               <Th modifier='wrap'>Elapsed (ms)</Th>
-              <Th dataLabel='Action' wrap=''></Th>
+              <Th dataLabel='Action' wrap='' screenReaderText='empty'></Th>
             </Tr>
           </Thead>
           <Tbody>
             {exchanges.map((ex, index) => (
               <Tr key={ex.exchangeId + '-' + index}>
-                <Td>{ex.exchangeId}</Td>g <Td>{ex.routeId}</Td>
+                <Td>{ex.exchangeId}</Td>
+                <Td>{ex.routeId}</Td>
                 <Td>{ex.nodeId}</Td>
                 <Td>{ex.duration}</Td>
                 <Td>{ex.elapsed}</Td>

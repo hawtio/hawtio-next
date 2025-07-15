@@ -19,7 +19,7 @@ const config: Config = {
   // },
 
   testEnvironment: './jsdom-test-env.ts',
-  silent: false,
+  silent: true,
 
   // Automatically clear mock calls and instances between every test
   clearMocks: true,

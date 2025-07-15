@@ -4,6 +4,7 @@ import { MBeanNode, MBeanTree } from '@hawtiosrc/plugins'
 import { EndpointStatistics } from '@hawtiosrc/plugins/camel/endpoints/endpoints-service'
 import userEvent from '@testing-library/user-event'
 import { EndpointStats } from '@hawtiosrc/plugins/camel/endpoints/EndpointsStats'
+import { act } from 'react'
 
 function getMockedStatistics(): EndpointStatistics[] {
   return [
@@ -34,7 +35,11 @@ describe('EndpointStats.tsx', () => {
   }
 
   test('Component renders correctly', async () => {
-    renderWithContext()
+    // without act(): Warning: An update to EndpointStats inside a test was not wrapped in act(...).
+    // eslint-disable-next-line testing-library/no-unnecessary-act
+    await act(async () => {
+      renderWithContext()
+    })
     expect(screen.getByText('Endpoints (in/out)')).toBeInTheDocument()
   })
 
