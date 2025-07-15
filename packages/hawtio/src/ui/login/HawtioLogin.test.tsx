@@ -9,7 +9,7 @@ describe('HawtioLogin', () => {
 
   test('renders page', async () => {
     render(
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <HawtioLogin />
       </BrowserRouter>,
     )

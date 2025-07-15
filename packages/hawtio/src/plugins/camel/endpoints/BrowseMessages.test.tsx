@@ -4,6 +4,7 @@ import { BrowseMessages } from '@hawtiosrc/plugins/camel/endpoints/BrowseMessage
 import { MessageData } from '@hawtiosrc/plugins/camel/endpoints/endpoints-service'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { act } from 'react'
 
 function getMockedMessages(): MessageData[] {
   return [
@@ -61,7 +62,10 @@ describe('BrowseMessages.tsx', () => {
   }
 
   test('Component renders correctly', async () => {
-    renderWithContext()
+    // eslint-disable-next-line testing-library/no-unnecessary-act
+    await act(async () => {
+      renderWithContext()
+    })
     expect(screen.getByText('Browse Messages')).toBeInTheDocument()
   })
 
