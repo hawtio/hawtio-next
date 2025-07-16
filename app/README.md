@@ -20,27 +20,27 @@ shows how other applications ([Hawtio Standalone](https://github.com/hawtio/hawt
 
 ## dependencies, dev dependencies, peer dependencies
 
-This `app` NPM package is bundled using Webpack and produces an _application_ that runs in browser. This is _not_ a published NPM packages and will never be a dependency of any other NPM project.
+This `app` NPM package is bundled using Webpack and produces an _application_ that runs in the browser. This is _not_ a published NPM package and will never be a dependency of any other NPM project.
 
-In terms of dependencies we have to remember few things:
+In terms of dependencies we have to remember a few things:
 
-- This `app` definitely depends on `react`, `react-dom` and Patternfly libraries and `@hawtio/react` package
+- This `app` definitely depends on `react`, `react-dom`, PatternFly libraries and `@hawtio/react` package
 - This `app` transitively (implicitly) depends on other libraries (dependencies of the above)
 - `webpack.config.cjs` configuration of this `app` uses some _shared modules_ (with the help of [Module Federation mechanism](https://webpack.js.org/concepts/module-federation/)).
 
-Application bundled with Webpack should not have any `peerDependencies`, because it's not used by other packages in their `dependencies`.
+Applications that are bundled with Webpack should not have any `peerDependencies`, because such applications are not used by other packages in their `dependencies`.
 
-This `app` should declare a `dependency` only if it's used directly in its code (for example `src/bootstrap.tsx` imports React functions, so `react` should be a direct dependency). This `app` should not add Jolokia to it's `dependencies` - Webpack will bundle it together with `@hawtio/react` without problems.
+This `app` should declare a `dependency` only if it is used directly in its code (for example `src/bootstrap.tsx` imports React functions, so `react` should be a direct dependency). This `app` should not add Jolokia to it is `dependencies` - Webpack will bundle it together with `@hawtio/react` without problems.
 
-If there's a need to select specific version of a transitive package (for example due to security reasons or known CVE), such dependency should be added to `resolutions` config in `package.json`.
+If there's a need to select a specific version of a transitive package (for example due to security reasons or known CVE), such a dependency should be added to the `resolutions` config in `package.json`.
 
 `@patternfly/react-core` and React libraries should be _peer dependencies_ of `@hawtio/react` package:
 
 - these are declared as `shared` dependencies in Module Federation configuration in `webpack.config.cjs`
 - the exact version should be specified by the _application_, not by the _library_
-- another plugin library (for example the plugin from [Artemis Console](https://github.com/apache/activemq-artemis-console/)) could be used by this `app`, so it's easier to manage single version of React, Patternfly at the _application_ level than at the level of both `@hawtio/react` and `artemis-console-extension`.
+- another plugin library (for example the plugin from [Artemis Console](https://github.com/apache/activemq-artemis-console/)) could be used by this `app`, so it is easier to manage single versions of React and PatternFly at the _application_ level than at the level of both `@hawtio/react` and `artemis-console-extension`.
 
-And finally there's one confusing, but recommended configuration - a _peer dependency_ usually should be added also as _dev dependency_. There's only one reason - some package managers like [Yarn](https://yarnpkg.com/) or NPM before version 7 do **not** install peer dependencies. As a proof of this confusing convention, here's a fragment from `react-router` package:
+And finally there is one confusing, but recommended configuration - a _peer dependency_ usually should be added also as a _dev dependency_. There is only one reason - some package managers like [Yarn](https://yarnpkg.com/) or NPM before version 7 do **not** install peer dependencies. As a proof of this confusing convention, here is a fragment from the `react-router` package:
 
 ```json
 "devDependencies": {
@@ -52,18 +52,18 @@ And finally there's one confusing, but recommended configuration - a _peer depen
 },
 ```
 
-## Patternfly dependencies
+## PatternFly dependencies
 
-The first dependency on Patternfly library is `@patternfly/react-core`. It directly depends on (declaration in its `dependencies`) 3 other libraries: `@patternfly/react-icons`, `@patternfly/react-styles` and `@patternfly/react-tokens`.
+The first dependency on PatternFly library is `@patternfly/react-core`. It directly depends on (declaration in its `dependencies`) 3 other libraries: `@patternfly/react-icons`, `@patternfly/react-styles` and `@patternfly/react-tokens`.
 
-There other Patternfly libraries we use: `@patternfly/react-charts`, `@patternfly/react-code-editor` and `@patternfly/react-table`, which also depend on icons, styles and tokens.
+There are other PatternFly libraries we use: `@patternfly/react-charts`, `@patternfly/react-code-editor` and `@patternfly/react-table`, which also depend on icons, styles and tokens.
 
-So we can identify these Patternfly libraries:
+So we can identify these PatternFly libraries:
 
 - direct dependencies: `@patternfly/react-core`, `@patternfly/react-table`, `@patternfly/react-charts` and `@patternfly/react-code-editor`
 - transitive dependencies: `@patternfly/react-icons`, `@patternfly/react-styles` and `@patternfly/react-tokens`
 
-But because we actually use the transitive dependencies directly (and not just need them for `@hawtio/react-core` to work), we use all 7 Patternfly dependencies as peer dependencies at `@hawtio/react` level, so the actual versions are set at the _application_ level.
+But because we actually use the transitive dependencies directly (and not just need them for `@hawtio/react-core` to work), we use all 7 PatternFly dependencies as peer dependencies at `@hawtio/react` level, so the actual versions are set at the _application_ level.
 For `yarn install` to work and to run the tests, we specify these versions in `devDependencies` of `@hawtio/react` too.
 
 ## A note about semantic versioning
@@ -74,9 +74,9 @@ For Yarn, `defaultSemverRangePrefix` option defaults to `"^"`. When adding depen
     yarn add <dependency> --tilde
     yarn add <dependency> --exact
 
-It may be confusing to distinguish between caret and tilde versioning, so here's the definition:
+It may be confusing to distinguish between caret and tilde versioning, so here is the definition:
 
-- `"^"` preserves left-most non-zero digit
+- `"^"` preserves the left-most non-zero digit
 - `"~"` allows only patch changes (3rd digit) if minor (2nd digit) is specified, allows minor changes if minor is not specified
 
 Still confused?

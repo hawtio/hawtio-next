@@ -3,7 +3,7 @@ import { type HawtioAsyncPlugin, Logger } from '@hawtio/react'
 // this module is consumed fully dynamically - Hawtio uses @module-federation/utilities to load and call it,
 // so the single exported symbol should be declared explicitly in JSON file returned from endpoint added
 // to Hawtio using hawtio.addUrl()
-// Here's a part of the JSON which points Hawtio to actual exported symbol:
+// Here's a part of the JSON plugin descriptor (HawtioRemote type) which points Hawtio to the actual exported symbol:
 //     pluginEntry: 'registerRemote'
 //
 // Hawtio doesn't assume any return value from this exported function. It only checks if the value is a Promise

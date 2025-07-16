@@ -52,8 +52,8 @@
     "prepack": "yarn build && yarn replace-version"
   },
   "dependencies": {
-    "@hawtio/camel-model-v4_10": "npm:@hawtio/camel-model@^4.10.6",
-    "@hawtio/camel-model-v4_8": "npm:@hawtio/camel-model@^4.8.8",
+    "@hawtio/camel-model-v4_10": "npm:@hawtio/camel-model@~4.10.6",
+    "@hawtio/camel-model-v4_8": "npm:@hawtio/camel-model@~4.8.8",
     "@jolokia.js/simple": "^2.2.4",
     "@module-federation/utilities": "^3.1.60",
     "@thumbmarkjs/thumbmarkjs": "^1.0.0",

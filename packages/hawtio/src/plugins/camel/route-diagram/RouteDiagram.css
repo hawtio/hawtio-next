@@ -77,7 +77,7 @@
 /*
  * Attribution logo box for ReactFlow is grey by default & doesn't
  * change when theme becomes dark. So set the background color to a
- * patternfly var that does change when the theme is updated.
+ * PatternFly var that does change when the theme is updated.
  */
 .react-flow__attribution {
   background-color: var(--pf-v5-c-page__main-section--BackgroundColor) !important;

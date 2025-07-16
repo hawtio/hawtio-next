@@ -1,22 +1,24 @@
 import type { Config } from 'jest'
 
 const config: Config = {
-  // https://jestjs.io/docs/ecmascript-modules
-  // while we can switch jest to use ESM, we use so many different modules that for now (2025), it's better
-  // to let jest work in CJS mode - this means jest loads all files through a transformer that converts:
-  //  - ts to js
-  //  - esm to cjs
-  // 1) preset: 'ts-jest' is the easiest option here.
-  //     - node_modules/jest-config/build/index.js#setupPreset() resolves 'ts-jest' to 'node_modules/ts-jest/jest-preset.js'
-  //       node_modules/ts-jest/dist/types.d.ts#DefaultPreset is just { transform: ... } definition
+  /*
+   * https://jestjs.io/docs/ecmascript-modules
+   * while we can switch jest to use ESM, we use so many different modules that for now (2025), it's better
+   * to let jest work in CJS mode - this means jest loads all files through a transformer that converts:
+   *  - ts to js
+   *  - esm to cjs
+   * 1) preset: 'ts-jest' is the easiest option here.
+   *     - node_modules/jest-config/build/index.js#setupPreset() resolves 'ts-jest' to 'node_modules/ts-jest/jest-preset.js'
+   *       node_modules/ts-jest/dist/types.d.ts#DefaultPreset is just { transform: ... } definition
+   * 2) we can call a function that returns an object we can spread here (with ...)
+   *    we need to use import { createJsWithBabelEsmPreset } from 'ts-jest' first
+   * ...createJsWithBabelEsmPreset(),
+   * 3) we can define 'transform' ourselves for most flexibility
+   * transform: {
+   *   "^.+\\.m?[jt]sx?$": ['ts-jest', { useESM: true, },],
+   * },
+   */
   preset: 'ts-jest',
-  // 2) we can call a function that returns an object we can spread here (with ...)
-  //    we need to use import { createJsWithBabelEsmPreset } from 'ts-jest' first
-  // ...createJsWithBabelEsmPreset(),
-  // 3) we can define 'transform' ourselves for most flexibility
-  // transform: {
-  //   "^.+\\.m?[jt]sx?$": ['ts-jest', { useESM: true, },],
-  // },
 
   testEnvironment: './jsdom-test-env.ts',
   silent: true,
@@ -24,19 +26,21 @@ const config: Config = {
   // Automatically clear mock calls and instances between every test
   clearMocks: true,
 
-  // module mapper can be used for quick replacement of actual modules with our mocks - this is especially
-  // useful if the Hawtio modules we test import some other modules with components, but we don't care about
-  // what these components are.
-  // if we for example wanted to _not_ map react-markdown module, we'd need to transform (babel or ts-jest for .js)
-  // additional 48 modules from node_modules/, so ESM is transformed to CJS which is what jest uses internally.
-  // if we follow https://jestjs.io/docs/ecmascript-modules, we'd have much more problems transforming from CJS to ESM
-  // that's why moduleNameMapper is very good approach
-  //
-  // there are two kinds of mappings here:
-  // 1. map from module location to a mocked module under /src/__mocks__ which usually just provide module.exports = ...
-  // 2. map from module location to another module location inside node_modules/ if a module provides both ESM and CJS version
-  //
-  // Mind that "import { .. } from 'module-x'" is automatically mocked if there is src/__mocks__/module-x.js file
+  /*
+   * module mapper can be used for quick replacement of actual modules with our mocks - this is especially
+   * useful if the Hawtio modules we test import some other modules with components, but we don't care about
+   * what these components are.
+   * if we for example wanted to _not_ map react-markdown module, we'd need to transform (babel or ts-jest for .js)
+   * additional 48 modules from node_modules/, so ESM is transformed to CJS which is what jest uses internally.
+   * if we follow https://jestjs.io/docs/ecmascript-modules, we'd have much more problems transforming from CJS to ESM
+   * that's why moduleNameMapper is very good approach
+   *
+   * there are two kinds of mappings here:
+   * 1. map from module location to a mocked module under /src/__mocks__ which usually just provide module.exports = ...
+   * 2. map from module location to another module location inside node_modules/ if a module provides both ESM and CJS version
+   *
+   * Mind that "import { .. } from 'module-x'" is automatically mocked if there is src/__mocks__/module-x.js file
+   */
   moduleNameMapper: {
     // mocked modules that simply provide necessary, fake module.exports = ...
     // mock modules that are handled by webpack at application level

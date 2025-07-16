@@ -866,10 +866,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hawtio/camel-model-v4_10@npm:@hawtio/camel-model@^4.10.6, @hawtio/camel-model-v4_8@npm:@hawtio/camel-model@^4.8.8":
-  version: 4.12.0
-  resolution: "@hawtio/camel-model@npm:4.12.0"
-  checksum: 10/4e324c302ac09a12171869d7046f75c38dfb0ce1d4ca00e5fbc3c5b64e36efcbe8a8ae980848875b361a8106e3b4915adca7cf546149acbd87ec0940ac542d87
+"@hawtio/camel-model-v4_10@npm:@hawtio/camel-model@~4.10.6":
+  version: 4.10.6
+  resolution: "@hawtio/camel-model@npm:4.10.6"
+  checksum: 10/d32efb354b420c0b8cb1c5d53406807378f9227cd2cacaf0ebac746ef4c192a1203858f1cac00e15fbca1539ccba962f23cc9fb90fd724ab9d878ae2907c9923
+  languageName: node
+  linkType: hard
+
+"@hawtio/camel-model-v4_8@npm:@hawtio/camel-model@~4.8.8":
+  version: 4.8.8
+  resolution: "@hawtio/camel-model@npm:4.8.8"
+  checksum: 10/a7ab341d6030604d420af6238b80a58a762babbe86b5fcc91670a0fc65138c49d378dd9c0fd5ff6ae74ba40ee976ba377a6e87bc0d1b0290a1c6030b59bf9031
   languageName: node
   linkType: hard
 
@@ -897,8 +904,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hawtio/react@workspace:packages/hawtio"
   dependencies:
-    "@hawtio/camel-model-v4_10": "npm:@hawtio/camel-model@^4.10.6"
-    "@hawtio/camel-model-v4_8": "npm:@hawtio/camel-model@^4.8.8"
+    "@hawtio/camel-model-v4_10": "npm:@hawtio/camel-model@~4.10.6"
+    "@hawtio/camel-model-v4_8": "npm:@hawtio/camel-model@~4.8.8"
     "@jolokia.js/simple": "npm:^2.2.4"
     "@module-federation/utilities": "npm:^3.1.60"
     "@patternfly/react-charts": "npm:^7.4.9"

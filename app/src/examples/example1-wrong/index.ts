@@ -1,7 +1,7 @@
 import { hawtio, type HawtioPlugin } from '@hawtio/react'
 
 // In this example we want to import "./Example1" module in asynchronous way, so Webpack has a chance
-// to put Patternfly-related code in separate chunk.
+// to put PatternFly-related code in separate chunk.
 // import() "operator" (opposite to import "statement") is dynamic, returns a Promise resolved with
 // the imported JavaScript module.
 // At first glance we can call hawtio.addPlugin() in the `.then()` block of the promise, but this makes

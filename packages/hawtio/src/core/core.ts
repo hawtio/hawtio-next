@@ -54,6 +54,12 @@ export function isUniversalHeaderItem(item: HeaderItem): item is UniversalHeader
  * loaded using Module Federation utilities
  */
 export type HawtioPlugin = () => void
+
+/**
+ * Type definition of a fully remote _plugin_ (function) that is called by Hawtio using @module-federation/utilities.
+ *
+ * This method should be asynchronous and return a Promise (with any value), so Hawtio can await for its resolution.
+ */
 export type HawtioAsyncPlugin = () => Promise<unknown>
 
 /**
@@ -162,7 +168,7 @@ export interface IHawtio {
    * Bootstraps Hawtio. This method needs to be called by all applications that are bundled with `webpack` (or
    * similar web bundler).
    *
-   * This method returns a Promise. When resolved we can finally render the `<Hawtio>` React/Patternfly component
+   * This method returns a Promise. When resolved we can finally render the `<Hawtio>` React/PatternFly component
    */
   bootstrap(): Promise<boolean>
 }
@@ -564,7 +570,7 @@ export class HawtioCore implements IHawtio {
   }
 
   /**
-   * Update the document root with the patternfly dark class
+   * Update the document root with the PatternFly dark class
    * see https://www.patternfly.org/developer-resources/dark-theme-handbook
    */
   private updateFromTheme() {

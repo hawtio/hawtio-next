@@ -32,7 +32,7 @@ remotes: {
         <CodeBlockCode>
           {`hawtio.addDeferredPlugin('exampleStaticRemote1', async () => {
   return import('static-remotes/remote1').then(m => {
-    // this module exports only the React/Patternfly component, so we register it ourselves
+    // this module exports only the React/PatternFly component, so we register it ourselves
     return {
       id: 'exampleStaticRemote1',
       title: 'Remote plugin 1 (static)',

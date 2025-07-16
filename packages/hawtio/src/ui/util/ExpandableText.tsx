@@ -11,7 +11,7 @@ export enum ExpandableSectionVariant {
   truncate = 'truncate',
 }
 
-//TODO: this is "borrowed" from patternfly, the whole ExpandableSection component can be fixed once https://github.com/patternfly/patternfly-react/pull/10870 gets merged and released
+//TODO: this is "borrowed" from PatternFly, the whole ExpandableSection component can be fixed once https://github.com/patternfly/patternfly-react/pull/10870 gets merged and released
 /** The main expandable section component. */
 
 export interface ExpandableSectionProps extends React.HTMLProps<HTMLDivElement> {
