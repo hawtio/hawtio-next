@@ -10,7 +10,7 @@ export const Example1: React.FunctionComponent = () => (
       </Text>
       <Text component='p'>
         This plugin doesn't use any asynchronous code. The disadvantage is that with static <code>import</code>
-        JavaScript statement, the resulting bundle is much less optimized, because all Patternfly components used by{' '}
+        JavaScript statement, the resulting bundle is much less optimized, because all PatternFly components used by{' '}
         <code>Example1</code> are loaded in <em>static way</em>. This approach can lead to increased size of chunks
         loaded when application starts, thus delaying initial UI response.
       </Text>

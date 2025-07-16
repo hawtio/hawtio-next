@@ -1,6 +1,6 @@
 import { hawtio, type HawtioPlugin } from '@hawtio/react'
 
-// This is the recommended approach to register Hawtio plugins which use Patternfly components.
+// This is the recommended approach to register Hawtio plugins which use PatternFly components.
 // Instead of importing the component using `import` statement, the component module is imported
 // with `import()` operator. This requires different approach and new hawtio.addDeferredPlugin() API
 export const registerExample1Deferred: HawtioPlugin = () => {

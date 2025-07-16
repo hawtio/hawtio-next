@@ -8,7 +8,7 @@
 // trick.
 //
 // Importing styles first is also a good idea and using `import` ensures proper ordering.
-// But mind that even if we import '@patternfly/react-core/dist/styles/base.css' here, the order of Patternfly
+// But mind that even if we import '@patternfly/react-core/dist/styles/base.css' here, the order of PatternFly
 // styles won't be predictable - base.css is only a set of basic styles. Styles for particular components
 // are imported from these components and these are loaded asynchronously (because of the dynamic `import()`)
 

@@ -1,10 +1,10 @@
 // This is our application's bootstrap code which:
 // - statically imports react
 // - statically imports Hawtio services
-// - statically imports <HawtioInitialization> React component (which doesn't use Patternfly)
+// - statically imports <HawtioInitialization> React component (which doesn't use PatternFly)
 // - configures Hawtio synchronously (adding plugins and product info)
 // - calls asynchronous hawtio.bootstrap() and on fulfilled promise, dynamically (with 'import()') imports
-//   @hawtio/react/ui and it's <Hawtio> React/Patternfly component
+//   @hawtio/react/ui and it's <Hawtio> React/PatternFly component
 //
 // The separation of statically loaded <HawtioInitialization> and dynamically loaded <Hawtio> components allows
 // us to provide user feedback as soon as possible
@@ -20,7 +20,7 @@ configManager.initItem('Loading UI', TaskState.started, 'config')
 // Create root for rendering React components. More React components can be rendered in single root.
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
-// Basic UI that shows initialization progress without depending on Patternfly.
+// Basic UI that shows initialization progress without depending on PatternFly.
 // It is imported and rendered in fully synchronous way.
 root.render(<HawtioInitialization verbose={true} />)
 

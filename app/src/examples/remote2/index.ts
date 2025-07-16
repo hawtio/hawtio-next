@@ -1,5 +1,3 @@
-import { type HawtioAsyncPlugin } from '@hawtio/react'
-
 // This module is used through "exposes" configuration of Webpack's ModuleFederationPlugin.
 // Exported "remotePlugin" is a function which should NOT asynchronously call hawtio.addPlugin() -
 // it should return a Promise resolved to a Plugin, so the importing code could call hawtio.addDeferredPlugin()
@@ -7,7 +5,7 @@ import { type HawtioAsyncPlugin } from '@hawtio/react'
 
 export const remotePluginName = 'remote2'
 
-export const remotePlugin: HawtioAsyncPlugin = async () => {
+export const remotePlugin = async () => {
   return import('@hawtio/react').then(async m => {
     const log = m.Logger.get('remote')
     log.info('Loaded')

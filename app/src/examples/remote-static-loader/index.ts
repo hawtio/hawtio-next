@@ -18,7 +18,7 @@ import { hawtio, type HawtioPlugin } from '@hawtio/react'
 export const registerRemoteExamplesStatically: HawtioPlugin = () => {
   hawtio.addDeferredPlugin('exampleStaticRemote1', async () => {
     return import('static-remotes/remote1').then(m => {
-      // this module exports only the React/Patternfly component, so we register it ourselves
+      // this module exports only the React/PatternFly component, so we register it ourselves
       return {
         id: 'exampleStaticRemote1',
         title: 'Remote plugin 1 (static)',
@@ -31,7 +31,7 @@ export const registerRemoteExamplesStatically: HawtioPlugin = () => {
   // Here we NEED to know the plugin ID - we can't import it from the module if we want to stay fully asynchronous
   hawtio.addDeferredPlugin('remote2', async () => {
     return import('static-remotes/remote2').then(m => {
-      // this module exports a function which returns a plugin definition (object),
+      // this module exports a function which returns a plugin (as Promise) definition (object),
       // which we can return as chained promise - Hawtio will eventually await for the definition
       return m.remotePlugin()
     })
@@ -44,7 +44,7 @@ export const registerRemoteExamplesStatically: HawtioPlugin = () => {
   // 1. 'static-remotes/remoteX' should be imported with `import`, not with `import()`
   // 2. if the exported function calls hawtio.addDeferredPlugin() we're safe
   // 3. if the exported function calls hawtio.addPlugin() we're also safe, but we're effectively statically
-  //    importing Patternfly modules if such plugin uses it.
+  //    importing PatternFly modules if such plugin uses it.
   //
   // if we would like to import such remote module with import() as in the above examples, the import() itself
   // returns a promise so registerRemoteExamplesStatically would have to become async, we would have to await
