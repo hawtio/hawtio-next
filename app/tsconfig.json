@@ -1,6 +1,11 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "paths": {
+      // with this alias, we can avoid errors in IDE (which reads tsconfig.json) without affecting webpack + swc,
+      // which doesn't read this file.
+      "static-remotes/*": ["./src/examples/*"]
+    },
     "target": "esnext",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
