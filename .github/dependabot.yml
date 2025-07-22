@@ -8,9 +8,10 @@ updates:
     reviewers:
       - tadayosi
       - phantomjinx
-      - mmelko
       - jsolovjo
       - grgrzybek
+      - kariuwu
+      - joshiraezcode
   - package-ecosystem: github-actions
     directory: '/'
     schedule:
@@ -19,6 +20,7 @@ updates:
     reviewers:
       - tadayosi
       - phantomjinx
-      - mmelko
       - jsolovjo
       - grgrzybek
+      - kariuwu
+      - joshiraezcode
