@@ -383,7 +383,7 @@ export class ConfigManager implements IConfigManager {
         }
       })
       .catch(e => {
-        log.error('Problem fetching authentication providers', e)
+        log.debug('Problem fetching authentication providers', e)
         return [defaultConfiguration]
       })
 

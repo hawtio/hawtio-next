@@ -15,7 +15,7 @@ describe('JolokiaService', () => {
 
   test('getJolokiaUrl - not logged in', async () => {
     userService.isLogin = jest.fn(async () => false)
-    await expect(jolokiaService.getJolokiaUrl()).rejects.toThrow()
+    await expect(jolokiaService.getJolokiaUrl()).resolves.toBeNull()
   })
 
   test('getJolokiaUrl - null', async () => {
