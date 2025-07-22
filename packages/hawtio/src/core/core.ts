@@ -124,7 +124,7 @@ type Plugins = Record<string, Plugin>
 /**
  * A collection of asynchronous functions returning Hawtio plugins
  */
-type DeferredPlugins = Record<string, () => Promise<Plugin>>
+type DeferredPlugins = Record<string, () => Promise<Plugin | Plugin[]>>
 
 /**
  * Extension of Module Federation {@link ImportRemoteOptions} for single federated module.
@@ -149,11 +149,11 @@ export interface IHawtio {
 
   /**
    * Adds a Hawtio plugin in a deferred way. Instead of passing `Plugin` object directly, we pass a function that
-   * returns a Promise resolving (for example after `import()`) to actual `Plugin`.
+   * returns a Promise resolving (for example after `import()`) to actual `Plugin` or an array of `Plugin` objects.
    * @param id Plugin ID
-   * @param deferred a function returning a Promise resolving to a `Plugin`
+   * @param deferred a function returning a Promise resolving to a `Plugin` or array of `Plugin` objects
    */
-  addDeferredPlugin(id: string, deferred: () => Promise<Plugin>): IHawtio
+  addDeferredPlugin(id: string, deferred: () => Promise<Plugin | Plugin[]>): IHawtio
 
   /**
    * Adds a URL for discovering plugins. Single URL defines an endpoint that returns an array of modules/plugins
@@ -229,7 +229,7 @@ export class HawtioCore implements IHawtio {
     return this
   }
 
-  addDeferredPlugin(id: string, deferred: () => Promise<Plugin>): HawtioCore {
+  addDeferredPlugin(id: string, deferred: () => Promise<Plugin | Plugin[]>): HawtioCore {
     log.info('Add deferred plugin:', id)
     configManager.initItem('Registering deferred plugin: ' + id, TaskState.started, 'plugins')
     if (this.deferredPlugins[id]) {
@@ -408,8 +408,8 @@ export class HawtioCore implements IHawtio {
    * This plugin mechanism is implemented using [Webpack Module Federation](https://module-federation.github.io/).
    */
   private async loadPlugins() {
-    if (this.urls.length === 0) {
-      log.info('No URLs provided to load external plugins')
+    if (this.urls.length === 0 && Object.entries(this.deferredPlugins).length === 0) {
+      log.info('No URLs provided to load external plugins and no deferred plugins registered')
       return
     }
 
@@ -531,19 +531,27 @@ export class HawtioCore implements IHawtio {
   private async loadDeferredPlugins() {
     log.debug('Loading deferred plugins')
 
-    // each "deferred plugin" is a function returning a Promise resolving to a Plugin
+    // each "deferred plugin" is a function returning a Promise resolving to a Plugin or an array of Plugin objects
     return Promise.all(
       Object.entries(this.deferredPlugins).map(async e => {
         const [id, deferred] = e
 
         // call the async method returning Promise<Plugin>
         return deferred()
-          .then(plugin => {
-            // now we can treat it as direct plugin
-            if (this.plugins[plugin.id]) {
-              throw new Error(`Plugin "${plugin.id}" already exists`)
+          .then(result => {
+            let plugins: Plugin[]
+            if (!Array.isArray(result)) {
+              plugins = [result]
+            } else {
+              plugins = result
             }
-            this.plugins[plugin.id] = plugin
+            for (const plugin of plugins) {
+              // now we can treat it as direct plugin
+              if (this.plugins[plugin.id]) {
+                throw new Error(`Plugin "${plugin.id}" already exists`)
+              }
+              this.plugins[plugin.id] = plugin
+            }
 
             // when deferred plugin was registered, we started dedicated initialization task. We can finish it now.
             configManager.initItem('Registering deferred plugin: ' + id, TaskState.finished, 'plugins')
