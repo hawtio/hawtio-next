@@ -10,7 +10,7 @@ updates:
       - phantomjinx
       - mmelko
       - jsolovjo
-      - mmuzikar
+      - grgrzybek
   - package-ecosystem: github-actions
     directory: '/'
     schedule:
@@ -21,4 +21,4 @@ updates:
       - phantomjinx
       - mmelko
       - jsolovjo
-      - mmuzikar
+      - grgrzybek
