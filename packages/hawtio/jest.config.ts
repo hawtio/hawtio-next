@@ -49,9 +49,9 @@ const config: Config = {
 
     // modules mocking by pointing to other modules/locations
     '@hawtiosrc/(.*)': '<rootDir>/src/$1',
-    // icons will be loaded from ESM to CJS - otherwise we'd have to mock a lot of modules
+    // icons will be mapped from ESM to CJS - otherwise we'd have to mock a lot of modules
     '@patternfly/react-icons/dist/esm/icons/(.*)': '<rootDir>/../../node_modules/@patternfly/react-icons/dist/js/icons/$1',
-    // tokens will be loaded from ESM to CJS
+    // tokens will be mapped from ESM to CJS
     '@patternfly/react-tokens/dist/esm/(.*)': '<rootDir>/../../node_modules/@patternfly/react-tokens/dist/js/$1',
   },
 

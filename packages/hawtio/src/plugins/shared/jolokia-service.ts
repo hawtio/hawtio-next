@@ -237,7 +237,7 @@ class JolokiaService implements IJolokiaService {
   private async initJolokiaUrl(): Promise<string | null> {
     // Wait for resolving user as it may attach credentials to http request headers
     if (!(await userService.isLogin())) {
-      throw new Error('User needs to have logged in to use Jolokia service')
+      return null
     }
 
     // Check remote connection
