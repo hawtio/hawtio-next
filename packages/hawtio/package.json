@@ -90,7 +90,7 @@
     "@types/react-dom": "^18.3.7",
     "@types/react-router-dom": "^5.3.3",
     "commit-and-tag-version": "^12.5.1",
-    "jest": "^30.0.4",
+    "jest": "^30.0.5",
     "jest-environment-jsdom": "^30.0.4",
     "jest-fetch-mock": "^3.0.3",
     "monaco-editor": "^0.52.2",
