@@ -2,6 +2,62 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.10.0](https://github.com/hawtio/hawtio-next/compare/v1.9.2...v1.10.0) (2025-07-25)
+
+
+### Features
+
+* **auth:** Fix jest tests after authentication changes ([0e8d373](https://github.com/hawtio/hawtio-next/commit/0e8d37326fa04afd6a2c93a08ec76d8da2a90171))
+* **auth:** Handle OIDC configuration errors and logout errors ([#1574](https://github.com/hawtio/hawtio-next/issues/1574)) ([3d6493c](https://github.com/hawtio/hawtio-next/commit/3d6493c3592d816bac5020551f2c9d4ec1ff4311))
+* **auth:** Handle OIDC connect/security/configuration errors in unified way (closes [#1574](https://github.com/hawtio/hawtio-next/issues/1574)) ([484bce9](https://github.com/hawtio/hawtio-next/commit/484bce9db7823df61f51251eb41f64e6efa29c3b))
+* **auth:** Handle unavailable OIDC provider at login time ([#1574](https://github.com/hawtio/hawtio-next/issues/1574)) ([301ceb2](https://github.com/hawtio/hawtio-next/commit/301ceb24c53ba374ff8cf164033228a8b78db55a))
+* **auth:** HawtioLogin component shows multiple auth options ([#1556](https://github.com/hawtio/hawtio-next/issues/1556)) ([cec5656](https://github.com/hawtio/hawtio-next/commit/cec5656f78e171a6fc2e683bddc2072353abde37))
+* **auth:** Login with keycloak-service.ts only on demand ([#1556](https://github.com/hawtio/hawtio-next/issues/1556)) ([9c5e9f7](https://github.com/hawtio/hawtio-next/commit/9c5e9f770beac244c8e41942ed98758592f30eaa))
+* **auth:** Logout method depends on selected login method ([#1556](https://github.com/hawtio/hawtio-next/issues/1556)) ([cf51416](https://github.com/hawtio/hawtio-next/commit/cf5141642509a82a83bcf8493d98e36d46c1faae))
+* **auth:** OIDC login/logout works with webpack app, no refresh yet ([#1556](https://github.com/hawtio/hawtio-next/issues/1556)) ([f83df28](https://github.com/hawtio/hawtio-next/commit/f83df28f900b7ce55f6e105a3308ac11000ac7ff))
+* **auth:** Refreshes work with silent OIDC login now ([#1556](https://github.com/hawtio/hawtio-next/issues/1556)) ([6f31eef](https://github.com/hawtio/hawtio-next/commit/6f31eefc6942b646f49cdcbb392160dcdcb580dc))
+* **auth:** Show error for Keycloak login in insecure browsing context (closes [#1328](https://github.com/hawtio/hawtio-next/issues/1328)) ([0d13b51](https://github.com/hawtio/hawtio-next/commit/0d13b51b9d0ffeb70359de9290a2e7d5b2193898))
+* **camel:** Improved tracer feature adding extra fields ([a37a252](https://github.com/hawtio/hawtio-next/commit/a37a2524c44419e9d97e475c2347fd1bd8cf26f9))
+* **session:** Fix race condition in session configuration ([8e433e9](https://github.com/hawtio/hawtio-next/commit/8e433e973c89109ed939774143deccae1727e8a0))
+* **ui:** Add verbose flag to <HawtioInitialization> ([bc80333](https://github.com/hawtio/hawtio-next/commit/bc80333e759f83ed17b62ecd2ab1a1401c008089))
+* **ui:** Splitting Patternfly and non-Patternfly code, Initialization UI (closes [#1541](https://github.com/hawtio/hawtio-next/issues/1541)) ([c6e660a](https://github.com/hawtio/hawtio-next/commit/c6e660a0458561890fe8cad33f930cec755e0843))
+
+
+### Bug Fixes
+
+* Aligns the size of the camel diagram content with parent bounds ([#1543](https://github.com/hawtio/hawtio-next/issues/1543)) ([c152018](https://github.com/hawtio/hawtio-next/commit/c1520188b98c6fd2c14b518a46301a6c54de130a))
+* Aligns the theme of the application with browser setting ([#1542](https://github.com/hawtio/hawtio-next/issues/1542)) ([219ce6b](https://github.com/hawtio/hawtio-next/commit/219ce6b0335da83704450fa268197f34f1a99090))
+* **build:** Stick to thumbmarkjs 0.20.5 (0.20.6 doesn't work) ([c097cd1](https://github.com/hawtio/hawtio-next/commit/c097cd1f9e0515e85ea35756d502400b1e2d7877))
+* **camel:** HAWNG-1018 update camel help link ([0a27b85](https://github.com/hawtio/hawtio-next/commit/0a27b8564cc6f80c3ec8bb34ef778fe92c619fee))
+* catch exception on http code 403 properly ([261e94f](https://github.com/hawtio/hawtio-next/commit/261e94f3322285a196c787632af1f054b869ced9))
+* **connect:** Fixed toggle moving when dropdown was shown (hawng-967) ([19965c3](https://github.com/hawtio/hawtio-next/commit/19965c33fbf4834f45b2ccbbf215be1fe1d44cfe))
+* **connect:** HAWNG-1008 copy paste error ([0831109](https://github.com/hawtio/hawtio-next/commit/0831109d391bf26396a7b1b7b1b6c376a8e1189a))
+* **connect:** When testing connections (top bar) add credentials if present (closes [#1504](https://github.com/hawtio/hawtio-next/issues/1504)) ([#1512](https://github.com/hawtio/hawtio-next/issues/1512)) ([7c4ca3d](https://github.com/hawtio/hawtio-next/commit/7c4ca3dc16dbf5506708f6347ad98ef1452908e7))
+* Decrements @patternfly/react-code-editor back to version 5 ([ceb076d](https://github.com/hawtio/hawtio-next/commit/ceb076d8a3dd7a25a82bc9c106c62249b5dd2bd3))
+* **deps:** downgrade react-code-editor back to 5 ([d8068a2](https://github.com/hawtio/hawtio-next/commit/d8068a250a6df365c1c52342da1139b68be3bfed))
+* Get Debug diagram to display ([5e0a683](https://github.com/hawtio/hawtio-next/commit/5e0a6836d0499ff2441a50e1029c0664d402af4f))
+* Handles route statistics in multi route applications ([#1570](https://github.com/hawtio/hawtio-next/issues/1570)) ([abfdd82](https://github.com/hawtio/hawtio-next/commit/abfdd82b0721f728edd21b47d0cc473e2e46392c))
+* HAWNG-1020 Fix routing behavior for login page with new v7 routing rules ([3274cf7](https://github.com/hawtio/hawtio-next/commit/3274cf74018eb2e6b131e8ff27ccb4eca99e508d))
+* **help:** HAWNG-1018 fix contributing page not found ([4b8e305](https://github.com/hawtio/hawtio-next/commit/4b8e30566c374353e4dbd82af21c6bba5174add6))
+* initJolokiaUrl should return null when user is not authenticated ([d38f86a](https://github.com/hawtio/hawtio-next/commit/d38f86aa3e43deb1ab6fad573dfd6675a7c74203))
+* **lint:** Fix style ([d4748c3](https://github.com/hawtio/hawtio-next/commit/d4748c33cfea7ff67a57d561413adfe11952e89b))
+* Makes the showVerticalNav preference shown only if sidebar is visible ([b559b9b](https://github.com/hawtio/hawtio-next/commit/b559b9bb5485ed4258ca7d372b27df3ec9cd06f5))
+* **preferences:** Tip icons next to labels ([#1438](https://github.com/hawtio/hawtio-next/issues/1438)) ([ff71414](https://github.com/hawtio/hawtio-next/commit/ff71414c5ea6469d6eb691aff7aaae134fd01241))
+* **react:** Fix whitespace handling in top bar ([156c2fe](https://github.com/hawtio/hawtio-next/commit/156c2fe655cd749efa403f18811b486dbeccacb3))
+* **react:** Fix whitespace handling in top bar - again ([d9c09c8](https://github.com/hawtio/hawtio-next/commit/d9c09c89a936927dc095427177a93ca60e5b961d))
+* **react:** Fix whitespace handling in top bar - formatting error ([b9fdd16](https://github.com/hawtio/hawtio-next/commit/b9fdd1678e226b1ec5c4d5aff0a43fdaf4d8fae8))
+* **runtime, logs:** Fixed column width in data tables changing ([#1452](https://github.com/hawtio/hawtio-next/issues/1452)) ([5b44c74](https://github.com/hawtio/hawtio-next/commit/5b44c741178c08c8fd71f7da9ad365ae5fac5daf))
+* **runtime:** Round values in Metrics ([#1437](https://github.com/hawtio/hawtio-next/issues/1437)) ([db72816](https://github.com/hawtio/hawtio-next/commit/db72816ad08650a8b919a7b62effb7307e1105d3))
+* **runtime:** Search terms can be removed ([#1435](https://github.com/hawtio/hawtio-next/issues/1435)) ([0df17a9](https://github.com/hawtio/hawtio-next/commit/0df17a902b7957da4c77e249611418297c2a8b19))
+* **runtime:** Search terms can be set with enter key ([#1435](https://github.com/hawtio/hawtio-next/issues/1435)) ([4db2df4](https://github.com/hawtio/hawtio-next/commit/4db2df44abafd0a9e084869c2d87075a007a57d7))
+* **runtime:** Test for isTranslatableToNumber and roundNumber ([#1437](https://github.com/hawtio/hawtio-next/issues/1437)) ([494f3ae](https://github.com/hawtio/hawtio-next/commit/494f3ae02465d6cb655d0caf1e7741b6d86e5006))
+* **runtime:** Use DescriptionList in Metrics ([#1437](https://github.com/hawtio/hawtio-next/issues/1437)) ([8d73cf1](https://github.com/hawtio/hawtio-next/commit/8d73cf11bb21a705e46d2badb5a3b8ae16270be1))
+* **session:** Do not print error when there's no /auth/config/session-timeout endpoint ([bda5b78](https://github.com/hawtio/hawtio-next/commit/bda5b78f1597ef695cb64285186b4a493611b547))
+* **shared:** Fixed column width in JMXAttributes ([#1452](https://github.com/hawtio/hawtio-next/issues/1452)) ([53930dd](https://github.com/hawtio/hawtio-next/commit/53930dd32442c11362314819b77d5aa8d512b43b))
+* Sort out the node alignment to support all node diagrams ([#1543](https://github.com/hawtio/hawtio-next/issues/1543)) ([2a5562c](https://github.com/hawtio/hawtio-next/commit/2a5562ccacc3b46222da1dd96150f997ff32774f))
+* **test:** Changed deprecated code https://jestjs.io/docs/upgrading-to-jest30#removal-of-alias-matcher-functions ([030324c](https://github.com/hawtio/hawtio-next/commit/030324c9f8072c227470871551924efea0fd1670))
+* **webpack:** do not include <script> for remoteEntry.js ([0f76974](https://github.com/hawtio/hawtio-next/commit/0f76974ac22fc837393b913295b1734d44c57ff4))
+
 ## [1.9.2](https://github.com/hawtio/hawtio-next/compare/v1.9.1...v1.9.2) (2025-03-31)
 
 
