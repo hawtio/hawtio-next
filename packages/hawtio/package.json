@@ -80,7 +80,7 @@
     "@patternfly/react-table": "^5.4.16",
     "@patternfly/react-tokens": "^5.4.1",
     "@testing-library/dom": "^10.4.0",
-    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/jest-dom": "^6.6.4",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/dagre": "^0.7.53",
