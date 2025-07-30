@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.10.1](https://github.com/hawtio/hawtio-next/compare/v1.10.0...v1.10.1) (2025-07-30)
+
+
+### Bug Fixes
+
+* Do not bundle @monaco-editor/react in @hawtio/react (fixes [#1641](https://github.com/hawtio/hawtio-next/issues/1641)) ([7797679](https://github.com/hawtio/hawtio-next/commit/77976790b7a7e10ee0a1b024fe983b2c232568ce))
+
 ## [1.10.0](https://github.com/hawtio/hawtio-next/compare/v1.9.2...v1.10.0) (2025-07-25)
 
 
