@@ -322,9 +322,9 @@ const OperationExecuteForm: React.FunctionComponent<{
   return (
     <Form
       isHorizontal={operation.args.length > 0}
-      onSubmit={(event) => {
-        event.preventDefault();
-        execute();
+      onSubmit={event => {
+        event.preventDefault()
+        execute()
       }}
     >
       {operation.args.length === 0 && (
