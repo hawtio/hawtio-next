@@ -320,7 +320,13 @@ const OperationExecuteForm: React.FunctionComponent<{
   }
 
   return (
-    <Form isHorizontal={operation.args.length > 0}>
+    <Form
+      isHorizontal={operation.args.length > 0}
+      onSubmit={(event) => {
+        event.preventDefault();
+        execute();
+      }}
+    >
       {operation.args.length === 0 && (
         <Text component='p'>
           This JMX operation requires no arguments. Click the <code>Execute</code> button to invoke the operation.
@@ -359,6 +365,7 @@ const OperationExecuteForm: React.FunctionComponent<{
           key={`operation-action-execute-${name}`}
           variant='danger'
           onClick={execute}
+          type='submit'
           size='sm'
           isDisabled={!operation.canInvoke || isExecuting}
         >
