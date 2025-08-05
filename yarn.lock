@@ -855,7 +855,7 @@ __metadata:
     "@types/jest": "npm:^30.0.0"
     "@types/node": "npm:^24.1.0"
     axios: "npm:^1.11.0"
-    commit-and-tag-version: "npm:^12.5.1"
+    commit-and-tag-version: "npm:^12.5.2"
     concurrently: "npm:^9.2.0"
     express: "npm:^5.1.0"
     jest: "npm:^30.0.5"
@@ -927,7 +927,7 @@ __metadata:
     "@types/react": "npm:^18.3.23"
     "@types/react-dom": "npm:^18.3.7"
     "@types/react-router-dom": "npm:^5.3.3"
-    commit-and-tag-version: "npm:^12.5.1"
+    commit-and-tag-version: "npm:^12.5.2"
     dagre: "npm:^0.8.5"
     dompurify: "npm:^3.2.6"
     eventemitter3: "npm:^5.0.1"
@@ -4785,9 +4785,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commit-and-tag-version@npm:^12.5.1":
-  version: 12.5.1
-  resolution: "commit-and-tag-version@npm:12.5.1"
+"commit-and-tag-version@npm:^12.5.2":
+  version: 12.5.2
+  resolution: "commit-and-tag-version@npm:12.5.2"
   dependencies:
     chalk: "npm:^2.4.2"
     conventional-changelog: "npm:4.0.0"
@@ -4801,13 +4801,13 @@ __metadata:
     find-up: "npm:^5.0.0"
     git-semver-tags: "npm:^5.0.1"
     jsdom: "npm:^25.0.1"
-    semver: "npm:^7.6.3"
+    semver: "npm:^7.7.2"
     w3c-xmlserializer: "npm:^5.0.0"
     yaml: "npm:^2.6.0"
     yargs: "npm:^17.7.2"
   bin:
     commit-and-tag-version: bin/cli.js
-  checksum: 10/2915ed68736476bbac2ccae681ccd5e6f510bc0568c926c7bcf29fbc6240377e06e377af81422100bf48ccf27a92dd68e334df1ab87e43665667cbf753bd6fa7
+  checksum: 10/7b437e0ce252948588b2fcab520e0c83ec4c9306140c7050e5b0c947cc0ee9c83dfa10183101ec1a529e41e2b00a8d554c2feeaf020dae210cde30bf3a89ea09
   languageName: node
   linkType: hard
 
@@ -12257,7 +12257,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.0.0, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.5.3, semver@npm:^7.5.4, semver@npm:^7.6.0, semver@npm:^7.6.3, semver@npm:^7.7.2":
+"semver@npm:^7.0.0, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.5.3, semver@npm:^7.5.4, semver@npm:^7.6.0, semver@npm:^7.7.2":
   version: 7.7.2
   resolution: "semver@npm:7.7.2"
   bin:
