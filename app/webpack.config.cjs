@@ -68,7 +68,7 @@ module.exports = (_, args) => {
             '@hawtio/react': {
               singleton: true,
               // Hardcoding needed because it cannot handle yarn 'workspace:*' version
-              requiredVersion: '1.9.6',
+              requiredVersion: '^1.10.2',
             },
             '@patternfly/react-core': {
               singleton: true,
@@ -415,7 +415,7 @@ module.exports = (_, args) => {
             '@hawtio/react': {
               singleton: true,
               // Hardcoding needed because it cannot handle yarn 'workspace:*' version
-              requiredVersion: '1.9.6',
+              requiredVersion: '^1.10.2',
             },
             '@patternfly/react-core': {
               singleton: true,
