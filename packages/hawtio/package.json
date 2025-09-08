@@ -2,22 +2,21 @@
   "name": "@hawtio/react",
   "version": "1.10.2",
   "description": "A Hawtio reimplementation based on TypeScript + React.",
-  "main": "./dist/index.js",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "require": "./dist/index.js",
-      "default": "./dist/index.js"
+      "import": "./dist/index.mjs"
     },
     "./init": {
       "types": "./dist/init.d.ts",
       "require": "./dist/init.js",
-      "default": "./dist/init.js"
+      "import": "./dist/init.mjs"
     },
     "./ui": {
       "types": "./dist/ui/index.d.ts",
       "require": "./dist/ui/index.js",
-      "default": "./dist/ui/index.js"
+      "import": "./dist/ui/index.mjs"
     },
     "./dist/index.css": {
       "default": "./dist/index.css"

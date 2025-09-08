@@ -2,9 +2,13 @@
   "name": "@hawtio/backend-middleware",
   "version": "1.0.7",
   "description": "An Express middleware that implements Hawtio backend",
-  "main": "build/main/index.js",
-  "typings": "build/main/index.d.ts",
-  "module": "build/module/index.js",
+  "exports": {
+    ".": {
+      "types": "./build/main/index.d.ts",
+      "require": "./build/main/index.js",
+      "import": "./build/module/index.js"
+    }
+  },
   "author": "Hawtio developer team",
   "license": "Apache-2.0",
   "files": [

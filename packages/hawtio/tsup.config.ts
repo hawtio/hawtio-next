@@ -5,7 +5,7 @@ export default defineConfig({
   target: 'esnext',
   dts: true,
   sourcemap: true,
-  format: 'cjs',
+  format: ["esm", "cjs"],
   splitting: true,
   loader: {
     '.svg': 'dataurl',
