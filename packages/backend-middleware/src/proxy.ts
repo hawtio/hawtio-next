@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { isAxiosError } from 'axios'
 import { Request, Response } from 'express'
 
 import { log } from './logger'
@@ -25,7 +25,7 @@ export async function proxy(uri: string, req: Request, res: Response) {
     res.status(res2.status)
     res2.data.pipe(res).on('error', handleError)
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
+    if (isAxiosError(error) && error.response) {
       const res2 = error.response
       switch (res2.status) {
         case 401:
