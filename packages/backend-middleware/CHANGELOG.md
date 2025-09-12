@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.0.7](https://github.com/hawtio/hawtio-next/compare/backend-middleware-v1.0.5...backend-middleware-v1.0.7) (2025-09-12)
+
+
+### Bug Fixes
+
+* **backend-middleware:** fix backend-middleware build ([40d4e7a](https://github.com/hawtio/hawtio-next/commit/40d4e7a4b0ec602b7ee9593f80fbfe02505cd187))
+* **backend-middleware:** update axios to pass audit ([e59597d](https://github.com/hawtio/hawtio-next/commit/e59597d9c1189d829d0d1f6b6931142c6984b043))
+* **security:** Use X-Jolokia-Authorization with XSRF cookies ([#1138](https://github.com/hawtio/hawtio-next/issues/1138)) ([13d1d85](https://github.com/hawtio/hawtio-next/commit/13d1d8561e1082678abd5107eb1514733f49fe7b))
+
 ## 1.0.6 (2024-11-27)
 
 ### Bug Fixes
