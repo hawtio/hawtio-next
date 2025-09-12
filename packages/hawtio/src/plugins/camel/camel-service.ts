@@ -323,9 +323,9 @@ export function hasProperties(node: MBeanNode): boolean {
 }
 
 export async function getCamelVersions(): Promise<string[]> {
-  const { version: camel4_8Version } = await import('@hawtio/camel-model-v4_8/package.json')
   const { version: camel4_10Version } = await import('@hawtio/camel-model-v4_10/package.json')
-  return [camel4_8Version, camel4_10Version]
+  const { version: camel4_14Version } = await import('@hawtio/camel-model-v4_14/package.json')
+  return [camel4_10Version, camel4_14Version]
 }
 
 /**
@@ -333,19 +333,16 @@ export async function getCamelVersions(): Promise<string[]> {
  * the given node.
  */
 export async function getCamelModel(node: MBeanNode): Promise<CamelModel> {
-  // 4.10 ~     => 4.10.x
-  // 4.0 ~ 4.10 => 4.8.x
+  // 4.14 ~     => 4.14.x
+  // 4.0 ~ 4.14 => 4.10.x
+  if (isCamelVersionEQGT(node, 4, 14)) {
+    return (await import('@hawtio/camel-model-v4_14')) as unknown as CamelModel
+  }
   if (isCamelVersionEQGT(node, 4, 10)) {
-    const camel4_10 = (await import('@hawtio/camel-model-v4_10')) as unknown as CamelModel
-    return camel4_10
+    return (await import('@hawtio/camel-model-v4_10')) as unknown as CamelModel
   }
-  if (isCamelVersionEQGT(node, 4, 8)) {
-    const camel4_8 = (await import('@hawtio/camel-model-v4_8')) as unknown as CamelModel
-    return camel4_8
-  }
-  // Fallback to 4.8.x model
-  const camel4_x = (await import('@hawtio/camel-model-v4_8')) as unknown as CamelModel
-  return camel4_x
+  // Fallback to 4.10.x model
+  return (await import('@hawtio/camel-model-v4_10')) as unknown as CamelModel
 }
 
 /**
