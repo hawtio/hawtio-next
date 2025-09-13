@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { connectService, ConnectStatus } from '@hawtiosrc/plugins/shared/connect-service'
-import { PluggedIcon } from '@patternfly/react-icons/dist/esm/icons/plugged-icon'
-import { UnpluggedIcon } from '@patternfly/react-icons/dist/esm/icons/unplugged-icon'
+import { PluggedIcon } from '@patternfly/react-icons/dist/esm/icons/plugged-icon.js'
+import { UnpluggedIcon } from '@patternfly/react-icons/dist/esm/icons/unplugged-icon.js'
 import { Icon } from '@patternfly/react-core'
 
 /**

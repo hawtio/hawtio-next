@@ -14,7 +14,7 @@ import {
   Switch,
   TextInput,
 } from '@patternfly/react-core'
-import { ExclamationCircleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon'
+import { ExclamationCircleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon.js'
 import React, { useContext, useState } from 'react'
 import { ADD, UPDATE } from '../connections'
 import { ConnectContext } from '../context'

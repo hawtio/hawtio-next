@@ -27,7 +27,7 @@ import {
   ToolbarItem,
   EmptyStateHeader,
 } from '@patternfly/react-core'
-import { SearchIcon } from '@patternfly/react-icons/dist/esm/icons/search-icon'
+import { SearchIcon } from '@patternfly/react-icons/dist/esm/icons/search-icon.js'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useState } from 'react'
 import { Position } from 'reactflow'

@@ -1,7 +1,7 @@
 import { eventService } from '@hawtiosrc/core'
 import { HawtioEmptyCard, HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
 import { Button, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core'
-import { PlusIcon } from '@patternfly/react-icons/dist/esm/icons/plus-icon'
+import { PlusIcon } from '@patternfly/react-icons/dist/esm/icons/plus-icon.js'
 import { ISortBy, Table, Tbody, Td, Th, ThProps, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useState } from 'react'
 import { CamelContext } from '../context'

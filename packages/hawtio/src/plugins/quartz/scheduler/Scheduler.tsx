@@ -13,8 +13,8 @@ import {
   Stack,
   Switch,
 } from '@patternfly/react-core'
-import { CheckCircleIcon } from '@patternfly/react-icons/dist/esm/icons/check-circle-icon'
-import { PauseCircleIcon } from '@patternfly/react-icons/dist/esm/icons/pause-circle-icon'
+import { CheckCircleIcon } from '@patternfly/react-icons/dist/esm/icons/check-circle-icon.js'
+import { PauseCircleIcon } from '@patternfly/react-icons/dist/esm/icons/pause-circle-icon.js'
 import React, { useContext, useEffect, useState } from 'react'
 import { QuartzContext } from '../context'
 import { log } from '../globals'

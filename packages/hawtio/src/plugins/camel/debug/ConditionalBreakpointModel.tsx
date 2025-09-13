@@ -2,8 +2,8 @@ import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import { Button, Form, FormGroup, Modal, ModalVariant, Popover, Radio, TextInput } from '@patternfly/react-core'
 import { useState } from 'react'
 import { ConditionalBreakpoint, debugService as ds } from './debug-service'
-import { ExclamationCircleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon'
-import { HelpIcon } from '@patternfly/react-icons/dist/esm/icons/help-icon'
+import { ExclamationCircleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon.js'
+import { HelpIcon } from '@patternfly/react-icons/dist/esm/icons/help-icon.js'
 
 interface CondBkpsProps {
   selectedNode: MBeanNode
@@ -114,7 +114,7 @@ export const ConditionalBreakpointModal: React.FunctionComponent<CondBkpsProps> 
         </FormGroup>
         {error && (
           <div className='cond-bkp-form-error'>
-            <ExclamationCircleIcon className='cond-bkp-form-error-icon' />
+            <ExclamationCircleIcon className='cond-bkp-form-error-icon.js' />
             <p className='cond-bkp-form-error-msg'>{error}</p>
           </div>
         )}
