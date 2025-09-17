@@ -2,13 +2,13 @@ import { keycloak } from './auth/keycloak'
 import { oidc } from './auth/oidc'
 import { camel } from './camel'
 import { connect } from './connect'
+import { consoleStatus } from './console-status'
 import { jmx } from './jmx'
 import { logs } from './logs'
 import { quartz } from './quartz'
 import { rbac } from './rbac'
 import { runtime } from './runtime'
 import { springboot } from './springboot'
-import { consoleStatus } from './console-status'
 
 /**
  * Registers the builtin plugins for Hawtio React.
@@ -32,9 +32,10 @@ export const registerPlugins = () => {
 }
 
 // Export each plugin's entry point so that a custom console assembler can select which to bundle
-export { camel, connect, jmx, keycloak, oidc, logs, quartz, rbac, runtime, springboot, consoleStatus }
+export { camel, connect, consoleStatus, jmx, keycloak, logs, oidc, quartz, rbac, runtime, springboot }
 
 // Common plugin API
 export * from './connect'
 export * from './context'
+export * from './rbac'
 export * from './shared'

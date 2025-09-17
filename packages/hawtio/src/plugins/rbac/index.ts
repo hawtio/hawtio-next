@@ -5,3 +5,5 @@ import { rbacTreeProcessor } from './tree-processor'
 export const rbac: HawtioPlugin = () => {
   treeProcessorRegistry.add('rbac', rbacTreeProcessor)
 }
+
+export * from './rbac-service'

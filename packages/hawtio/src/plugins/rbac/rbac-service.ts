@@ -5,7 +5,7 @@ import { log } from './globals'
 
 const ACL_MBEAN_PATTERN = '*:type=security,area=jmx,*'
 
-interface IRBACService {
+export interface IRBACService {
   reset(): void
   getACLMBean(): Promise<string | null>
 }
