@@ -26,16 +26,16 @@ import {
   ToolbarItem,
 } from '@patternfly/react-core'
 import './Remote.css'
-import { PluggedIcon } from '@patternfly/react-icons/dist/esm/icons/plugged-icon'
-import { PlusIcon } from '@patternfly/react-icons/dist/esm/icons/plus-icon'
-import { UnpluggedIcon } from '@patternfly/react-icons/dist/esm/icons/unplugged-icon'
+import { PluggedIcon } from '@patternfly/react-icons/dist/esm/icons/plugged-icon.js'
+import { PlusIcon } from '@patternfly/react-icons/dist/esm/icons/plus-icon.js'
+import { UnpluggedIcon } from '@patternfly/react-icons/dist/esm/icons/unplugged-icon.js'
 import React, { useContext, useEffect, useState } from 'react'
 import { DELETE } from '../connections'
 import { ConnectContext } from '../context'
 import { log } from '../globals'
 import { ConnectionModal } from './ConnectionModal'
 import { ImportModal } from './ImportModal'
-import { EllipsisVIcon } from '@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon'
+import { EllipsisVIcon } from '@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon.js'
 
 export const Remote: React.FunctionComponent = () => {
   const { connections } = useContext(ConnectContext)

@@ -28,7 +28,7 @@ import {
 import { Table, Thead, Tr, Th, Tbody, Td, ThProps } from '@patternfly/react-table'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { SearchIcon } from '@patternfly/react-icons/dist/esm/icons/search-icon'
+import { SearchIcon } from '@patternfly/react-icons/dist/esm/icons/search-icon.js'
 import { ExpandableText } from './ExpandableText'
 import { isNumber, objectSorter } from '@hawtiosrc/util/objects'
 

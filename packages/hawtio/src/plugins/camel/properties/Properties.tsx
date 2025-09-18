@@ -1,6 +1,6 @@
 import { HawtioEmptyCard, HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
 import { Label, LabelGroup, Panel, PanelMain, PanelMainBody } from '@patternfly/react-core'
-import { InfoCircleIcon } from '@patternfly/react-icons/dist/esm/icons/info-circle-icon'
+import { InfoCircleIcon } from '@patternfly/react-icons/dist/esm/icons/info-circle-icon.js'
 import React, { useContext, useEffect, useState } from 'react'
 import { CamelContext } from '../context'
 import { log, xmlNodeLocalName } from '../globals'

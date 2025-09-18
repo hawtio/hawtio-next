@@ -14,15 +14,15 @@ import {
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core'
-import { AsleepIcon } from '@patternfly/react-icons/dist/esm/icons/asleep-icon'
-import { PlayIcon } from '@patternfly/react-icons/dist/esm/icons/play-icon'
-import { Remove2Icon } from '@patternfly/react-icons/dist/esm/icons/remove2-icon'
+import { AsleepIcon } from '@patternfly/react-icons/dist/esm/icons/asleep-icon.js'
+import { PlayIcon } from '@patternfly/react-icons/dist/esm/icons/play-icon.js'
+import { Remove2Icon } from '@patternfly/react-icons/dist/esm/icons/remove2-icon.js'
 import { Table, Tbody, Td, Th, ThProps, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useState } from 'react'
 import { CamelContext } from '../context'
 import { CamelRoute } from './route'
 import { routesService } from './routes-service'
-import { EllipsisVIcon } from '@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon'
+import { EllipsisVIcon } from '@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon.js'
 
 const ROUTES_REFRESH_INTERVAL = 10000 // milliseconds
 

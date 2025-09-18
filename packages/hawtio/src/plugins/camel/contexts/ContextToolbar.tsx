@@ -14,10 +14,10 @@ import {
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core'
-import { AsleepIcon } from '@patternfly/react-icons/dist/esm/icons/asleep-icon'
-import { PlayIcon } from '@patternfly/react-icons/dist/esm/icons/play-icon'
-import { Remove2Icon } from '@patternfly/react-icons/dist/esm/icons/remove2-icon'
-import { EllipsisVIcon } from '@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon'
+import { AsleepIcon } from '@patternfly/react-icons/dist/esm/icons/asleep-icon.js'
+import { PlayIcon } from '@patternfly/react-icons/dist/esm/icons/play-icon.js'
+import { Remove2Icon } from '@patternfly/react-icons/dist/esm/icons/remove2-icon.js'
+import { EllipsisVIcon } from '@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon.js'
 import React, { useState } from 'react'
 import {
   CONTEXT_OPERATIONS,

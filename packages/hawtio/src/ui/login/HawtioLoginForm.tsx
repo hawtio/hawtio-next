@@ -1,6 +1,6 @@
 import { humanizeSeconds } from '@hawtiosrc/util/dates'
 import { LoginForm, LoginFormProps } from '@patternfly/react-core'
-import { ExclamationCircleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon'
+import { ExclamationCircleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon.js'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { log } from './globals'

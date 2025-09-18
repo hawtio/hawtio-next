@@ -32,12 +32,12 @@ import {
   TextInput,
   Title,
 } from '@patternfly/react-core'
-import { LockIcon } from '@patternfly/react-icons/dist/esm/icons/lock-icon'
+import { LockIcon } from '@patternfly/react-icons/dist/esm/icons/lock-icon.js'
 import React, { createContext, useContext, useState } from 'react'
 import './OperationForm.css'
 import { Operation, OperationArgument } from './operation'
 import { operationService } from './operation-service'
-import { EllipsisVIcon } from '@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon'
+import { EllipsisVIcon } from '@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon.js'
 import DOMPurify from 'dompurify'
 
 export const OperationContext = createContext<{

@@ -31,8 +31,8 @@ import {
   ToolbarItem,
 } from '@patternfly/react-core'
 
-import { BarsIcon } from '@patternfly/react-icons/dist/esm/icons/bars-icon'
-import { HelpIcon } from '@patternfly/react-icons/dist/esm/icons/help-icon'
+import { BarsIcon } from '@patternfly/react-icons/dist/esm/icons/bars-icon.js'
+import { HelpIcon } from '@patternfly/react-icons/dist/esm/icons/help-icon.js'
 import React, { useContext, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import './HawtioHeader.css'

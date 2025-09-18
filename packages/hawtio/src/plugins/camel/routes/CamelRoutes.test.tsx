@@ -15,7 +15,7 @@ function getMockedRoutes(): CamelRoute[] {
 }
 
 // needed despite of being mocked globally
-jest.mock('@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon', () => ({
+jest.mock('@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon.js', () => ({
   EllipsisVIcon: jest.fn(),
 }))
 

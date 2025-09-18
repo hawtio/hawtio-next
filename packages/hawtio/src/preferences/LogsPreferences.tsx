@@ -21,8 +21,8 @@ import {
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core'
-import { PlusIcon } from '@patternfly/react-icons/dist/esm/icons/plus-icon'
-import { TrashIcon } from '@patternfly/react-icons/dist/esm/icons/trash-icon'
+import { PlusIcon } from '@patternfly/react-icons/dist/esm/icons/plus-icon.js'
+import { TrashIcon } from '@patternfly/react-icons/dist/esm/icons/trash-icon.js'
 import React, { useContext, useState } from 'react'
 import { LogsContext, useChildLoggers } from './context'
 

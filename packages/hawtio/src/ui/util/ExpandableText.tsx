@@ -1,10 +1,10 @@
 import * as React from 'react'
-import styles from '@patternfly/react-styles/css/components/ExpandableSection/expandable-section'
+import styles from '@patternfly/react-styles/css/components/ExpandableSection/expandable-section.js'
 import { css } from '@patternfly/react-styles'
-import { c_expandable_section_m_truncate__content_LineClamp as lineClamp } from '@patternfly/react-tokens/dist/esm/c_expandable_section_m_truncate__content_LineClamp'
+import { c_expandable_section_m_truncate__content_LineClamp as lineClamp } from '@patternfly/react-tokens/dist/esm/c_expandable_section_m_truncate__content_LineClamp.js'
 import { debounce, getResizeObserver, getUniqueId, PickOptional } from '@patternfly/react-core'
 import { isString } from '@hawtiosrc/util/objects'
-import { AngleRightIcon } from '@patternfly/react-icons/dist/esm/icons/angle-right-icon'
+import { AngleRightIcon } from '@patternfly/react-icons/dist/esm/icons/angle-right-icon.js'
 
 export enum ExpandableSectionVariant {
   default = 'default',

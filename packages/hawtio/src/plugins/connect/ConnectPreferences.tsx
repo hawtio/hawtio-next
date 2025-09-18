@@ -20,7 +20,7 @@ import { useNavigate } from 'react-router-dom'
 import { RESET } from './connections'
 import { useConnections } from './context'
 import { log } from './globals'
-import { ExclamationCircleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon'
+import { ExclamationCircleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon.js'
 
 export const ConnectPreferences: React.FunctionComponent = () => (
   <CardBody>

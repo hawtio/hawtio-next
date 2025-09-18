@@ -13,7 +13,7 @@ import {
   PageSection,
   EmptyStateHeader,
 } from '@patternfly/react-core'
-import { CubesIcon } from '@patternfly/react-icons/dist/esm/icons/cubes-icon'
+import { CubesIcon } from '@patternfly/react-icons/dist/esm/icons/cubes-icon.js'
 import React, { useEffect } from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { HawtioNotification } from '@hawtiosrc/ui/notification'
