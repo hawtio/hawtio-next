@@ -70,7 +70,7 @@
     "react-split": "^2.0.14",
     "reactflow": "^11.11.4",
     "superstruct": "^2.0.2",
-    "xml-formatter": "^3.6.6"
+    "xml-formatter": "^3.6.7"
   },
   "devDependencies": {
     "@patternfly/react-charts": "^7.4.9",
