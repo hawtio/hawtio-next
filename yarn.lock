@@ -904,7 +904,7 @@ __metadata:
     eslint-plugin-import: "npm:^2.32.0"
     eslint-plugin-react: "npm:^7.37.5"
     eslint-plugin-react-hooks: "npm:^5.2.0"
-    eslint-plugin-testing-library: "npm:^7.6.4"
+    eslint-plugin-testing-library: "npm:^7.11.0"
     prettier: "npm:^3.6.2"
     typescript: "npm:^5.8.3"
     typescript-eslint: "npm:^8.45.0"
@@ -6483,15 +6483,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-testing-library@npm:^7.6.4":
-  version: 7.6.4
-  resolution: "eslint-plugin-testing-library@npm:7.6.4"
+"eslint-plugin-testing-library@npm:^7.11.0":
+  version: 7.11.0
+  resolution: "eslint-plugin-testing-library@npm:7.11.0"
   dependencies:
     "@typescript-eslint/scope-manager": "npm:^8.15.0"
     "@typescript-eslint/utils": "npm:^8.15.0"
   peerDependencies:
     eslint: ^8.57.0 || ^9.0.0
-  checksum: 10/eb401c4785d3576d7ae94d181a881d209408dd3e7efa755f1facee0571394b7edf351526f78552846358d974814e8650ea5bf6877416c3fc64d02deba81175ba
+  checksum: 10/25be8a202879220213a5b15204ab85e82e8c57d3c68ba6e9f946d122b39c80b646c198968ad5a9990def9e3e42a0a09dcdf1256a7e9d58c06170bd9a869ad956
   languageName: node
   linkType: hard
 
