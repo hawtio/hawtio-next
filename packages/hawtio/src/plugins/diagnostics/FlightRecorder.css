@@ -1,0 +1,20 @@
+.pf-v5-c-modal-box {
+  max-width: 50vw !important;
+}
+
+.pf-v5-c-form__group {
+  max-width: 30rem;
+}
+
+.java-flight-recorder button > span {
+  padding: 0;
+}
+
+.flight-recorder-button-divider {
+  padding: 1rem;
+}
+
+.flight-recorder-recording-text {
+  text-align: center;
+  padding-top: 0.5rem !important;
+}
