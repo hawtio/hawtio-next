@@ -877,17 +877,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hawtio/camel-model-v4_10@npm:@hawtio/camel-model@~4.10.6":
-  version: 4.10.6
-  resolution: "@hawtio/camel-model@npm:4.10.6"
-  checksum: 10/d32efb354b420c0b8cb1c5d53406807378f9227cd2cacaf0ebac746ef4c192a1203858f1cac00e15fbca1539ccba962f23cc9fb90fd724ab9d878ae2907c9923
+"@hawtio/camel-model-v4_10@npm:@hawtio/camel-model@~4.10.7":
+  version: 4.10.7
+  resolution: "@hawtio/camel-model@npm:4.10.7"
+  checksum: 10/c60c544acb327669a3d4dd0314f110c7e5072ad673bc1901d3775ca90b71782d27a57c4d645e50ed8ddbb994cb99cbf85f29999b926125ae11a4de46bd190d6a
   languageName: node
   linkType: hard
 
-"@hawtio/camel-model-v4_14@npm:@hawtio/camel-model@~4.14.0":
-  version: 4.14.0
-  resolution: "@hawtio/camel-model@npm:4.14.0"
-  checksum: 10/831a1e654ef240f99d86c6823fa14b79f02f6a75ea5a10c674de38fa2fdb3cec8a4720c58fdb04168a777ac67e927564c5257b60ebe70f5d8370a414ca4607ce
+"@hawtio/camel-model-v4_14@npm:@hawtio/camel-model@~4.14.1":
+  version: 4.14.1
+  resolution: "@hawtio/camel-model@npm:4.14.1"
+  checksum: 10/e07fde41092cfa465776bf9f5eca0863e5244460bd7e9a265aa9ab286f48cf2ac214e2006a8251d46f59ce232785e791858369f624ccf7b9a4c3e5def4ee6446
   languageName: node
   linkType: hard
 
@@ -915,8 +915,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hawtio/react@workspace:packages/hawtio"
   dependencies:
-    "@hawtio/camel-model-v4_10": "npm:@hawtio/camel-model@~4.10.6"
-    "@hawtio/camel-model-v4_14": "npm:@hawtio/camel-model@~4.14.0"
+    "@hawtio/camel-model-v4_10": "npm:@hawtio/camel-model@~4.10.7"
+    "@hawtio/camel-model-v4_14": "npm:@hawtio/camel-model@~4.14.1"
     "@jolokia.js/simple": "npm:^2.3.0"
     "@module-federation/utilities": "npm:^3.1.69"
     "@monaco-editor/react": "npm:^4.6.0"
