@@ -1,4 +1,4 @@
-import axios, { isAxiosError } from 'axios'
+import axios, { type AxiosRequestConfig, isAxiosError } from 'axios'
 import { Request, Response } from 'express'
 
 import { log } from './logger'
@@ -12,13 +12,23 @@ export async function proxy(uri: string, req: Request, res: Response) {
     req.headers['Authorization'] = req.headers['x-jolokia-authorization']
   }
   try {
-    const res2 = await axios({
+    const axiosRequest: AxiosRequestConfig = {
       method: req.method,
       url: uri,
-      data: req,
       headers: req.headers,
       responseType: 'stream',
-    })
+    }
+    if (req.method === 'POST') {
+      // can we pass the request to be streamed from incoming expres.js to outgoing axios request?
+      if (req.complete || req.readableEnded) {
+        // pass data consumed and transformed into JSON by bodyParser.json() middleware
+        axiosRequest.data = req.body ?? {}
+      } else {
+        // we can safely stream
+        axiosRequest.data = req
+      }
+    }
+    const res2 = await axios(axiosRequest)
     if (res2.headers['content-type']) {
       res.header('content-type', res2.headers['content-type'])
     }
@@ -27,12 +37,12 @@ export async function proxy(uri: string, req: Request, res: Response) {
   } catch (error) {
     if (isAxiosError(error) && error.response) {
       const res2 = error.response
-      const newHeaders = Object.assign({}, res2.headers as { [key: string]: string})
+      const newHeaders = Object.assign({}, res2.headers as { [key: string]: string })
       if (res2.status == 401 && newHeaders['www-authenticate']) {
         // emulate Hawtio's probing of remote Jolokia. Without "WWW-Authenticate: Basic ...",
         // browser never displays native credentials dialog, so we can handle it nicer
         let v = newHeaders['www-authenticate'] as string
-        if (v.toLowerCase().startsWith("basic")) {
+        if (v.toLowerCase().startsWith('basic')) {
           v = 'Hawtio original-scheme="Basic" ' + v.substring(6, v.length)
           newHeaders['WWW-Authenticate'] = v
         }

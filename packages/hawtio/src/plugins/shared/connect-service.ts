@@ -388,9 +388,7 @@ class ConnectService implements IConnectService {
         }
         fetch(this.getJolokiaUrl(connection), {
           method: 'post',
-          // with application/json, I'm getting "CanceledError: Request stream has been aborted" when running
-          // via hawtioMiddleware...
-          headers: { ...headers, 'Content-Type': 'text/json' },
+          headers: { ...headers, 'Content-Type': 'application/json' },
           credentials: 'same-origin',
           body: JSON.stringify({ type: 'version' }),
         })
