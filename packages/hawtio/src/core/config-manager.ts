@@ -306,6 +306,11 @@ export interface IConfigManager {
    * @param group One of supported initialization task groups
    */
   initItem(item: string, state: TaskState, group: 'config' | 'plugins' | 'finish'): void
+
+  /**
+   * Returns global log level value set for the "root logger". Defaults to INFO value.
+   */
+  globalLogLevel(): number
 }
 
 /**
@@ -352,6 +357,10 @@ export class ConfigManager implements IConfigManager {
         l(this.initTasks)
       }
     }, 0)
+  }
+
+  globalLogLevel(): number {
+    return Logger.getLevel().value
   }
 
   // --- Public API

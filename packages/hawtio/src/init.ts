@@ -7,6 +7,7 @@
 import { configManager as configManagerService, type IConfigManager, TaskState } from './core/config-manager'
 import { hawtio as hawtioService, type IHawtio } from './core/core'
 
+export { Logger } from './core/logging'
 export const configManager: IConfigManager = configManagerService
 export const hawtio: IHawtio = hawtioService
 export { TaskState }
