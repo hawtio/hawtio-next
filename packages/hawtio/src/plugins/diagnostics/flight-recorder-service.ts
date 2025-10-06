@@ -13,12 +13,13 @@ export interface IFlightRecorderService {
 }
 
 enum RecordingState {
+    NOT_CREATED,
     CREATED,
     RECORDING,
     STOPPED,
 }
 
-interface UserJfrSettings {
+export interface UserJfrSettings {
     limitType: "duration" | "maxSize" | "unlimited";
     limitValue: number;
     recordingNumber: number;
@@ -28,7 +29,7 @@ interface UserJfrSettings {
     configuration: string;
 }
 
-type Recording = {
+export type Recording = {
     number: string,
     size: string,
     file: string,
@@ -37,9 +38,9 @@ type Recording = {
     downloadLink: string
 }
 
-type CurrentRecording = {
+export type CurrentRecording = {
     state: RecordingState
-    number: number
+    number?: number
 }
 
 class FlightRecorderService implements IFlightRecorderService {
@@ -47,12 +48,12 @@ class FlightRecorderService implements IFlightRecorderService {
     private jfrLogger : ILogger = Logger.get('jfr-service')
 
     private jfrMBean?: MBeanNode
-    private jfrConfigs?: string[]
-    private userJfrSettings?: UserJfrSettings
+    public jfrConfigs?: string[]
+    public userJfrSettings?: UserJfrSettings
     
-    private recordings: Array<Recording> = []
-    private currentRecording: CurrentRecording = {state: RecordingState.STOPPED, number: -1}
-    private initialized: boolean = false
+    public recordings: Array<Recording> = []
+    public currentRecording: CurrentRecording = {state: RecordingState.NOT_CREATED}
+    public initialized: boolean = false
 
     async setUp() : Promise<FlightRecorderService> {
         await this.getFlightRecoderMBean()
@@ -85,31 +86,7 @@ class FlightRecorderService implements IFlightRecorderService {
                 ?.map(config => config.name);
                 
 
-        return this.jfrConfigs        
-    }
-
-    async retrieveSettings(): Promise<any> {
-        if (!this.jfrMBean) (await this.getFlightRecoderMBean())
-        
-        const initialSettings = 
-            await jolokiaService.execute(this.jfrMBean?.objectName as string, "getRecordingOptions", [4]) as any
-
-        const limitType = Number(initialSettings["duration"]) !== 0 ? "duration"
-                        : Number(initialSettings["maxSize"]) !== 0 ? "maxSize"
-                        : "unlimited" 
-
-        this.userJfrSettings =
-            {
-                filename: "",
-                configuration: initialSettings["configuration"] || "default",
-                name: initialSettings["name"] as string,
-                dumpOnExit: initialSettings["dumpOnExit"] === "true",
-                recordingNumber: this.currentRecording?.number as number,
-                limitType: limitType,
-                limitValue: limitType !== "unlimited" ? Number(initialSettings[limitType]) : 0
-            }
-
-        return [this.userJfrSettings, initialSettings]
+        return this.jfrConfigs
     }
 
     async retrieveRecordings(): Promise<[Recording[], CurrentRecording, any]> {
@@ -141,9 +118,9 @@ class FlightRecorderService implements IFlightRecorderService {
                     )
     }
 
-    private async configureCurrentRecording(jfrRecordings?: Array<any>) : Promise<CurrentRecording> {
+    private async configureCurrentRecording(jfrRecordings: Array<any>) : Promise<CurrentRecording> {
 
-        const current = jfrRecordings && jfrRecordings?.[jfrRecordings.length -1]
+        const current = jfrRecordings && jfrRecordings.length > 0 && jfrRecordings[jfrRecordings.length - 1]
 
         if (current?.state === "RUNNING")
             return {
@@ -155,7 +132,7 @@ class FlightRecorderService implements IFlightRecorderService {
             return {
                 state: RecordingState.CREATED,
                 number: jfrRecordings?.[jfrRecordings.length -1].id
-            }
+           }
 
         return {
             state: RecordingState.CREATED,
@@ -163,10 +140,35 @@ class FlightRecorderService implements IFlightRecorderService {
         }
     }
 
+    async retrieveSettings(): Promise<any> {
+        if (!this.jfrMBean) (await this.getFlightRecoderMBean())
+        if (!this.currentRecording) (await this.retrieveRecordings())
+        
+        const initialSettings = 
+            await jolokiaService.execute(this.jfrMBean?.objectName as string, "getRecordingOptions", [this.currentRecording?.number]) as any
+
+        const limitType = Number(initialSettings["duration"]) !== 0 ? "duration"
+                        : Number(initialSettings["maxSize"]) !== 0 ? "maxSize"
+                        : "unlimited" 
+
+        this.userJfrSettings =
+            {
+                filename: "",
+                configuration: initialSettings["configuration"] || "default",
+                name: initialSettings["name"] as string,
+                dumpOnExit: initialSettings["dumpOnExit"] === "true",
+                recordingNumber: this.currentRecording?.number as number,
+                limitType: limitType,
+                limitValue: limitType !== "unlimited" ? Number(initialSettings[limitType]) : 0
+            }
+
+        return [this.userJfrSettings, initialSettings]
+    }
+
     async startRecording(): Promise<any> {
-        await jolokiaService.execute(this.jfrMBean?.objectName as string, "setRecordingOptions", [this.currentRecording.number, this.convertSettingsToJfrOptions(this.userJfrSettings as any)]);
-        await jolokiaService.execute(this.jfrMBean?.objectName as string, "setPredefinedConfiguration", [this.currentRecording.number, this.userJfrSettings?.configuration])
-        await jolokiaService.execute(this.jfrMBean?.objectName as string, "startRecording", [this.currentRecording.number]);
+        await jolokiaService.execute(this.jfrMBean?.objectName as string, "setRecordingOptions", [this.currentRecording?.number, this.convertSettingsToJfrOptions(this.userJfrSettings as any)]);
+        await jolokiaService.execute(this.jfrMBean?.objectName as string, "setPredefinedConfiguration", [this.currentRecording?.number, this.userJfrSettings?.configuration])
+        await jolokiaService.execute(this.jfrMBean?.objectName as string, "startRecording", [this.currentRecording?.number]);
         this.currentRecording.state = RecordingState.RECORDING
     }
 
