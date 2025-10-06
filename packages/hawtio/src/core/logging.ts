@@ -81,6 +81,7 @@ class LocalStorageHawtioLogger implements HawtioLogger {
       jsLogger.setLevel(logLevel)
     } catch (e) {
       console.error('Failed to load log level from local storage:', e)
+      jsLogger.setLevel(this.INFO)
     }
 
     try {
