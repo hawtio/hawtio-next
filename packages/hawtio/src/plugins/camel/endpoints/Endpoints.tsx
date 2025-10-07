@@ -35,11 +35,6 @@ export const Endpoints: React.FunctionComponent = () => {
       setIsReading(false)
     }
     readEndpoints()
-
-    /*
-     * lint reporting that ctx should be a dependency which it really doesn't
-     */
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedNode])
 
   if (!selectedNode) {

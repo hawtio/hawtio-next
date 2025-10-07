@@ -56,7 +56,6 @@ export function useQuartz() {
     loadTree()
 
     return () => eventService.removeListener(EVENT_REFRESH, listener)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return { tree, loaded, selectedNode, setSelectedNode }

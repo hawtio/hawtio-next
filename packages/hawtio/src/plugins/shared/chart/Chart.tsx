@@ -242,8 +242,6 @@ export const Chart: React.FunctionComponent = () => {
       attributesToWatch.current = {}
       setInitialTime(-1)
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedNode])
 
   if (
