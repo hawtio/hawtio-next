@@ -80,6 +80,7 @@ class KeycloakService implements IKeycloakService {
     this.userProfile = this.loadUserProfile()
 
     this.originalFetch = fetch
+    this.originalFetch = this.originalFetch.bind(window)
   }
 
   /**
