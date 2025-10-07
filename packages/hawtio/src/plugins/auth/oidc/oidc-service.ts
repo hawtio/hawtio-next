@@ -146,6 +146,7 @@ class OidcService implements IOidcService {
     this.userInfo = this.initialize()
 
     this.originalFetch = fetch
+    this.originalFetch = this.originalFetch.bind(window)
   }
 
   /**
