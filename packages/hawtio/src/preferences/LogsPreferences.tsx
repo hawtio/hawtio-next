@@ -143,6 +143,9 @@ const ChildLoggerItem: React.FunctionComponent<ChildLoggerItemProps> = props => 
       return
     }
     Logger.updateChildLogger(logger.name, level)
+  }
+
+  const onStopDragging = () => {
     reloadChildLoggers()
   }
 
@@ -166,6 +169,8 @@ const ChildLoggerItem: React.FunctionComponent<ChildLoggerItemProps> = props => 
                 max={LOG_LEVEL_OPTIONS.length - 1}
                 customSteps={LOG_LEVEL_OPTIONS.map((level, index) => ({ value: index, label: level }))}
                 onChange={(_event, value: number) => onLogLevelChange(LOG_LEVEL_OPTIONS[value])}
+                onMouseUp={_event => onStopDragging()}
+                onTouchEnd={_event => onStopDragging()}
               />
             </DataListCell>,
           ]}
