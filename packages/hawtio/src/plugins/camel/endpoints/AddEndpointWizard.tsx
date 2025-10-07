@@ -38,11 +38,6 @@ export const AddEndpointWizard: React.FunctionComponent = () => {
         ctx.setComponentSchema(schema)
       }
     })
-
-    /*
-     * lint reporting that ctx should be a dependency which it really doesn't
-     */
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedNode, ctx.componentName])
 
   if (!selectedNode) {
