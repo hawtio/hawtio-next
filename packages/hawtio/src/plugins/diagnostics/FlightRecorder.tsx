@@ -1,9 +1,10 @@
-import { ActionList, Alert, AlertActionLink, AlertGroup, Button, Card, EmptyState, EmptyStateHeader, EmptyStateIcon, EmptyStateVariant, Icon, PageSection, PageSectionVariants, Panel, Spinner } from '@patternfly/react-core'
+import { ActionList, Alert, AlertActionLink, AlertGroup, Button, Card, CardHeader, Divider, EmptyState, EmptyStateHeader, EmptyStateIcon, EmptyStateVariant, Flex, Icon, PageSection, PageSectionVariants, Panel, Spinner, Title } from '@patternfly/react-core'
 import React, { Fragment, useEffect, useState } from 'react'
 import { CurrentRecording, flightRecorderService, Recording, RecordingState, UserJfrSettings } from './flight-recorder-service'
 import { jolokiaService } from '../shared'
 import { CogIcon, CubesIcon, DownloadIcon, PlayIcon, StopIcon } from '@patternfly/react-icons'
-import { Table, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
+import './FlightRecorder.css'
 
 export const FlightRecorder: React.FunctionComponent = () => {
 
@@ -83,75 +84,90 @@ export const FlightRecorder: React.FunctionComponent = () => {
             <React.Fragment>
                 <AlertGroup isToast isLiveRegion>{alerts}</AlertGroup>
             </React.Fragment>
-            <Card>
-                <h2>
-                    {
-                        currentRecording?.state == RecordingState.RECORDING 
-                            ? "Currently recording..." 
-                            : "Ready to record"
-                    }
-                </h2>
-                <ActionList>
-                    <Button 
-                        isDisabled={currentRecording?.state == RecordingState.RECORDING} 
-                        onClick={() => flightRecorderService.startRecording().then(() => {
-                        setRecordingOnProgress(true)
-                        startRecordingAlert()
-                    })}>
-                        <Icon size="md">
-                            <PlayIcon />
-                        </Icon>
-                    </Button>
-                    <Button isDisabled={currentRecording?.state != RecordingState.RECORDING} onClick={() => {
-                        flightRecorderService.stopRecording().then(()=> {
-                            stopRecordingAlert(currentRecording?.number as number)
-                            setRecordings(flightRecorderService.recordings)
-                            setCurrentRecording(flightRecorderService.currentRecording)
-                            setUserJfrSettings(flightRecorderService.userJfrSettings)
-                        })
-                    }}>
-                        <Icon size="md">
-                            <StopIcon />
-                        </Icon>
-                    </Button>
-                    <Button isDisabled={currentRecording?.state == RecordingState.RECORDING}>
-                        <Icon size="md">
-                            <CogIcon />
-                        </Icon>
-                    </Button>
-                </ActionList>
-            </Card>
-
-
-            <Table>
-                <Thead>
-                    <Th>Record number</Th>
-                    <Th>Name</Th>
-                    <Th>Size</Th>
-                    <Th>Date</Th>
-                    <Th></Th>
-                </Thead>
-                {recordings.map(({number, file, size, time}) => (
-                    <Tr>
-                        <Td>{number}</Td>
-                        <Td>{file}</Td>
-                        <Td>{size}</Td>
-                        <Td>{new Date(time).toUTCString()}</Td>
-                        <Td>
+            <Card className="flight-recorder-button-divider">
+                <Flex direction={{md: 'column'}} alignContent={{md:'alignContentCenter'}}>
+                    <CardHeader className="flight-recorder-recording-text">
+                        <Title headingLevel='h3'>
+                            {
+                                currentRecording?.state == RecordingState.RECORDING 
+                                    ? "Currently recording..." 
+                                    : "Ready to record"
+                            }
+                        </Title>
+                    </CardHeader>
+                    <ActionList>
+                        <Flex alignContent={{md:'alignContentCenter'}}>
                             <Button 
-                                onClick={async () => {
-                                    await flightRecorderService.downloadRecording(Number(number), "/home/joshiraez")
-                                    saveRecordingAlert(Number(number))
-                                }}
-                            >
-                                <Icon>
-                                    <DownloadIcon />
+                                isDisabled={currentRecording?.state == RecordingState.RECORDING} 
+                                onClick={() => flightRecorderService.startRecording().then(() => {
+                                setRecordingOnProgress(true)
+                                startRecordingAlert()
+                            })}>
+                                <Icon size="md">
+                                    <PlayIcon />
                                 </Icon>
                             </Button>
-                        </Td>
-                    </Tr>
-                ))}
-            </Table>
+                            <Button isDisabled={currentRecording?.state != RecordingState.RECORDING} onClick={() => {
+                                flightRecorderService.stopRecording().then(()=> {
+                                    stopRecordingAlert(currentRecording?.number as number)
+                                    setRecordings(flightRecorderService.recordings)
+                                    setCurrentRecording(flightRecorderService.currentRecording)
+                                    setUserJfrSettings(flightRecorderService.userJfrSettings)
+                                })
+                            }}>
+                                <Icon size="md">
+                                    <StopIcon />
+                                </Icon>
+                            </Button>
+                            <Divider orientation={{md:'vertical'}} />
+                            <Button isDisabled={currentRecording?.state == RecordingState.RECORDING}>
+                                <Icon size="md">
+                                    <CogIcon />
+                                </Icon>
+                            </Button>
+                        </Flex>
+                    </ActionList>
+                </Flex>
+            </Card>
+
+            <Divider />
+
+            <Card>
+                <Table>
+                    <Thead>
+                        <Tr>
+                            <Th>Record number</Th>
+                            <Th>Name</Th>
+                            <Th>Size</Th>
+                            <Th>Date</Th>
+                            <Th></Th>
+                        </Tr>
+                    </Thead>
+                    <Tbody>
+                    {recordings.map(({number, file, size, time}) => (
+                        <Tr key={number}>
+                            <Td>{number}</Td>
+                            <Td>{file}</Td>
+                            <Td>{size}</Td>
+                            <Td>{new Date(time).toUTCString()}</Td>
+                            <Td>
+                                <Button 
+                                    onClick={async () => {
+                                        await flightRecorderService.downloadRecording(Number(number), "/home/joshiraez")
+                                        saveRecordingAlert(Number(number))
+                                    }}
+                                >
+                                    <Icon>
+                                        <DownloadIcon />
+                                    </Icon>
+                                </Button>
+                            </Td>
+                        </Tr>
+                    ))}
+                    </Tbody>
+                </Table>
+            </Card>
+            
 
         </PageSection>
     )
