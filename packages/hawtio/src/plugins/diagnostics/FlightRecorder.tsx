@@ -1,6 +1,9 @@
-import { Button, PageSection } from '@patternfly/react-core'
-import React, { useEffect, useState } from 'react'
-import { CurrentRecording, flightRecorderService, Recording, UserJfrSettings } from './flight-recorder-service'
+import { ActionList, Alert, AlertActionLink, AlertGroup, Button, Card, EmptyState, EmptyStateHeader, EmptyStateIcon, EmptyStateVariant, Icon, PageSection, PageSectionVariants, Panel, Spinner } from '@patternfly/react-core'
+import React, { Fragment, useEffect, useState } from 'react'
+import { CurrentRecording, flightRecorderService, Recording, RecordingState, UserJfrSettings } from './flight-recorder-service'
+import { jolokiaService } from '../shared'
+import { CogIcon, CubesIcon, DownloadIcon, PlayIcon, StopIcon } from '@patternfly/react-icons'
+import { Table, Td, Th, Thead, Tr } from '@patternfly/react-table'
 
 export const FlightRecorder: React.FunctionComponent = () => {
 
@@ -10,9 +13,15 @@ export const FlightRecorder: React.FunctionComponent = () => {
     const [currentRecording, setCurrentRecording] = useState<CurrentRecording>()
     const [configurations, setConfigurations] = useState<String[]>([])
     const [userJfrSettings, setUserJfrSettings] = useState<UserJfrSettings>()
+    const [jolokiaUrl, setJolokiaUrl] = useState<String>()
+    const [alerts, setAlerts] = useState<React.ReactNode[]>([]);
 
     useEffect(() => {
         if(!initialized)
+            jolokiaService.getFullJolokiaUrl().then(url => {
+                setJolokiaUrl(url)
+            })
+
             flightRecorderService.setUp().then(() => {
                 setInitialized(true)
                 setRecordings(flightRecorderService.recordings)
@@ -22,28 +31,127 @@ export const FlightRecorder: React.FunctionComponent = () => {
             })
     }, [initialized])
 
-    if(!initialized) return "Flight Recorder initializing"
+    if(!initialized) return
+        (<PageSection>
+            <Spinner aria-label='Loading Flight Recorder' />
+        </PageSection>)
+
+    if (!(initialized
+        && jolokiaUrl
+        && ["localhost", "127.0.0.1", "::1", "192.168.", "10.0"].filter(localUrl => jolokiaUrl.includes(localUrl)).length >= 1))
+        return (<PageSection>
+            <EmptyState variant={EmptyStateVariant.full}>
+                <EmptyStateHeader titleText='Tech preview only allows for local connections' icon={<EmptyStateIcon icon={CubesIcon} />} headingLevel='h1' />
+            </EmptyState>
+        </PageSection>)
+
+    if(initialized && !flightRecorderService.jfrMBean) return
+        (<PageSection>
+            <EmptyState variant={EmptyStateVariant.full}>
+                <EmptyStateHeader titleText='No MBean found for Java Flight Recorder' icon={<EmptyStateIcon icon={CubesIcon} />} headingLevel='h1' />
+            </EmptyState>
+        </PageSection>)
+
+    const recordingAlert = (text: string, downloadId?: number, timeout?: number) => {
+        setAlerts((prevAlerts) => {
+            return [
+                ...prevAlerts, <Alert
+                    title={text}
+                    timeout={timeout ? timeout : 2000}
+                    actionLinks={
+                        downloadId &&
+                            <Fragment>
+                                <AlertActionLink component="a" onClick={async () => {
+                                    await flightRecorderService.downloadRecording(Number(downloadId), "/home/joshiraez")
+                                    saveRecordingAlert(downloadId)
+                                }}>
+                                    Download
+                                </AlertActionLink>
+                            </Fragment>
+                    }
+                >
+                </Alert>
+            ]})
+    }
+
+    const startRecordingAlert = () => recordingAlert("Starting recording.")
+    const stopRecordingAlert = (recordingId: number) => recordingAlert(`Recording ${recordingId} stored`, recordingId)
+    const saveRecordingAlert = (recordingId: number) => recordingAlert(`Saved recording ${recordingId} on /home/joshiraez/${recordingId}.jfr`)
 
     return (
         <PageSection>
-            {"Current Recording" + currentRecording?.state + " " + currentRecording?.number}
-            {"Settings" + userJfrSettings}
-            <Button onClick={() => flightRecorderService.startRecording().then(() => {
-                setRecordingOnProgress(true)
-            })}>
-                Record
-            </Button>
-            <Button onClick={() => {
-                flightRecorderService.stopRecording().then(()=> {
-                    setRecordings(flightRecorderService.recordings)
-                    setCurrentRecording(flightRecorderService.currentRecording)
-                    setUserJfrSettings(flightRecorderService.userJfrSettings)
-                })
-            }}>
-                Stop
-            </Button>
+            <React.Fragment>
+                <AlertGroup isToast isLiveRegion>{alerts}</AlertGroup>
+            </React.Fragment>
+            <Card>
+                <h2>
+                    {
+                        currentRecording?.state == RecordingState.RECORDING 
+                            ? "Currently recording..." 
+                            : "Ready to record"
+                    }
+                </h2>
+                <ActionList>
+                    <Button 
+                        isDisabled={currentRecording?.state == RecordingState.RECORDING} 
+                        onClick={() => flightRecorderService.startRecording().then(() => {
+                        setRecordingOnProgress(true)
+                        startRecordingAlert()
+                    })}>
+                        <Icon size="md">
+                            <PlayIcon />
+                        </Icon>
+                    </Button>
+                    <Button isDisabled={currentRecording?.state != RecordingState.RECORDING} onClick={() => {
+                        flightRecorderService.stopRecording().then(()=> {
+                            stopRecordingAlert(currentRecording?.number as number)
+                            setRecordings(flightRecorderService.recordings)
+                            setCurrentRecording(flightRecorderService.currentRecording)
+                            setUserJfrSettings(flightRecorderService.userJfrSettings)
+                        })
+                    }}>
+                        <Icon size="md">
+                            <StopIcon />
+                        </Icon>
+                    </Button>
+                    <Button isDisabled={currentRecording?.state == RecordingState.RECORDING}>
+                        <Icon size="md">
+                            <CogIcon />
+                        </Icon>
+                    </Button>
+                </ActionList>
+            </Card>
 
-            {"Recordings" + recordings.map(record => `${record.number}: ${record.downloadLink}. ${record.file}, ${record.size}, ${Date.UTC(record.time)}\n`)}
+
+            <Table>
+                <Thead>
+                    <Th>Record number</Th>
+                    <Th>Name</Th>
+                    <Th>Size</Th>
+                    <Th>Date</Th>
+                    <Th></Th>
+                </Thead>
+                {recordings.map(({number, file, size, time}) => (
+                    <Tr>
+                        <Td>{number}</Td>
+                        <Td>{file}</Td>
+                        <Td>{size}</Td>
+                        <Td>{new Date(time).toUTCString()}</Td>
+                        <Td>
+                            <Button 
+                                onClick={async () => {
+                                    await flightRecorderService.downloadRecording(Number(number), "/home/joshiraez")
+                                    saveRecordingAlert(Number(number))
+                                }}
+                            >
+                                <Icon>
+                                    <DownloadIcon />
+                                </Icon>
+                            </Button>
+                        </Td>
+                    </Tr>
+                ))}
+            </Table>
 
         </PageSection>
     )

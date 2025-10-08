@@ -12,7 +12,7 @@ export interface IFlightRecorderService {
   saveRecording(): Promise<any>
 }
 
-enum RecordingState {
+export enum RecordingState {
     NOT_CREATED,
     CREATED,
     RECORDING,
@@ -47,7 +47,7 @@ class FlightRecorderService implements IFlightRecorderService {
 
     private jfrLogger : ILogger = Logger.get('jfr-service')
 
-    private jfrMBean?: MBeanNode
+    public jfrMBean?: MBeanNode
     public jfrConfigs?: string[]
     public userJfrSettings?: UserJfrSettings
     
@@ -56,7 +56,10 @@ class FlightRecorderService implements IFlightRecorderService {
     public initialized: boolean = false
 
     async setUp() : Promise<FlightRecorderService> {
-        await this.getFlightRecoderMBean()
+        const jfr = await this.getFlightRecoderMBean()
+        
+        if (!jfr) return this;
+
         await this.retrieveConfigurations()
         await this.retrieveRecordings()
         await this.retrieveSettings()
@@ -177,6 +180,10 @@ class FlightRecorderService implements IFlightRecorderService {
         await jolokiaService.execute(this.jfrMBean?.objectName as string, "stopRecording", [this.currentRecording.number]);
         await this.retrieveRecordings()
     }
+
+    async downloadRecording(id: number, directoryGenerated: string ) {
+        await jolokiaService.execute(this.jfrMBean?.objectName as string, "copyTo(long,java.lang.String)", [id, directoryGenerated+"/"+id+".jfr"])
+    } 
 
     async saveRecording(): Promise<any> {
 
