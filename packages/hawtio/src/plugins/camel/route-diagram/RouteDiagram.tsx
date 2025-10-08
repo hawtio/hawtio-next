@@ -1,7 +1,7 @@
+import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import { Table, Tbody, Td, Tr } from '@patternfly/react-table'
 import React, { RefObject, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import {
-  ReactFlow,
   Connection,
   ConnectionLineType,
   Handle,
@@ -9,22 +9,22 @@ import {
   NodeProps,
   NodeToolbar,
   Position,
+  ReactFlow,
+  ReactFlowProvider,
   addEdge,
   useEdgesState,
-  useNodesState,
-  ReactFlowProvider,
   useNodesInitialized,
+  useNodesState,
   useReactFlow,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 import { camelPreferencesService } from '../camel-preferences-service'
 import { CamelContext } from '../context'
-import { routesService } from '../routes-service'
 import { log } from '../globals'
+import { Annotation, RouteDiagramContext } from '../route-diagram-context'
+import { routesService } from '../routes-service'
 import './RouteDiagram.css'
-import { Annotation, RouteDiagramContext } from './context'
 import { CamelNodeData, visualizationService } from './visualization-service'
-import { MBeanNode } from '@hawtiosrc/plugins/shared'
 
 export const RouteDiagram: React.FunctionComponent = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
@@ -211,10 +211,8 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
     setAnnotation(ann)
   }, [annotations, data.cid])
 
-  const handleDoubleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!doubleClickAction) return
-
-    doubleClickAction(data)
+  const handleDoubleClick = (_e: React.MouseEvent<HTMLDivElement>) => {
+    doubleClickAction?.(data)
   }
 
   const truncate = (label: string) => {
@@ -225,18 +223,14 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
     return newLabel.substring(0, 17) + '...'
   }
 
-  const totalExchanges: number =
+  const totalExchanges =
     parseInt(data.stats?.exchangesCompleted ?? '0') + parseInt(data.stats?.exchangesInflight ?? '0')
 
   return (
     <div
       className={'camel-node-content' + (selected ? ' highlighted' : '')}
-      onMouseEnter={() => {
-        if (showStatistics) setVisible(true)
-      }}
-      onMouseLeave={() => {
-        if (showStatistics) setVisible(false)
-      }}
+      onMouseEnter={() => showStatistics && setVisible(true)}
+      onMouseLeave={() => showStatistics && setVisible(false)}
       onDoubleClick={handleDoubleClick}
     >
       <Handle type='target' position={targetPosition ?? Position.Top} />
@@ -249,42 +243,42 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
       {data.cid && <div className='camel-node-id'> (ID: {data.cid})</div>}
       {showStatistics && (
         <NodeToolbar isVisible={isVisible} position={Position.Bottom} style={{ marginTop: '-30px' }}>
-          <div className={'node-tooltip'}>
+          <div className='node-tooltip'>
             {!data.stats && data.label}
             {data.stats && !showFull && (
-              <Table variant={'compact'}>
+              <Table variant='compact'>
                 <Tbody style={{ fontSize: 'xx-small' }}>
-                  <Tr className={'node-tooltip-odd-row'}>
+                  <Tr className='node-tooltip-odd-row'>
                     <Td>ID</Td>
-                    <Td className={'node-tooltip-value'}>{data.stats.id}</Td>
+                    <Td className='node-tooltip-value'>{data.stats.id}</Td>
                   </Tr>
-                  <Tr className={'node-tooltip-even-row'}>
+                  <Tr className='node-tooltip-even-row'>
                     <Td>Total</Td>
-                    <Td className={'node-tooltip-value'}>{totalExchanges}</Td>
+                    <Td className='node-tooltip-value'>{totalExchanges}</Td>
                   </Tr>
-                  <Tr className={'node-tooltip-odd-row'}>
+                  <Tr className='node-tooltip-odd-row'>
                     <Td>Completed</Td>
-                    <Td className={'node-tooltip-value'}>{data.stats?.exchangesCompleted}</Td>
+                    <Td className='node-tooltip-value'>{data.stats?.exchangesCompleted}</Td>
                   </Tr>
-                  <Tr className={'node-tooltip-even-row'}>
+                  <Tr className='node-tooltip-even-row'>
                     <Td>Inflight</Td>
-                    <Td className={'node-tooltip-value'}>{data.stats?.exchangesInflight}</Td>
+                    <Td className='node-tooltip-value'>{data.stats?.exchangesInflight}</Td>
                   </Tr>
-                  <Tr className={'node-tooltip-odd-row'}>
+                  <Tr className='node-tooltip-odd-row'>
                     <Td>Last</Td>
-                    <Td className={'node-tooltip-value'}>{data.stats?.lastProcessingTime} (ms)</Td>
+                    <Td className='node-tooltip-value'>{data.stats?.lastProcessingTime} (ms)</Td>
                   </Tr>
-                  <Tr className={'node-tooltip-even-row'}>
+                  <Tr className='node-tooltip-even-row'>
                     <Td>Mean</Td>
-                    <Td className={'node-tooltip-value'}>{data.stats?.meanProcessingTime} (ms)</Td>
+                    <Td className='node-tooltip-value'>{data.stats?.meanProcessingTime} (ms)</Td>
                   </Tr>
-                  <Tr className={'node-tooltip-odd-row'}>
+                  <Tr className='node-tooltip-odd-row'>
                     <Td>Min</Td>
-                    <Td className={'node-tooltip-value'}>{data.stats?.minProcessingTime} (ms)</Td>
+                    <Td className='node-tooltip-value'>{data.stats?.minProcessingTime} (ms)</Td>
                   </Tr>
-                  <Tr className={'node-tooltip-even-row'}>
+                  <Tr className='node-tooltip-even-row'>
                     <Td>Max</Td>
-                    <Td className={'node-tooltip-value'}>{data.stats?.maxProcessingTime} (ms)</Td>
+                    <Td className='node-tooltip-value'>{data.stats?.maxProcessingTime} (ms)</Td>
                   </Tr>
                 </Tbody>
               </Table>
@@ -292,7 +286,7 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
 
             {data.stats && showFull && (
               //TODO finish full statistics
-              <Table variant={'compact'}>
+              <Table variant='compact'>
                 <Tbody style={{ fontSize: 'xx-small' }}>
                   {Object.entries(data.stats).map(s => {
                     return (

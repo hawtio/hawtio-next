@@ -4,15 +4,15 @@ import { isBlank } from '@hawtiosrc/util/strings'
 import { childText, parseXML } from '@hawtiosrc/util/xml'
 import {
   Button,
+  Panel,
+  PanelHeader,
+  PanelMain,
   PanelMainBody,
   Text,
+  Title,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
-  PanelHeader,
-  PanelMain,
-  Panel,
-  Title,
 } from '@patternfly/react-core'
 import { BanIcon } from '@patternfly/react-icons/dist/esm/icons/ban-icon'
 import { BarsIcon } from '@patternfly/react-icons/dist/esm/icons/bars-icon'
@@ -24,13 +24,13 @@ import { PlusCircleIcon } from '@patternfly/react-icons/dist/esm/icons/plus-circ
 import { PlusIcon } from '@patternfly/react-icons/dist/esm/icons/plus-icon'
 import { TimesCircleIcon } from '@patternfly/react-icons/dist/esm/icons/times-circle-icon'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
-import Jolokia, { JolokiaSuccessResponse, JolokiaErrorResponse } from 'jolokia.js'
+import Jolokia, { JolokiaErrorResponse, JolokiaSuccessResponse } from 'jolokia.js'
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import * as camelService from '../camel-service'
 import { CamelContext } from '../context'
 import { log } from '../globals'
+import { Annotation, RouteDiagramContext, useRouteDiagramContext } from '../route-diagram-context'
 import { RouteDiagram } from '../route-diagram/RouteDiagram'
-import { Annotation, RouteDiagramContext, useRouteDiagramContext } from '../route-diagram/context'
 import { CamelNodeData } from '../route-diagram/visualization-service'
 import { ConditionalBreakpointModal } from './ConditionalBreakpointModel'
 import './Debug.css'
