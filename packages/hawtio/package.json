@@ -21,6 +21,9 @@
     },
     "./dist/index.css": {
       "default": "./dist/index.css"
+    },
+    "./dist/init.css": {
+      "default": "./dist/init.css"
     }
   },
   "author": "Hawtio developer team",

@@ -1,3 +1,4 @@
+import './HawtioInitialization.css'
 import React, { useEffect, useState } from 'react'
 
 import { configManager, type InitializationTasks, TaskState } from '@hawtiosrc/core/config-manager'
@@ -54,8 +55,10 @@ export const HawtioInitialization: React.FC<{ verbose: boolean }> = ({ verbose =
       <>
         <div className='hwt-loading'>
           <h4>
-            {dots.map((el: TaskState) => (
-              <span className={tickClass(el)}>&#9679;</span>
+            {dots.map((el: TaskState, idx: number) => (
+              <span key={idx} className={tickClass(el)}>
+                &#9679;
+              </span>
             ))}
           </h4>
         </div>

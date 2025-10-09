@@ -1,0 +1,47 @@
+.hwt-loading {
+  padding: 0.2em 0.5em;
+}
+.hwt-loading h4 {
+  margin: 0.3em 0;
+}
+.hwt-loading h4.ready {
+  margin: 0.3em 0;
+  color: black;
+}
+.hwt-loading h4.not-ready {
+  color: #adafb6;
+}
+.hwt-loading ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+.hwt-loading li {
+  margin: 0.1em 0 0.1em 0.5em;
+}
+.hwt-loading li span {
+  width: 2em;
+  display: inline-block;
+}
+.hwt-loading li.not-ready {
+  color: #adafb6;
+}
+.hwt-loading li.ready {
+  color: black;
+}
+
+.tick {
+  padding: 0 2px;
+}
+.tick-skipped {
+  color: #dddfe6;
+}
+.tick-finished {
+  color: green;
+}
+.tick-error {
+  color: red;
+}
+.tick-started {
+  color: #adafb6;
+}

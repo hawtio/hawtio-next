@@ -161,6 +161,11 @@ class ConnectService implements IConnectService {
         log.debug('Failed to load preset connections:', res.status, res.statusText)
         return
       }
+      if (res.headers.get('Content-Type') != 'application/json') {
+        configManager.initItem('Checking preset connections', TaskState.skipped, 'config')
+        log.debug('Preset connections not configured')
+        return
+      }
 
       const preset: Partial<Connection>[] = await res.json()
       log.debug('Preset connections:', preset)
