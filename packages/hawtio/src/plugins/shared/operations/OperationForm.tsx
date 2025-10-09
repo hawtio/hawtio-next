@@ -364,7 +364,7 @@ const OperationExecuteForm: React.FunctionComponent<{
         <Button
           key={`operation-action-execute-${name}`}
           variant='danger'
-          onClick={execute}
+          onClick={operation.canInvoke ? execute : () => null}
           type='submit'
           size='sm'
           isDisabled={!operation.canInvoke || isExecuting}

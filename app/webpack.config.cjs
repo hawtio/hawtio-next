@@ -304,6 +304,8 @@ module.exports = (_, args) => {
           //   // prompt: 'login',
           // }
           const keycloakOidcConfig = {
+            // configuration suitable for Keycloak run from https://github.com/hawtio/hawtio
+            // repository with examples/keycloak-integration/run-keycloak.sh
             method: 'oidc',
             provider: 'http://127.0.0.1:18080/realms/hawtio-demo',
             client_id: 'hawtio-client',
@@ -332,6 +334,11 @@ module.exports = (_, args) => {
               method: 'basic',
               name: 'Basic Authentication',
               realm: 'Hawtio Realm',
+            },
+            {
+              // special method that is declared at server side, but never handled in @hawtio/react
+              method: 'external',
+              name: 'Spring Security',
             },
             {
               // Actual configuration of OIDC provider will be added from

@@ -58,7 +58,7 @@ export type OidcConfig = OidcAuthenticationMethod & {
   prompt: 'none' | 'login' | 'consent' | 'select_account' | null
 
   /**
-   * OpenID Connnect configuration obtained from [/.well-known/openid-configuration](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfigurationRequest)
+   * OpenID Connect configuration obtained from [/.well-known/openid-configuration](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfigurationRequest)
    * endpoint.
    * See https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml#authorization-server-metadata
    *

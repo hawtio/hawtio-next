@@ -176,6 +176,11 @@ export type AuthenticationKind =
   | 'basic'
 
   /**
+   * External authentication - triggered even before navigating to Hawtio, so can't really be handled
+   */
+  | 'external'
+
+  /**
    * Digest authentication - [Digest Access Authentication Scheme](https://www.rfc-editor.org/rfc/rfc2617#section-3),
    * uses several challenge parameters (realm, nonces, ...)
    */
@@ -372,6 +377,7 @@ export class ConfigManager implements IConfigManager {
   async initialize(): Promise<boolean> {
     this.initItem('Checking authentication providers', TaskState.started, 'config')
 
+    // default configuration which is handled by hawtio/hawtio using io.hawt.web.auth.LoginServlet
     const defaultConfiguration: FormAuthenticationMethod = {
       method: 'form',
       name: 'Form Authentication',
