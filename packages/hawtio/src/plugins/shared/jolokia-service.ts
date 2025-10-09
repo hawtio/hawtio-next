@@ -58,8 +58,6 @@ const DEFAULT_JOLOKIA_OPTIONS: SimpleRequestOptions = {
 export const DEFAULT_UPDATE_RATE = 5000
 export const DEFAULT_AUTO_REFRESH = false
 
-const JOLOKIA_PATHS = ['jolokia', '/hawtio/jolokia', '/jolokia'] as const
-
 export enum JolokiaListMethod {
   /** The default LIST+EXEC Jolokia operations. */
   DEFAULT,
@@ -174,6 +172,17 @@ class JolokiaService implements IJolokiaService {
     mbean: OPTIMISED_JOLOKIA_LIST_MBEAN,
   }
 
+  private readonly JOLOKIA_PATHS: string[]
+
+  constructor() {
+    const hawtioBase = hawtio.getBasePath()
+    if (hawtioBase == '/hawtio') {
+      this.JOLOKIA_PATHS = ['jolokia', '/jolokia'] as const
+    } else {
+      this.JOLOKIA_PATHS = ['jolokia', '/hawtio/jolokia', '/jolokia'] as const
+    }
+  }
+
   // --- Management methods
 
   reset() {
@@ -244,12 +253,13 @@ class JolokiaService implements IJolokiaService {
     const connId = connectService.getCurrentConnectionId()
     if (connId) {
       log.debug('Connection provided, not discovering Jolokia: con =', connId)
-      return connectService.getJolokiaUrlFromId(connId)
+      const url = connectService.getJolokiaUrlFromId(connId)
+      log.debug('Jolokia URL for remote connection:', url)
+      return url
     }
 
     // Discover Jolokia
-    // TODO: should not check both 'jolokia' and '/hawtio/jolokia' if base path is '/hawtio/'
-    for (const path of JOLOKIA_PATHS) {
+    for (const path of this.JOLOKIA_PATHS) {
       log.debug('Checking Jolokia path:', path)
       try {
         return await this.tryProbeJolokiaPath(path)
@@ -349,13 +359,16 @@ class JolokiaService implements IJolokiaService {
     }
 
     // for remote Jolokia authorization, we'll always use X-Jolokia-Authorization header
+    // because "Authorization" header is used to connect to the Hawtio server which serves this web application
     if (connection && connection.username && connection.password) {
       headers['X-Jolokia-Authorization'] = basicAuthHeaderValue(connection.username, connection.password)
     }
 
     const token = getCookie('XSRF-TOKEN')
     if (token) {
-      // For CSRF protection with Spring Security
+      // https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#employing-custom-request-headers-for-ajaxapi
+      // https://docs.spring.io/spring-security/reference/servlet/exploits/csrf.html#csrf-token-repository-cookie
+      // For CSRF protection with Spring Security (and Angular) - it's X-XSRF-TOKEN
       log.debug('Set XSRF token header from cookies')
       headers['X-XSRF-TOKEN'] = token
     }
@@ -902,6 +915,10 @@ class JolokiaService implements IJolokiaService {
     })
   }
 
+  /**
+   * Execute a search operation, which finds matching MBeans by a pattern
+   * @param mbeanPattern
+   */
   async search(mbeanPattern: string): Promise<string[]> {
     const jolokia = await this.getJolokia()
     return new Promise((resolve, reject) => {
@@ -920,6 +937,11 @@ class JolokiaService implements IJolokiaService {
     })
   }
 
+  /**
+   * Perform a bulk request to send multiple Jolokia requests using single HTTP request
+   * @param requests
+   * @param options
+   */
   async bulkRequest(
     requests: JolokiaRequest[],
     options?: RequestOptions,
@@ -953,6 +975,11 @@ class JolokiaService implements IJolokiaService {
     })
   }
 
+  /**
+   * Register single Jolokia request to be invoked periodically
+   * @param request
+   * @param callback
+   */
   async register(
     request: JolokiaRequest,
     callback: (response: JolokiaSuccessResponse | JolokiaErrorResponse) => void,
@@ -961,6 +988,10 @@ class JolokiaService implements IJolokiaService {
     return jolokia.register(callback, request)
   }
 
+  /**
+   * Unregisters previously registered _job_
+   * @param handle
+   */
   async unregister(handle: number) {
     const jolokia = await this.getJolokia()
     jolokia.unregister(handle)
