@@ -25,7 +25,6 @@ export interface UserJfrSettings {
     recordingNumber: number;
     dumpOnExit: boolean;
     name: string;
-    filename: string;
     configuration: string;
 }
 
@@ -43,12 +42,18 @@ export type CurrentRecording = {
     number?: number
 }
 
+export type JfrConfig = {
+    name: string,
+    label: string,
+    description: string
+}
+
 class FlightRecorderService implements IFlightRecorderService {
 
     private jfrLogger : ILogger = Logger.get('jfr-service')
 
     public jfrMBean?: MBeanNode
-    public jfrConfigs?: string[]
+    public jfrConfigs?: JfrConfig[]
     public userJfrSettings?: UserJfrSettings
     
     public recordings: Array<Recording> = []
@@ -79,14 +84,14 @@ class FlightRecorderService implements IFlightRecorderService {
         return this.jfrMBean
     }
 
-    async retrieveConfigurations(): Promise<string[] | undefined> {
+    async retrieveConfigurations(): Promise<JfrConfig[] | undefined> {
         if (this.jfrConfigs) return this.jfrConfigs
 
         if (!this.jfrMBean) (await this.getFlightRecoderMBean())
         
         this.jfrConfigs = 
-            ((await jolokiaService.readAttribute(this.jfrMBean?.objectName as string, "Configurations")) as Array<{name: string}> | undefined)
-                ?.map(config => config.name);
+            ((await jolokiaService.readAttribute(this.jfrMBean?.objectName as string, "Configurations")) as Array<{name: string, label:string, description: string}> | undefined)
+                ?.map(config => ({name: config.name, label: config.label, description: config.description}));
                 
 
         return this.jfrConfigs
@@ -156,7 +161,6 @@ class FlightRecorderService implements IFlightRecorderService {
 
         this.userJfrSettings =
             {
-                filename: "",
                 configuration: initialSettings["configuration"] || "default",
                 name: initialSettings["name"] as string,
                 dumpOnExit: initialSettings["dumpOnExit"] === "true",
