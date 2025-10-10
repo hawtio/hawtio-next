@@ -306,6 +306,9 @@ const OperationExecuteForm: React.FunctionComponent<{
   }
 
   const execute = async () => {
+    if (!operation.canInvoke) {
+      return
+    }
     setIsExecuting(true)
     try {
       const result = await operationService.execute(objectName, name, argValues)
@@ -364,7 +367,7 @@ const OperationExecuteForm: React.FunctionComponent<{
         <Button
           key={`operation-action-execute-${name}`}
           variant='danger'
-          onClick={operation.canInvoke ? execute : () => null}
+          onClick={execute}
           type='submit'
           size='sm'
           isDisabled={!operation.canInvoke || isExecuting}
