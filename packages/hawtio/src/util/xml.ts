@@ -6,7 +6,14 @@ export function parseXML(xml: string): XMLDocument {
   if (!window.DOMParser) throw new Error('Cannot parse xml due to no available native parser')
 
   const parser = new DOMParser()
-  return parser.parseFromString(xml, 'text/xml')
+  const doc = parser.parseFromString(xml, 'text/xml')
+
+  const errorNode = doc.querySelector('parsererror')
+  if (errorNode) {
+    throw new Error(`Failed to parse XML: ${errorNode.textContent}`)
+  }
+
+  return doc
 }
 
 export function xmlText(element: Element): string | null {
