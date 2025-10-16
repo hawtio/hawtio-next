@@ -10,6 +10,8 @@ const bodyParser = require('body-parser')
 const publicPath = '/hawtio'
 const outputPath = path.resolve(__dirname, 'build')
 
+const port = 3000
+
 module.exports = (_, args) => {
   const isProduction = args.mode === 'production'
   return [
@@ -18,11 +20,9 @@ module.exports = (_, args) => {
       entry: './src/index',
 
       /*
-       * To debug in development with source maps
-       * update accordingly
+       * To debug in development with source maps * update accordingly
        *
-       * For other alternatives see
-       * https://webpack.js.org/configuration/devtool
+       * For other alternatives see * https://webpack.js.org/configuration/devtool
        */
       devtool: isProduction ? 'source-map' : false,
       plugins: [
@@ -49,7 +49,7 @@ module.exports = (_, args) => {
           // All declared entries in "remotes" can be imported using `import` or `import()` in JavaScript code.
           // When an entry is not declared here, we can still consume such module using @module-federation/utilities
           remotes: {
-            'static-remotes': 'app@http://localhost:3000/hawtio/remoteEntry.js',
+            'static-remotes': `app@http://localhost:${port}/hawtio/remoteEntry.js`,
           },
           shared: {
             ...dependencies,
@@ -169,7 +169,7 @@ module.exports = (_, args) => {
         maxAssetSize: 1000000, // 1MB for now
       },
       devServer: {
-        port: 3000,
+        port: port,
         static: path.join(__dirname, 'public'),
         historyApiFallback: {
           // Needed to fallback to bundled index instead of public/index.html template
@@ -251,14 +251,14 @@ module.exports = (_, args) => {
 
           const plugin = [
             {
-              url: 'http://localhost:3000/hawtio',
+              url: `http://localhost:${port}/hawtio`,
               scope: 'appRemote',
               module: './remote3',
               remoteEntryFileName: 'remoteExternalEntry.js',
               pluginEntry: 'registerRemote',
             },
             {
-              url: 'http://localhost:3000/hawtio',
+              url: `http://localhost:${port}/hawtio`,
               scope: 'appRemote',
               module: './remote3-deferred',
               remoteEntryFileName: 'remoteExternalEntry.js',
@@ -292,26 +292,26 @@ module.exports = (_, args) => {
           /* OpenID Connect */
 
           const oidcEnabled = false
-          // const entraIDOidcConfig = {
-          //   method: 'oidc',
-          //   provider: 'https://login.microsoftonline.com/11111111-2222-3333-4444-555555555555/v2.0',
-          //   client_id: '66666666-7777-8888-9999-000000000000',
-          //   response_mode: 'fragment',
-          //   scope: 'openid email profile api://hawtio-server/Jolokia.Access',
-          //   redirect_uri: 'http://localhost:3000/hawtio/',
-          //   code_challenge_method: 'S256',
-          //   prompt: null
-          //   // prompt: 'login',
-          // }
+          //const entraIDOidcConfig = {
+          //  method: 'oidc',
+          //  provider: 'https://login.microsoftonline.com/11111111-2222-3333-4444-555555555555/v2.0',
+          //  client_id: '66666666-7777-8888-9999-000000000000',
+          //  response_mode: 'fragment',
+          //  scope: 'openid email profile api://hawtio-server/Jolokia.Access',
+          //  redirect_uri: `http://localhost:${port}/hawtio/`,
+          //  code_challenge_method: 'S256',
+          //  prompt: null
+          //  // prompt: 'login',
+          //}
           const keycloakOidcConfig = {
             // configuration suitable for Keycloak run from https://github.com/hawtio/hawtio
-            // repository with examples/keycloak-integration/run-keycloak.sh
+            // repository using examples/keycloak-integration/run-keycloak.sh
             method: 'oidc',
             provider: 'http://127.0.0.1:18080/realms/hawtio-demo',
             client_id: 'hawtio-client',
             response_mode: 'fragment',
             scope: 'openid email profile',
-            redirect_uri: 'http://localhost:3000/hawtio/',
+            redirect_uri: `http://localhost:${port}/hawtio/`,
             code_challenge_method: 'S256',
             prompt: null,
             // Hawtio (oidc plugin) will fetch this configuration from .well-known/openid-configuration
