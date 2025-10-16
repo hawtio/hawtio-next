@@ -40,6 +40,8 @@ export type Statistics = {
 export type ProcessorStats = Statistics & {
   index?: string
   sourceLineNumber?: string
+  // Available in Camel 4.14 and later
+  disabled?: string
 }
 
 export type RouteStats = Statistics & {

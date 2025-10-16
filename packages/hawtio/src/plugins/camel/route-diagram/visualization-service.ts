@@ -1,11 +1,11 @@
-import { routesService, RouteStats, Statistics } from '@hawtiosrc/plugins/camel/routes-service'
-import { schemaService } from '@hawtiosrc/plugins/camel/schema-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import { parseXML } from '@hawtiosrc/util/xml'
 import dagre from 'dagre'
 import { ReactNode } from 'react'
 import { Edge, MarkerType, Node, Position } from 'reactflow'
 import { camelPreferencesService } from '../camel-preferences-service'
+import { routesService, RouteStats, Statistics } from '../routes-service'
+import { schemaService } from '../schema-service'
 
 export type CamelNodeData = {
   id: string
@@ -14,6 +14,7 @@ export type CamelNodeData = {
   label: string
   labelSummary: string
   group: 1
+  disabled: boolean
 
   elementId: string | null
   imageUrl: ReactNode
@@ -143,6 +144,7 @@ class VisualizationService {
       }
       const pStats = routeStat?.processorStats.find(p => node.data.cid === p.id)
       const newData = { ...node.data, stats: pStats }
+      newData.disabled = pStats?.disabled === 'true'
       return { ...node, data: newData }
     })
   }
@@ -186,14 +188,14 @@ class VisualizationService {
           tooltip += ' ' + uri
         }
         const { ignoreIdForLabel, maximumLabelWidth } = camelPreferencesService.loadOptions()
-        const elementID = routeElement.getAttribute('id')
+        const elementId = routeElement.getAttribute('id')
         let labelSummary = label
-        if (elementID) {
+        if (elementId) {
           const customId = routeElement.getAttribute('customId')
           if (ignoreIdForLabel || !customId || customId === 'false') {
-            labelSummary = 'id: ' + elementID
+            labelSummary = 'id: ' + elementId
           } else {
-            label = elementID
+            label = elementId
           }
         }
         // lets check if we need to trim the label
@@ -220,19 +222,20 @@ class VisualizationService {
         let cid = routeElement.getAttribute('_cid') || routeElement.getAttribute('id')
         const parallelProcessing: boolean = routeElement.getAttribute('parallelProcessing')?.toLowerCase() === 'true'
         nodeData = {
-          id: id,
-          routeIdx: routeIdx,
+          id,
+          routeIdx,
           name: nodeId,
-          label: label,
-          labelSummary: labelSummary,
+          label,
+          labelSummary,
           group: 1,
-          elementId: elementID,
-          imageUrl: imageUrl,
+          disabled: false,
+          elementId,
+          imageUrl,
           cid: cid ?? id,
-          tooltip: tooltip,
+          tooltip,
           type: nodeId,
           uri: uri ?? '',
-          routeId: routeId,
+          routeId,
           isParallel: parallelProcessing,
         }
 

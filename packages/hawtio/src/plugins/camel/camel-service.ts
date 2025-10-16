@@ -322,6 +322,52 @@ export function hasProperties(node: MBeanNode): boolean {
   return isRouteNode(node) || isRouteXmlNode(node)
 }
 
+export function canInvokeEnableDisable(node: MBeanNode, id: string): boolean {
+  if (!isRouteNode(node) && !isRoutesFolder(node)) return false
+
+  const processor = findMBean(node, 'processors', id)
+  return processor?.hasInvokeRights('enable', 'disable') ?? false
+}
+
+function enableOrDisableProcessor(node: MBeanNode, id: string, op: 'enable' | 'disable') {
+  if (!isRouteNode(node) && !isRoutesFolder(node)) return
+
+  if (!isCamelVersionEQGT(node, 4, 14)) {
+    eventService.notify({
+      type: 'warning',
+      message: 'Enabling/disabling processors requires Camel version 4.14 or later',
+    })
+    return
+  }
+
+  const processor = findMBean(node, 'processors', id)
+  if (!processor) {
+    eventService.notify({ type: 'danger', message: `Processor '${id}' not found` })
+    return
+  }
+  const { objectName } = processor
+  if (!objectName) {
+    eventService.notify({ type: 'danger', message: `Processor '${id}' has no ObjectName` })
+    return
+  }
+  if (!processor.hasInvokeRights(op)) {
+    eventService.notify({ type: 'danger', message: `No rights to invoke the ${op} operation` })
+    return
+  }
+
+  jolokiaService.execute(objectName, op)
+}
+
+export function enableProcessor(node: MBeanNode, id: string) {
+  enableOrDisableProcessor(node, id, 'enable')
+}
+
+export function disableProcessor(node: MBeanNode, id: string) {
+  enableOrDisableProcessor(node, id, 'disable')
+}
+
+// ----- Camel version helper functions ----------------------------------------
+
 export async function getCamelVersions(): Promise<string[]> {
   const { version: camel4_10Version } = await import('@hawtio/camel-model-v4_10/package.json')
   const { version: camel4_14Version } = await import('@hawtio/camel-model-v4_14/package.json')
