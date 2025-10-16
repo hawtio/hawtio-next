@@ -1,4 +1,6 @@
+import { eventService } from '@hawtiosrc/core'
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
+import { Switch, Title } from '@patternfly/react-core'
 import { Table, Tbody, Td, Tr } from '@patternfly/react-table'
 import React, { RefObject, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import {
@@ -19,6 +21,7 @@ import {
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 import { camelPreferencesService } from '../camel-preferences-service'
+import { canInvokeEnableDisable, disableProcessor, enableProcessor, isCamelVersionEQGT } from '../camel-service'
 import { CamelContext } from '../context'
 import { log } from '../globals'
 import { Annotation, RouteDiagramContext } from '../route-diagram-context'
@@ -38,11 +41,9 @@ export const RouteDiagram: React.FunctionComponent = () => {
   )
 }
 
-type ReactFlowRouteDiagramProps = {
+const ReactFlowRouteDiagram: React.FunctionComponent<{
   parent: RefObject<HTMLDivElement>
-}
-
-const ReactFlowRouteDiagram: React.FunctionComponent<ReactFlowRouteDiagramProps> = props => {
+}> = ({ parent }) => {
   const { selectedNode } = useContext(CamelContext)
   const { setGraphNodeData, graphSelection, setGraphSelection } = useContext(RouteDiagramContext)
   const previousSelectedNodeRef = useRef<MBeanNode | null>(null)
@@ -66,11 +67,11 @@ const ReactFlowRouteDiagram: React.FunctionComponent<ReactFlowRouteDiagramProps>
    * width and height to state for use with fitView useEffect
    */
   useEffect(() => {
-    if (props.parent.current) {
-      const { width, height } = props.parent.current.getBoundingClientRect()
+    if (parent.current) {
+      const { width, height } = parent.current.getBoundingClientRect()
       setWrapperDimensions({ width, height })
     }
-  }, [props.parent])
+  }, [parent])
 
   /*
    * Only when we are sure the nodes have properly initialized
@@ -228,11 +229,12 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
 
   return (
     <div
-      className={'camel-node-content' + (selected ? ' highlighted' : '')}
+      className={'camel-node-content' + (selected ? ' highlighted' : '') + (data.disabled ? ' disabled' : '')}
       onMouseEnter={() => showStatistics && setVisible(true)}
       onMouseLeave={() => showStatistics && setVisible(false)}
       onDoubleClick={handleDoubleClick}
     >
+      <CamelNodeActions data={data} />
       <Handle type='target' position={targetPosition ?? Position.Top} />
       <Handle type='source' position={sourcePosition ?? Position.Bottom} id='a' />
       <div className='annotation'>{annotation?.element}</div>
@@ -303,5 +305,60 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
         </NodeToolbar>
       )}
     </div>
+  )
+}
+
+const CamelNodeActions: React.FunctionComponent<{ data: CamelNodeData }> = ({ data }) => {
+  const { selectedNode } = useContext(CamelContext)
+  const [enableEip, setEnableEip] = useState(true)
+
+  useEffect(() => {
+    setEnableEip(!data.disabled)
+  }, [data])
+
+  useEffect(() => {
+    if (!selectedNode || enableEip === !data.disabled) {
+      return
+    }
+
+    const { cid } = data
+    if (!cid) {
+      eventService.notify({ type: 'warning', message: 'No processor ID found for the node' })
+      return
+    }
+
+    if (enableEip) {
+      enableProcessor(selectedNode, cid)
+    } else {
+      disableProcessor(selectedNode, cid)
+    }
+  }, [enableEip])
+
+  if (!selectedNode) {
+    return null
+  }
+
+  if (data.type === 'from') {
+    // 'From' nodes don't provide the enable/disable operations
+    return null
+  }
+
+  // EIP enable/disable is only supported in Camel 4.14+
+  if (!isCamelVersionEQGT(selectedNode, 4, 14)) {
+    return null
+  }
+
+  return (
+    <NodeToolbar position={Position.Right}>
+      <Title headingLevel='h4'>Node actions</Title>
+      <Switch
+        id='camel-route-diagram-camel-node-action-enable-disable-eip'
+        label='EIP enabled'
+        labelOff='EIP disabled'
+        isChecked={enableEip}
+        isDisabled={!canInvokeEnableDisable(selectedNode, data.cid)}
+        onChange={(_event, checked) => setEnableEip(checked)}
+      />
+    </NodeToolbar>
   )
 }
