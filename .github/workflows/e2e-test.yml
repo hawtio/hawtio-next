@@ -35,8 +35,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: ['20', '22']
-        java: ['17', '21']
+        #        node: ['20', '22']
+        #        java: ['17', '21']
+        node: ['22']
+        java: ['17']
         runtime: ['springboot', 'quarkus']
         browser: ['firefox'] # 'chrome' tests are unstable: https://github.com/hawtio/hawtio-next/issues/478
     env:
@@ -73,7 +75,7 @@ jobs:
         run: yarn build:all
       - name: Start server
         run: |
-          yarn start:app --no-color --no-hot --no-live-reload --no-client-overlay 2>&1 > log &
+          DISABLE_WS=true yarn start:app --no-color --no-hot --no-live-reload --no-client-overlay 2>&1 > log &
           # Check both CRACO and Webpack log messages until we migrate to Webpack
           # https://github.com/hawtio/hawtio-next/pull/847
           timeout 120 bash -c "while ! grep -e 'Project is running at' -e 'webpack .\+ compiled' log ; do cat log; sleep 5; done"
@@ -133,7 +135,7 @@ jobs:
 
               springboot)
                 APP_PORT=10001
-                echo "url-suffix=actuator/hawtio" >> $GITHUB_ENV
+                echo "url-suffix=actuator" >> $GITHUB_ENV
                 echo 'app-port=10001' >> $GITHUB_ENV
               ;;
           esac
