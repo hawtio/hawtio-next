@@ -73,7 +73,7 @@ export const FlightRecorder: React.FunctionComponent = () => {
                         downloadId &&
                             <Fragment>
                                 <AlertActionLink component="a" onClick={async () => {
-                                    await flightRecorderService.downloadRecording(Number(downloadId), "/home/joshiraez")
+                                    await flightRecorderService.downloadRecording(Number(downloadId))
                                     saveRecordingAlert(downloadId)
                                 }}>
                                     Download
@@ -248,7 +248,7 @@ export const FlightRecorder: React.FunctionComponent = () => {
                                 <Td>
                                     <Button 
                                         onClick={async () => {
-                                            await flightRecorderService.downloadRecording(Number(number), "/home/joshiraez")
+                                            await flightRecorderService.downloadRecording(Number(number))
                                             saveRecordingAlert(Number(number))
                                         }}
                                     >

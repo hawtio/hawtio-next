@@ -1,6 +1,5 @@
 import { ILogger, Logger } from "@hawtiosrc/core"
 import { jolokiaService, MBeanNode, workspace } from "../shared"
-import { JolokiaSuccessResponse } from "jolokia.js"
 
 export interface IFlightRecorderService {
   getFlightRecoderMBean(): Promise<MBeanNode | undefined>
@@ -185,8 +184,40 @@ class FlightRecorderService implements IFlightRecorderService {
         await this.retrieveRecordings()
     }
 
-    async downloadRecording(id: number, directoryGenerated: string ) {
-        await jolokiaService.execute(this.jfrMBean?.objectName as string, "copyTo(long,java.lang.String)", [id, directoryGenerated+"/"+id+".jfr"])
+    async downloadRecording(id: number) {
+        const fileData: Uint8Array = await this.retrieveFileData(id)
+        const fileUrl = URL.createObjectURL(new Blob([fileData as any], {type: "application/octet-stream"}))
+        //new Uint8Array(fileData.buffer, fileData.byteOffset, fileData.byteLength) as any
+        const fileDownload = document.createElement('a');
+        fileDownload.href = fileUrl;
+        fileDownload.download = `${this.userJfrSettings?.name}.jfr`;
+        fileDownload.click()
+        URL.revokeObjectURL(fileDownload.toString());
+    }
+
+    private async retrieveFileData(id: number): Promise<Uint8Array> {
+        const responses : Uint8Array[] = []
+        let fileRead = false;
+
+        const streamToRead = await jolokiaService.execute(this.jfrMBean?.objectName as string, "openStream(long, javax.management.openmbean.TabularData)", [id, {}])
+
+        while(!fileRead)
+            await jolokiaService.execute(this.jfrMBean?.objectName as string, "readStream(long)", [streamToRead])
+                .then(response => {
+
+                    //If the value comes as null, the stream has ended transmiting.
+                    if(!response) {
+                        fileRead = true;
+                        return 
+                    }
+
+                    responses.push(new Uint8Array(response as number[]))
+                })
+
+        await jolokiaService.execute(this.jfrMBean?.objectName as string, "closeStream(long)", [streamToRead])
+
+
+        return this.concatenateUInt32Array(responses)
     } 
 
     async saveRecording(): Promise<any> {
@@ -204,34 +235,55 @@ class FlightRecorderService implements IFlightRecorderService {
         }
     }
 
-    executeDiagnosticFunction(operation: string, jcmd: string, args?:Array<any>, callback?: (response: JolokiaSuccessResponse) => void) {
-        this.jfrLogger.debug(Date.now() + " Invoking operation "
-          + operation + " with arguments" + arguments + " settings: " + JSON.stringify(this.jfrConfigs));
+    // executeDiagnosticFunction(operation: string, jcmd: string, args?:Array<any>, callback?: (response: JolokiaSuccessResponse) => void) {
+    //     this.jfrLogger.debug(Date.now() + " Invoking operation "
+    //       + operation + " with arguments" + arguments + " settings: " + JSON.stringify(this.jfrConfigs));
         
-        //const jcmdCommand = 'jcmd ' + jcmd + ' ' + args?.reduceRight((prev, curr) => `${prev}, ${curr}`, '');
+    //     //const jcmdCommand = 'jcmd ' + jcmd + ' ' + args?.reduceRight((prev, curr) => `${prev}, ${curr}`, '');
 
-        jolokiaService.bulkRequest(
-            [{
-                type: "exec",
-                operation: operation,
-                mbean: 'com.sun.management:type=DiagnosticCommand',
-                arguments: args
-            }, 
-            {
-                type: 'exec',
-                operation: 'jfrCheck([Ljava.lang.String;)',
-                mbean: 'com.sun.management:type=DiagnosticCommand',
-                arguments: ['']    
-            }]
-        ).then(responses =>
-            responses.forEach(message => 
-                this.jfrLogger.debug(`Diagnostic Operation ${operation} was successful ${message}`)
+    //     jolokiaService.bulkRequest(
+    //         [{
+    //             type: "exec",
+    //             operation: operation,
+    //             mbean: 'com.sun.management:type=DiagnosticCommand',
+    //             arguments: args
+    //         }, 
+    //         {
+    //             type: 'exec',
+    //             operation: 'jfrCheck([Ljava.lang.String;)',
+    //             mbean: 'com.sun.management:type=DiagnosticCommand',
+    //             arguments: ['']    
+    //         }]
+    //     ).then(responses =>
+    //         responses.forEach(message => 
+    //             this.jfrLogger.debug(`Diagnostic Operation ${operation} was successful ${message}`)
                 
-                //if(callback) callback(message)
-            ),
-            error => this.jfrLogger.warn(`Diagnostic Operation ${operation} failed: ${error}`)
-        )
+    //             //if(callback) callback(message)
+    //         ),
+    //         error => this.jfrLogger.warn(`Diagnostic Operation ${operation} failed: ${error}`)
+    //     )
+    // }
+
+    private concatenateUInt32Array(uint8arrays: Uint8Array[]) {
+        // Determine the length of the result.
+        const totalLength = uint8arrays.reduce(
+            (total, uint8Array) => total + uint8Array.byteLength,
+            0
+        );
+
+        // Allocate the result.
+        const result = new Uint8Array(totalLength);
+
+        // Copy each Uint8Array into the result.
+        let offset = 0;
+        uint8arrays.forEach((uint8arrays) => {
+            result.set(uint8arrays, offset);
+            offset += uint8arrays.byteLength;
+        });
+
+        return result;
     }
+
 
 }
 
