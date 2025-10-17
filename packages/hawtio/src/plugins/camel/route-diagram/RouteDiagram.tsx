@@ -21,11 +21,18 @@ import {
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 import { camelPreferencesService } from '../camel-preferences-service'
-import { canInvokeEnableDisable, disableProcessor, enableProcessor, isCamelVersionEQGT } from '../camel-service'
+import {
+  canEnableDisableProcessor,
+  disableProcessor,
+  enableProcessor,
+  isCamelVersionEQGT,
+  isRoutesFolder,
+} from '../camel-service'
 import { CamelContext } from '../context'
 import { log } from '../globals'
 import { Annotation, RouteDiagramContext } from '../route-diagram-context'
-import { routesService } from '../routes-service'
+import { routeStatsService } from '../route-stats-service'
+import { routesService } from '../routes/routes-service'
 import './RouteDiagram.css'
 import { CamelNodeData, visualizationService } from './visualization-service'
 
@@ -141,7 +148,7 @@ const ReactFlowRouteDiagram: React.FunctionComponent<{
 
     const fetchStats = async () => {
       try {
-        const xml = await routesService.dumpRoutesStatsXML(selectedNode)
+        const xml = await routeStatsService.dumpRoutesStatsXML(selectedNode)
         if (xml) {
           setStatsXml(xml)
         }
@@ -229,7 +236,11 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
 
   return (
     <div
-      className={'camel-node-content' + (selected ? ' highlighted' : '') + (data.disabled ? ' disabled' : '')}
+      className={
+        'camel-node-content' +
+        (selected ? ' highlighted' : '') +
+        (data.routeStopped || data.disabled ? ' disabled' : '')
+      }
       onMouseEnter={() => showStatistics && setVisible(true)}
       onMouseLeave={() => showStatistics && setVisible(false)}
       onDoubleClick={handleDoubleClick}
@@ -310,16 +321,42 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
 
 const CamelNodeActions: React.FunctionComponent<{ data: CamelNodeData }> = ({ data }) => {
   const { selectedNode } = useContext(CamelContext)
-  const [enableEip, setEnableEip] = useState(true)
+  const [routeStopped, setRouteStopped] = useState(false)
+  const [disabled, setDisabled] = useState(false)
 
   useEffect(() => {
-    setEnableEip(!data.disabled)
+    setRouteStopped(data.routeStopped)
+    setDisabled(data.disabled)
   }, [data])
 
-  useEffect(() => {
-    if (!selectedNode || enableEip === !data.disabled) {
+  if (!selectedNode) {
+    return null
+  }
+
+  const routeNode = isRoutesFolder(selectedNode) ? selectedNode.find(n => n.name === data.routeId) : selectedNode
+  if (!routeNode) {
+    eventService.notify({ type: 'warning', message: `No route found for route ID '${data.routeId}'` })
+    return null
+  }
+
+  const updateRoute = (started: boolean) => {
+    if (data.type !== 'from' || started === !data.routeStopped) {
       return
     }
+    setRouteStopped(!started)
+
+    if (started) {
+      routesService.startRoute(routeNode)
+    } else {
+      routesService.stopRoute(routeNode)
+    }
+  }
+
+  const updateProcessor = (enabled: boolean) => {
+    if (enabled === !data.disabled) {
+      return
+    }
+    setDisabled(!enabled)
 
     const { cid } = data
     if (!cid) {
@@ -327,38 +364,39 @@ const CamelNodeActions: React.FunctionComponent<{ data: CamelNodeData }> = ({ da
       return
     }
 
-    if (enableEip) {
-      enableProcessor(selectedNode, cid)
+    if (enabled) {
+      enableProcessor(routeNode, cid)
     } else {
-      disableProcessor(selectedNode, cid)
+      disableProcessor(routeNode, cid)
     }
-  }, [enableEip])
-
-  if (!selectedNode) {
-    return null
-  }
-
-  if (data.type === 'from') {
-    // 'From' nodes don't provide the enable/disable operations
-    return null
   }
 
   // EIP enable/disable is only supported in Camel 4.14+
-  if (!isCamelVersionEQGT(selectedNode, 4, 14)) {
-    return null
-  }
+  const isCamel4_14 = isCamelVersionEQGT(selectedNode, 4, 14)
 
   return (
     <NodeToolbar position={Position.Right}>
       <Title headingLevel='h4'>Node actions</Title>
-      <Switch
-        id='camel-route-diagram-camel-node-action-enable-disable-eip'
-        label='EIP enabled'
-        labelOff='EIP disabled'
-        isChecked={enableEip}
-        isDisabled={!canInvokeEnableDisable(selectedNode, data.cid)}
-        onChange={(_event, checked) => setEnableEip(checked)}
-      />
+      {data.type === 'from' && (
+        <Switch
+          id='camel-route-diagram-camel-node-start-stop-route'
+          label='Route started'
+          labelOff='Route stopped'
+          isChecked={!routeStopped}
+          isDisabled={!routesService.canStartRoute(routeNode) || !routesService.canStopRoute(routeNode)}
+          onChange={(_event, checked) => updateRoute(checked)}
+        />
+      )}
+      {data.type !== 'from' && isCamel4_14 && (
+        <Switch
+          id='camel-route-diagram-camel-node-action-enable-disable-eip'
+          label='EIP enabled'
+          labelOff='EIP disabled'
+          isChecked={!disabled}
+          isDisabled={!canEnableDisableProcessor(routeNode, data.cid)}
+          onChange={(_event, checked) => updateProcessor(checked)}
+        />
+      )}
     </NodeToolbar>
   )
 }

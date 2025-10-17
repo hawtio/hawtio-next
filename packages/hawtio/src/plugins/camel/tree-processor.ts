@@ -19,7 +19,7 @@ import {
   routesType,
 } from './globals'
 import { IconNames, getIcon } from './icons'
-import { routesService } from './routes-service'
+import { routeStatsService } from './route-stats-service'
 
 function adoptChild(parent: MBeanNode, child: MBeanNode, type: string, childIcon: ReactNode) {
   parent.adopt(child)
@@ -120,7 +120,7 @@ export const camelTreeProcessor: TreeProcessor = async (tree: MBeanTree) => {
       camelService.setChildProperties(routesNode, routeNodeType)
       routesNode.addMetadata(contextNodeType, newCtxNode.objectName ?? '')
 
-      await routesService.loadRoutesXml(newCtxNode, routesNode)
+      await routeStatsService.loadRoutesXml(newCtxNode, routesNode)
 
       // Once XML has been processed then group the routes if they have groupIds
       groupRoutes(routesNode)

@@ -1,5 +1,6 @@
 import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
+import { isRouteNode, isRoutesFolder } from '../camel-service'
 import { routeGroupsType, routeNodeType } from '../globals'
 import { CamelRoute } from './route'
 
@@ -65,8 +66,15 @@ class RoutesService implements IRoutesService {
     )
   }
 
+  private canInvoke(node: MBeanNode, op: string): boolean {
+    if (!isRouteNode(node) && !isRoutesFolder(node)) return false
+
+    const target = isRoutesFolder(node) ? node.children?.[0] : node
+    return target?.hasInvokeRights(op) ?? false
+  }
+
   canStartRoute(node: MBeanNode): boolean {
-    return node.hasInvokeRights(ROUTE_OPERATIONS.start)
+    return this.canInvoke(node, ROUTE_OPERATIONS.start)
   }
 
   async startRoute(node: MBeanNode) {
@@ -77,7 +85,7 @@ class RoutesService implements IRoutesService {
   }
 
   canStopRoute(node: MBeanNode): boolean {
-    return node.hasInvokeRights(ROUTE_OPERATIONS.stop)
+    return this.canInvoke(node, ROUTE_OPERATIONS.stop)
   }
 
   async stopRoute(node: MBeanNode) {

@@ -4,7 +4,7 @@ import dagre from 'dagre'
 import { ReactNode } from 'react'
 import { Edge, MarkerType, Node, Position } from 'reactflow'
 import { camelPreferencesService } from '../camel-preferences-service'
-import { routesService, RouteStats, Statistics } from '../routes-service'
+import { routeStatsService, RouteStats, Statistics } from '../route-stats-service'
 import { schemaService } from '../schema-service'
 
 export type CamelNodeData = {
@@ -15,6 +15,7 @@ export type CamelNodeData = {
   labelSummary: string
   group: 1
   disabled: boolean
+  routeStopped: boolean
 
   elementId: string | null
   imageUrl: ReactNode
@@ -134,17 +135,22 @@ class VisualizationService {
   }
 
   updateStats(statsXml: string, nodes: Node<CamelNodeData>[]): Node<CamelNodeData>[] {
-    const stats: RouteStats[] = routesService.processRoutesStats(statsXml)
+    const stats: RouteStats[] = routeStatsService.processRoutesStats(statsXml)
 
     return nodes.map(node => {
       const routeStat = stats.find(s => s.id === node.data.routeId)
+      const routeStopped = routeStat?.state === 'Stopped'
       if (node.data.type === 'from') {
-        const newData = { ...node.data, stats: routeStat }
+        const newData = { ...node.data, routeStopped, stats: routeStat }
         return { ...node, data: newData }
       }
       const pStats = routeStat?.processorStats.find(p => node.data.cid === p.id)
-      const newData = { ...node.data, stats: pStats }
-      newData.disabled = pStats?.disabled === 'true'
+      const newData = {
+        ...node.data,
+        disabled: pStats?.disabled === 'true',
+        routeStopped,
+        stats: pStats,
+      }
       return { ...node, data: newData }
     })
   }
@@ -204,7 +210,7 @@ class VisualizationService {
           labelSummary = label + '\n\n' + labelSummary
           label = label.substring(0, maximumLabelWidth) + '..'
         }
-        const imageUrl = await routesService.getIcon(node, nodeSettings)
+        const imageUrl = await routeStatsService.getIcon(node, nodeSettings)
 
         if ((nodeId === 'from' || nodeId === 'to') && uri) {
           const uriIdx = uri.indexOf(':')
@@ -229,6 +235,7 @@ class VisualizationService {
           labelSummary,
           group: 1,
           disabled: false,
+          routeStopped: false,
           elementId,
           imageUrl,
           cid: cid ?? id,
