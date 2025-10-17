@@ -3,6 +3,7 @@ import { oidc } from './auth/oidc'
 import { camel } from './camel'
 import { connect } from './connect'
 import { consoleStatus } from './console-status'
+import { diagnostics } from './diagnostics'
 import { jmx } from './jmx'
 import { logs } from './logs'
 import { quartz } from './quartz'
@@ -29,10 +30,11 @@ export const registerPlugins = () => {
   quartz()
   springboot()
   consoleStatus()
+  diagnostics()
 }
 
 // Export each plugin's entry point so that a custom console assembler can select which to bundle
-export { camel, connect, consoleStatus, jmx, keycloak, logs, oidc, quartz, rbac, runtime, springboot }
+export { camel, connect, consoleStatus, jmx, keycloak, logs, oidc, quartz, rbac, runtime, springboot, diagnostics }
 
 // Common plugin API
 export * from './connect'
