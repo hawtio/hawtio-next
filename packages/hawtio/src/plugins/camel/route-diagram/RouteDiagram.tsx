@@ -35,6 +35,7 @@ import { routeStatsService } from '../route-stats-service'
 import { routesService } from '../routes/routes-service'
 import './RouteDiagram.css'
 import { CamelNodeData, visualizationService } from './visualization-service'
+import { Alert, Card, CardBody } from '@patternfly/react-core'
 
 export const RouteDiagram: React.FunctionComponent = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
@@ -55,6 +56,7 @@ const ReactFlowRouteDiagram: React.FunctionComponent<{
   const { setGraphNodeData, graphSelection, setGraphSelection } = useContext(RouteDiagramContext)
   const previousSelectedNodeRef = useRef<MBeanNode | null>(null)
 
+  const [error, setError] = useState<Error | null>(null)
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const nodesInitialized = useNodesInitialized({ includeHiddenNodes: false })
@@ -114,10 +116,16 @@ const ReactFlowRouteDiagram: React.FunctionComponent<{
     }
     previousSelectedNodeRef.current = selectedNode // Update ref for next render
 
+    setError(null)
+
     const xml = selectedNode?.getMetadata('xml')
     if (!selectedNode || !xml) {
       setNodes([])
       setEdges([])
+
+      if (!xml) {
+        setError(new Error('Could not locate any XML for route.'))
+      }
       return
     }
 
@@ -136,9 +144,16 @@ const ReactFlowRouteDiagram: React.FunctionComponent<{
         setNodes(layoutedNodes)
       })
       .catch(error => {
-        log.error(`Error loading the diagram route for ${selectedNode}:`, error)
+        log.error(`Error loading the diagram route for`, selectedNode, error)
         setNodes([])
         setEdges([])
+
+        if (error instanceof Error) {
+          setError(error)
+        } else {
+          // If it's not an Error, create a new one from its string representation
+          setError(new Error(String(error)))
+        }
       })
   }, [selectedNode, setEdges, setNodes, setGraphNodeData, graphSelection])
 
@@ -171,8 +186,27 @@ const ReactFlowRouteDiagram: React.FunctionComponent<{
     }
   }, [statsXml, setNodes, nodes.length])
 
+  const hasCause = (error: Error) => {
+    if (!error || !error.cause) return false
+    return error.cause instanceof Error
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardBody>
+          <Alert variant='warning' title='Route could not be drawn.' />
+
+          <Alert variant='danger' title={error.message}>
+            {hasCause(error) && <p>Cause: {(error.cause as Error).message}</p>}
+          </Alert>
+        </CardBody>
+      </Card>
+    )
+  }
+
   if (!selectedNode) {
-    return null
+    setError(new Error('No route has been selected.'))
   }
 
   const onNodeClick = (_event: React.MouseEvent, node: Node) => {
