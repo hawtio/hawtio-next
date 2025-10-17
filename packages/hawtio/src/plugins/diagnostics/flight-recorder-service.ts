@@ -187,7 +187,6 @@ class FlightRecorderService implements IFlightRecorderService {
     async downloadRecording(id: number) {
         const fileData: Uint8Array = await this.retrieveFileData(id)
         const fileUrl = URL.createObjectURL(new Blob([fileData as any], {type: "application/octet-stream"}))
-        //new Uint8Array(fileData.buffer, fileData.byteOffset, fileData.byteLength) as any
         const fileDownload = document.createElement('a');
         fileDownload.href = fileUrl;
         fileDownload.download = `${this.userJfrSettings?.name}.jfr`;
@@ -234,35 +233,6 @@ class FlightRecorderService implements IFlightRecorderService {
             "maxSize": jfrOptions.limitType === "maxSize" ? jfrOptions.limitValue : undefined
         }
     }
-
-    // executeDiagnosticFunction(operation: string, jcmd: string, args?:Array<any>, callback?: (response: JolokiaSuccessResponse) => void) {
-    //     this.jfrLogger.debug(Date.now() + " Invoking operation "
-    //       + operation + " with arguments" + arguments + " settings: " + JSON.stringify(this.jfrConfigs));
-        
-    //     //const jcmdCommand = 'jcmd ' + jcmd + ' ' + args?.reduceRight((prev, curr) => `${prev}, ${curr}`, '');
-
-    //     jolokiaService.bulkRequest(
-    //         [{
-    //             type: "exec",
-    //             operation: operation,
-    //             mbean: 'com.sun.management:type=DiagnosticCommand',
-    //             arguments: args
-    //         }, 
-    //         {
-    //             type: 'exec',
-    //             operation: 'jfrCheck([Ljava.lang.String;)',
-    //             mbean: 'com.sun.management:type=DiagnosticCommand',
-    //             arguments: ['']    
-    //         }]
-    //     ).then(responses =>
-    //         responses.forEach(message => 
-    //             this.jfrLogger.debug(`Diagnostic Operation ${operation} was successful ${message}`)
-                
-    //             //if(callback) callback(message)
-    //         ),
-    //         error => this.jfrLogger.warn(`Diagnostic Operation ${operation} failed: ${error}`)
-    //     )
-    // }
 
     private concatenateUInt32Array(uint8arrays: Uint8Array[]) {
         // Determine the length of the result.
