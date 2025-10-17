@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.11.0-pre.1](https://github.com/hawtio/hawtio-next/compare/v1.11.0-pre.0...v1.11.0-pre.1) (2025-10-17)
+
+
+### Features
+
+* **camel:** allow start/stop routes in the Route Diagram ([e55a24a](https://github.com/hawtio/hawtio-next/commit/e55a24ac876d8b789225f5ffc6783d50f9da3706)), closes [#1754](https://github.com/hawtio/hawtio-next/issues/1754)
+
 ## [1.11.0-pre.0](https://github.com/hawtio/hawtio-next/compare/v1.10.2...v1.11.0-pre.0) (2025-10-17)
 
 
