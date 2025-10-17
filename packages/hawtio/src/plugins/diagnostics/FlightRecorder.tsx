@@ -63,7 +63,7 @@ export const FlightRecorder: React.FunctionComponent = () => {
             </EmptyState>
         </PageSection>)
 
-    const recordingAlert = (text: string, downloadId?: number, timeout?: number) => {
+    const recordingAlert = (text: string, downloadId?: number, recordingName?: string, timeout?: number) => {
         setAlerts((prevAlerts) => {
             return [
                 ...prevAlerts, <Alert
@@ -73,8 +73,8 @@ export const FlightRecorder: React.FunctionComponent = () => {
                         downloadId &&
                             <Fragment>
                                 <AlertActionLink component="a" onClick={async () => {
-                                    await flightRecorderService.downloadRecording(Number(downloadId))
-                                    saveRecordingAlert(downloadId)
+                                    await flightRecorderService.downloadRecording(Number(downloadId), recordingName || downloadId.toString())
+                                    saveRecordingAlert(recordingName || downloadId.toString())
                                 }}>
                                     Download
                                 </AlertActionLink>
@@ -86,11 +86,11 @@ export const FlightRecorder: React.FunctionComponent = () => {
     }
 
     const startRecordingAlert = () => recordingAlert("Starting recording.")
-    const stopRecordingAlert = (recordingId: number) => recordingAlert(`Recording ${recordingId} stored`, recordingId)
-    const saveRecordingAlert = (recordingId: number) => recordingAlert(`Saved recording ${recordingId} on /home/joshiraez/${recordingId}.jfr`)
+    const stopRecordingAlert = (recordingId: number, recordingName: string, ) => recordingAlert(`Recording ${recordingName} stored`, recordingId)
+    const saveRecordingAlert = (recordingName: string) => recordingAlert(`Downloading recording ${recordingName}`)
 
     return (
-        <PageSection>
+        <PageSection className='java-flight-recorder'>
             <React.Fragment>
                 <AlertGroup isToast isLiveRegion>{alerts}</AlertGroup>
             </React.Fragment>
@@ -114,6 +114,7 @@ export const FlightRecorder: React.FunctionComponent = () => {
                                         {configurations?.find(config => config.name === userJfrSettings?.configuration)?.label || `Select configuration`}
                                     </MenuToggle>
                                 )}
+                                onOpenChange={(isOpen: boolean) =>setIsConfigurationsDropdownOpen(isOpen)}
                                 shouldFocusToggleOnSelect
                             >
                                 <DropdownList>
@@ -134,38 +135,41 @@ export const FlightRecorder: React.FunctionComponent = () => {
                                 onChange={(_event, value) => setUserJfrSettings({...userJfrSettings, name: value} as UserJfrSettings)} />
                         </FormGroup>
                         <FormGroup label="Limit">
-                            <DropdownGroup label="Type">
-                                <Dropdown
-                                    isOpen={isLimitTypeOpen}
-                                    onSelect={(_event, value) => {
-                                        setUserJfrSettings({...userJfrSettings, limitType: value as string, limitValue: value === 'unlimited' ? 0 : userJfrSettings?.limitValue} as UserJfrSettings)
-                                        setIsLimitTypeOpen(false)
-                                    }}
-                                    toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-                                        <MenuToggle ref={toggleRef} 
-                                            onClick={() => setIsLimitTypeOpen(true)} 
-                                            isExpanded={isLimitTypeOpen}>
-                                            {LIMIT_TYPE.find(limitType => limitType.value === userJfrSettings?.limitType)?.label || `Select limit type`}
-                                        </MenuToggle>
-                                    )}
-                                    shouldFocusToggleOnSelect
-                                >
-                                    <DropdownList>
-                                        {LIMIT_TYPE.map(({label, value}) =>
-                                            <DropdownItem key={value} value={value}>
-                                                {label}
-                                            </DropdownItem>
-                                        )}  
-                                    </DropdownList>
-                                </Dropdown>
-                            </DropdownGroup>
-                            <TextInput 
-                                type="number" 
-                                label="Value"
-                                aria-label="Value"
-                                value={userJfrSettings?.limitValue || 0}
-                                isDisabled={userJfrSettings?.limitType === "unlimited"}
-                                onChange={(_event, value) => setUserJfrSettings({...userJfrSettings, limitValue: Number(value)} as UserJfrSettings)} />
+                            <Stack hasGutter>
+                                <DropdownGroup label="Type">
+                                    <Dropdown
+                                        isOpen={isLimitTypeOpen}
+                                        onSelect={(_event, value) => {
+                                            setUserJfrSettings({...userJfrSettings, limitType: value as string, limitValue: value === 'unlimited' ? 0 : userJfrSettings?.limitValue} as UserJfrSettings)
+                                            setIsLimitTypeOpen(false)
+                                        }}
+                                        toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                                            <MenuToggle ref={toggleRef} 
+                                                onClick={() => setIsLimitTypeOpen(true)} 
+                                                isExpanded={isLimitTypeOpen}>
+                                                {LIMIT_TYPE.find(limitType => limitType.value === userJfrSettings?.limitType)?.label || `Select limit type`}
+                                            </MenuToggle>
+                                        )}
+                                        onOpenChange={(isOpen: boolean) => setIsLimitTypeOpen(isOpen)}
+                                        shouldFocusToggleOnSelect
+                                    >
+                                        <DropdownList>
+                                            {LIMIT_TYPE.map(({label, value}) =>
+                                                <DropdownItem key={value} value={value}>
+                                                    {label}
+                                                </DropdownItem>
+                                            )}  
+                                        </DropdownList>
+                                    </Dropdown>
+                                </DropdownGroup>
+                                <TextInput 
+                                    type="number" 
+                                    label="Value"
+                                    aria-label="Value"
+                                    value={userJfrSettings?.limitValue || 0}
+                                    isDisabled={userJfrSettings?.limitType === "unlimited"}
+                                    onChange={(_event, value) => setUserJfrSettings({...userJfrSettings, limitValue: Number(value)} as UserJfrSettings)} />
+                            </Stack>
                         </FormGroup>
                         <Checkbox
                             id="dump-on-exit-checkbox"
@@ -191,7 +195,7 @@ export const FlightRecorder: React.FunctionComponent = () => {
                             <Flex alignContent={{md:'alignContentCenter'}}>
                                 <Button
                                     isDisabled={currentRecording?.state == RecordingState.RECORDING} 
-                                    onClick={() => flightRecorderService.startRecording().then(() => {
+                                    onClick={() => flightRecorderService.startRecording(userJfrSettings).then(() => {
                                     setRecordingOnProgress(true)
                                     startRecordingAlert()
                                 })}>
@@ -201,7 +205,7 @@ export const FlightRecorder: React.FunctionComponent = () => {
                                 </Button>
                                 <Button isDisabled={currentRecording?.state != RecordingState.RECORDING} onClick={() => {
                                     flightRecorderService.stopRecording().then(()=> {
-                                        stopRecordingAlert(currentRecording?.number as number)
+                                        stopRecordingAlert(currentRecording?.number as number, userJfrSettings?.name || currentRecording?.number?.toString() || "")
                                         setRecordings(flightRecorderService.recordings)
                                         setCurrentRecording(flightRecorderService.currentRecording)
                                         setUserJfrSettings(flightRecorderService.userJfrSettings)
@@ -248,8 +252,8 @@ export const FlightRecorder: React.FunctionComponent = () => {
                                 <Td>
                                     <Button 
                                         onClick={async () => {
-                                            await flightRecorderService.downloadRecording(Number(number))
-                                            saveRecordingAlert(Number(number))
+                                            await flightRecorderService.downloadRecording(Number(number), file)
+                                            saveRecordingAlert(file)
                                         }}
                                     >
                                         <Icon>

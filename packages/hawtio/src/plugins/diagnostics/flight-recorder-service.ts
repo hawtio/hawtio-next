@@ -3,12 +3,10 @@ import { jolokiaService, MBeanNode, workspace } from "../shared"
 
 export interface IFlightRecorderService {
   getFlightRecoderMBean(): Promise<MBeanNode | undefined>
-  retrieveConfigurations(): Promise<any>
-  retrieveSettings(): Promise<any>
-  retrieveRecordings(): Promise<any>
-  startRecording(): Promise<any>
+  setUp(): Promise<any>
+  startRecording(userJfrSettings?: UserJfrSettings): Promise<any>
   stopRecording(): Promise<any>
-  saveRecording(): Promise<any>
+  downloadRecording(id: number, name:string): Promise<any>
 }
 
 export enum RecordingState {
@@ -63,7 +61,7 @@ class FlightRecorderService implements IFlightRecorderService {
 
         if(!this.jfrMBean) {
             const jfr = await this.getFlightRecoderMBean()
-            
+
             if (!jfr) return this;
         }
 
@@ -86,7 +84,7 @@ class FlightRecorderService implements IFlightRecorderService {
         return this.jfrMBean
     }
 
-    async retrieveConfigurations(): Promise<JfrConfig[] | undefined> {
+    private async retrieveConfigurations(): Promise<JfrConfig[] | undefined> {
         if (this.jfrConfigs) return this.jfrConfigs
 
         if (!this.jfrMBean) (await this.getFlightRecoderMBean())
@@ -99,7 +97,7 @@ class FlightRecorderService implements IFlightRecorderService {
         return this.jfrConfigs
     }
 
-    async retrieveRecordings(): Promise<[Recording[], CurrentRecording, any]> {
+    private async retrieveRecordings(): Promise<[Recording[], CurrentRecording, any]> {
         if (!this.jfrMBean) (await this.getFlightRecoderMBean())
         
         const jfrRecordings : Array<any> | undefined 
@@ -120,7 +118,7 @@ class FlightRecorderService implements IFlightRecorderService {
                     recording => ({
                         number: "" + recording.id,
                         size: `${recording.size}b`,
-                        file: `${recording.id}.jfr`,
+                        file: `${recording.name}.jfr`,
                         time: recording.stopTime,
                         canDownload: true,
                         downloadLink: `${jolokiaUrl}/exec/jdk.management.jfr:type=FlightRecorder/copyTo(long,java.lang.String)/${recording.id}/${recording.id}.jfr`    
@@ -150,7 +148,7 @@ class FlightRecorderService implements IFlightRecorderService {
         }
     }
 
-    async retrieveSettings(): Promise<any> {
+    private async retrieveSettings(): Promise<any> {
         if (!this.jfrMBean) (await this.getFlightRecoderMBean())
         if (!this.currentRecording) (await this.retrieveRecordings())
         
@@ -174,7 +172,8 @@ class FlightRecorderService implements IFlightRecorderService {
         return [this.userJfrSettings, initialSettings]
     }
 
-    async startRecording(): Promise<any> {
+    async startRecording(userJfrSettings?: UserJfrSettings): Promise<any> {
+        this.userJfrSettings = {...this.userJfrSettings, ...(userJfrSettings || {})} as UserJfrSettings
         await jolokiaService.execute(this.jfrMBean?.objectName as string, "setRecordingOptions", [this.currentRecording?.number, this.convertSettingsToJfrOptions(this.userJfrSettings as any)]);
         await jolokiaService.execute(this.jfrMBean?.objectName as string, "setPredefinedConfiguration", [this.currentRecording?.number, this.userJfrSettings?.configuration])
         await jolokiaService.execute(this.jfrMBean?.objectName as string, "startRecording", [this.currentRecording?.number]);
@@ -187,12 +186,12 @@ class FlightRecorderService implements IFlightRecorderService {
         await this.retrieveRecordings()
     }
 
-    async downloadRecording(id: number) {
+    async downloadRecording(id: number, name: string) {
         const fileData: Uint8Array = await this.retrieveFileData(id)
         const fileUrl = URL.createObjectURL(new Blob([fileData as any], {type: "application/octet-stream"}))
         const fileDownload = document.createElement('a');
         fileDownload.href = fileUrl;
-        fileDownload.download = `${this.userJfrSettings?.name}.jfr`;
+        fileDownload.download = `${name}.jfr`;
         fileDownload.click()
         URL.revokeObjectURL(fileDownload.toString());
     }
@@ -220,15 +219,9 @@ class FlightRecorderService implements IFlightRecorderService {
 
 
         return this.concatenateUInt32Array(responses)
-    } 
-
-    async saveRecording(): Promise<any> {
-
-        await jolokiaService.execute(this.jfrMBean?.objectName as string, "takeSnapshot")
-        await this.retrieveRecordings()
     }
 
-    convertSettingsToJfrOptions(jfrOptions: UserJfrSettings) {
+    private convertSettingsToJfrOptions(jfrOptions: UserJfrSettings) {
         return {
             "name": "" + jfrOptions.name,
             "dumpOnExit": "" + jfrOptions.dumpOnExit,
