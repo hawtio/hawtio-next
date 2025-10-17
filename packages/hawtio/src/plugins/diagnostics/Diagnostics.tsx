@@ -12,9 +12,7 @@ type NavItem = {
 export const Diagnostics: React.FunctionComponent = () => {
   const location = useLocation()
 
-  const navItems: NavItem[] = [
-    { id: 'jfr', title: 'Flight Recorder', component: <FlightRecorder /> },
-  ]
+  const navItems: NavItem[] = [{ id: 'jfr', title: 'Flight Recorder', component: <FlightRecorder /> }]
 
   return (
     <React.Fragment>

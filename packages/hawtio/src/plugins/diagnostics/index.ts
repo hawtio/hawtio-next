@@ -17,11 +17,14 @@ export const diagnostics: HawtioPlugin = () => {
         order,
         component: m.Diagnostics,
         isActive: async () => {
-            const jolokiaUrl = await jolokiaService.getFullJolokiaUrl();
+          const jolokiaUrl = await jolokiaService.getFullJolokiaUrl()
 
-            return Boolean(await flightRecorderService.getFlightRecoderMBean())
-                && ["localhost", "127.0.0.1", "::1", "192.168.", "10.0"].filter(localUrl => jolokiaUrl.includes(localUrl)).length != 0.
-        }
+          return (
+            Boolean(await flightRecorderService.getFlightRecoderMBean()) &&
+            ['localhost', '127.0.0.1', '::1', '192.168.', '10.0'].filter(localUrl => jolokiaUrl.includes(localUrl))
+              .length != 0
+          )
+        },
       }
     })
   })
