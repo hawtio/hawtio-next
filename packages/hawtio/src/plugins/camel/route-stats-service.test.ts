@@ -7,7 +7,7 @@ import path from 'path'
 import React from 'react'
 import { contextNodeType, routeNodeType, xmlNodeLocalName } from './globals'
 import { IconNames } from './icons'
-import { ROUTE_OPERATIONS, routesService } from './routes-service'
+import { ROUTE_OPERATIONS, routeStatsService } from './route-stats-service'
 import { workspace } from '../shared'
 import { camelTreeProcessor } from './tree-processor'
 import { userService } from '@hawtiosrc/auth'
@@ -63,14 +63,14 @@ describe('routes-service', () => {
   })
 
   test('fetchRoutesXml', async () => {
-    const xml = await routesService.fetchRoutesXml(contextNode)
+    const xml = await routeStatsService.fetchRoutesXml(contextNode)
     expect(xml).not.toBeNull()
   })
 
   test('fetchRoutesXml no mbean', async () => {
     contextNode.objectName = undefined
 
-    await expect(() => routesService.fetchRoutesXml(contextNode)).rejects.toThrow(
+    await expect(() => routeStatsService.fetchRoutesXml(contextNode)).rejects.toThrow(
       'Cannot process route xml as mbean name not available',
     )
   })
@@ -78,19 +78,19 @@ describe('routes-service', () => {
   test('fetchRoutesXml wrong mbean', async () => {
     contextNode.objectName = 'wrong:mbean:name'
 
-    await expect(() => routesService.fetchRoutesXml(contextNode)).rejects.toThrow(
+    await expect(() => routeStatsService.fetchRoutesXml(contextNode)).rejects.toThrow(
       'Failed to extract any xml from mbean: ' + contextNode.objectName,
     )
   })
 
   test('processRouteXml', async () => {
-    const route = routesService.processRouteXml(sampleRoutesXml, simpleRouteNode)
+    const route = routeStatsService.processRouteXml(sampleRoutesXml, simpleRouteNode)
     expect(route).not.toBeNull()
     expect((route as Element).id).toBe(testRouteId)
   })
 
   test('loadRouteXml', async () => {
-    await routesService.loadRouteXml(simpleRouteNode, simpleRouteXml)
+    await routeStatsService.loadRouteXml(simpleRouteNode, simpleRouteXml)
     expect(simpleRouteNode.getMetadata('xml')).toBe('    ' + simpleRouteXml.outerHTML)
     expect(simpleRouteNode.childCount()).toBe(4)
 
@@ -167,14 +167,14 @@ describe('routes-service.dumpRoutesStatsXML', () => {
     const simpleRoute = routesNode.get('simple', false) as MBeanNode
     expect(simpleRoute.getType()).toBe(routeNodeType)
 
-    const routesXml = (await routesService.dumpRoutesStatsXML(routesNode)) as string
+    const routesXml = (await routeStatsService.dumpRoutesStatsXML(routesNode)) as string
     expect(routesXml).not.toBeNull()
     expect(routesXml).toMatch(sampleRoutesStatsXml)
 
-    const cronRouteXml = (await routesService.dumpRoutesStatsXML(cronRoute)) as string
+    const cronRouteXml = (await routeStatsService.dumpRoutesStatsXML(cronRoute)) as string
     expect(cronRouteXml).toMatch(routesXml)
 
-    const simpleRouteXml = (await routesService.dumpRoutesStatsXML(simpleRoute)) as string
+    const simpleRouteXml = (await routeStatsService.dumpRoutesStatsXML(simpleRoute)) as string
     expect(simpleRouteXml).toMatch(routesXml)
   })
 
@@ -212,14 +212,14 @@ describe('routes-service.dumpRoutesStatsXML', () => {
     const simpleRoute = group2Node.get('simple', false) as MBeanNode
     expect(simpleRoute.getType()).toBe(routeNodeType)
 
-    const routesXml = (await routesService.dumpRoutesStatsXML(routesNode)) as string
+    const routesXml = (await routeStatsService.dumpRoutesStatsXML(routesNode)) as string
     expect(routesXml).not.toBeNull()
     expect(routesXml).toMatch(sampleRoutesStatsXml)
 
-    const cronRouteXml = (await routesService.dumpRoutesStatsXML(cronRoute)) as string
+    const cronRouteXml = (await routeStatsService.dumpRoutesStatsXML(cronRoute)) as string
     expect(cronRouteXml).toMatch(routesXml)
 
-    const simpleRouteXml = (await routesService.dumpRoutesStatsXML(simpleRoute)) as string
+    const simpleRouteXml = (await routeStatsService.dumpRoutesStatsXML(simpleRoute)) as string
     expect(simpleRouteXml).toMatch(routesXml)
   })
 })

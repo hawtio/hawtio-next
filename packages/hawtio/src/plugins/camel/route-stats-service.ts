@@ -54,8 +54,7 @@ export const ROUTE_OPERATIONS = {
   dumpRoutesStatsAsXml: 'dumpRoutesStatsAsXml',
 } as const
 
-// TODO: This service should be named more properly like RoutesXmlService, RouteStatisticsService, etc.
-class RoutesService {
+class RouteStatsService {
   async getIcon(
     node: MBeanNode,
     nodeSettingsOrXmlNode: Record<string, unknown> | Element,
@@ -296,4 +295,4 @@ class RoutesService {
   }
 }
 
-export const routesService = new RoutesService()
+export const routeStatsService = new RouteStatsService()

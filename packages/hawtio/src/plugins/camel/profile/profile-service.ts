@@ -1,7 +1,7 @@
 import { MBeanNode, jolokiaService } from '@hawtiosrc/plugins/shared'
 import { JolokiaRequest, JolokiaSuccessResponse, JolokiaErrorResponse } from 'jolokia.js'
 import { log } from '../globals'
-import { routesService } from '../routes-service'
+import { routeStatsService } from '../route-stats-service'
 
 export type ProfileData = {
   id: string
@@ -31,11 +31,11 @@ class ProfileService {
   }
 
   async getProfile(node: MBeanNode): Promise<ProfileData[]> {
-    const xml = await routesService.dumpRoutesStatsXML(node)
+    const xml = await routeStatsService.dumpRoutesStatsXML(node)
     if (!xml) return []
 
     const profile: ProfileData[] = []
-    const stats = routesService.processRoutesStats(xml)
+    const stats = routeStatsService.processRoutesStats(xml)
 
     stats.forEach(stat => {
       const routeData: ProfileData = {

@@ -1,7 +1,7 @@
 import { CamelNodeData, visualizationService } from './visualization-service'
 import path from 'path'
 import fs from 'fs'
-import { RouteStats } from '@hawtiosrc/plugins/camel/routes-service'
+import { RouteStats } from '@hawtiosrc/plugins/camel/route-stats-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
 
 jest.mock('@hawtiosrc/plugins/shared/jolokia-service')

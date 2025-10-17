@@ -19,7 +19,7 @@ import {
   routeXmlNodeType,
   routesType,
 } from './globals'
-import { ROUTE_OPERATIONS } from './routes-service'
+import { ROUTE_OPERATIONS } from './route-stats-service'
 
 // TODO: Should be provided by @hawtio/camel-model package
 export type CamelModel = {
@@ -322,7 +322,7 @@ export function hasProperties(node: MBeanNode): boolean {
   return isRouteNode(node) || isRouteXmlNode(node)
 }
 
-export function canInvokeEnableDisable(node: MBeanNode, id: string): boolean {
+export function canEnableDisableProcessor(node: MBeanNode, id: string): boolean {
   if (!isRouteNode(node) && !isRoutesFolder(node)) return false
 
   const processor = findMBean(node, 'processors', id)

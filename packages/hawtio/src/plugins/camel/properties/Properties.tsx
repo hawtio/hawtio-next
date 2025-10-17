@@ -4,7 +4,7 @@ import { InfoCircleIcon } from '@patternfly/react-icons/dist/esm/icons/info-circ
 import React, { useContext, useEffect, useState } from 'react'
 import { CamelContext } from '../context'
 import { log, xmlNodeLocalName } from '../globals'
-import { routesService } from '../routes-service'
+import { routeStatsService } from '../route-stats-service'
 import { schemaService } from '../schema-service'
 import './Properties.css'
 import { PropertiesList } from './PropertiesList'
@@ -40,7 +40,7 @@ export const Properties: React.FunctionComponent = () => {
 
       if (schema) {
         newTitle = schema['title'] as string
-        newIcon = await routesService.getIcon(selectedNode, schema, 24)
+        newIcon = await routeStatsService.getIcon(selectedNode, schema, 24)
         newDescription = schema['description'] as string
         const groupStr = schema['group'] as string
         groups = groupStr.split(',')
