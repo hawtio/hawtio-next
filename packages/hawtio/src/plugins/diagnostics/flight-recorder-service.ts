@@ -60,9 +60,12 @@ class FlightRecorderService implements IFlightRecorderService {
     public initialized: boolean = false
 
     async setUp() : Promise<FlightRecorderService> {
-        const jfr = await this.getFlightRecoderMBean()
-        
-        if (!jfr) return this;
+
+        if(!this.jfrMBean) {
+            const jfr = await this.getFlightRecoderMBean()
+            
+            if (!jfr) return this;
+        }
 
         await this.retrieveConfigurations()
         await this.retrieveRecordings()
