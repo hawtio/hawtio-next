@@ -447,8 +447,13 @@ export class HawtioCore implements IHawtio {
       configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.started, 'plugins')
       const res = await fetch(url)
       if (!res.ok) {
-        configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.error, 'plugins')
-        log.error('Failed to fetch url:', url, '-', res.status, res.statusText)
+        if (res.status == 401 || res.status == 403) {
+          configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.error, 'plugins')
+          log.error('Failed to fetch url:', url, '-', res.status, res.statusText)
+        } else {
+          configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.skipped, 'plugins')
+          log.warn('Failed to fetch url:', url, '-', res.status, res.statusText)
+        }
         return
       }
 
@@ -518,8 +523,8 @@ export class HawtioCore implements IHawtio {
         }),
       )
     } catch (err) {
-      configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.error, 'plugins')
-      log.error('Error fetching url:', url, '-', err)
+      configManager.initItem('Loading plugins descriptor from URL ' + url, TaskState.skipped, 'plugins')
+      log.warn('Error fetching url:', url, '-', err)
       return
     }
   }
