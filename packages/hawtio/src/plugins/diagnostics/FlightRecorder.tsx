@@ -23,10 +23,7 @@ import {
   MenuToggle,
   MenuToggleElement,
   Modal,
-  NumberInput,
   PageSection,
-  PageSectionVariants,
-  Panel,
   Spinner,
   Stack,
   TextInput,
@@ -42,18 +39,18 @@ import {
   UserJfrSettings,
 } from './flight-recorder-service'
 import { jolokiaService } from '../shared'
-import { CogIcon, CubesIcon, DownloadIcon, PlayIcon, RecordVinylIcon, StopIcon } from '@patternfly/react-icons'
+import { CogIcon, CubesIcon, DownloadIcon, RecordVinylIcon, StopIcon } from '@patternfly/react-icons'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import './FlightRecorder.css'
 
 export const FlightRecorder: React.FunctionComponent = () => {
-  const [initialized, setInitialized] = useState<Boolean>(false)
-  const [recordingOnProgress, setRecordingOnProgress] = useState<Boolean>(false)
+  const [initialized, setInitialized] = useState<boolean>(false)
+  //   const [recordingOnProgress, setRecordingOnProgress] = useState<boolean>(false)
   const [recordings, setRecordings] = useState<Recording[]>([])
   const [currentRecording, setCurrentRecording] = useState<CurrentRecording>()
   const [configurations, setConfigurations] = useState<JfrConfig[]>([])
   const [userJfrSettings, setUserJfrSettings] = useState<UserJfrSettings>()
-  const [jolokiaUrl, setJolokiaUrl] = useState<String>()
+  const [jolokiaUrl, setJolokiaUrl] = useState<string>()
   const [alerts, setAlerts] = useState<React.ReactNode[]>([])
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [isConfigurationsDropdownOpen, setIsConfigurationsDropdownOpen] = useState<boolean>(false)
@@ -80,10 +77,12 @@ export const FlightRecorder: React.FunctionComponent = () => {
     })
   }, [initialized])
 
-  if (!initialized) return
-  ;<PageSection>
-    <Spinner aria-label='Loading Flight Recorder' />
-  </PageSection>
+  if (!initialized) {
+    return
+    <PageSection>
+      <Spinner aria-label='Loading Flight Recorder' />
+    </PageSection>
+  }
 
   if (
     !(
@@ -105,16 +104,18 @@ export const FlightRecorder: React.FunctionComponent = () => {
       </PageSection>
     )
 
-  if (initialized && !flightRecorderService.jfrMBean) return
-  ;<PageSection>
-    <EmptyState variant={EmptyStateVariant.full}>
-      <EmptyStateHeader
-        titleText='No MBean found for Java Flight Recorder'
-        icon={<EmptyStateIcon icon={CubesIcon} />}
-        headingLevel='h1'
-      />
-    </EmptyState>
-  </PageSection>
+  if (initialized && !flightRecorderService.jfrMBean) {
+    return
+    <PageSection>
+      <EmptyState variant={EmptyStateVariant.full}>
+        <EmptyStateHeader
+          titleText='No MBean found for Java Flight Recorder'
+          icon={<EmptyStateIcon icon={CubesIcon} />}
+          headingLevel='h1'
+        />
+      </EmptyState>
+    </PageSection>
+  }
 
   const recordingAlert = (text: string, downloadId?: number, recordingName?: string, timeout?: number) => {
     setAlerts(prevAlerts => {
@@ -267,7 +268,6 @@ export const FlightRecorder: React.FunctionComponent = () => {
                   isDisabled={currentRecording?.state == RecordingState.RECORDING}
                   onClick={() =>
                     flightRecorderService.startRecording(userJfrSettings).then(() => {
-                      setRecordingOnProgress(true)
                       startRecordingAlert()
                     })
                   }

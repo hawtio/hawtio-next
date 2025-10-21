@@ -3,10 +3,10 @@ import { jolokiaService, MBeanNode, workspace } from '../shared'
 
 export interface IFlightRecorderService {
   getFlightRecoderMBean(): Promise<MBeanNode | undefined>
-  setUp(): Promise<any>
-  startRecording(userJfrSettings?: UserJfrSettings): Promise<any>
-  stopRecording(): Promise<any>
-  downloadRecording(id: number, name: string): Promise<any>
+  setUp(): Promise<FlightRecorderService>
+  startRecording(userJfrSettings?: UserJfrSettings): Promise<void>
+  stopRecording(): Promise<void>
+  downloadRecording(id: number, name: string): Promise<void>
 }
 
 export enum RecordingState {
@@ -29,7 +29,7 @@ export type Recording = {
   number: string
   size: string
   file: string
-  time: any
+  time: number
   canDownload: boolean
   downloadLink: string
 }
@@ -38,6 +38,22 @@ export type CurrentRecording = {
   state: RecordingState
   number?: number
 }
+
+type RecordingDataJolokia = Partial<{
+  state: string
+  id: string
+  size: number
+  name: string
+  stopTime: number
+}>
+
+type JfrOptionsJolokia = Partial<{
+  duration?: number
+  maxSize?: number
+  configuration: string
+  name: string
+  dumpOnExit: string
+}>
 
 export type JfrConfig = {
   name: string
@@ -48,13 +64,13 @@ export type JfrConfig = {
 class FlightRecorderService implements IFlightRecorderService {
   private jfrLogger: ILogger = Logger.get('jfr-service')
 
-  public jfrMBean?: MBeanNode
-  public jfrConfigs?: JfrConfig[]
-  public userJfrSettings?: UserJfrSettings
+  jfrMBean?: MBeanNode
+  jfrConfigs?: JfrConfig[]
+  userJfrSettings?: UserJfrSettings
 
-  public recordings: Array<Recording> = []
-  public currentRecording: CurrentRecording = { state: RecordingState.NOT_CREATED }
-  public initialized: boolean = false
+  recordings: Array<Recording> = []
+  currentRecording: CurrentRecording = { state: RecordingState.NOT_CREATED }
+  initialized: boolean = false
 
   async setUp(): Promise<FlightRecorderService> {
     if (!this.jfrMBean) {
@@ -96,13 +112,13 @@ class FlightRecorderService implements IFlightRecorderService {
     return this.jfrConfigs
   }
 
-  private async retrieveRecordings(): Promise<[Recording[], CurrentRecording, any]> {
+  private async retrieveRecordings(): Promise<[Recording[], CurrentRecording, RecordingDataJolokia[]]> {
     if (!this.jfrMBean) await this.getFlightRecoderMBean()
 
-    const jfrRecordings: Array<any> | undefined = (await jolokiaService.readAttribute(
+    const jfrRecordings: Array<RecordingDataJolokia> | undefined = (await jolokiaService.readAttribute(
       this.jfrMBean?.objectName as string,
       'Recordings',
-    )) as Array<any>
+    )) as Array<RecordingDataJolokia>
 
     this.recordings = await this.listSavedRecordings(jfrRecordings)
     this.currentRecording = await this.configureCurrentRecording(jfrRecordings)
@@ -110,34 +126,37 @@ class FlightRecorderService implements IFlightRecorderService {
     return [this.recordings || [], this.currentRecording, jfrRecordings]
   }
 
-  private async listSavedRecordings(jfrRecordings: Array<any>) {
+  private async listSavedRecordings(jfrRecordings: Array<RecordingDataJolokia>): Promise<Recording[]> {
     const jolokiaUrl = await jolokiaService.getFullJolokiaUrl()
 
     return jfrRecordings
       .filter(recording => recording?.state === 'STOPPED')
-      .map(recording => ({
-        number: '' + recording.id,
-        size: `${recording.size}b`,
-        file: `${recording.name}.jfr`,
-        time: recording.stopTime,
-        canDownload: true,
-        downloadLink: `${jolokiaUrl}/exec/jdk.management.jfr:type=FlightRecorder/copyTo(long,java.lang.String)/${recording.id}/${recording.id}.jfr`,
-      }))
+      .map(
+        recording =>
+          ({
+            number: '' + recording.id,
+            size: `${recording.size}b`,
+            file: `${recording.name}.jfr`,
+            time: recording.stopTime,
+            canDownload: true,
+            downloadLink: `${jolokiaUrl}/exec/jdk.management.jfr:type=FlightRecorder/copyTo(long,java.lang.String)/${recording.id}/${recording.id}.jfr`,
+          }) as Recording,
+      )
   }
 
-  private async configureCurrentRecording(jfrRecordings: Array<any>): Promise<CurrentRecording> {
+  private async configureCurrentRecording(jfrRecordings: Array<RecordingDataJolokia>): Promise<CurrentRecording> {
     const current = jfrRecordings && jfrRecordings.length > 0 && jfrRecordings[jfrRecordings.length - 1]
 
-    if (current?.state === 'RUNNING')
+    if (current && current?.state === 'RUNNING')
       return {
         state: RecordingState.RECORDING,
-        number: jfrRecordings?.[jfrRecordings.length - 1].id,
+        number: Number(jfrRecordings?.[jfrRecordings.length - 1]?.id),
       }
 
-    if (current?.state === 'NEW')
+    if (current && current?.state === 'NEW')
       return {
         state: RecordingState.CREATED,
-        number: jfrRecordings?.[jfrRecordings.length - 1].id,
+        number: Number(jfrRecordings?.[jfrRecordings.length - 1]?.id),
       }
 
     return {
@@ -146,13 +165,13 @@ class FlightRecorderService implements IFlightRecorderService {
     }
   }
 
-  private async retrieveSettings(): Promise<any> {
+  private async retrieveSettings(): Promise<UserJfrSettings> {
     if (!this.jfrMBean) await this.getFlightRecoderMBean()
     if (!this.currentRecording) await this.retrieveRecordings()
 
     const initialSettings = (await jolokiaService.execute(this.jfrMBean?.objectName as string, 'getRecordingOptions', [
       this.currentRecording?.number,
-    ])) as any
+    ])) as JfrOptionsJolokia
 
     const limitType =
       Number(initialSettings['duration']) !== 0
@@ -170,14 +189,14 @@ class FlightRecorderService implements IFlightRecorderService {
       limitValue: limitType !== 'unlimited' ? Number(initialSettings[limitType]) : 0,
     }
 
-    return [this.userJfrSettings, initialSettings]
+    return this.userJfrSettings
   }
 
-  async startRecording(userJfrSettings?: UserJfrSettings): Promise<any> {
+  async startRecording(userJfrSettings?: UserJfrSettings): Promise<void> {
     this.userJfrSettings = { ...this.userJfrSettings, ...(userJfrSettings || {}) } as UserJfrSettings
     await jolokiaService.execute(this.jfrMBean?.objectName as string, 'setRecordingOptions', [
       this.currentRecording?.number,
-      this.convertSettingsToJfrOptions(this.userJfrSettings as any),
+      this.convertSettingsToJfrOptions(this.userJfrSettings),
     ])
     await jolokiaService.execute(this.jfrMBean?.objectName as string, 'setPredefinedConfiguration', [
       this.currentRecording?.number,
@@ -187,17 +206,17 @@ class FlightRecorderService implements IFlightRecorderService {
     this.currentRecording.state = RecordingState.RECORDING
   }
 
-  async stopRecording(): Promise<any> {
+  async stopRecording(): Promise<void> {
     await jolokiaService.execute(this.jfrMBean?.objectName as string, 'stopRecording', [this.currentRecording.number])
     await this.retrieveRecordings()
   }
 
   async downloadRecording(id: number, name: string) {
     const fileData: Uint8Array = await this.retrieveFileData(id)
-    const fileUrl = URL.createObjectURL(new Blob([fileData as any], { type: 'application/octet-stream' }))
+    const fileUrl = URL.createObjectURL(new Blob([fileData as BufferSource], { type: 'application/octet-stream' }))
     const fileDownload = document.createElement('a')
     fileDownload.href = fileUrl
-    fileDownload.download = `${name}.jfr`
+    fileDownload.download = `${name}`
     fileDownload.click()
     URL.revokeObjectURL(fileDownload.toString())
   }
@@ -234,7 +253,7 @@ class FlightRecorderService implements IFlightRecorderService {
     return {
       name: '' + jfrOptions.name,
       dumpOnExit: '' + jfrOptions.dumpOnExit,
-      duration: jfrOptions.limitType === 'duration' ? jfrOptions.limitValue : undefined,
+      duration: jfrOptions.limitType === 'duration' ? `${jfrOptions.limitValue}s` : undefined,
       maxSize: jfrOptions.limitType === 'maxSize' ? jfrOptions.limitValue : undefined,
     }
   }
