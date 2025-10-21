@@ -217,7 +217,6 @@ class FlightRecorderService implements IFlightRecorderService {
     const fileDownload = document.createElement('a')
     fileDownload.href = fileUrl
     fileDownload.download = `${name}`
-    // eslint-disable-next-line testing-library/no-node-access
     fileDownload.click()
     URL.revokeObjectURL(fileDownload.toString())
   }
