@@ -78,10 +78,11 @@ export const FlightRecorder: React.FunctionComponent = () => {
   }, [initialized])
 
   if (!initialized) {
-    return
-    <PageSection>
-      <Spinner aria-label='Loading Flight Recorder' />
-    </PageSection>
+    return (
+      <PageSection>
+        <Spinner aria-label='Loading Flight Recorder' />
+      </PageSection>
+    )
   }
 
   if (
@@ -105,16 +106,17 @@ export const FlightRecorder: React.FunctionComponent = () => {
     )
 
   if (initialized && !flightRecorderService.jfrMBean) {
-    return
-    <PageSection>
-      <EmptyState variant={EmptyStateVariant.full}>
-        <EmptyStateHeader
-          titleText='No MBean found for Java Flight Recorder'
-          icon={<EmptyStateIcon icon={CubesIcon} />}
-          headingLevel='h1'
-        />
-      </EmptyState>
-    </PageSection>
+    return (
+      <PageSection>
+        <EmptyState variant={EmptyStateVariant.full}>
+          <EmptyStateHeader
+            titleText='No MBean found for Java Flight Recorder'
+            icon={<EmptyStateIcon icon={CubesIcon} />}
+            headingLevel='h1'
+          />
+        </EmptyState>
+      </PageSection>
+    )
   }
 
   const recordingAlert = (text: string, downloadId?: number, recordingName?: string, timeout?: number) => {
