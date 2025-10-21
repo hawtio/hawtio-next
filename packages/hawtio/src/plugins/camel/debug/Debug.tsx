@@ -14,10 +14,12 @@ import {
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core'
+import { ArrowRightIcon } from '@patternfly/react-icons/dist/esm/icons/arrow-right-icon'
 import { BanIcon } from '@patternfly/react-icons/dist/esm/icons/ban-icon'
 import { BarsIcon } from '@patternfly/react-icons/dist/esm/icons/bars-icon'
 import { ExclamationCircleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon'
 import { LongArrowAltDownIcon } from '@patternfly/react-icons/dist/esm/icons/long-arrow-alt-down-icon'
+import { LongArrowAltUpIcon } from '@patternfly/react-icons/dist/esm/icons/long-arrow-alt-up-icon'
 import { MinusIcon } from '@patternfly/react-icons/dist/esm/icons/minus-icon'
 import { PlayIcon } from '@patternfly/react-icons/dist/esm/icons/play-icon'
 import { PlusCircleIcon } from '@patternfly/react-icons/dist/esm/icons/plus-circle-icon'
@@ -32,7 +34,7 @@ import { log } from '../globals'
 import { Annotation, RouteDiagramContext, useRouteDiagramContext } from '../route-diagram-context'
 import { RouteDiagram } from '../route-diagram/RouteDiagram'
 import { CamelNodeData } from '../route-diagram/visualization-service'
-import { ConditionalBreakpointModal } from './ConditionalBreakpointModel'
+import { ConditionalBreakpointModal } from './ConditionalBreakpointModal'
 import './Debug.css'
 import { MessageDrawer } from './MessageDrawer'
 import { ConditionalBreakpoint, MessageData, debugService } from './debug-service'
@@ -204,8 +206,8 @@ export const Debug: React.FunctionComponent = () => {
       // Unregister old handles
       debugService.unregisterAll()
 
-      const debugNode = debugService.getDebugBean(contextNode)
-      if (!debugNode || !debugNode.objectName) return
+      const debugMBean = debugService.getDebugMBean(contextNode)
+      if (!debugMBean || !debugMBean.objectName) return
 
       if (isDebugging) {
         const result = await debugService.getBreakpoints(contextNode)
@@ -220,7 +222,7 @@ export const Debug: React.FunctionComponent = () => {
         debugService.register(
           {
             type: 'exec',
-            mbean: debugNode.objectName,
+            mbean: debugMBean.objectName,
             operation: 'getDebugCounter',
           },
           (response: JolokiaSuccessResponse | JolokiaErrorResponse) => {
@@ -344,15 +346,39 @@ export const Debug: React.FunctionComponent = () => {
     setIsConditionalBreakpointOpen(!isConditionalBreakpointOpen)
   }
 
-  const onStep = async () => {
-    log.debug('Debug - step')
+  const onStepInto = async () => {
+    log.debug('Debug - step into')
     if (!suspendedBreakpoints || suspendedBreakpoints.length === 0) return
 
     const suspendedBreakpoint = suspendedBreakpoints[0]
     if (!suspendedBreakpoint) return
 
-    const result = await debugService.stepBreakpoint(selectedNode, suspendedBreakpoint)
-    log.debug('Debug - next breakpoint:', result)
+    const nextBps = await debugService.stepBreakpoint(selectedNode, suspendedBreakpoint)
+    log.debug('Debug - next breakpoint:', nextBps)
+    reloadBreakpointChanges(isDebugging, selectedNode)
+  }
+
+  const onStepOver = async () => {
+    log.debug('Debug - step over')
+    if (!suspendedBreakpoints || suspendedBreakpoints.length === 0) return
+
+    const suspendedBreakpoint = suspendedBreakpoints[0]
+    if (!suspendedBreakpoint) return
+
+    const nextBps = await debugService.stepOver(selectedNode)
+    log.debug('Debug - next breakpoint:', nextBps)
+    reloadBreakpointChanges(isDebugging, selectedNode)
+  }
+
+  const onSkipOver = async () => {
+    log.debug('Debug - skip over')
+    if (!suspendedBreakpoints || suspendedBreakpoints.length === 0) return
+
+    const suspendedBreakpoint = suspendedBreakpoints[0]
+    if (!suspendedBreakpoint) return
+
+    const nextBps = await debugService.skipOver(selectedNode)
+    log.debug('Debug - next breakpoint:', nextBps)
     reloadBreakpointChanges(isDebugging, selectedNode)
   }
 
@@ -398,6 +424,9 @@ export const Debug: React.FunctionComponent = () => {
       </Tbody>
     </Table>
   )
+
+  // Step over/skip over functions are only supported in Camel 4.14+
+  const isCamel4_14 = camelService.isCamelVersionEQGT(selectedNode, 4, 14)
 
   const toolbarButtons = (
     <React.Fragment>
@@ -447,11 +476,37 @@ export const Debug: React.FunctionComponent = () => {
           size='sm'
           icon={<LongArrowAltDownIcon />}
           isDisabled={suspendedBreakpoints.length === 0}
-          onClick={onStep}
+          onClick={onStepInto}
         >
-          Step
+          Step into
         </Button>
       </ToolbarItem>
+      {isCamel4_14 && (
+        <ToolbarItem spacer={{ default: 'spacerSm' }} title='Step over the next node'>
+          <Button
+            variant='secondary'
+            size='sm'
+            icon={<ArrowRightIcon />}
+            isDisabled={suspendedBreakpoints.length === 0}
+            onClick={onStepOver}
+          >
+            Step over
+          </Button>
+        </ToolbarItem>
+      )}
+      {isCamel4_14 && (
+        <ToolbarItem spacer={{ default: 'spacerSm' }} title='Skip over the next node'>
+          <Button
+            variant='secondary'
+            size='sm'
+            icon={<LongArrowAltUpIcon />}
+            isDisabled={suspendedBreakpoints.length === 0}
+            onClick={onSkipOver}
+          >
+            Skip over
+          </Button>
+        </ToolbarItem>
+      )}
       <ToolbarItem spacer={{ default: 'spacerSm' }} title='Resume running'>
         <Button
           variant='secondary'
@@ -489,7 +544,7 @@ export const Debug: React.FunctionComponent = () => {
         <Button
           variant='primary'
           size='sm'
-          icon={!isDebugging ? React.createElement(PlayIcon) : React.createElement(BanIcon)}
+          icon={!isDebugging ? <PlayIcon /> : <BanIcon />}
           onClick={onDebugging}
           isDisabled={!camelService.canGetBreakpoints(selectedNode)}
         >

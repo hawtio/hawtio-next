@@ -68,7 +68,7 @@ describe('debug-service', () => {
     const contextNode = tree.navigate(jmxDomain, camelContexts, 'SampleCamel') as MBeanNode
     expect(contextNode).not.toBeNull()
 
-    const debugBean = ds.getDebugBean(contextNode)
+    const debugBean = ds.getDebugMBean(contextNode)
     expect(debugBean).not.toBeNull()
     expect(debugBean?.objectName).toEqual('org.apache.camel:context=SampleCamel,type=tracer,name=BacklogDebugger')
   })

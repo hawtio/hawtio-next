@@ -1,7 +1,8 @@
+import { eventService } from '@hawtiosrc/core'
 import { MBeanNode, jolokiaService } from '@hawtiosrc/plugins/shared'
 import { isBlank } from '@hawtiosrc/util/strings'
 import { childText, xmlText } from '@hawtiosrc/util/xml'
-import { JolokiaRequest, JolokiaSuccessResponse, JolokiaErrorResponse } from 'jolokia.js'
+import { JolokiaErrorResponse, JolokiaRequest, JolokiaSuccessResponse } from 'jolokia.js'
 import { camelPreferencesService } from '../camel-preferences-service'
 import * as camelService from '../camel-service'
 import { log } from '../globals'
@@ -45,15 +46,18 @@ class DebugService {
     this.handles = []
   }
 
-  getDebugBean(node: MBeanNode): MBeanNode | null {
-    const db = camelService.findDebugBean(node)
-    if (!db || !db.objectName) camelService.notifyError('Could not find the debug bean')
+  getDebugMBean(node: MBeanNode): MBeanNode | null {
+    const db = camelService.findDebugMBean(node)
+    if (!db || !db.objectName) {
+      eventService.notify({ type: 'danger', message: 'Could not find the debug mbean' })
+      return null
+    }
 
     return db
   }
 
   async isDebugging(node: MBeanNode): Promise<boolean> {
-    const db = this.getDebugBean(node)
+    const db = this.getDebugMBean(node)
     if (!db || !db.objectName) return false
 
     const result = await jolokiaService.readAttribute(db.objectName, 'Enabled')
@@ -63,7 +67,7 @@ class DebugService {
   }
 
   async setDebugging(node: MBeanNode, flag: boolean): Promise<boolean> {
-    const db = this.getDebugBean(node)
+    const db = this.getDebugMBean(node)
     if (!db || !db.objectName) return false
 
     const options = camelPreferencesService.loadOptions()
@@ -77,7 +81,7 @@ class DebugService {
   }
 
   async getBreakpoints(node: MBeanNode): Promise<string[]> {
-    const db = this.getDebugBean(node)
+    const db = this.getDebugMBean(node)
     if (!db || !db.objectName) return []
 
     const result = await jolokiaService.execute(db.objectName, camelService.getBreakpointsOperation(node))
@@ -86,7 +90,7 @@ class DebugService {
   }
 
   async addBreakpoint(node: MBeanNode, breakpointId: string): Promise<boolean> {
-    const db = this.getDebugBean(node)
+    const db = this.getDebugMBean(node)
     if (!db || !db.objectName) return false
 
     await jolokiaService.execute(db.objectName, 'addBreakpoint', [breakpointId])
@@ -99,7 +103,7 @@ class DebugService {
   }
 
   async removeBreakpoint(node: MBeanNode, breakpointId: string): Promise<boolean> {
-    const db = this.getDebugBean(node)
+    const db = this.getDebugMBean(node)
     if (!db || !db.objectName) return false
 
     await jolokiaService.execute(db.objectName, 'removeBreakpoint', [breakpointId])
@@ -112,7 +116,7 @@ class DebugService {
   }
 
   async validateConditionalBreakpoint(node: MBeanNode, breakpoint: ConditionalBreakpoint): Promise<string | null> {
-    const db = this.getDebugBean(node)
+    const db = this.getDebugMBean(node)
     if (!db || !db.objectName) return 'Error: cannot find debugger bean'
 
     const result = await jolokiaService.execute(db.objectName, 'validateConditionalBreakpoint', [
@@ -125,7 +129,7 @@ class DebugService {
 
   async addConditionalBreakpoint(node: MBeanNode, conditionalBreakpoint: ConditionalBreakpoint): Promise<boolean> {
     log.info('Add conditional breakpoint')
-    const db = this.getDebugBean(node)
+    const db = this.getDebugMBean(node)
     if (!db || !db.objectName) return false
 
     await jolokiaService.execute(db.objectName, 'addConditionalBreakpoint', [
@@ -146,7 +150,7 @@ class DebugService {
    * Return the current node id we are stopped at
    */
   async getSuspendedBreakpointIds(node: MBeanNode): Promise<string[]> {
-    const db = this.getDebugBean(node)
+    const db = this.getDebugMBean(node)
     if (!db || !db.objectName) return []
 
     const result = await jolokiaService.execute(
@@ -156,18 +160,36 @@ class DebugService {
     return result as string[]
   }
 
-  async stepBreakpoint(node: MBeanNode, breakpointId: string): Promise<string[]> {
-    const db = this.getDebugBean(node)
+  private async doStep(node: MBeanNode, stepFn: (objectName: string) => Promise<unknown>): Promise<string[]> {
+    const db = this.getDebugMBean(node)
     if (!db || !db.objectName) return []
 
-    await jolokiaService.execute(db.objectName, 'stepBreakpoint(java.lang.String)', [breakpointId])
+    await stepFn(db.objectName)
 
     // Return the new suspended breakpoint
-    return await this.getSuspendedBreakpointIds(node)
+    return this.getSuspendedBreakpointIds(node)
+  }
+
+  async stepBreakpoint(node: MBeanNode, breakpointId: string): Promise<string[]> {
+    return this.doStep(node, objectName =>
+      jolokiaService.execute(objectName, 'stepBreakpoint(java.lang.String)', [breakpointId]),
+    )
+  }
+
+  async stepInto(node: MBeanNode): Promise<string[]> {
+    return this.doStep(node, objectName => jolokiaService.execute(objectName, 'step()'))
+  }
+
+  async stepOver(node: MBeanNode): Promise<string[]> {
+    return this.doStep(node, objectName => jolokiaService.execute(objectName, 'stepOver()'))
+  }
+
+  async skipOver(node: MBeanNode): Promise<string[]> {
+    return this.doStep(node, objectName => jolokiaService.execute(objectName, 'skipOver()'))
   }
 
   async getBreakpointCounter(node: MBeanNode): Promise<number> {
-    const db = this.getDebugBean(node)
+    const db = this.getDebugMBean(node)
     if (!db || !db.objectName) return 0
 
     const result = await jolokiaService.execute(db.objectName, 'getDebugCounter')
@@ -175,14 +197,14 @@ class DebugService {
   }
 
   async getTracedMessages(node: MBeanNode, breakpointId: string): Promise<string> {
-    const db = this.getDebugBean(node)
+    const db = this.getDebugMBean(node)
     if (!db || !db.objectName) return ''
 
     return await camelService.dumpTracedMessagesAsXml(node, db.objectName, breakpointId)
   }
 
   async resume(node: MBeanNode): Promise<void> {
-    const db = this.getDebugBean(node)
+    const db = this.getDebugMBean(node)
     if (!db || !db.objectName) return
 
     await jolokiaService.execute(db.objectName, 'resumeAll')

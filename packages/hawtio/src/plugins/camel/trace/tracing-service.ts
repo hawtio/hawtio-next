@@ -20,7 +20,7 @@ class TracingService {
   }
 
   getTracingBean(node: MBeanNode) {
-    const db = camelService.findTraceBean(node) as MBeanNode
+    const db = camelService.findTraceMBean(node) as MBeanNode
     if (!db || !db.objectName) camelService.notifyError('Could not find the tracing bean')
 
     return db

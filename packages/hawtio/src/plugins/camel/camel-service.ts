@@ -246,11 +246,11 @@ export function hasTypeConverter(node: MBeanNode): boolean {
   )
 }
 
-export function findTraceBean(node: MBeanNode): MBeanNode | null {
+export function findTraceMBean(node: MBeanNode): MBeanNode | null {
   return findMBean(node, 'tracer', 'BacklogTracer')
 }
 
-export function findDebugBean(node: MBeanNode): MBeanNode | null {
+export function findDebugMBean(node: MBeanNode): MBeanNode | null {
   return findMBean(node, 'tracer', 'BacklogDebugger')
 }
 
@@ -290,14 +290,14 @@ export function dumpTracedMessagesAsXml(node: MBeanNode, debugMBean: string, bre
 export function canGetBreakpoints(node: MBeanNode): boolean {
   if (!isRouteNode(node)) return false
 
-  const db = findDebugBean(node)
+  const db = findDebugMBean(node)
   return db?.hasInvokeRights(getBreakpointsOperation(node)) ?? false
 }
 
 export function canTrace(node: MBeanNode): boolean {
   if (!isRouteNode(node)) return false
 
-  const trace = findTraceBean(node)
+  const trace = findTraceMBean(node)
   return trace?.hasInvokeRights('dumpAllTracedMessagesAsXml') ?? false
 }
 
