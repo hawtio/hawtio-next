@@ -105,7 +105,7 @@ export const FlightRecorder: React.FunctionComponent = () => {
       </PageSection>
     )
 
-  if (initialized && !flightRecorderService.jfrMBean) {
+  if (initialized && !flightRecorderService.hasFlightRecorderMBean()) {
     return (
       <PageSection>
         <EmptyState variant={EmptyStateVariant.full}>
@@ -121,6 +121,10 @@ export const FlightRecorder: React.FunctionComponent = () => {
 
   const recordingAlert = (text: string, downloadId?: number, recordingName?: string, timeout?: number) => {
     setAlerts(prevAlerts => {
+      let recordingNameForDownload: string = recordingName || downloadId?.toString() || 'recording'
+
+      if (!recordingNameForDownload?.endsWith('.jfr')) recordingNameForDownload += '.jfr'
+
       return [
         ...prevAlerts,
         <Alert
@@ -132,11 +136,8 @@ export const FlightRecorder: React.FunctionComponent = () => {
                 <AlertActionLink
                   component='a'
                   onClick={async () => {
-                    await flightRecorderService.downloadRecording(
-                      Number(downloadId),
-                      recordingName || downloadId.toString(),
-                    )
-                    saveRecordingAlert(recordingName || downloadId.toString())
+                    await flightRecorderService.downloadRecording(Number(downloadId), recordingNameForDownload)
+                    saveRecordingAlert(recordingNameForDownload)
                   }}
                 >
                   Download
@@ -200,7 +201,9 @@ export const FlightRecorder: React.FunctionComponent = () => {
             <TextInput
               aria-label='Recording name'
               value={userJfrSettings?.name}
-              onChange={(_event, value) => setUserJfrSettings({ ...userJfrSettings, name: value } as UserJfrSettings)}
+              onChange={(_event, value) =>
+                setUserJfrSettings({ ...userJfrSettings, name: value, isUserSelectedName: true } as UserJfrSettings)
+              }
             />
           </FormGroup>
           <FormGroup label='Limit'>

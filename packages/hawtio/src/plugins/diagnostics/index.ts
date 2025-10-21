@@ -20,7 +20,7 @@ export const diagnostics: HawtioPlugin = () => {
           const jolokiaUrl = await jolokiaService.getFullJolokiaUrl()
 
           return (
-            Boolean(await flightRecorderService.getFlightRecoderMBean()) &&
+            Boolean(await flightRecorderService.hasFlightRecorderMBean()) &&
             ['localhost', '127.0.0.1', '::1', '192.168.', '10.0'].filter(localUrl => jolokiaUrl.includes(localUrl))
               .length != 0
           )

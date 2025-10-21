@@ -1,8 +1,7 @@
-import { ILogger, Logger } from '@hawtiosrc/core'
 import { jolokiaService, MBeanNode, workspace } from '../shared'
 
 export interface IFlightRecorderService {
-  getFlightRecoderMBean(): Promise<MBeanNode | undefined>
+  hasFlightRecorderMBean(): Promise<boolean>
   setUp(): Promise<FlightRecorderService>
   startRecording(userJfrSettings?: UserJfrSettings): Promise<void>
   stopRecording(): Promise<void>
@@ -22,6 +21,7 @@ export interface UserJfrSettings {
   recordingNumber: number
   dumpOnExit: boolean
   name: string
+  isUserSelectedName: boolean
   configuration: string
 }
 
@@ -62,9 +62,7 @@ export type JfrConfig = {
 }
 
 class FlightRecorderService implements IFlightRecorderService {
-  private jfrLogger: ILogger = Logger.get('jfr-service')
-
-  jfrMBean?: MBeanNode
+  private jfrMBean?: MBeanNode
   jfrConfigs?: JfrConfig[]
   userJfrSettings?: UserJfrSettings
 
@@ -88,7 +86,15 @@ class FlightRecorderService implements IFlightRecorderService {
     return this
   }
 
-  async getFlightRecoderMBean(): Promise<MBeanNode | undefined> {
+  async hasFlightRecorderMBean(): Promise<boolean> {
+    if (!this.jfrMBean) {
+      await this.getFlightRecoderMBean()
+    }
+
+    return this.jfrMBean !== undefined
+  }
+
+  private async getFlightRecoderMBean(): Promise<MBeanNode | undefined> {
     if (this.jfrMBean) return this.jfrMBean
 
     await workspace
@@ -183,6 +189,7 @@ class FlightRecorderService implements IFlightRecorderService {
     this.userJfrSettings = {
       configuration: initialSettings['configuration'] || 'default',
       name: initialSettings['name'] as string,
+      isUserSelectedName: this.userJfrSettings?.isUserSelectedName || false,
       dumpOnExit: initialSettings['dumpOnExit'] === 'true',
       recordingNumber: this.currentRecording?.number as number,
       limitType: limitType,
@@ -209,6 +216,12 @@ class FlightRecorderService implements IFlightRecorderService {
   async stopRecording(): Promise<void> {
     await jolokiaService.execute(this.jfrMBean?.objectName as string, 'stopRecording', [this.currentRecording.number])
     await this.retrieveRecordings()
+
+    if (this.userJfrSettings && !this.userJfrSettings?.isUserSelectedName && this.recordings.length > 0) {
+      const previousRecording = this.recordings[this.recordings.length - 1]
+
+      this.userJfrSettings.name = (Number(previousRecording?.number) + 1).toString() || ''
+    }
   }
 
   async downloadRecording(id: number, name: string) {
