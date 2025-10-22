@@ -1,7 +1,8 @@
 import { eventService } from '@hawtiosrc/core'
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
-import { Switch, Title } from '@patternfly/react-core'
+import { Switch, Title, EmptyState, EmptyStateBody, EmptyStateHeader, EmptyStateIcon } from '@patternfly/react-core'
 import { Table, Tbody, Td, Tr } from '@patternfly/react-table'
+import { ExclamationCircleIcon } from '@patternfly/react-icons'
 import React, { RefObject, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Connection,
@@ -55,6 +56,7 @@ const ReactFlowRouteDiagram: React.FunctionComponent<{
   const { setGraphNodeData, graphSelection, setGraphSelection } = useContext(RouteDiagramContext)
   const previousSelectedNodeRef = useRef<MBeanNode | null>(null)
 
+  const [error, setError] = useState<Error | null>(null)
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const nodesInitialized = useNodesInitialized({ includeHiddenNodes: false })
@@ -114,10 +116,16 @@ const ReactFlowRouteDiagram: React.FunctionComponent<{
     }
     previousSelectedNodeRef.current = selectedNode // Update ref for next render
 
+    setError(null)
+
     const xml = selectedNode?.getMetadata('xml')
     if (!selectedNode || !xml) {
       setNodes([])
       setEdges([])
+
+      if (!xml) {
+        setError(new Error('Could not locate any XML for route.'))
+      }
       return
     }
 
@@ -136,9 +144,16 @@ const ReactFlowRouteDiagram: React.FunctionComponent<{
         setNodes(layoutedNodes)
       })
       .catch(error => {
-        log.error(`Error loading the diagram route for ${selectedNode}:`, error)
+        log.error(`Error loading the diagram route for`, selectedNode, error)
         setNodes([])
         setEdges([])
+
+        if (error instanceof Error) {
+          setError(error)
+        } else {
+          // If it's not an Error, create a new one from its string representation
+          setError(new Error(String(error)))
+        }
       })
   }, [selectedNode, setEdges, setNodes, setGraphNodeData, graphSelection])
 
@@ -171,8 +186,36 @@ const ReactFlowRouteDiagram: React.FunctionComponent<{
     }
   }, [statsXml, setNodes, nodes.length])
 
+  const unwrap = (error: Error): string => {
+    if (!error) return 'unknown error'
+
+    if (error.cause instanceof Error) {
+      return error.message + '\n\t' + unwrap(error.cause)
+    }
+
+    return error.message
+  }
+
+  if (error) {
+    eventService.notify({
+      type: 'danger',
+      message: unwrap(error),
+    })
+
+    return (
+      <EmptyState>
+        <EmptyStateHeader
+          titleText='Error Occurred'
+          headingLevel='h4'
+          icon={<EmptyStateIcon icon={ExclamationCircleIcon} />}
+        />
+        <EmptyStateBody>An error occurred during drawing of the diagram.</EmptyStateBody>
+      </EmptyState>
+    )
+  }
+
   if (!selectedNode) {
-    return null
+    setError(new Error('No route has been selected.'))
   }
 
   const onNodeClick = (_event: React.MouseEvent, node: Node) => {
