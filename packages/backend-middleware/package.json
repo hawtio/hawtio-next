@@ -36,7 +36,7 @@
     "prepack": "yarn build"
   },
   "dependencies": {
-    "axios": "^1.12.2",
+    "axios": "^1.13.0",
     "express": "^5.1.0",
     "js-logger": "^1.6.1"
   },
