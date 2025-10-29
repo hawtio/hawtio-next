@@ -337,6 +337,8 @@ export class ConfigManager implements IConfigManager {
   /** Resolution method for `authenticationConfigPromise` */
   private authenticationConfigReady: (ready: boolean | PromiseLike<boolean>) => void = () => true
 
+  private authenticationConfigEndpointSupported = false
+
   /** Promise resolved when authentication config is already read from external source */
   private authenticationConfigPromise = new Promise<boolean>(resolve => {
     this.authenticationConfigReady = resolve
@@ -389,7 +391,24 @@ export class ConfigManager implements IConfigManager {
     }
 
     this.authenticationConfig = await fetch('auth/config/login')
-      .then(response => (response.ok ? response.json() : []))
+      .then(response => {
+        if (response.ok) {
+          // the endpoint is fine - whatever it returns we trust it
+          // if it returns empty array, we use default configuration
+          this.authenticationConfigEndpointSupported = true
+          return response.json()
+        } else {
+          // 404 means there's no such endpoint, so we may used older version of Hawtio
+          // or a backend that doesn't implement this endpoint, we have to record this fact
+          if (response.status === 404) {
+            this.authenticationConfigEndpointSupported = false
+          } else {
+            // it can be 401 or 403, but anyway there's something there
+            this.authenticationConfigEndpointSupported = true
+          }
+          return []
+        }
+      })
       .then((json: AuthenticationMethod[]) => {
         if (Array.isArray(json)) {
           return json.length == 0 ? [defaultConfiguration] : json
@@ -418,16 +437,43 @@ export class ConfigManager implements IConfigManager {
   async configureAuthenticationMethod(config: AuthenticationMethod): Promise<void> {
     // plugin-specific configuration can be applied to generic configuration from /auth/config/login
     // only when it's already fetched
+    let found = false
     return this.authenticationConfigPromise.then(() => {
       // search generic login configurations and alter the one which matches passed `config` by `method` field
       for (const idx in this.authenticationConfig) {
         if (this.authenticationConfig[idx]?.method === config.method) {
           // a plugin provides the remaining part of given authentication method (except the name)
+          const name = this.authenticationConfig[idx].name
           this.authenticationConfig[idx] = {
             ...config,
-            name: this.authenticationConfig[idx]!.name,
+            name,
           }
+          found = true
           break
+        }
+      }
+      if (!found) {
+        // it means there's a plugin like keycloak or oidc but there's no such method discovered from /auth/config/login
+        // endpoint - could be that this endpoint doesn't exist or is not implemented correctly
+        // but there IS keycloak or oidc method, so we add it dynamically
+        let name = config['name'] ?? config.method
+        // just handling known methods
+        if (name == 'oidc') {
+          name = 'OpenID Connect'
+        }
+        if (name == 'keycloak') {
+          name = 'Keycloak'
+        }
+        if (this.authenticationConfigEndpointSupported) {
+          // we found an auth/config/login endpoint which returned some authentication methods, but not the one
+          // passed here. So we _add_ this one
+          this.authenticationConfig.push({ ...config, name })
+        } else {
+          // there's no auth/config/endpoint, so we may be using old Hawtio backend or a backend which
+          // simply doesn't have this endpoint.
+          // in this special case we simply don't use the default form login config and choose this one
+          // (probably keycloak or OIDC)
+          this.authenticationConfig = [{ ...config, name }]
         }
       }
     })
