@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.11.0](https://github.com/hawtio/hawtio-next/compare/v1.11.0-pre.1...v1.11.0) (2025-10-29)
+
+
+### Features
+
+* **camel:** add debug step over/skip over functions for Camel 4.14+ ([b8d657f](https://github.com/hawtio/hawtio-next/commit/b8d657f11e06e33a39bbf9b48e531091f31ddae0)), closes [#1645](https://github.com/hawtio/hawtio-next/issues/1645)
+* **diagnostics:** Flight Recorder plugin ([#643](https://github.com/hawtio/hawtio-next/issues/643)) ([a8cf897](https://github.com/hawtio/hawtio-next/commit/a8cf897d45a5f2523ccb7e423103b8584b2ae383))
+
+
+### Bug Fixes
+
+* **plugins:** Skip /plugin endpoint if not available (fixes hawtio/hawtio[#4014](https://github.com/hawtio/hawtio-next/issues/4014)) ([0295702](https://github.com/hawtio/hawtio-next/commit/029570239b535690b7399f694d25ff800986143e))
+
 ## [1.11.0-pre.1](https://github.com/hawtio/hawtio-next/compare/v1.11.0-pre.0...v1.11.0-pre.1) (2025-10-17)
 
 
