@@ -601,11 +601,18 @@ class OidcService implements IOidcService {
         // window.location.assign(`${md?.end_session_endpoint}?post_logout_redirect_uri=${document.baseURI}&id_token_hint=${user!.id_token}`)
         // for Keycloak, with client_id passed here, we're logged out automatically and get redirected to Hawtio
         const c = await this.config
+        const userInfo = await this.userInfo
         // here we can't verify connection to IdP - we'll simply get browser error. Nothing we can do at this stage
         // use "location.assign" to let user browse back
-        window.location.assign(
-          `${md?.end_session_endpoint}?post_logout_redirect_uri=${document.baseURI}&client_id=${c!.client_id}`,
-        )
+        if (userInfo && userInfo.id_token) {
+          window.location.assign(
+            `${md?.end_session_endpoint}?post_logout_redirect_uri=${document.baseURI}&client_id=${c!.client_id}&id_token_hint=${userInfo.id_token}`,
+          )
+        } else {
+          window.location.assign(
+            `${md?.end_session_endpoint}?post_logout_redirect_uri=${document.baseURI}&client_id=${c!.client_id}`,
+          )
+        }
         return true
       }
       return false
