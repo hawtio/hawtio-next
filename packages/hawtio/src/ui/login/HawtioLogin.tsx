@@ -132,6 +132,7 @@ export const HawtioLogin: React.FunctionComponent = () => {
         // will handle login using loginService
         return <HawtioLoginForm method={method as FormAuthenticationMethod} />
       case 'oidc':
+      case 'keycloak':
         // already prepared Button with plugin-specific onClick
         return oidcComponent
       case 'basic':

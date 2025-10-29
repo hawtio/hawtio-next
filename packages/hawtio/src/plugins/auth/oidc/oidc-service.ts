@@ -120,7 +120,16 @@ class OidcService implements IOidcService {
   constructor() {
     configManager.initItem('OIDC Configuration', TaskState.started, 'config')
     this.config = fetch('auth/config/oidc')
-      .then(response => (response.ok && response.status == 200 ? response.json() : null))
+      .then(response => {
+        if (response.ok && response.status == 200) {
+          return response.json()
+        } else if (response.status == 404) {
+          // just one more try with different URI
+          return fetch('auth/config').then(response => (response.ok && response.status == 200 ? response.json() : null))
+        } else {
+          return false
+        }
+      })
       .then(json => {
         return json as OidcConfig
       })
