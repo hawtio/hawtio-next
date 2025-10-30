@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.11.1](https://github.com/hawtio/hawtio-next/compare/v1.11.0...v1.11.1) (2025-10-30)
+
+
+### Bug Fixes
+
+* **auth:** Handle Keycloak and OIDC login methods without /auth/config/login endpoint (fixes [#1774](https://github.com/hawtio/hawtio-next/issues/1774)) ([9ea7cca](https://github.com/hawtio/hawtio-next/commit/9ea7cca3fc9a9efe292f38481eac5a357886106a))
+* **auth:** Send proper id_token_hint with OIDC logout ([#1774](https://github.com/hawtio/hawtio-next/issues/1774)) ([9bb89a8](https://github.com/hawtio/hawtio-next/commit/9bb89a81716f70e067e161a30eae9ca8220c4ce3))
+
 ## [1.11.0](https://github.com/hawtio/hawtio-next/compare/v1.11.0-pre.1...v1.11.0) (2025-10-29)
 
 
