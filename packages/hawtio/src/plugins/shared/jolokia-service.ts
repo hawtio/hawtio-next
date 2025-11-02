@@ -129,6 +129,7 @@ export interface IJolokiaService {
   sublist(paths: string | string[], options?: SimpleRequestOptions): Promise<OptimisedJmxDomains>
 
   readAttributes(mbean: string, options?: RequestOptions): Promise<AttributeValues>
+  readSpecifiedAttributes(mbean: string, attributes: string[], options?: RequestOptions): Promise<AttributeValues>
   readAttribute(mbean: string, attribute: string, options?: RequestOptions): Promise<unknown>
   writeAttribute(mbean: string, attribute: string, value: unknown, options?: RequestOptions): Promise<unknown>
 
@@ -821,6 +822,36 @@ class JolokiaService implements IJolokiaService {
         onAttributeSuccessAndError(
           (response: JolokiaSuccessResponse) => {
             // Response can never be string/number in Hawtio's setup of Jolokia
+            resolve(response.value as AttributeValues)
+          },
+          error => {
+            log.error('Error during readAttributes:', error)
+            resolve({})
+          },
+          options,
+        ),
+      )
+    })
+  }
+
+  /**
+   * Reading multiple specified attributes of an MBean
+   * @param mbean
+   * @param attributes
+   * @param options
+   */
+  async readSpecifiedAttributes(
+    mbean: string,
+    attributes: string[],
+    options?: RequestOptions,
+  ): Promise<AttributeValues> {
+    const jolokia = await this.getJolokia()
+    return new Promise((resolve, reject) => {
+      options = this.configureFetchErrorCallback(options, reject)
+      jolokia.request(
+        { type: 'read', mbean, attribute: attributes },
+        onAttributeSuccessAndError(
+          response => {
             resolve(response.value as AttributeValues)
           },
           error => {
