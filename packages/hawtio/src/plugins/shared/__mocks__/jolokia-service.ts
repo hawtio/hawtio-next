@@ -46,6 +46,10 @@ class MockJolokiaService implements IJolokiaService {
     return null
   }
 
+  async readSpecifiedAttributes(_mbean: string, _attributes: string[]): Promise<AttributeValues> {
+    return {}
+  }
+
   async writeAttribute(_mbean: string, _attribute: string, _value: unknown): Promise<unknown> {
     return null
   }
