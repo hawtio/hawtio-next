@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.11.2](https://github.com/hawtio/hawtio-next/compare/v1.11.1...v1.11.2) (2025-11-03)
+
+
+### Features
+
+* **jolokia:** new `readSpecifiedAttributes()` method to fetch selected attributes for an MBean ([4be24e72](https://github.com/hawtio/hawtio-next/commit/4be24e7238f368a79b046d937ad0d842c4bc47f4))
+
+
+### Bug Fixes
+
+* **auth:** call keycloak.logout() passing configurable redirect URL (for Spring Security) (hawtio/hawtio[#4120](https://github.com/hawtio/hawtio-next/issues/4120)) ([acb8cfd](https://github.com/hawtio/hawtio-next/commit/acb8cfd41e73fca5a79ef838fc46afcfa7e43ce9))
+
 ## [1.11.1](https://github.com/hawtio/hawtio-next/compare/v1.11.0...v1.11.1) (2025-10-30)
 
 
