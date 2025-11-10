@@ -5,22 +5,8 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 10
-    reviewers:
-      - tadayosi
-      - phantomjinx
-      - jsolovjo
-      - grgrzybek
-      - kariuwu
-      - joshiraezcode
   - package-ecosystem: github-actions
     directory: '/'
     schedule:
       interval: weekly
     open-pull-requests-limit: 10
-    reviewers:
-      - tadayosi
-      - phantomjinx
-      - jsolovjo
-      - grgrzybek
-      - kariuwu
-      - joshiraezcode
