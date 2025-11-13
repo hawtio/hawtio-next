@@ -826,7 +826,7 @@ class JolokiaService implements IJolokiaService {
           },
           error => {
             log.error('Error during readAttributes:', error)
-            resolve({})
+            reject(error)
           },
           options,
         ),
@@ -856,7 +856,7 @@ class JolokiaService implements IJolokiaService {
           },
           error => {
             log.error('Error during readAttributes:', error)
-            resolve({})
+            reject(error)
           },
           options,
         ),
@@ -882,7 +882,7 @@ class JolokiaService implements IJolokiaService {
           },
           error => {
             log.error('Error during readAttribute:', error)
-            resolve(null)
+            reject(error)
           },
           options,
         ),
@@ -909,7 +909,7 @@ class JolokiaService implements IJolokiaService {
           },
           error => {
             log.error('Error during writeAttribute:', error)
-            resolve(null)
+            reject(error)
           },
           options,
         ),
