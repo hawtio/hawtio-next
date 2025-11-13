@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.11.3](https://github.com/hawtio/hawtio-next/compare/v1.11.2...v1.11.3) (2025-11-13)
+
+
+### Bug Fixes
+
+* **jolokia:** reject the promise on jolokia.request() error instead of resolving with empty value (fixes [#1791](https://github.com/hawtio/hawtio-next/issues/1791)) ([7411fe1](https://github.com/hawtio/hawtio-next/commit/7411fe1e59f43771e7fc6b27a86c5817f61d1651))
+
 ## [1.11.2](https://github.com/hawtio/hawtio-next/compare/v1.11.1...v1.11.2) (2025-11-03)
 
 
