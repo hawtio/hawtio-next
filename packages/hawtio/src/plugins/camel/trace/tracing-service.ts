@@ -3,6 +3,7 @@ import { JolokiaRequest, JolokiaSuccessResponse, JolokiaErrorResponse } from 'jo
 import { camelPreferencesService } from '../camel-preferences-service'
 import * as camelService from '../camel-service'
 import { log } from '../globals'
+import { eventService } from '@hawtiosrc/core'
 
 class TracingService {
   private handles: number[] = []
@@ -30,7 +31,10 @@ class TracingService {
     const tb = this.getTracingBean(node)
     if (!tb) return false
 
-    const result = await jolokiaService.readAttribute(tb.objectName as string, 'Enabled')
+    const result = await jolokiaService.readAttribute(tb.objectName as string, 'Enabled').catch(e => {
+      eventService.notify({ type: 'warning', message: jolokiaService.errorMessage(e) })
+      return false
+    })
     if (!result) return false
 
     return result as boolean
@@ -41,13 +45,25 @@ class TracingService {
     if (!tb) return false
 
     const options = camelPreferencesService.loadOptions()
-    await jolokiaService.writeAttribute(tb.objectName as string, 'BodyMaxChars', options.maximumTraceOrDebugBodyLength)
-    await jolokiaService.writeAttribute(
-      tb.objectName as string,
-      'BodyIncludeStreams',
-      options.traceOrDebugIncludeStreams,
-    )
-    await jolokiaService.writeAttribute(tb.objectName as string, 'BodyIncludeFiles', options.traceOrDebugIncludeStreams)
+    try {
+      await jolokiaService.writeAttribute(
+        tb.objectName as string,
+        'BodyMaxChars',
+        options.maximumTraceOrDebugBodyLength,
+      )
+      await jolokiaService.writeAttribute(
+        tb.objectName as string,
+        'BodyIncludeStreams',
+        options.traceOrDebugIncludeStreams,
+      )
+      await jolokiaService.writeAttribute(
+        tb.objectName as string,
+        'BodyIncludeFiles',
+        options.traceOrDebugIncludeStreams,
+      )
+    } catch (e) {
+      eventService.notify({ type: 'warning', message: jolokiaService.errorMessage(e) })
+    }
 
     await jolokiaService.execute(tb.objectName as string, 'setEnabled', [flag])
 

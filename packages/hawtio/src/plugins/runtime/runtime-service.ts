@@ -1,6 +1,7 @@
 import { jolokiaService } from '@hawtiosrc/plugins/shared'
 import Jolokia, { JolokiaRequest, JolokiaSuccessResponse } from 'jolokia.js'
 import { Metric, SystemProperty, Thread } from './types'
+import { eventService } from '@hawtiosrc/core'
 
 class RuntimeService {
   handlers: number[] = []
@@ -16,7 +17,10 @@ class RuntimeService {
 
   async loadSystemProperties(): Promise<SystemProperty[]> {
     const systemProperties: SystemProperty[] = []
-    const attr = await jolokiaService.readAttribute('java.lang:type=Runtime', 'SystemProperties')
+    const attr = await jolokiaService.readAttribute('java.lang:type=Runtime', 'SystemProperties').catch(e => {
+      eventService.notify({ type: 'warning', message: jolokiaService.errorMessage(e) })
+      return {}
+    })
     for (const [k, v] of Object.entries(attr as object)) {
       systemProperties.push({ key: k, value: v })
     }
@@ -49,12 +53,21 @@ class RuntimeService {
   }
 
   async isThreadContentionMonitoringEnabled(): Promise<boolean> {
-    const res = await jolokiaService.readAttribute('java.lang:type=Threading', 'ThreadContentionMonitoringEnabled')
+    const res = await jolokiaService
+      .readAttribute('java.lang:type=Threading', 'ThreadContentionMonitoringEnabled')
+      .catch(e => {
+        eventService.notify({ type: 'warning', message: jolokiaService.errorMessage(e) })
+        return false
+      })
     return res as boolean
   }
 
   async enableThreadContentionMonitoring(enabled: boolean) {
-    return await jolokiaService.writeAttribute('java.lang:type=Threading', 'ThreadContentionMonitoringEnabled', enabled)
+    return await jolokiaService
+      .writeAttribute('java.lang:type=Threading', 'ThreadContentionMonitoringEnabled', enabled)
+      .catch(e => {
+        eventService.notify({ type: 'warning', message: jolokiaService.errorMessage(e) })
+      })
   }
 
   async dumpThreads(): Promise<string> {

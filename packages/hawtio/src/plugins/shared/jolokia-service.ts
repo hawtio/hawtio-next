@@ -160,6 +160,10 @@ export interface IJolokiaService {
 
   loadJolokiaStoredOptions(): JolokiaStoredOptions
   saveJolokiaStoredOptions(options: JolokiaStoredOptions): void
+
+  // --- Helper methods
+
+  errorMessage(error: unknown): string | null
 }
 
 // Note: While Jolokia 2.1.0 switches to fetch() API and introduces recommended _promise mode_, we still
@@ -1056,6 +1060,15 @@ class JolokiaService implements IJolokiaService {
 
   saveJolokiaStoredOptions(options: JolokiaStoredOptions) {
     localStorage.setItem(STORAGE_KEY_JOLOKIA_OPTIONS, JSON.stringify(options))
+  }
+
+  errorMessage(error: unknown): string | null {
+    const e = error as JolokiaErrorResponse
+    if (e.error) {
+      return e.status ? `${e.status}: ${e.error}` : e.error
+    } else {
+      return JSON.stringify(e)
+    }
   }
 }
 

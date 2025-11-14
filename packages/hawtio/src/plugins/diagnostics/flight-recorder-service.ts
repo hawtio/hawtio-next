@@ -1,4 +1,5 @@
 import { jolokiaService, MBeanNode, workspace } from '../shared'
+import { eventService } from '@hawtiosrc/core'
 
 export interface IFlightRecorderService {
   hasFlightRecorderMBean(): Promise<boolean>
@@ -110,9 +111,10 @@ class FlightRecorderService implements IFlightRecorderService {
     if (!this.jfrMBean) await this.getFlightRecoderMBean()
 
     this.jfrConfigs = (
-      (await jolokiaService.readAttribute(this.jfrMBean?.objectName as string, 'Configurations')) as
-        | Array<{ name: string; label: string; description: string }>
-        | undefined
+      (await jolokiaService.readAttribute(this.jfrMBean?.objectName as string, 'Configurations').catch(e => {
+        eventService.notify({ type: 'warning', message: jolokiaService.errorMessage(e) })
+        return []
+      })) as Array<{ name: string; label: string; description: string }> | undefined
     )?.map(config => ({ name: config.name, label: config.label, description: config.description }))
 
     return this.jfrConfigs
@@ -121,10 +123,12 @@ class FlightRecorderService implements IFlightRecorderService {
   private async retrieveRecordings(): Promise<[Recording[], CurrentRecording, RecordingDataJolokia[]]> {
     if (!this.jfrMBean) await this.getFlightRecoderMBean()
 
-    const jfrRecordings: Array<RecordingDataJolokia> | undefined = (await jolokiaService.readAttribute(
-      this.jfrMBean?.objectName as string,
-      'Recordings',
-    )) as Array<RecordingDataJolokia>
+    const jfrRecordings: Array<RecordingDataJolokia> | undefined = (await jolokiaService
+      .readAttribute(this.jfrMBean?.objectName as string, 'Recordings')
+      .catch(e => {
+        eventService.notify({ type: 'warning', message: jolokiaService.errorMessage(e) })
+        return []
+      })) as Array<RecordingDataJolokia>
 
     this.recordings = await this.listSavedRecordings(jfrRecordings)
     this.currentRecording = await this.configureCurrentRecording(jfrRecordings)

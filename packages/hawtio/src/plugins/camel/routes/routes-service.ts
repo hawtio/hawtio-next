@@ -1,8 +1,9 @@
-import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
+import { AttributeValues, jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import { isRouteNode, isRoutesFolder } from '../camel-service'
 import { routeGroupsType, routeNodeType } from '../globals'
 import { CamelRoute } from './route'
+import { eventService } from '@hawtiosrc/core'
 
 export const ROUTE_OPERATIONS = {
   start: 'start()',
@@ -51,7 +52,10 @@ class RoutesService implements IRoutesService {
     const { objectName } = routeNode
     if (!objectName) return null
 
-    const attributes = await jolokiaService.readAttributes(objectName)
+    const attributes = await jolokiaService.readAttributes(objectName).catch(e => {
+      eventService.notify({ type: 'warning', message: jolokiaService.errorMessage(e) })
+      return {} as AttributeValues
+    })
     return new CamelRoute(
       routeNode,
       attributes['RouteId'] as string,
