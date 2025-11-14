@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.11.4](https://github.com/hawtio/hawtio-next/compare/v1.11.3...v1.11.4) (2025-11-14)
+
+
+### Bug Fixes
+
+* **jolokia:** handle all the rejected calls to readAttribute/writeAttribute ([#1791](https://github.com/hawtio/hawtio-next/issues/1791)) ([7f8618a](https://github.com/hawtio/hawtio-next/commit/7f8618a25edf21da188fad7dda53328e234cc020))
+
 ## [1.11.3](https://github.com/hawtio/hawtio-next/compare/v1.11.2...v1.11.3) (2025-11-13)
 
 
