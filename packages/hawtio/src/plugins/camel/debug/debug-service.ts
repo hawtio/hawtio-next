@@ -60,7 +60,10 @@ class DebugService {
     const db = this.getDebugMBean(node)
     if (!db || !db.objectName) return false
 
-    const result = await jolokiaService.readAttribute(db.objectName, 'Enabled')
+    const result = await jolokiaService.readAttribute(db.objectName, 'Enabled').catch(e => {
+      eventService.notify({ type: 'warning', message: jolokiaService.errorMessage(e) })
+      return false
+    })
     if (!result) return false
 
     return result as boolean
@@ -71,9 +74,13 @@ class DebugService {
     if (!db || !db.objectName) return false
 
     const options = camelPreferencesService.loadOptions()
-    await jolokiaService.writeAttribute(db.objectName, 'BodyMaxChars', options.maximumTraceOrDebugBodyLength)
-    await jolokiaService.writeAttribute(db.objectName, 'BodyIncludeStreams', options.traceOrDebugIncludeStreams)
-    await jolokiaService.writeAttribute(db.objectName, 'BodyIncludeFiles', options.traceOrDebugIncludeStreams)
+    try {
+      await jolokiaService.writeAttribute(db.objectName, 'BodyMaxChars', options.maximumTraceOrDebugBodyLength)
+      await jolokiaService.writeAttribute(db.objectName, 'BodyIncludeStreams', options.traceOrDebugIncludeStreams)
+      await jolokiaService.writeAttribute(db.objectName, 'BodyIncludeFiles', options.traceOrDebugIncludeStreams)
+    } catch (e) {
+      eventService.notify({ type: 'warning', message: jolokiaService.errorMessage(e) })
+    }
 
     const method = flag ? 'enableDebugger' : 'disableDebugger'
     await jolokiaService.execute(db.objectName, method)

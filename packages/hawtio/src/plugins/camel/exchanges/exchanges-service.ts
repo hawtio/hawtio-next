@@ -2,6 +2,7 @@ import { jolokiaService } from '@hawtiosrc/plugins/shared'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import { findContext } from '../camel-service'
 import { mbeansType, routeNodeType } from '../globals'
+import { eventService } from '@hawtiosrc/core'
 
 export type Exchange = {
   exchangeId: string
@@ -66,6 +67,11 @@ export async function canBrowseInflightExchanges(node: MBeanNode): Promise<boole
   const service = ctxNode.navigate(mbeansType, 'services', INFLIGHT_SERVICE + '*') as MBeanNode
   if (!service) return Promise.resolve(false)
 
-  const response = await jolokiaService.readAttribute(service.objectName as string, 'InflightBrowseEnabled')
+  const response = await jolokiaService
+    .readAttribute(service.objectName as string, 'InflightBrowseEnabled')
+    .catch(e => {
+      eventService.notify({ type: 'warning', message: jolokiaService.errorMessage(e) })
+      return false
+    })
   return response as boolean
 }

@@ -1,5 +1,5 @@
 import { eventService, NotificationType } from '@hawtiosrc/core'
-import { jolokiaService, MBeanNode, workspace } from '@hawtiosrc/plugins/shared'
+import { AttributeValues, jolokiaService, MBeanNode, workspace } from '@hawtiosrc/plugins/shared'
 import { isBlank } from '@hawtiosrc/util/strings'
 import { parseXML } from '@hawtiosrc/util/xml'
 import * as camelService from '../camel-service'
@@ -50,7 +50,10 @@ export async function getEndpoints(node: MBeanNode): Promise<Endpoint[]> {
   const endpoints: Endpoint[] = []
   for (const ep of endpointsNode.getChildren()) {
     if (!ep.objectName) continue
-    const attributes = await jolokiaService.readAttributes(ep.objectName)
+    const attributes = await jolokiaService.readAttributes(ep.objectName).catch(e => {
+      eventService.notify({ type: 'warning', message: jolokiaService.errorMessage(e) })
+      return {} as AttributeValues
+    })
     endpoints.push({
       uri: attributes.EndpointUri as string,
       state: attributes.State as string,

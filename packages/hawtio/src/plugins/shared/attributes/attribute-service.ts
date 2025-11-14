@@ -23,11 +23,17 @@ class AttributeService {
   }
 
   async read(mbean: string): Promise<AttributeValues> {
-    return await jolokiaService.readAttributes(mbean, this.requestOptions())
+    return await jolokiaService.readAttributes(mbean, this.requestOptions()).catch(e => {
+      eventService.notify({ type: 'warning', message: jolokiaService.errorMessage(e) })
+      return {} as AttributeValues
+    })
   }
 
   async readWithCallback(mbean: string, callback: (attrs: AttributeValues) => void): Promise<void> {
-    const attrs = await jolokiaService.readAttributes(mbean, this.requestOptions())
+    const attrs = await jolokiaService.readAttributes(mbean, this.requestOptions()).catch(e => {
+      eventService.notify({ type: 'warning', message: jolokiaService.errorMessage(e) })
+      return {} as AttributeValues
+    })
     callback(attrs)
   }
 
@@ -61,8 +67,14 @@ class AttributeService {
   }
 
   async update(mbeanName: string, attribute: string, value: unknown) {
-    await jolokiaService.writeAttribute(mbeanName, attribute, value, this.requestOptions())
-    eventService.notify({ type: 'success', message: `Updated attribute: ${attribute}` })
+    await jolokiaService
+      .writeAttribute(mbeanName, attribute, value, this.requestOptions())
+      .then(_ => {
+        eventService.notify({ type: 'success', message: `Updated attribute: ${attribute}` })
+      })
+      .catch(e => {
+        eventService.notify({ type: 'warning', message: jolokiaService.errorMessage(e) })
+      })
   }
 
   async bulkRequest(requests: JolokiaRequest[]) {

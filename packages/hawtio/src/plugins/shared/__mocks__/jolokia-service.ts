@@ -106,6 +106,10 @@ class MockJolokiaService implements IJolokiaService {
   saveJolokiaStoredOptions(_options: JolokiaStoredOptions) {
     //no-op
   }
+
+  errorMessage(_error: unknown): string | null {
+    return null
+  }
 }
 
 export const jolokiaService = new MockJolokiaService()

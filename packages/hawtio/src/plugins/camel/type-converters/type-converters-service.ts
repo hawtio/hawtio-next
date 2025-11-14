@@ -1,7 +1,8 @@
-import { jolokiaService } from '@hawtiosrc/plugins/shared'
+import { AttributeValues, jolokiaService } from '@hawtiosrc/plugins/shared'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import { findContext } from '../camel-service'
 import { mbeansType } from '../globals'
+import { eventService } from '@hawtiosrc/core'
 
 export class TypeConvertersStats {
   attemptCounter: number
@@ -47,7 +48,10 @@ export async function getStatisticsEnablement(node: MBeanNode | null): Promise<b
   const serviceName = getTypeConverterObjectName(node)
   if (!serviceName) return Promise.reject()
 
-  const response = await jolokiaService.readAttribute(serviceName, 'StatisticsEnabled')
+  const response = await jolokiaService.readAttribute(serviceName, 'StatisticsEnabled').catch(e => {
+    eventService.notify({ type: 'warning', message: jolokiaService.errorMessage(e) })
+    return false
+  })
   return response as boolean
 }
 
@@ -60,7 +64,9 @@ export async function setStatisticsEnablement(node: MBeanNode, state: boolean): 
   const serviceName = getTypeConverterObjectName(node)
   if (!serviceName) return Promise.reject()
 
-  return jolokiaService.writeAttribute(serviceName, 'StatisticsEnabled', state)
+  return jolokiaService.writeAttribute(serviceName, 'StatisticsEnabled', state).catch(e => {
+    eventService.notify({ type: 'warning', message: jolokiaService.errorMessage(e) })
+  })
 }
 
 /**
@@ -85,7 +91,10 @@ export async function getStatistics(node: MBeanNode | null): Promise<TypeConvert
   const serviceName = getTypeConverterObjectName(node)
   if (!serviceName) return stats
 
-  const response = await jolokiaService.readAttributes(serviceName)
+  const response = await jolokiaService.readAttributes(serviceName).catch(e => {
+    eventService.notify({ type: 'warning', message: jolokiaService.errorMessage(e) })
+    return {} as AttributeValues
+  })
   stats.attemptCounter = response['AttemptCounter'] as number
   stats.hitCounter = response['HitCounter'] as number
   stats.missCounter = response['MissCounter'] as number

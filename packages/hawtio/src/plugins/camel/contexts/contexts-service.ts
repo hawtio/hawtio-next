@@ -2,6 +2,7 @@ import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import { AttributeValues, jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { JolokiaRequest, JolokiaSuccessResponse, JolokiaErrorResponse } from 'jolokia.js'
 import { log } from '../globals'
+import { eventService } from '@hawtiosrc/core'
 
 export const CONTEXT_STATE_STARTED = 'Started'
 export const CONTEXT_STATE_SUSPENDED = 'Suspended'
@@ -28,7 +29,10 @@ class ContextsService {
   async getContext(contextNode: MBeanNode): Promise<ContextState | null> {
     if (!contextNode.objectName) return null
 
-    const attributes = await jolokiaService.readAttributes(contextNode.objectName)
+    const attributes = await jolokiaService.readAttributes(contextNode.objectName).catch(e => {
+      eventService.notify({ type: 'warning', message: jolokiaService.errorMessage(e) })
+      return {} as AttributeValues
+    })
     return this.toContextState(contextNode, attributes)
   }
 
@@ -42,7 +46,10 @@ class ContextsService {
         continue
       }
 
-      const attributes: AttributeValues = await jolokiaService.readAttributes(contextNode.objectName)
+      const attributes: AttributeValues = await jolokiaService.readAttributes(contextNode.objectName).catch(e => {
+        eventService.notify({ type: 'warning', message: jolokiaService.errorMessage(e) })
+        return {} as AttributeValues
+      })
       ctxAttributes.push(this.toContextState(contextNode, attributes))
     }
 

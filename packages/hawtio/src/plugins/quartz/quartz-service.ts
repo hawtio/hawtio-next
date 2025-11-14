@@ -104,11 +104,17 @@ class QuartzService {
   }
 
   async updateSampleStatisticsEnabled(schedulerName: string, schedulerMBean: string, value: boolean) {
-    await jolokiaService.writeAttribute(schedulerMBean, 'SampledStatisticsEnabled', value)
-    eventService.notify({
-      type: 'success',
-      message: `${value ? 'Enabled' : 'Disabled'} sampled statistics for scheduler: ${schedulerName}`,
-    })
+    await jolokiaService
+      .writeAttribute(schedulerMBean, 'SampledStatisticsEnabled', value)
+      .then(_ => {
+        eventService.notify({
+          type: 'success',
+          message: `${value ? 'Enabled' : 'Disabled'} sampled statistics for scheduler: ${schedulerName}`,
+        })
+      })
+      .catch(e => {
+        eventService.notify({ type: 'warning', message: jolokiaService.errorMessage(e) })
+      })
   }
 
   async loadTriggers(schedulerMBean: string): Promise<Trigger[]> {

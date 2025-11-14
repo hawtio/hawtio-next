@@ -407,7 +407,10 @@ export async function fetchCamelVersion(contextNode: MBeanNode) {
     return
   }
 
-  const camelVersion = (await jolokiaService.readAttribute(contextNode.objectName, 'CamelVersion')) as string
+  const camelVersion = (await jolokiaService.readAttribute(contextNode.objectName, 'CamelVersion').catch(e => {
+    eventService.notify({ type: 'warning', message: jolokiaService.errorMessage(e) })
+    return 'unknown'
+  })) as string
   contextNode.addMetadata('version', camelVersion)
 }
 
