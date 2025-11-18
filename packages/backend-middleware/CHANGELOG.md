@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.0.8](https://github.com/hawtio/hawtio-next/compare/backend-middleware-v1.0.7...backend-middleware-v1.0.8) (2025-11-18)
+
+
+### Bug Fixes
+
+* **backend-middleware:** Handle streamed request when sending over @hawtio/backend-middleware proxy (fixes [#1724](https://github.com/hawtio/hawtio-next/issues/1724)) ([0bede16](https://github.com/hawtio/hawtio-next/commit/0bede162dfb7362e8aef4b018ce187e32450aa4b))
+
 ## [1.0.7](https://github.com/hawtio/hawtio-next/compare/backend-middleware-v1.0.5...backend-middleware-v1.0.7) (2025-09-12)
 
 
