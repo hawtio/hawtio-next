@@ -17,7 +17,7 @@ export const JmxPreferences: React.FunctionComponent = () => {
         <FormGroup
           label='Serialize long to string'
           fieldId='serialize-long-to-string'
-          labelIcon={<TooltipHelpIcon tooltip='Serialize long values in the JSON responses from Jolokia to string' />}
+          labelHelp={<TooltipHelpIcon tooltip='Serialize long values in the JSON responses from Jolokia to string' />}
         >
           <Checkbox
             id='serialize-long-to-string-input'

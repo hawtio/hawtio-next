@@ -1,4 +1,4 @@
-import { Card, CardBody, CardTitle, Text } from '@patternfly/react-core'
+import { Card, CardBody, CardTitle, Content } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons/dist/esm/icons/info-circle-icon'
 import React from 'react'
 
@@ -10,9 +10,9 @@ export const HawtioEmptyCard: React.FunctionComponent<{ title?: string; message:
   <Card>
     {title && <CardTitle>{title}</CardTitle>}
     <CardBody>
-      <Text data-testid={testid} component='p'>
+      <Content data-testid={testid} component='p'>
         <InfoCircleIcon /> {message}
-      </Text>
+      </Content>
     </CardBody>
   </Card>
 )

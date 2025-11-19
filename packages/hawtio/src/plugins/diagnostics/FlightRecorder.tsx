@@ -13,8 +13,6 @@ import {
   DropdownItem,
   DropdownList,
   EmptyState,
-  EmptyStateHeader,
-  EmptyStateIcon,
   EmptyStateVariant,
   Flex,
   Form,
@@ -22,13 +20,13 @@ import {
   Icon,
   MenuToggle,
   MenuToggleElement,
-  Modal,
   PageSection,
   Spinner,
   Stack,
   TextInput,
   Title,
 } from '@patternfly/react-core'
+import { Modal } from '@patternfly/react-core/deprecated'
 import React, { Fragment, useEffect, useState } from 'react'
 import {
   CurrentRecording,
@@ -79,7 +77,7 @@ export const FlightRecorder: React.FunctionComponent = () => {
 
   if (!initialized) {
     return (
-      <PageSection>
+      <PageSection hasBodyWrapper={false}>
         <Spinner aria-label='Loading Flight Recorder' />
       </PageSection>
     )
@@ -94,27 +92,25 @@ export const FlightRecorder: React.FunctionComponent = () => {
     )
   )
     return (
-      <PageSection>
-        <EmptyState variant={EmptyStateVariant.full}>
-          <EmptyStateHeader
-            titleText='Tech preview only allows for local connections'
-            icon={<EmptyStateIcon icon={CubesIcon} />}
-            headingLevel='h1'
-          />
-        </EmptyState>
+      <PageSection hasBodyWrapper={false}>
+        <EmptyState
+          headingLevel='h1'
+          icon={CubesIcon}
+          titleText='Tech preview only allows for local connections'
+          variant={EmptyStateVariant.full}
+        ></EmptyState>
       </PageSection>
     )
 
   if (initialized && !flightRecorderService.hasFlightRecorderMBean()) {
     return (
-      <PageSection>
-        <EmptyState variant={EmptyStateVariant.full}>
-          <EmptyStateHeader
-            titleText='No MBean found for Java Flight Recorder'
-            icon={<EmptyStateIcon icon={CubesIcon} />}
-            headingLevel='h1'
-          />
-        </EmptyState>
+      <PageSection hasBodyWrapper={false}>
+        <EmptyState
+          headingLevel='h1'
+          icon={CubesIcon}
+          titleText='No MBean found for Java Flight Recorder'
+          variant={EmptyStateVariant.full}
+        ></EmptyState>
       </PageSection>
     )
   }
@@ -156,7 +152,7 @@ export const FlightRecorder: React.FunctionComponent = () => {
   const saveRecordingAlert = (recordingName: string) => recordingAlert(`Downloading recording ${recordingName}`)
 
   return (
-    <PageSection className='java-flight-recorder'>
+    <PageSection hasBodyWrapper={false} className='java-flight-recorder'>
       <React.Fragment>
         <AlertGroup isToast isLiveRegion>
           {alerts}
@@ -270,18 +266,24 @@ export const FlightRecorder: React.FunctionComponent = () => {
             <ActionList>
               <Flex alignContent={{ md: 'alignContentCenter' }}>
                 <Button
+                  icon={
+                    <Icon size='md'>
+                      <RecordVinylIcon />
+                    </Icon>
+                  }
                   isDisabled={currentRecording?.state == RecordingState.RECORDING}
                   onClick={() =>
                     flightRecorderService.startRecording(userJfrSettings).then(() => {
                       startRecordingAlert()
                     })
                   }
-                >
-                  <Icon size='md'>
-                    <RecordVinylIcon />
-                  </Icon>
-                </Button>
+                ></Button>
                 <Button
+                  icon={
+                    <Icon size='md'>
+                      <StopIcon />
+                    </Icon>
+                  }
                   isDisabled={currentRecording?.state != RecordingState.RECORDING}
                   onClick={() => {
                     flightRecorderService.stopRecording().then(() => {
@@ -294,20 +296,17 @@ export const FlightRecorder: React.FunctionComponent = () => {
                       setUserJfrSettings(flightRecorderService.userJfrSettings)
                     })
                   }}
-                >
-                  <Icon size='md'>
-                    <StopIcon />
-                  </Icon>
-                </Button>
+                ></Button>
                 <Divider orientation={{ md: 'vertical' }} />
                 <Button
+                  icon={
+                    <Icon size='md'>
+                      <CogIcon />
+                    </Icon>
+                  }
                   isDisabled={currentRecording?.state == RecordingState.RECORDING}
                   onClick={() => setIsModalOpen(true)}
-                >
-                  <Icon size='md'>
-                    <CogIcon />
-                  </Icon>
-                </Button>
+                ></Button>
               </Flex>
             </ActionList>
           </Flex>
@@ -335,15 +334,16 @@ export const FlightRecorder: React.FunctionComponent = () => {
                     <Td>{new Date(time).toUTCString()}</Td>
                     <Td>
                       <Button
+                        icon={
+                          <Icon>
+                            <DownloadIcon />
+                          </Icon>
+                        }
                         onClick={async () => {
                           await flightRecorderService.downloadRecording(Number(number), file)
                           saveRecordingAlert(file)
                         }}
-                      >
-                        <Icon>
-                          <DownloadIcon />
-                        </Icon>
-                      </Button>
+                      ></Button>
                     </Td>
                   </Tr>
                 ))}

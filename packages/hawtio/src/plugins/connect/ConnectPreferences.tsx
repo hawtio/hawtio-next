@@ -11,10 +11,9 @@ import {
   FormSection,
   HelperText,
   HelperTextItem,
-  Modal,
-  ModalVariant,
   TextInput,
 } from '@patternfly/react-core'
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { RESET } from './connections'
@@ -129,7 +128,7 @@ const JolokiaForm: React.FunctionComponent = () => {
       <FormGroup
         label='Update rate'
         fieldId='jolokia-form-update-rate'
-        labelIcon={<TooltipHelpIcon tooltip='The period between polls to jolokia to fetch JMX data' />}
+        labelHelp={<TooltipHelpIcon tooltip='The period between polls to jolokia to fetch JMX data' />}
       >
         <TextInput
           id='jolokia-form-update-rate-input'
@@ -143,7 +142,7 @@ const JolokiaForm: React.FunctionComponent = () => {
       <FormGroup
         label='Max depth'
         fieldId='jolokia-form-max-depth'
-        labelIcon={
+        labelHelp={
           <TooltipHelpIcon tooltip='The number of levels jolokia will marshal an object to json on the server side before returning' />
         }
       >
@@ -159,7 +158,7 @@ const JolokiaForm: React.FunctionComponent = () => {
       <FormGroup
         label='Max collection size'
         fieldId='jolokia-form-max-collection-size'
-        labelIcon={
+        labelHelp={
           <TooltipHelpIcon tooltip='The maximum number of elements in an array that jolokia will marshal in a response' />
         }
       >
@@ -175,7 +174,7 @@ const JolokiaForm: React.FunctionComponent = () => {
       <FormGroup
         label='Auto refresh'
         fieldId='jolokia-form-auto-refresh'
-        labelIcon={
+        labelHelp={
           <TooltipHelpIcon tooltip='Whether the page should refresh whenever it detects an update on a plugin' />
         }
       >

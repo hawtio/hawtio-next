@@ -1,15 +1,15 @@
-import { CodeBlock, CodeBlockCode, PageSection, PageSectionVariants, Text, TextContent } from '@patternfly/react-core'
+import { CodeBlock, CodeBlockCode, PageSection, Content,  } from '@patternfly/react-core'
 import React from 'react'
 
 export const RemotePlugin: React.FunctionComponent = () => (
-  <PageSection variant={PageSectionVariants.light}>
-    <TextContent>
-      <Text component='h1'>Remote Plugin 1</Text>
-      <Text component='p'>
+  <PageSection hasBodyWrapper={false} >
+    <Content>
+      <Content component='h1'>Remote Plugin 1</Content>
+      <Content component='p'>
         This is a remote plugin that is imported like normal JavaScript module, but its name/path{' '}
         <code>static-remotes/remote1</code>
         is actually handled by webpack at build time with this config of <code>ModuleFederationPlugin</code>:
-      </Text>
+      </Content>
       <CodeBlock>
         <CodeBlockCode>
           {`name: 'app',
@@ -25,9 +25,9 @@ remotes: {
 },`}
         </CodeBlockCode>
       </CodeBlock>
-      <Text component='p'>
+      <Content component='p'>
         This is handled in JavaScript by normal <code>import()</code> statements:
-      </Text>
+      </Content>
       <CodeBlock>
         <CodeBlockCode>
           {`hawtio.addDeferredPlugin('exampleStaticRemote1', async () => {
@@ -52,6 +52,6 @@ hawtio.addDeferredPlugin('remote2', async () => {
 })`}
         </CodeBlockCode>
       </CodeBlock>
-    </TextContent>
+    </Content>
   </PageSection>
 )

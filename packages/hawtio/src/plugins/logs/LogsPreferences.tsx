@@ -79,7 +79,7 @@ export const LogsPreferences: React.FunctionComponent = () => {
           <FormGroup
             label='Sort ascending'
             fieldId='logs-form-sort-ascending'
-            labelIcon={<TooltipHelpIcon tooltip='Sort log entries by timestamp ascending' />}
+            labelHelp={<TooltipHelpIcon tooltip='Sort log entries by timestamp ascending' />}
           >
             <Checkbox
               id='logs-form-sort-ascending-input'
@@ -90,7 +90,7 @@ export const LogsPreferences: React.FunctionComponent = () => {
           <FormGroup
             label='Auto scroll'
             fieldId='logs-form-auto-scroll'
-            labelIcon={<TooltipHelpIcon tooltip='Automatically scroll when new log entries are added' />}
+            labelHelp={<TooltipHelpIcon tooltip='Automatically scroll when new log entries are added' />}
           >
             <Checkbox
               id='logs-form-auto-scroll-input'
@@ -101,7 +101,7 @@ export const LogsPreferences: React.FunctionComponent = () => {
           <FormGroup
             label='Log cache size'
             fieldId='logs-form-log-cache-size'
-            labelIcon={<TooltipHelpIcon tooltip='The number of log messages to keep in the browser' />}
+            labelHelp={<TooltipHelpIcon tooltip='The number of log messages to keep in the browser' />}
           >
             <TextInput
               id='logs-form-log-cache-size-input'
@@ -124,7 +124,7 @@ export const LogsPreferences: React.FunctionComponent = () => {
           <FormGroup
             label='Log batch size'
             fieldId='logs-form-log-batch-size'
-            labelIcon={
+            labelHelp={
               <TooltipHelpIcon tooltip='The maximum number of log messages to retrieve when loading new log lines' />
             }
           >

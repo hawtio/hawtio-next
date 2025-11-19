@@ -3,16 +3,13 @@ import { AttributeValues, Attributes, Chart, JmxContentMBeans, MBeanNode, Operat
 import {
   Divider,
   EmptyState,
-  EmptyStateHeader,
-  EmptyStateIcon,
   EmptyStateVariant,
   Nav,
   NavItem,
   NavList,
   PageGroup,
   PageSection,
-  PageSectionVariants,
-  Text,
+  Content,
   Title,
 } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons/dist/esm/icons/cubes-icon'
@@ -56,14 +53,13 @@ export const CamelContent: React.FunctionComponent = () => {
 
   if (!selectedNode) {
     return (
-      <PageSection variant={PageSectionVariants.light} isFilled>
-        <EmptyState variant={EmptyStateVariant.full}>
-          <EmptyStateHeader
-            titleText='Select Camel Node'
-            icon={<EmptyStateIcon icon={CubesIcon} />}
-            headingLevel='h1'
-          />
-        </EmptyState>
+      <PageSection hasBodyWrapper={false} isFilled>
+        <EmptyState
+          headingLevel='h1'
+          icon={CubesIcon}
+          titleText='Select Camel Node'
+          variant={EmptyStateVariant.full}
+        ></EmptyState>
       </PageSection>
     )
   }
@@ -147,7 +143,7 @@ export const CamelContent: React.FunctionComponent = () => {
   const navItems = allNavItems.filter(nav => nav.isApplicable(selectedNode))
 
   const camelNav = (
-    <Nav aria-label='Camel Nav' variant='tertiary'>
+    <Nav aria-label='Camel Nav' variant='horizontal-subnav'>
       <NavList>
         {navItems.map(nav => (
           <NavItem key={nav.id} isActive={pathname === `${pluginPath}/${nav.id}`}>
@@ -162,21 +158,21 @@ export const CamelContent: React.FunctionComponent = () => {
 
   return (
     <PageGroup id='camel-content'>
-      <PageSection id='camel-content-header' variant={PageSectionVariants.light}>
+      <PageSection hasBodyWrapper={false} id='camel-content-header'>
         {camelService.isContext(selectedNode) && <CamelContentContextToolbar />}
         <Title headingLevel='h1'>{selectedNode.name}</Title>
-        {selectedNode.objectName && <Text component='small'>{selectedNode.objectName}</Text>}
+        {selectedNode.objectName && <Content component='small'>{selectedNode.objectName}</Content>}
       </PageSection>
       <Divider />
       {navItems.length > 1 && (
-        <PageSection type={'tabs'} variant={PageSectionVariants.light} hasShadowBottom>
+        <PageSection hasBodyWrapper={false} type={'tabs'} hasShadowBottom>
           {camelNav}
         </PageSection>
       )}
       <Divider />
       <PageSection
+        hasBodyWrapper={false}
         id='camel-content-main'
-        variant={PageSectionVariants.light}
         padding={{ default: 'noPadding' }}
         hasOverflowScroll
         aria-label='camel-content-main'

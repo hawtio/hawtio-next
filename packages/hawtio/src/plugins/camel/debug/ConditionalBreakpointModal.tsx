@@ -1,5 +1,6 @@
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
-import { Button, Form, FormGroup, Modal, ModalVariant, Popover, Radio, TextInput } from '@patternfly/react-core'
+import { Button, Form, FormGroup, Popover, Radio, TextInput } from '@patternfly/react-core'
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated'
 import { useState } from 'react'
 import { ConditionalBreakpoint, debugService as ds } from './debug-service'
 import { ExclamationCircleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon'

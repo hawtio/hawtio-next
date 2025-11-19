@@ -1,4 +1,4 @@
-import { Divider, Nav, NavItem, NavList, PageSection, PageSectionVariants, Title } from '@patternfly/react-core'
+import { Divider, Nav, NavItem, NavList, PageSection, Title } from '@patternfly/react-core'
 import React, { useEffect, useState } from 'react'
 
 import { Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom'
@@ -49,12 +49,12 @@ export const SpringBoot: React.FunctionComponent = () => {
 
   return (
     <React.Fragment>
-      <PageSection variant='light'>
+      <PageSection hasBodyWrapper={false}>
         <Title headingLevel='h1'>Spring Boot</Title>
       </PageSection>
       <Divider />
-      <PageSection type='tabs' hasShadowBottom>
-        <Nav aria-label='Spring-boot Nav' variant='tertiary'>
+      <PageSection hasBodyWrapper={false} type='tabs' hasShadowBottom>
+        <Nav aria-label='Spring-boot Nav' variant='horizontal-subnav'>
           <NavList>
             {navItems.map(navItem => (
               <NavItem key={navItem.id} isActive={location.pathname === `/springboot/${navItem.id}`}>
@@ -65,11 +65,7 @@ export const SpringBoot: React.FunctionComponent = () => {
         </Nav>
       </PageSection>
       <Divider />
-      <PageSection
-        aria-label='Spring-boot Content'
-        variant={PageSectionVariants.light}
-        padding={{ default: 'noPadding' }}
-      >
+      <PageSection hasBodyWrapper={false} aria-label='Spring-boot Content' padding={{ default: 'noPadding' }}>
         <Routes>
           {navItems.map(navItem => (
             <Route key={navItem.id} path={navItem.id} element={navItem.component} />

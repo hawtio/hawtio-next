@@ -19,13 +19,12 @@ import {
   Icon,
   MenuToggle,
   MenuToggleElement,
-  Modal,
-  ModalVariant,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core'
-import './Remote.css'
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated'
+import { EllipsisVIcon } from '@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon'
 import { PluggedIcon } from '@patternfly/react-icons/dist/esm/icons/plugged-icon'
 import { PlusIcon } from '@patternfly/react-icons/dist/esm/icons/plus-icon'
 import { UnpluggedIcon } from '@patternfly/react-icons/dist/esm/icons/unplugged-icon'
@@ -35,7 +34,7 @@ import { ConnectContext } from '../context'
 import { log } from '../globals'
 import { ConnectionModal } from './ConnectionModal'
 import { ImportModal } from './ImportModal'
-import { EllipsisVIcon } from '@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon'
+import './Remote.css'
 
 export const Remote: React.FunctionComponent = () => {
   const { connections } = useContext(ConnectContext)
@@ -77,8 +76,8 @@ const RemoteToolbar: React.FunctionComponent = () => {
     <Toolbar id='connect-toolbar'>
       <ToolbarContent>
         <ToolbarItem>
-          <Button variant={ButtonVariant.secondary} onClick={handleAddToggle}>
-            <PlusIcon /> Add connection
+          <Button icon={<PlusIcon />} variant={ButtonVariant.secondary} onClick={handleAddToggle}>
+            Add connection
           </Button>
         </ToolbarItem>
         <ToolbarItem>
@@ -87,9 +86,12 @@ const RemoteToolbar: React.FunctionComponent = () => {
             isOpen={isDropdownOpen}
             onOpenChange={setIsDropdownOpen}
             toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-              <MenuToggle ref={toggleRef} variant='plain' onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-                <EllipsisVIcon aria-hidden='true' />
-              </MenuToggle>
+              <MenuToggle
+                ref={toggleRef}
+                variant='plain'
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                icon={<EllipsisVIcon aria-hidden='true' />}
+              />
             )}
           >
             <DropdownList>
@@ -240,9 +242,8 @@ const ConnectionItem: React.FunctionComponent<{
                 ref={toggleRef}
                 className='data-list-action-toggle'
                 onClick={handleDropdownToggle}
-              >
-                <EllipsisVIcon />
-              </MenuToggle>
+                icon={<EllipsisVIcon />}
+              />
             )}
           >
             <DropdownList>

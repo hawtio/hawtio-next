@@ -4,8 +4,8 @@ import {
   eventService,
   Hawtconfig,
   isUniversalHeaderItem,
-  useHawtconfig,
   UniversalHeaderItem,
+  useHawtconfig,
 } from '@hawtiosrc/core'
 import { hawtioLogo, userAvatar } from '@hawtiosrc/img'
 import { preferencesService } from '@hawtiosrc/preferences/preferences-service'
@@ -17,8 +17,8 @@ import {
   DropdownItem,
   DropdownList,
   Masthead,
-  MastheadBrand,
   MastheadContent,
+  MastheadLogo,
   MastheadMain,
   MastheadToggle,
   MenuToggle,
@@ -30,8 +30,6 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core'
-
-import { BarsIcon } from '@patternfly/react-icons/dist/esm/icons/bars-icon'
 import { HelpIcon } from '@patternfly/react-icons/dist/esm/icons/help-icon'
 import React, { useContext, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
@@ -57,14 +55,13 @@ export const HawtioHeader: React.FunctionComponent<{ loginMethod: string }> = ({
       {sideBarShown && (
         <MastheadToggle>
           <PageToggleButton
+            isHamburgerButton
             variant='plain'
             aria-label='Global navigation'
             isSidebarOpen={navOpen}
             onSidebarToggle={onNavToggle}
             id='vertical-nav-toggle'
-          >
-            <BarsIcon />
-          </PageToggleButton>
+          ></PageToggleButton>
         </MastheadToggle>
       )}
       {isBrandShown && (
@@ -89,14 +86,14 @@ const HawtioBrand: React.FunctionComponent<HawtioBrandProps> = props => {
   const showAppName = props.hawtconfig.branding?.showAppName ?? false
 
   return (
-    <MastheadBrand id='hawtio-header-brand' component={props => <Link to='/' {...props} />}>
+    <MastheadLogo data-codemods id='hawtio-header-brand' component={props => <Link to='/' {...props} />}>
       <Brand src={appLogo} alt={appName} />
       {showAppName && (
         <Title headingLevel='h1' size='xl'>
           {appName}
         </Title>
       )}
-    </MastheadBrand>
+    </MastheadLogo>
   )
 }
 
@@ -214,9 +211,8 @@ const HawtioHeaderToolbar: React.FunctionComponent<HawtioHeaderToolbarProps> = p
                   ref={toggleRef}
                   onClick={() => setHelpOpen(!helpOpen)}
                   isExpanded={helpOpen}
-                >
-                  <HelpIcon />
-                </MenuToggle>
+                  icon={<HelpIcon />}
+                />
               )}
               isOpen={helpOpen}
             >

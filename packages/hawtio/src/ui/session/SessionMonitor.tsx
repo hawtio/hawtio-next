@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Modal, ModalVariant } from '@patternfly/react-core'
+import { Button } from '@patternfly/react-core'
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated'
 import { userService } from '@hawtiosrc/auth'
 import { sessionService } from './session-service'
 

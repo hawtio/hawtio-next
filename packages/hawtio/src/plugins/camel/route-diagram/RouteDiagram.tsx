@@ -1,6 +1,6 @@
 import { eventService } from '@hawtiosrc/core'
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
-import { Switch, Title, EmptyState, EmptyStateBody, EmptyStateHeader, EmptyStateIcon } from '@patternfly/react-core'
+import { Switch, Title, EmptyState, EmptyStateBody } from '@patternfly/react-core'
 import { Table, Tbody, Td, Tr } from '@patternfly/react-table'
 import { ExclamationCircleIcon } from '@patternfly/react-icons'
 import React, { RefObject, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
@@ -203,12 +203,7 @@ const ReactFlowRouteDiagram: React.FunctionComponent<{
     })
 
     return (
-      <EmptyState>
-        <EmptyStateHeader
-          titleText='Error Occurred'
-          headingLevel='h4'
-          icon={<EmptyStateIcon icon={ExclamationCircleIcon} />}
-        />
+      <EmptyState headingLevel='h4' icon={ExclamationCircleIcon} titleText='Error Occurred'>
         <EmptyStateBody>An error occurred during drawing of the diagram.</EmptyStateBody>
       </EmptyState>
     )
@@ -424,7 +419,6 @@ const CamelNodeActions: React.FunctionComponent<{ data: CamelNodeData }> = ({ da
         <Switch
           id='camel-route-diagram-camel-node-start-stop-route'
           label='Route started'
-          labelOff='Route stopped'
           isChecked={!routeStopped}
           isDisabled={!routesService.canStartRoute(routeNode) || !routesService.canStopRoute(routeNode)}
           onChange={(_event, checked) => updateRoute(checked)}
@@ -434,7 +428,6 @@ const CamelNodeActions: React.FunctionComponent<{ data: CamelNodeData }> = ({ da
         <Switch
           id='camel-route-diagram-camel-node-action-enable-disable-eip'
           label='EIP enabled'
-          labelOff='EIP disabled'
           isChecked={!disabled}
           isDisabled={!canEnableDisableProcessor(routeNode, data.cid)}
           onChange={(_event, checked) => updateProcessor(checked)}

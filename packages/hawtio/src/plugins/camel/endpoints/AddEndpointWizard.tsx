@@ -14,7 +14,6 @@ import {
   SelectOption,
   TextInput,
 } from '@patternfly/react-core'
-
 import { ExclamationCircleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon'
 import React, { useContext, useEffect, useState } from 'react'
 import { CamelContext } from '../context'

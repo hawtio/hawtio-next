@@ -1,5 +1,16 @@
+import {
+	Button,
+	Divider,
+	Dropdown,
+	DropdownItem,
+	DropdownList,
+	MenuToggle,
+	MenuToggleElement
+} from '@patternfly/react-core';
+import {
+	Modal
+} from '@patternfly/react-core/deprecated';
 import React from 'react'
-import { Button, Dropdown, DropdownItem, Divider, MenuToggleElement, MenuToggle, Modal } from '@patternfly/react-core'
 
 export const Example3HeaderItem1: React.FunctionComponent = () => {
   const [isModalOpen, setIsModalOpen] = React.useState(false)
@@ -62,26 +73,28 @@ export const Example3HeaderItem2: React.FunctionComponent = () => {
       )}
       isOpen={isOpen}
     >
-      <DropdownItem key='link'>Link</DropdownItem>
-      <DropdownItem key='action' component='button'>
-        Action
-      </DropdownItem>
-      <DropdownItem key='disabled link' isDisabled href='www.google.com'>
-        Disabled link
-      </DropdownItem>
-      <DropdownItem
-        key='disabled action'
-        isAriaDisabled
-        component='button'
-        tooltipProps={{ content: '  Disabled action', position: 'top' }}
-      >
-        Disabled action
-      </DropdownItem>
-      <Divider key='separator' />
-      <DropdownItem key='separated link'>Separated link</DropdownItem>
-      <DropdownItem key='separated action' component='button'>
-        Separated action
-      </DropdownItem>
+      <DropdownList>
+        <DropdownItem key='link'>Link</DropdownItem>
+        <DropdownItem key='action' component='button'>
+          Action
+        </DropdownItem>
+        <DropdownItem key='disabled link' isDisabled href='www.google.com'>
+          Disabled link
+        </DropdownItem>
+        <DropdownItem
+          key='disabled action'
+          isAriaDisabled
+          component='button'
+          tooltipProps={{ content: '  Disabled action', position: 'top' }}
+        >
+          Disabled action
+        </DropdownItem>
+        <Divider key='separator' />
+        <DropdownItem key='separated link'>Separated link</DropdownItem>
+        <DropdownItem key='separated action' component='button'>
+          Separated action
+        </DropdownItem>
+      </DropdownList>
     </Dropdown>
   )
 }

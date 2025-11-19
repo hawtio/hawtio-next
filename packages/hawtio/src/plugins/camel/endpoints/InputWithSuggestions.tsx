@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react'
-import { Menu, MenuContent, MenuItem, MenuList, Text, TextInput } from '@patternfly/react-core'
+import { Menu, MenuContent, MenuItem, MenuList, Content, TextInput } from '@patternfly/react-core'
 
 export const InputWithSuggestions: React.FunctionComponent<{
   suggestions: string[]
@@ -44,7 +44,7 @@ export const InputWithSuggestions: React.FunctionComponent<{
 
       return (
         <MenuItem key={e} itemId={e}>
-          <Text>{suggestion}</Text>
+          <Content component='p'>{suggestion}</Content>
         </MenuItem>
       )
     })

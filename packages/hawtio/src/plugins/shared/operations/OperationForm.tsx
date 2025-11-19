@@ -28,7 +28,7 @@ import {
   HelperTextItem,
   MenuToggle,
   MenuToggleElement,
-  Text,
+  Content,
   TextInput,
   Title,
 } from '@patternfly/react-core'
@@ -331,15 +331,15 @@ const OperationExecuteForm: React.FunctionComponent<{
       }}
     >
       {operation.args.length === 0 && (
-        <Text component='p'>
+        <Content component='p'>
           This JMX operation requires no arguments. Click the <code>Execute</code> button to invoke the operation.
-        </Text>
+        </Content>
       )}
       {operation.args.length > 0 && (
-        <Text component='p'>
+        <Content component='p'>
           This JMX operation requires some parameters. Fill in the fields below and click the <code>Execute</code>{' '}
           button to invoke the operation.
-        </Text>
+        </Content>
       )}
       {operation.args.map((arg, index) => (
         <FormGroup

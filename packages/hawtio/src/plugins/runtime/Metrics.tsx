@@ -1,4 +1,4 @@
-import { ChartBullet } from '@patternfly/react-charts'
+import { ChartBullet } from '@patternfly/react-charts/victory'
 import {
   Card,
   CardBody,

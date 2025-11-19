@@ -1,6 +1,6 @@
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
 import { isEmpty } from '@hawtiosrc/util/objects'
-import { DataList, Panel, PanelHeader, PanelMain, PanelMainBody, Text } from '@patternfly/react-core'
+import { DataList, Panel, PanelHeader, PanelMain, PanelMainBody, Content } from '@patternfly/react-core'
 import React, { useContext } from 'react'
 import { HawtioEmptyCard } from '@hawtiosrc/plugins/shared'
 import { OperationForm } from './OperationForm'
@@ -33,9 +33,9 @@ export const Operations: React.FunctionComponent = () => {
   return (
     <Panel>
       <PanelHeader>
-        <Text component='p'>
+        <Content component='p'>
           This MBean supports the following JMX operations. Expand an item in the list to invoke that operation.
-        </Text>
+        </Content>
       </PanelHeader>
       <PanelMain>
         <PanelMainBody>

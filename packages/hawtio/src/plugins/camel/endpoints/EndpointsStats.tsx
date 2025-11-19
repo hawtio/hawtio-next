@@ -1,13 +1,17 @@
-import React, { useContext, useEffect, useState } from 'react'
 import { CamelContext } from '@hawtiosrc/plugins/camel/context'
 import { EndpointStatistics, getEndpointStatistics } from '@hawtiosrc/plugins/camel/endpoints/endpoints-service'
+import { objectSorter } from '@hawtiosrc/util/objects'
 import {
   Bullseye,
   Button,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
   EmptyState,
   EmptyStateBody,
-  EmptyStateIcon,
   FormGroup,
+  MenuToggle,
+  MenuToggleElement,
   PageSection,
   SearchInput,
   Title,
@@ -15,17 +19,10 @@ import {
   ToolbarContent,
   ToolbarFilter,
   ToolbarGroup,
-  EmptyStateHeader,
-  DropdownItem,
-  Dropdown,
-  MenuToggle,
-  MenuToggleElement,
-  DropdownList,
 } from '@patternfly/react-core'
-
-import { Table, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
 import { SearchIcon } from '@patternfly/react-icons/dist/esm/icons/search-icon'
-import { objectSorter } from '@hawtiosrc/util/objects'
+import { Table, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
+import React, { useContext, useEffect, useState } from 'react'
 
 export const EndpointStats: React.FunctionComponent = () => {
   const { selectedNode } = useContext(CamelContext)
@@ -132,7 +129,7 @@ export const EndpointStats: React.FunctionComponent = () => {
   }
 
   return (
-    <PageSection variant='light'>
+    <PageSection hasBodyWrapper={false}>
       <Title headingLevel='h1'>Endpoints (in/out)</Title>
 
       <Toolbar clearAllFilters={clearFilters}>
@@ -159,9 +156,9 @@ export const EndpointStats: React.FunctionComponent = () => {
             </Dropdown>
 
             <ToolbarFilter
-              chips={filters}
-              deleteChip={(_e, filter) => onDeleteFilter(filter as string)}
-              deleteChipGroup={clearFilters}
+              labels={filters}
+              deleteLabel={(_e, filter) => onDeleteFilter(filter as string)}
+              deleteLabelGroup={clearFilters}
               categoryName='Filters'
             >
               <SearchInput
@@ -224,8 +221,7 @@ export const EndpointStats: React.FunctionComponent = () => {
         </FormGroup>
       ) : (
         <Bullseye>
-          <EmptyState>
-            <EmptyStateHeader icon={<EmptyStateIcon icon={SearchIcon} />} />
+          <EmptyState icon={SearchIcon}>
             <EmptyStateBody>No results found.</EmptyStateBody>
           </EmptyState>
         </Bullseye>

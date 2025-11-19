@@ -3,16 +3,13 @@ import {
   Divider,
   EmptyState,
   EmptyStateBody,
-  EmptyStateIcon,
   Nav,
   NavItem,
   NavList,
   PageGroup,
   PageSection,
-  PageSectionVariants,
-  Text,
+  Content,
   Title,
-  EmptyStateHeader,
   EmptyStateFooter,
 } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons/dist/esm/icons/cubes-icon'
@@ -31,27 +28,21 @@ export const QuartzContent: React.FunctionComponent = () => {
 
   if (tree.isEmpty()) {
     return (
-      <PageSection variant='light'>
-        <EmptyState variant='full'>
-          <EmptyStateHeader
-            titleText='No Quartz schedulers found'
-            icon={<EmptyStateIcon icon={CubesIcon} />}
-            headingLevel='h1'
-          />
-        </EmptyState>
+      <PageSection hasBodyWrapper={false}>
+        <EmptyState
+          headingLevel='h1'
+          icon={CubesIcon}
+          titleText='No Quartz schedulers found'
+          variant='full'
+        ></EmptyState>
       </PageSection>
     )
   }
 
   if (!selectedNode) {
     return (
-      <PageSection variant='light'>
-        <EmptyState variant='full'>
-          <EmptyStateHeader
-            titleText='No scheduler selected'
-            icon={<EmptyStateIcon icon={CubesIcon} />}
-            headingLevel='h1'
-          />
+      <PageSection hasBodyWrapper={false}>
+        <EmptyState headingLevel='h1' icon={CubesIcon} titleText='No scheduler selected' variant='full'>
           <EmptyStateBody>
             The Quartz plugin allows you to see details about running Quartz Schedulers, and their associated triggers
             and jobs.
@@ -73,7 +64,7 @@ export const QuartzContent: React.FunctionComponent = () => {
   ]
 
   const nav = (
-    <Nav aria-label='Quartz Nav' variant='tertiary'>
+    <Nav aria-label='Quartz Nav' variant='horizontal-subnav'>
       <NavList>
         {navItems.map(nav => (
           <NavItem key={nav.id} isActive={pathname === `${pluginPath}/${nav.id}`}>
@@ -88,18 +79,18 @@ export const QuartzContent: React.FunctionComponent = () => {
 
   return (
     <PageGroup id='quartz-content'>
-      <PageSection id='quartz-content-header' variant={PageSectionVariants.light}>
+      <PageSection hasBodyWrapper={false} id='quartz-content-header'>
         <Title headingLevel='h1'>{selectedNode.name}</Title>
-        <Text component='small'>{selectedNode.objectName}</Text>
+        <Content component='small'>{selectedNode.objectName}</Content>
       </PageSection>
       <Divider />
-      <PageSection type='tabs' hasShadowBottom>
+      <PageSection hasBodyWrapper={false} type='tabs' hasShadowBottom>
         {nav}
       </PageSection>
       <Divider />
 
       <PageSection
-        variant='light'
+        hasBodyWrapper={false}
         id='quartz-content-main'
         padding={{ default: 'noPadding' }}
         hasOverflowScroll

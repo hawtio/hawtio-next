@@ -1,4 +1,5 @@
-import { Button, CodeBlock, CodeBlockCode, Modal, ToolbarGroup, ToolbarItem } from '@patternfly/react-core'
+import { Button, CodeBlock, CodeBlockCode, ToolbarGroup, ToolbarItem } from '@patternfly/react-core'
+import { Modal } from '@patternfly/react-core/deprecated'
 import React, { useEffect, useState } from 'react'
 
 import { Thread } from './types'

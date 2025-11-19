@@ -8,7 +8,7 @@ import {
   PanelHeader,
   PanelMain,
   PanelMainBody,
-  Text,
+  Content,
   Title,
   Toolbar,
   ToolbarContent,
@@ -431,7 +431,7 @@ export const Debug: React.FunctionComponent = () => {
   const toolbarButtons = (
     <React.Fragment>
       {hasSelectedBreakpoint() && (
-        <ToolbarItem spacer={{ default: 'spacerSm' }} title='Remove the breakpoint on the selected node'>
+        <ToolbarItem gap={{ default: 'gapSm' }} title='Remove the breakpoint on the selected node'>
           <Button
             variant='secondary'
             size='sm'
@@ -445,7 +445,7 @@ export const Debug: React.FunctionComponent = () => {
       )}
       {!hasSelectedBreakpoint() && (
         <React.Fragment>
-          <ToolbarItem spacer={{ default: 'spacerSm' }} title='Add a breakpoint on the selected node'>
+          <ToolbarItem gap={{ default: 'gapSm' }} title='Add a breakpoint on the selected node'>
             <Button
               variant='secondary'
               size='sm'
@@ -456,7 +456,7 @@ export const Debug: React.FunctionComponent = () => {
               Add breakpoint
             </Button>
           </ToolbarItem>
-          <ToolbarItem spacer={{ default: 'spacerSm' }} title='Add a conditional breakpoint on the selected node'>
+          <ToolbarItem gap={{ default: 'gapSm' }} title='Add a conditional breakpoint on the selected node'>
             <Button
               variant='secondary'
               size='sm'
@@ -469,8 +469,8 @@ export const Debug: React.FunctionComponent = () => {
           </ToolbarItem>
         </React.Fragment>
       )}
-      <ToolbarItem variant='separator' spacer={{ default: 'spacerSm' }} />
-      <ToolbarItem spacer={{ default: 'spacerSm' }} title='Step into the next node'>
+      <ToolbarItem variant='separator' gap={{ default: 'gapSm' }} />
+      <ToolbarItem gap={{ default: 'gapSm' }} title='Step into the next node'>
         <Button
           variant='secondary'
           size='sm'
@@ -482,7 +482,7 @@ export const Debug: React.FunctionComponent = () => {
         </Button>
       </ToolbarItem>
       {isCamel4_14 && (
-        <ToolbarItem spacer={{ default: 'spacerSm' }} title='Step over the next node'>
+        <ToolbarItem gap={{ default: 'gapSm' }} title='Step over the next node'>
           <Button
             variant='secondary'
             size='sm'
@@ -495,7 +495,7 @@ export const Debug: React.FunctionComponent = () => {
         </ToolbarItem>
       )}
       {isCamel4_14 && (
-        <ToolbarItem spacer={{ default: 'spacerSm' }} title='Skip over the next node'>
+        <ToolbarItem gap={{ default: 'gapSm' }} title='Skip over the next node'>
           <Button
             variant='secondary'
             size='sm'
@@ -507,7 +507,7 @@ export const Debug: React.FunctionComponent = () => {
           </Button>
         </ToolbarItem>
       )}
-      <ToolbarItem spacer={{ default: 'spacerSm' }} title='Resume running'>
+      <ToolbarItem gap={{ default: 'gapSm' }} title='Resume running'>
         <Button
           variant='secondary'
           size='sm'
@@ -520,8 +520,8 @@ export const Debug: React.FunctionComponent = () => {
       </ToolbarItem>
       {suspendedBreakpoints.length > 0 && (
         <React.Fragment>
-          <ToolbarItem variant='separator' spacer={{ default: 'spacerSm' }} />
-          <ToolbarItem spacer={{ default: 'spacerSm' }} title='Show Debug Panel'>
+          <ToolbarItem variant='separator' gap={{ default: 'gapSm' }} />
+          <ToolbarItem gap={{ default: 'gapSm' }} title='Show Debug Panel'>
             <Button
               variant='secondary'
               size='sm'
@@ -554,9 +554,9 @@ export const Debug: React.FunctionComponent = () => {
       <PanelMain>
         <PanelMainBody>
           {!isDebugging && (
-            <Text data-testid='no-debugging' component='p'>
+            <Content data-testid='no-debugging' component='p'>
               Debugging allows you to step through camel routes to diagnose issues.
-            </Text>
+            </Content>
           )}
           {isDebugging && (
             <React.Fragment>

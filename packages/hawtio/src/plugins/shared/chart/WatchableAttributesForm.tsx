@@ -1,4 +1,5 @@
-import { Button, DualListSelector, DualListSelectorTreeItemData, Modal, ModalVariant } from '@patternfly/react-core'
+import { Button, DualListSelectorTreeItemData } from '@patternfly/react-core'
+import { Modal, ModalVariant, DualListSelector } from '@patternfly/react-core/deprecated'
 import { AttributesToWatch } from './Chart'
 import { ReactNode, useState } from 'react'
 

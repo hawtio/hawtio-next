@@ -11,11 +11,11 @@ import {
   DescriptionListTerm,
   Divider,
   Label,
-  Modal,
   PageSection,
   Skeleton,
   Title,
 } from '@patternfly/react-core'
+import { Modal } from '@patternfly/react-core/deprecated'
 import React, { useEffect, useRef, useState } from 'react'
 import { log } from './globals'
 import { LogEntry } from './log-entry'
@@ -25,11 +25,11 @@ import { FilteredTable } from '@hawtiosrc/ui'
 export const Logs: React.FunctionComponent = () => {
   return (
     <React.Fragment>
-      <PageSection id='logs-header' hasShadowBottom variant='light'>
+      <PageSection hasBodyWrapper={false} id='logs-header' hasShadowBottom>
         <Title headingLevel='h1'>Logs</Title>
       </PageSection>
       <Divider />
-      <PageSection id='logs-table' variant='light' isFilled>
+      <PageSection hasBodyWrapper={false} id='logs-table' isFilled>
         <LogsTable />
       </PageSection>
     </React.Fragment>

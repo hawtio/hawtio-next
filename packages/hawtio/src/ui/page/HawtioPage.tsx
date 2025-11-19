@@ -5,14 +5,7 @@ import { background } from '@hawtiosrc/img'
 import { PluginNodeSelectionContext, usePluginNodeSelected } from '@hawtiosrc/plugins'
 import { HawtioPreferences } from '@hawtiosrc/preferences/ui'
 import { preferencesService } from '@hawtiosrc/preferences/preferences-service'
-import {
-  BackgroundImage,
-  EmptyState,
-  EmptyStateIcon,
-  Page,
-  PageSection,
-  EmptyStateHeader,
-} from '@patternfly/react-core'
+import { BackgroundImage, EmptyState, Page, PageSection } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons/dist/esm/icons/cubes-icon'
 import React, { useEffect } from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
@@ -75,7 +68,7 @@ export const HawtioPage: React.FunctionComponent = () => {
       <BackgroundImage src={background} />
       <Page
         id='hawtio-main-page'
-        header={headerShown && <HawtioHeader loginMethod={loginMethod} />}
+        masthead={headerShown && <HawtioHeader loginMethod={loginMethod} />}
         sidebar={sideBarShown && <HawtioSidebar />}
         isManagedSidebar={sideBarShown}
         defaultManagedSidebarIsOpen={showVerticalNavByDefault}
@@ -110,9 +103,7 @@ export const HawtioPage: React.FunctionComponent = () => {
 }
 
 const HawtioHome: React.FunctionComponent = () => (
-  <PageSection variant='light'>
-    <EmptyState variant='full'>
-      <EmptyStateHeader titleText='Hawtio' icon={<EmptyStateIcon icon={CubesIcon} />} headingLevel='h1' />
-    </EmptyState>
+  <PageSection hasBodyWrapper={false}>
+    <EmptyState headingLevel='h1' icon={CubesIcon} titleText='Hawtio' variant='full'></EmptyState>
   </PageSection>
 )

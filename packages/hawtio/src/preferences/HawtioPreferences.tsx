@@ -1,5 +1,5 @@
 import { helpRegistry } from '@hawtiosrc/help/registry'
-import { Divider, Nav, NavItem, NavList, PageSection, PageSectionVariants, Title } from '@patternfly/react-core'
+import { Divider, Nav, NavItem, NavList, PageSection, Title } from '@patternfly/react-core'
 import React from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import help from './help.md'
@@ -15,12 +15,12 @@ export const HawtioPreferences: React.FunctionComponent = () => {
   const location = useLocation()
   return (
     <React.Fragment>
-      <PageSection variant={PageSectionVariants.light}>
+      <PageSection hasBodyWrapper={false}>
         <Title headingLevel='h1'>Preferences</Title>
       </PageSection>
       <Divider />
-      <PageSection type='tabs' hasShadowBottom>
-        <Nav aria-label='Nav' variant='tertiary'>
+      <PageSection hasBodyWrapper={false} type='tabs' hasShadowBottom>
+        <Nav aria-label='Nav' variant='horizontal-subnav'>
           <NavList>
             {preferencesRegistry.getPreferences().map(prefs => (
               <NavItem key={prefs.id} isActive={location.pathname === `/preferences/${prefs.id}`}>
@@ -31,7 +31,7 @@ export const HawtioPreferences: React.FunctionComponent = () => {
         </Nav>
       </PageSection>
       <Divider />
-      <PageSection variant={PageSectionVariants.light}>
+      <PageSection hasBodyWrapper={false}>
         <Routes>
           {preferencesRegistry.getPreferences().map(prefs => (
             <Route key={prefs.id} path={prefs.id} element={React.createElement(prefs.component)} />

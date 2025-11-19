@@ -151,9 +151,12 @@ const MessageHeaders: React.FunctionComponent<{
                 />
               </FlexItem>
               <FlexItem flex={{ default: 'flexNone', md: 'flex_1' }} span={4}>
-                <Button variant='link' onClick={() => handleRemoveHeader(index)} aria-label='Remove Header'>
-                  <TrashIcon />
-                </Button>
+                <Button
+                  icon={<TrashIcon />}
+                  variant='link'
+                  onClick={() => handleRemoveHeader(index)}
+                  aria-label='Remove Header'
+                ></Button>
               </FlexItem>
             </Flex>
           ))}

@@ -1,5 +1,6 @@
 import { HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
-import { Button, Panel, PanelMain, PanelMainBody, Modal } from '@patternfly/react-core'
+import { Button, Panel, PanelMain, PanelMainBody } from '@patternfly/react-core'
+import { Modal } from '@patternfly/react-core/deprecated'
 import './Jobs.css'
 
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'

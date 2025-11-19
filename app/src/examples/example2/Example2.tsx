@@ -1,17 +1,17 @@
-import { CodeBlock, CodeBlockCode, PageSection, PageSectionVariants, Text, TextContent } from '@patternfly/react-core'
+import { CodeBlock, CodeBlockCode, PageSection, Content,  } from '@patternfly/react-core'
 import React from 'react'
 
 export const Example2: React.FunctionComponent = () => (
-  <PageSection variant={PageSectionVariants.light}>
-    <TextContent>
-      <Text component='h1'>Example 2</Text>
-      <Text component='p'>
+  <PageSection hasBodyWrapper={false} >
+    <Content>
+      <Content component='h1'>Example 2</Content>
+      <Content component='p'>
         This is another example plugin that demonstrates how you can customise <code>hawtconfig.json</code> from an
         external plugin.
-      </Text>
-      <Text component='p'>
+      </Content>
+      <Content component='p'>
         See: <code>app/src/examples/example2/index.ts</code>
-      </Text>
+      </Content>
       <CodeBlock>
         <CodeBlockCode>
           {`configManager.configure(config => {
@@ -27,6 +27,6 @@ export const Example2: React.FunctionComponent = () => (
 })`}
         </CodeBlockCode>
       </CodeBlock>
-    </TextContent>
+    </Content>
   </PageSection>
 )

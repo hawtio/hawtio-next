@@ -223,9 +223,9 @@ export const RestServices: React.FunctionComponent = () => {
                   </Select>
                 </ToolbarItem>
                 <ToolbarFilter
-                  chips={filterChips()}
-                  deleteChip={(_e, filter) => deleteFilter(filter as string)}
-                  deleteChipGroup={clearFilters}
+                  labels={filterChips()}
+                  deleteLabel={(_e, filter) => deleteFilter(filter as string)}
+                  deleteLabelGroup={clearFilters}
                   categoryName='Filters'
                 >
                   <SearchInput

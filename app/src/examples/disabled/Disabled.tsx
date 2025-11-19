@@ -1,11 +1,11 @@
-import { PageSection, PageSectionVariants, Text, TextContent } from '@patternfly/react-core'
+import { PageSection, Content,  } from '@patternfly/react-core'
 import React from 'react'
 
 export const DisabledExample: React.FunctionComponent = () => (
-  <PageSection variant={PageSectionVariants.light}>
-    <TextContent>
-      <Text component='h1'>Disabled Plugin</Text>
-      <Text component='p'>This is an disabled plugin. It should not be visible in the console.</Text>
-    </TextContent>
+  <PageSection hasBodyWrapper={false} >
+    <Content>
+      <Content component='h1'>Disabled Plugin</Content>
+      <Content component='p'>This is an disabled plugin. It should not be visible in the console.</Content>
+    </Content>
   </PageSection>
 )

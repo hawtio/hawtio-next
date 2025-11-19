@@ -6,12 +6,9 @@ import {
   CodeBlockCode,
   EmptyState,
   EmptyStateBody,
-  EmptyStateIcon,
   Flex,
   FlexItem,
   FormGroup,
-  Modal,
-  ModalVariant,
   Pagination,
   Panel,
   PanelHeader,
@@ -25,8 +22,8 @@ import {
   ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
-  EmptyStateHeader,
 } from '@patternfly/react-core'
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated'
 import { SearchIcon } from '@patternfly/react-icons/dist/esm/icons/search-icon'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useState } from 'react'
@@ -203,9 +200,9 @@ export const BrowseMessages: React.FunctionComponent = () => {
             <ToolbarContent>
               <ToolbarGroup>
                 <ToolbarFilter
-                  chips={filters}
-                  deleteChip={(_e, filter) => onDeleteFilter(filter as string)}
-                  deleteChipGroup={clearFilters}
+                  labels={filters}
+                  deleteLabel={(_e, filter) => onDeleteFilter(filter as string)}
+                  deleteLabelGroup={clearFilters}
                   categoryName='Filters'
                 >
                   <SearchInput
@@ -292,8 +289,7 @@ export const BrowseMessages: React.FunctionComponent = () => {
           )}
           {filteredMessages.length === 0 && (
             <Bullseye>
-              <EmptyState>
-                <EmptyStateHeader icon={<EmptyStateIcon icon={SearchIcon} />} />
+              <EmptyState icon={SearchIcon}>
                 <EmptyStateBody>No results found.</EmptyStateBody>
               </EmptyState>
             </Bullseye>
@@ -478,19 +474,35 @@ const MessageSelect: React.FunctionComponent<{
 }> = ({ min, max, value, onNext, onPrevious, onFirst, onLast }) => {
   return (
     <div style={{ display: 'flex', alignItems: 'center', width: '300px' }}>
-      <Button data-testid='first-message-button' variant='plain' onClick={onFirst} isDisabled={value === min}>
-        {'<<'}
-      </Button>
-      <Button data-testid='previous-message-button' variant='plain' onClick={onPrevious} isDisabled={value === min}>
-        {'<'}
-      </Button>
+      <Button
+        icon={'<<'}
+        data-testid='first-message-button'
+        variant='plain'
+        onClick={onFirst}
+        isDisabled={value === min}
+      />
+      <Button
+        icon={'<'}
+        data-testid='previous-message-button'
+        variant='plain'
+        onClick={onPrevious}
+        isDisabled={value === min}
+      />
       <TextInput id='current-message-index' value={`${value}/${max}`} readOnly />
-      <Button data-testid='next-message-button' variant='plain' onClick={onNext} isDisabled={value === max}>
-        {'>'}
-      </Button>{' '}
-      <Button data-testid='last-message-button' variant='plain' onClick={onLast} isDisabled={value === max}>
-        {'>>'}
-      </Button>
+      <Button
+        icon={'>'}
+        data-testid='next-message-button'
+        variant='plain'
+        onClick={onNext}
+        isDisabled={value === max}
+      />{' '}
+      <Button
+        icon={'>>'}
+        data-testid='last-message-button'
+        variant='plain'
+        onClick={onLast}
+        isDisabled={value === max}
+      />
     </div>
   )
 }

@@ -2,7 +2,7 @@ import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
 import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared/tree'
 import { isNumber } from '@hawtiosrc/util/objects'
-import { ChartArea, ChartAxis, Chart as ChartDraw, ChartVoronoiContainer } from '@patternfly/react-charts'
+import { ChartArea, ChartAxis, Chart as ChartDraw, ChartVoronoiContainer } from '@patternfly/react-charts/victory'
 import {
   getResizeObserver,
   Button,
@@ -12,9 +12,8 @@ import {
   Grid,
   GridItem,
   PageSection,
-  PageSectionVariants,
   Switch,
-  Text,
+  Content,
   Title,
 } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons/dist/esm/icons/info-circle-icon'
@@ -268,7 +267,7 @@ export const Chart: React.FunctionComponent = () => {
   ) {
     // No currently watched attributes.
     return (
-      <PageSection variant={PageSectionVariants.light} isFilled>
+      <PageSection hasBodyWrapper={false} isFilled>
         <WatchableAttributesForm
           isOpen={isWatchableAttributesModalOpen}
           onClose={(isClosed: boolean) => {
@@ -285,9 +284,9 @@ export const Chart: React.FunctionComponent = () => {
             }}
           ></CardHeader>
           <CardBody>
-            <Text component='p'>
+            <Content component='p'>
               <InfoCircleIcon /> There are currently no watches. Please click on the button to select any Chart
-            </Text>
+            </Content>
           </CardBody>
         </Card>
       </PageSection>

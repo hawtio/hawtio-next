@@ -180,9 +180,7 @@ const ChildLoggerItem: React.FunctionComponent<ChildLoggerItemProps> = props => 
           aria-label={`logs child logger actions ${name}`}
           aria-labelledby={`${name} logs-child-logger-actions-${name}`}
         >
-          <Button variant='secondary' onClick={deleteChildLogger}>
-            <TrashIcon />
-          </Button>
+          <Button icon={<TrashIcon />} variant='secondary' onClick={deleteChildLogger}></Button>
         </DataListAction>
       </DataListItemRow>
     </DataListItem>

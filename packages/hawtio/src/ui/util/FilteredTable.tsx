@@ -1,3 +1,4 @@
+import { isNumber, objectSorter } from '@hawtiosrc/util/objects'
 import {
   Bullseye,
   Dropdown,
@@ -5,8 +6,6 @@ import {
   DropdownList,
   EmptyState,
   EmptyStateBody,
-  EmptyStateHeader,
-  EmptyStateIcon,
   FormGroup,
   MenuToggle,
   MenuToggleElement,
@@ -25,12 +24,10 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core'
-import { Table, Thead, Tr, Th, Tbody, Td, ThProps } from '@patternfly/react-table'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-
 import { SearchIcon } from '@patternfly/react-icons/dist/esm/icons/search-icon'
+import { Table, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { ExpandableText } from './ExpandableText'
-import { isNumber, objectSorter } from '@hawtiosrc/util/objects'
 
 interface Props<T> {
   extraToolbarLeft?: React.ReactNode
@@ -115,19 +112,19 @@ export function FilteredTable<T>({
   useEffect(() => {
     let filtered: T[] = [...rows]
 
-    //add current searchTerm and filter
-    ;[...filters, searchTerm].forEach(filter => {
-      const key = filter.key
-      if (!key) {
-        return
-      }
-      const searchTerm = filter.value
-      filtered = filtered.filter(value => {
-        return String(value[key]).toLowerCase().includes(searchTerm.toLowerCase())
+      //add current searchTerm and filter
+      ;[...filters, searchTerm].forEach(filter => {
+        const key = filter.key
+        if (!key) {
+          return
+        }
+        const searchTerm = filter.value
+        filtered = filtered.filter(value => {
+          return String(value[key]).toLowerCase().includes(searchTerm.toLowerCase())
+        })
       })
-    })
 
-    //If user is filtering - refreshing the threds themselves would reset the page count
+    //If user is filtering - refreshing the threads themselves would reset the page count
     if (filtered.length != rows.length) {
       setPage(1)
     }
@@ -305,9 +302,9 @@ export function FilteredTable<T>({
             </Dropdown>
           )}
           <ToolbarFilter
-            chips={getFilterChips()}
-            deleteChip={(_e, filter) => onDeleteFilter(filter as string)}
-            deleteChipGroup={clearFilters}
+            labels={getFilterChips()}
+            deleteLabel={(_e, filter) => onDeleteFilter(filter as string)}
+            deleteLabelGroup={clearFilters}
             categoryName='Filters'
             className={(classPrefix && classPrefix + '-') + 'searchToolbar'}
           >
@@ -424,8 +421,7 @@ export function FilteredTable<T>({
           )}
           {sortedFilteredRows.length === 0 && (
             <Bullseye>
-              <EmptyState>
-                <EmptyStateHeader icon={<EmptyStateIcon icon={SearchIcon} />} />
+              <EmptyState icon={SearchIcon}>
                 <EmptyStateBody>No results found.</EmptyStateBody>
               </EmptyState>
             </Bullseye>

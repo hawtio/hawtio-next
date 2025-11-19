@@ -1,6 +1,6 @@
 import { HawtioEmptyCard, HawtioLoadingCard, MBeanNode } from '@hawtiosrc/plugins/shared'
 import { childText, parseXML } from '@hawtiosrc/util/xml'
-import { Button, Divider, Panel, PanelHeader, PanelMain, PanelMainBody, Text, Title } from '@patternfly/react-core'
+import { Button, Divider, Panel, PanelHeader, PanelMain, PanelMainBody, Content, Title } from '@patternfly/react-core'
 import { BanIcon } from '@patternfly/react-icons/dist/esm/icons/ban-icon'
 import { PlayIcon } from '@patternfly/react-icons/dist/esm/icons/play-icon'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
@@ -198,18 +198,18 @@ export const Trace: React.FunctionComponent = () => {
         <PanelMainBody>
           {!isTracing && (
             <React.Fragment>
-              <Text className='noTracing' data-testid='no-tracing' component='p'>
+              <Content className='noTracing' data-testid='no-tracing' component='p'>
                 Tracing allows you to send messages to a route and then step through and see the messages flow through a
                 route to aid debugging and to help diagnose issues.
-              </Text>
-              <Text className='noTracing' data-testid='no-tracing2' component='p'>
+              </Content>
+              <Content className='noTracing' data-testid='no-tracing2' component='p'>
                 Once you start tracing, you can send messages to the input endpoints, then come back to this page and
                 see the flow of messages through your route.
-              </Text>
-              <Text className='noTracing' data-testid='no-tracing3' component='p'>
+              </Content>
+              <Content className='noTracing' data-testid='no-tracing3' component='p'>
                 As you click on the message table, you can see which node in the flow it came through; moving the
                 selection up and down in the message table lets you see the flow of the message through the diagram.
-              </Text>
+              </Content>
             </React.Fragment>
           )}
           {isTracing && (

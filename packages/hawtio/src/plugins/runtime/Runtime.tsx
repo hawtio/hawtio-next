@@ -22,13 +22,13 @@ export const Runtime: React.FunctionComponent = () => {
 
   return (
     <React.Fragment>
-      <PageSection variant='light'>
+      <PageSection hasBodyWrapper={false}>
         <Title headingLevel='h1'>Runtime</Title>
       </PageSection>
       <PageGroup>
         <Divider />
-        <PageSection type='tabs' hasShadowBottom>
-          <Nav aria-label='Runtime Nav' variant='tertiary'>
+        <PageSection hasBodyWrapper={false} type='tabs' hasShadowBottom>
+          <Nav aria-label='Runtime Nav' variant='horizontal-subnav'>
             <NavList>
               {navItems.map(navItem => (
                 <NavItem key={navItem.id} isActive={location.pathname === `/runtime/${navItem.id}`}>
@@ -41,6 +41,7 @@ export const Runtime: React.FunctionComponent = () => {
       </PageGroup>
       <Divider />
       <PageSection
+        hasBodyWrapper={false}
         variant={location.pathname.includes('metrics') ? 'default' : 'light'}
         padding={{ default: location.pathname.includes('metrics') ? 'padding' : 'noPadding' }}
       >

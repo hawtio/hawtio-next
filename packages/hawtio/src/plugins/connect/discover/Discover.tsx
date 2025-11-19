@@ -22,7 +22,7 @@ import {
   Select,
   SelectList,
   SelectOption,
-  Text,
+  Content,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
@@ -203,9 +203,7 @@ export const Discover: React.FunctionComponent = () => {
 
   return (
     <React.Fragment>
-      <Card style={{ marginBottom: '1rem' }} isFlat>
-        {toolbar}
-      </Card>
+      <Card style={{ marginBottom: '1rem' }}>{toolbar}</Card>
       <Gallery hasGutter minWidths={{ default: '400px' }}>
         {label === 'Agent' &&
           filteredAgents.map((agent, index) => (
@@ -227,7 +225,7 @@ export const AgentCard: React.FunctionComponent<{
   const title = discoverService.hasName(agent) ? (
     `${agent.server_vendor} ${agent.server_product} ${agent.server_version}`
   ) : (
-    <Text component='pre'>{agent.command}</Text>
+    <Content component='pre'>{agent.command}</Content>
   )
 
   return (
@@ -269,9 +267,9 @@ export const AgentCard: React.FunctionComponent<{
             <DescriptionListGroup>
               <DescriptionListTerm>Agent URL</DescriptionListTerm>
               <DescriptionListDescription>
-                <Text component='a' href={agent.url} target='_blank'>
+                <Content component='a' href={agent.url} target='_blank'>
                   {agent.url}
-                </Text>
+                </Content>
               </DescriptionListDescription>
             </DescriptionListGroup>
           )}
@@ -347,9 +345,9 @@ export const JvmCard: React.FunctionComponent<{
             <DescriptionListGroup>
               <DescriptionListTerm>Agent URL</DescriptionListTerm>
               <DescriptionListDescription>
-                <Text component='a' href={jvm.agentUrl} target='_blank'>
+                <Content component='a' href={jvm.agentUrl} target='_blank'>
                   {jvm.agentUrl}
-                </Text>
+                </Content>
               </DescriptionListDescription>
             </DescriptionListGroup>
           )}

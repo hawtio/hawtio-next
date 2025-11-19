@@ -1,13 +1,5 @@
-import {
-  Button,
-  Form,
-  FormGroup,
-  FormHelperText,
-  HelperText,
-  HelperTextItem,
-  Modal,
-  TextArea,
-} from '@patternfly/react-core'
+import { Button, Form, FormGroup, FormHelperText, HelperText, HelperTextItem, TextArea } from '@patternfly/react-core'
+import { Modal } from '@patternfly/react-core/deprecated'
 import React, { useContext, useState } from 'react'
 import { QuartzContext } from '../context'
 import { log } from '../globals'

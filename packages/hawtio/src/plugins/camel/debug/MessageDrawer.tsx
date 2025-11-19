@@ -13,7 +13,7 @@ import {
   Panel,
   PanelMain,
   PanelMainBody,
-  Text,
+  Content,
 } from '@patternfly/react-core'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import React, { useRef, useState } from 'react'
@@ -116,14 +116,13 @@ export const MessageDrawer: React.FunctionComponent<MessageDrawerProps> = (props
     <DrawerPanelContent id='message-drawer-panel-content' minSize={'50%'}>
       <DrawerHead id='message-drawer-panel-content-head'>
         <div tabIndex={props.expanded ? 0 : -1} ref={panelRef}>
-          <Text>
+          <Content component='p'>
             <em>UID: {props.messages && props.messages.length > 0 ? props.messages[0]?.uid : ''}</em>
-          </Text>
+          </Content>
           <Nav
             id='message-drawer-panel-content-head-nav'
             onSelect={(_event, result: { itemId: number | string }) => onSelectTab(result)}
             variant='horizontal'
-            theme='light'
             aria-label='Show Header or Body Debug Info Table'
           >
             <NavList>{panelNavItems()}</NavList>

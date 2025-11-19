@@ -1,20 +1,20 @@
-import { CodeBlock, CodeBlockCode, PageSection, PageSectionVariants, Text, TextContent } from '@patternfly/react-core'
+import { CodeBlock, CodeBlockCode, PageSection, Content,  } from '@patternfly/react-core'
 import React from 'react'
 
 export const Example1: React.FunctionComponent = () => (
-  <PageSection variant={PageSectionVariants.light}>
-    <TextContent>
-      <Text component='h1'>Example 1</Text>
-      <Text component='p'>
+  <PageSection hasBodyWrapper={false} >
+    <Content>
+      <Content component='h1'>Example 1</Content>
+      <Content component='p'>
         This is an example plugin registered using <code>hawtio.addPlugin()</code>.
-      </Text>
-      <Text component='p'>
+      </Content>
+      <Content component='p'>
         This plugin doesn't use any asynchronous code. The disadvantage is that with static <code>import</code>
         JavaScript statement, the resulting bundle is much less optimized, because all PatternFly components used by{' '}
         <code>Example1</code> are loaded in <em>static way</em>. This approach can lead to increased size of chunks
         loaded when application starts, thus delaying initial UI response.
-      </Text>
-      <Text component='p'>Here's the simplest Hawtio plugin registration code:</Text>
+      </Content>
+      <Content component='p'>Here's the simplest Hawtio plugin registration code:</Content>
       <CodeBlock>
         <CodeBlockCode>
           {`import { hawtio, type HawtioPlugin } from '@hawtio/react'
@@ -31,6 +31,6 @@ export const registerExample1: HawtioPlugin = () => {
 }`}
         </CodeBlockCode>
       </CodeBlock>
-    </TextContent>
+    </Content>
   </PageSection>
 )

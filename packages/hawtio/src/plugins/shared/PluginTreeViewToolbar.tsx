@@ -27,7 +27,7 @@ export const PluginTreeViewToolbar: React.FunctionComponent<ToolbarProps> = (pro
     <Toolbar style={{ padding: 0 }}>
       <ToolbarContent style={{ padding: 0 }}>
         <ToolbarGroup variant='filter-group'>
-          <ToolbarItem variant='search-filter' widths={{ default: '100%' }}>
+          <ToolbarItem>
             <TreeViewSearch
               onSearch={onSearch}
               id='input-search'

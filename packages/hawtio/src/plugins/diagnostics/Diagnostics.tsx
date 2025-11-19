@@ -16,13 +16,13 @@ export const Diagnostics: React.FunctionComponent = () => {
 
   return (
     <React.Fragment>
-      <PageSection variant='light'>
+      <PageSection hasBodyWrapper={false}>
         <Title headingLevel='h1'>Diagnostics</Title>
       </PageSection>
       <PageGroup>
         <Divider />
-        <PageSection type='tabs' hasShadowBottom>
-          <Nav aria-label='Diagnostics Nav' variant='tertiary'>
+        <PageSection hasBodyWrapper={false} type='tabs' hasShadowBottom>
+          <Nav aria-label='Diagnostics Nav' variant='horizontal-subnav'>
             <NavList>
               {navItems.map(navItem => (
                 <NavItem key={navItem.id} isActive={location.pathname === `/diagnostics/${navItem.id}`}>
@@ -34,7 +34,7 @@ export const Diagnostics: React.FunctionComponent = () => {
         </PageSection>
       </PageGroup>
       <Divider />
-      <PageSection>
+      <PageSection hasBodyWrapper={false}>
         <Routes>
           {navItems.map(navItem => (
             <Route key={navItem.id} path={navItem.id} element={navItem.component} />

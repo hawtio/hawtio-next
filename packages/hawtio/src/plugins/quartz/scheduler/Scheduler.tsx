@@ -125,7 +125,6 @@ export const Scheduler: React.FunctionComponent = () => {
                 <Switch
                   id='quartz-scheduler-main-switch'
                   label='Started'
-                  labelOff='Paused'
                   isChecked={scheduler.started}
                   isDisabled={!canStartPauseScheduler()}
                   onChange={(_event, start: boolean) => handleSchedulerSwitchChange(start)}
@@ -188,7 +187,6 @@ export const Scheduler: React.FunctionComponent = () => {
                 <Switch
                   id='quartz-scheduler-statistics-switch'
                   label='Enabled'
-                  labelOff='Disabled'
                   isChecked={scheduler.sampledStatisticsEnabled}
                   isDisabled={!canUpdateSampleStatisticsEnabled()}
                   onChange={(_event, value: boolean) => handleSampledStatisticsSwitchChange(value)}

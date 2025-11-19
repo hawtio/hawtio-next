@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { Card, CardBody, Panel, TextVariants, Text } from '@patternfly/react-core'
+import { Card, CardBody, Panel, ContentVariants, Content } from '@patternfly/react-core'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
@@ -22,9 +22,9 @@ export const JmxContentMBeans: React.FunctionComponent = () => {
     return (
       <Card>
         <CardBody>
-          <Text component={TextVariants.p}>
+          <Content component={ContentVariants.p}>
             <InfoCircleIcon /> This node has no MBeans.
-          </Text>
+          </Content>
         </CardBody>
       </Card>
     )

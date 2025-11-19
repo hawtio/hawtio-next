@@ -1,6 +1,7 @@
 import { CamelContext } from '@hawtiosrc/plugins/camel/context'
 import { HawtioEmptyCard, HawtioLoadingCard, MBeanNode } from '@hawtiosrc/plugins/shared'
-import { Button, Card, CardBody, CardTitle, Modal, ModalVariant, Title } from '@patternfly/react-core'
+import { Button, Card, CardBody, CardTitle, Title } from '@patternfly/react-core'
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import * as exs from './exchanges-service'

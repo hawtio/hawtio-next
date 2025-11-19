@@ -15,7 +15,7 @@ export const HawtioSidebar: React.FunctionComponent = () => {
   }
 
   const pageNav = (
-    <Nav theme='dark'>
+    <Nav>
       <NavList>
         {plugins
           .filter(plugin => plugin.path != null)
@@ -29,7 +29,7 @@ export const HawtioSidebar: React.FunctionComponent = () => {
   )
 
   return (
-    <PageSidebar theme='dark'>
+    <PageSidebar>
       <PageSidebarBody>{pageNav}</PageSidebarBody>
     </PageSidebar>
   )

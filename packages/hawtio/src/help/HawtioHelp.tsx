@@ -1,14 +1,4 @@
-import {
-  CardBody,
-  Divider,
-  Nav,
-  NavItem,
-  NavList,
-  PageSection,
-  PageSectionVariants,
-  TextContent,
-  Title,
-} from '@patternfly/react-core'
+import { CardBody, Divider, Nav, NavItem, NavList, PageSection, Content, Title } from '@patternfly/react-core'
 import React, { useMemo } from 'react'
 import Markdown from 'react-markdown'
 import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
@@ -35,13 +25,13 @@ export const HawtioHelp: React.FunctionComponent = () => {
 
   return (
     <React.Fragment>
-      <PageSection variant={PageSectionVariants.light}>
+      <PageSection hasBodyWrapper={false}>
         <Title headingLevel='h1'>Help</Title>
       </PageSection>
       <Divider />
 
-      <PageSection type='tabs' hasShadowBottom>
-        <Nav aria-label='Nav' variant='tertiary'>
+      <PageSection hasBodyWrapper={false} type='tabs' hasShadowBottom>
+        <Nav aria-label='Nav' variant='horizontal-subnav'>
           <NavList>
             {helps.map(help => (
               <NavItem key={help.id} isActive={location.pathname === `/help/${help.id}`}>
@@ -52,7 +42,7 @@ export const HawtioHelp: React.FunctionComponent = () => {
         </Nav>
       </PageSection>
       <Divider />
-      <PageSection variant={PageSectionVariants.light}>
+      <PageSection hasBodyWrapper={false}>
         <Routes>
           {helpRegistry.getHelps().map(help => (
             <Route
@@ -60,9 +50,9 @@ export const HawtioHelp: React.FunctionComponent = () => {
               path={help.id}
               element={
                 <CardBody>
-                  <TextContent>
+                  <Content>
                     <Markdown>{help.content}</Markdown>
-                  </TextContent>
+                  </Content>
                 </CardBody>
               }
             />

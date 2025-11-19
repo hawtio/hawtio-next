@@ -9,11 +9,10 @@ import {
   FormHelperText,
   HelperText,
   HelperTextItem,
-  Modal,
-  ModalVariant,
   Switch,
   TextInput,
 } from '@patternfly/react-core'
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated'
 import { ExclamationCircleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon'
 import React, { useContext, useState } from 'react'
 import { ADD, UPDATE } from '../connections'
@@ -191,7 +190,6 @@ export const ConnectionModal: React.FunctionComponent<{
           <Switch
             id='connection-form-scheme'
             label='HTTPS'
-            labelOff='HTTP (not encrypted)'
             isChecked={connection.scheme === 'https'}
             onChange={(_event, https) => setConnection({ ...connection, scheme: https ? 'https' : 'http' })}
           />
@@ -234,7 +232,7 @@ export const ConnectionModal: React.FunctionComponent<{
           </Button>
           {validations.test ? (
             <HelperText>
-              <HelperTextItem variant={validations.test.status === 'reachable' ? 'success' : 'error'} hasIcon>
+              <HelperTextItem variant={validations.test.status === 'reachable' ? 'success' : 'error'}>
                 {validations.test.message}
               </HelperTextItem>
             </HelperText>

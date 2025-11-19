@@ -9,11 +9,11 @@ import {
   Label,
   MenuToggle,
   MenuToggleElement,
-  Modal,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core'
+import { Modal } from '@patternfly/react-core/deprecated'
 import { AsleepIcon } from '@patternfly/react-icons/dist/esm/icons/asleep-icon'
 import { PlayIcon } from '@patternfly/react-icons/dist/esm/icons/play-icon'
 import { Remove2Icon } from '@patternfly/react-icons/dist/esm/icons/remove2-icon'

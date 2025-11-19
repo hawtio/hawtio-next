@@ -1,6 +1,7 @@
 import React from 'react'
 import { Thread } from '@hawtiosrc/plugins/runtime/types'
-import { Grid, GridItem, Label, Modal, ModalVariant } from '@patternfly/react-core'
+import { Grid, GridItem, Label } from '@patternfly/react-core'
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated'
 
 export const ThreadState: React.FunctionComponent<{ state: string }> = ({ state }) => {
   switch (state) {

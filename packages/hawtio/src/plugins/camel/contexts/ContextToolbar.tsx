@@ -7,17 +7,16 @@ import {
   DropdownList,
   MenuToggle,
   MenuToggleElement,
-  Modal,
-  ModalVariant,
   Skeleton,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core'
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated'
 import { AsleepIcon } from '@patternfly/react-icons/dist/esm/icons/asleep-icon'
+import { EllipsisVIcon } from '@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon'
 import { PlayIcon } from '@patternfly/react-icons/dist/esm/icons/play-icon'
 import { Remove2Icon } from '@patternfly/react-icons/dist/esm/icons/remove2-icon'
-import { EllipsisVIcon } from '@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon'
 import React, { useState } from 'react'
 import {
   CONTEXT_OPERATIONS,
@@ -206,8 +205,9 @@ export const ContextToolbar: React.FunctionComponent<{
       key='delete'
       isDisabled={!(firstContext && firstContext.node.hasInvokeRights(CONTEXT_OPERATIONS.stop)) || !isDeleteEnabled()}
       onClick={onDeleteClicked}
+      icon={<Remove2Icon />}
     >
-      <Remove2Icon /> Delete
+      Delete
     </DropdownItem>,
   ]
 
@@ -226,9 +226,8 @@ export const ContextToolbar: React.FunctionComponent<{
                   variant='plain'
                   id='camel-contexts-toolbar-item-dropdown-toggle'
                   onClick={() => onDropdownToggle(!isDropdownOpen)}
-                >
-                  <EllipsisVIcon />
-                </MenuToggle>
+                  icon={<EllipsisVIcon />}
+                />
               )}
               isOpen={isDropdownOpen}
             >

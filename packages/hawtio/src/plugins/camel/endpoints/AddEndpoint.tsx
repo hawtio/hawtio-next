@@ -1,4 +1,4 @@
-import { Button, Card, CardBody, CardTitle, Form, FormGroup, Text } from '@patternfly/react-core'
+import { Button, Card, CardBody, CardTitle, Form, FormGroup, Content } from '@patternfly/react-core'
 import React, { useContext, useState } from 'react'
 import { CamelContext } from '../context'
 import { AddEndpointURI } from './AddEndpointURI'
@@ -14,7 +14,7 @@ export const AddEndpoint: React.FunctionComponent = () => {
     return (
       <Card>
         <CardBody>
-          <Text component='p'>No selection has been made</Text>
+          <Content component='p'>No selection has been made</Content>
         </CardBody>
       </Card>
     )

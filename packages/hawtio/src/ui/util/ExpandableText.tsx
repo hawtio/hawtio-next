@@ -1,10 +1,10 @@
-import * as React from 'react'
-import styles from '@patternfly/react-styles/css/components/ExpandableSection/expandable-section'
-import { css } from '@patternfly/react-styles'
-import { c_expandable_section_m_truncate__content_LineClamp as lineClamp } from '@patternfly/react-tokens/dist/esm/c_expandable_section_m_truncate__content_LineClamp'
-import { debounce, getResizeObserver, getUniqueId, PickOptional } from '@patternfly/react-core'
 import { isString } from '@hawtiosrc/util/objects'
+import { debounce, getResizeObserver, getUniqueId, PickOptional } from '@patternfly/react-core'
 import { AngleRightIcon } from '@patternfly/react-icons/dist/esm/icons/angle-right-icon'
+import { css } from '@patternfly/react-styles'
+import styles from '@patternfly/react-styles/css/components/ExpandableSection/expandable-section'
+import { c_expandable_section_m_truncate__content_LineClamp as lineClamp } from '@patternfly/react-tokens/dist/esm/c_expandable_section_m_truncate__content_LineClamp'
+import * as React from 'react'
 
 export enum ExpandableSectionVariant {
   default = 'default',
@@ -238,7 +238,7 @@ class ExpandableSection extends React.Component<ExpandableSectionProps, Expandab
 
     const expandableToggle = !isDetached && (
       <button
-        className={css(styles.expandableSectionToggle)}
+        className={css(styles.expandableSection + '__toggle')}
         type='button'
         aria-expanded={propOrStateIsExpanded}
         aria-controls={uniqueContentId}
@@ -250,7 +250,7 @@ class ExpandableSection extends React.Component<ExpandableSectionProps, Expandab
             <AngleRightIcon aria-hidden />
           </span>
         )}
-        <span className={css(styles.expandableSectionToggleText)}>{toggleContent || computedToggleText}</span>
+        <span className={css('pf-v6-c-button__text')}>{toggleContent || computedToggleText}</span>
       </button>
     )
 
@@ -259,8 +259,8 @@ class ExpandableSection extends React.Component<ExpandableSectionProps, Expandab
         className={css(
           styles.expandableSection,
           propOrStateIsExpanded && styles.modifiers.expanded,
-          isActive && styles.modifiers.active,
-          isDetached && styles.modifiers.detached,
+          //isActive && styles.modifiers.active,
+          //isDetached && styles.modifiers.detached,
           displaySize === 'lg' && styles.modifiers.displayLg,
           isWidthLimited && styles.modifiers.limitWidth,
           isIndented && styles.modifiers.indented,
@@ -292,7 +292,7 @@ export const ExpandableText: React.FunctionComponent<{ children: React.ReactNode
       <ExpandableSection
         onClick={e => {
           // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-          ;(e.target as HTMLElement)?.classList.contains('pf-v5-c-expandable-section__toggle-text') &&
+          ; (e.target as HTMLElement)?.classList.contains('pf-v5-c-expandable-section__toggle-text') &&
             e.stopPropagation()
         }}
         truncateMaxLines={3}

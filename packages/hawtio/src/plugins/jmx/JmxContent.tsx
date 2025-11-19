@@ -2,17 +2,14 @@ import { AttributeTable, Attributes, Chart, JmxContentMBeans, MBeanNode, Operati
 import {
   Divider,
   EmptyState,
-  EmptyStateIcon,
   EmptyStateVariant,
   Nav,
   NavItem,
   NavList,
   PageGroup,
   PageSection,
-  PageSectionVariants,
-  Text,
+  Content,
   Title,
-  EmptyStateHeader,
 } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons/dist/esm/icons/cubes-icon'
 import React, { useContext } from 'react'
@@ -27,10 +24,13 @@ export const JmxContent: React.FunctionComponent = () => {
 
   if (!selectedNode) {
     return (
-      <PageSection variant={PageSectionVariants.light} isFilled>
-        <EmptyState variant={EmptyStateVariant.full}>
-          <EmptyStateHeader titleText='Select MBean' icon={<EmptyStateIcon icon={CubesIcon} />} headingLevel='h1' />
-        </EmptyState>
+      <PageSection hasBodyWrapper={false} isFilled>
+        <EmptyState
+          headingLevel='h1'
+          icon={CubesIcon}
+          titleText='Select MBean'
+          variant={EmptyStateVariant.full}
+        ></EmptyState>
       </PageSection>
     )
   }
@@ -60,7 +60,7 @@ export const JmxContent: React.FunctionComponent = () => {
   const navItems = allNavItems.filter(nav => nav.isApplicable(selectedNode))
 
   const mbeanNav = (
-    <Nav aria-label='MBean Nav' variant='tertiary'>
+    <Nav aria-label='MBean Nav' variant='horizontal-subnav'>
       <NavList>
         {navItems.map(nav => (
           <NavItem key={nav.id} isActive={pathname === `${pluginPath}/${nav.id}`}>
@@ -77,18 +77,18 @@ export const JmxContent: React.FunctionComponent = () => {
 
   return (
     <PageGroup id='jmx-content'>
-      <PageSection id='jmx-content-header' variant={PageSectionVariants.light}>
+      <PageSection hasBodyWrapper={false} id='jmx-content-header'>
         <Title headingLevel='h1'>{selectedNode.name}</Title>
-        <Text component='small'>{selectedNode.objectName}</Text>
+        <Content component='small'>{selectedNode.objectName}</Content>
       </PageSection>
       <Divider />
-      <PageSection type='tabs' variant={PageSectionVariants.light} hasShadowBottom>
+      <PageSection hasBodyWrapper={false} type='tabs' hasShadowBottom>
         {mbeanNav}
       </PageSection>
       <Divider />
       <PageSection
+        hasBodyWrapper={false}
         id='jmx-content-main'
-        variant={PageSectionVariants.light}
         padding={{ default: 'noPadding' }}
         hasOverflowScroll
         aria-label='jmx-content-main'

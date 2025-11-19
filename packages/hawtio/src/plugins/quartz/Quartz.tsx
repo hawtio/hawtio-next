@@ -11,7 +11,7 @@ export const Quartz: React.FunctionComponent = () => {
 
   if (!loaded) {
     return (
-      <PageSection>
+      <PageSection hasBodyWrapper={false}>
         <Spinner aria-label='Loading Quartz schedulers' />
       </PageSection>
     )

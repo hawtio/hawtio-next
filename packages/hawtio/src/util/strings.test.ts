@@ -1,7 +1,7 @@
 import { humanizeLabels, matchWithWildcard, parseBoolean, stringSorter, toString, trimQuotes } from './strings'
 
 describe('strings', () => {
-  test('toString', () => {
+  test('function toString() { [native code] }', () => {
     expect(toString(null)).toEqual('{}')
     expect(toString({})).toEqual('{  }')
     const obj = { a: 'x', b: 'y', c: 'z' }

@@ -7,9 +7,9 @@ import {
   FormSelectOption,
   HelperText,
   HelperTextItem,
-  Modal,
   TextInput,
 } from '@patternfly/react-core'
+import { Modal } from '@patternfly/react-core/deprecated'
 import React, { useContext, useState } from 'react'
 import { QuartzContext } from '../context'
 import { log } from '../globals'

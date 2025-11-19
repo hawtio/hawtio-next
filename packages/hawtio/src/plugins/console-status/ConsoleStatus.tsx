@@ -4,7 +4,6 @@ import {
   Card,
   CardBody,
   PageSection,
-  PageSectionVariants,
   Panel,
   PanelHeader,
   PanelMain,
@@ -40,7 +39,7 @@ export const ConsoleStatus: React.FunctionComponent = () => {
 
   if (loading) {
     return (
-      <PageSection variant={PageSectionVariants.light}>
+      <PageSection hasBodyWrapper={false}>
         <Panel>
           <PanelHeader>Waiting workspace to load ...</PanelHeader>
           <PanelMain>
@@ -59,7 +58,7 @@ export const ConsoleStatus: React.FunctionComponent = () => {
   }
 
   return (
-    <PageSection variant={PageSectionVariants.light}>
+    <PageSection hasBodyWrapper={false}>
       <Card>
         <CardBody>
           <Alert variant='warning' title='Application returned no mbeans' />

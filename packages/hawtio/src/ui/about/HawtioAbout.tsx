@@ -1,6 +1,6 @@
 import imgLogo from '@hawtiosrc/img/hawtio-logo.svg'
 import { stringSorter } from '@hawtiosrc/util/strings'
-import { AboutModal, Text, TextContent, TextList, TextListItem } from '@patternfly/react-core'
+import { AboutModal, Content } from '@patternfly/react-core'
 import React from 'react'
 import { useAbout } from './context'
 import { log } from './globals'
@@ -26,9 +26,9 @@ export const HawtioAbout: React.FunctionComponent<HawtioAboutProps> = props => {
   const AboutDescription = () => {
     if (about.description) {
       return (
-        <TextContent id='hawtio-about-description'>
-          <Text component='p'>{about.description}</Text>
-        </TextContent>
+        <Content id='hawtio-about-description'>
+          <Content component='p'>{about.description}</Content>
+        </Content>
       )
     }
     return null
@@ -38,17 +38,17 @@ export const HawtioAbout: React.FunctionComponent<HawtioAboutProps> = props => {
   productInfo.sort((a, b) => stringSorter(a.name, b.name))
   log.debug('Product info:', productInfo)
   const AboutProductInfo = () => (
-    <TextContent id='hawtio-about-product-info'>
-      <Text component='h3'>Component versions</Text>
-      <TextList component='dl'>
+    <Content id='hawtio-about-product-info'>
+      <Content component='h3'>Component versions</Content>
+      <Content component='dl'>
         {productInfo.map((info, index) => (
           <React.Fragment key={`product-info-${index}`}>
-            <TextListItem component='dt'>{info.name}</TextListItem>
-            <TextListItem component='dd'>{info.value}</TextListItem>
+            <Content component='dt'>{info.name}</Content>
+            <Content component='dd'>{info.value}</Content>
           </React.Fragment>
         ))}
-      </TextList>
-    </TextContent>
+      </Content>
+    </Content>
   )
 
   return (

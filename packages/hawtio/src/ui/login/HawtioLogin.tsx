@@ -10,11 +10,11 @@ import {
   usePlugins,
 } from '@hawtiosrc/core'
 import { background, hawtioLogo } from '@hawtiosrc/img'
+import { HawtioNotification } from '@hawtiosrc/ui/notification'
+import { HawtioLoadingPage } from '@hawtiosrc/ui/page'
 import { Alert, Button, ListItem, ListVariant, LoginFooterItem, LoginPage } from '@patternfly/react-core'
 import React, { ReactNode, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { HawtioNotification } from '@hawtiosrc/ui/notification'
-import { HawtioLoadingPage } from '@hawtiosrc/ui/page'
 import { HawtioLoginForm } from './HawtioLoginForm'
 import { log } from './globals'
 

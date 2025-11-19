@@ -33,7 +33,7 @@ export const CamelPreferences: React.FunctionComponent = () => {
             hasNoPaddingTop
             label='Maximum label width'
             fieldId='camel-form-maximum-label-width'
-            labelIcon={
+            labelHelp={
               <TooltipHelpIcon tooltip='The maximum length of a label in Camel diagrams before it is clipped' />
             }
           >
@@ -48,7 +48,7 @@ export const CamelPreferences: React.FunctionComponent = () => {
             hasNoPaddingTop
             label='Ignore ID for label'
             fieldId='camel-form-ignore-id-for-label'
-            labelIcon={
+            labelHelp={
               <TooltipHelpIcon tooltip='If enabled then we will ignore the ID value when viewing a pattern in a Camel diagram; otherwise we will use the ID value as the label (the tooltip will show the actual detail)' />
             }
           >
@@ -62,7 +62,7 @@ export const CamelPreferences: React.FunctionComponent = () => {
             hasNoPaddingTop
             label='Show inflight counter'
             fieldId='camel-show-inflight-counter'
-            labelIcon={<TooltipHelpIcon tooltip='Whether to show inflight counter in route diagram' />}
+            labelHelp={<TooltipHelpIcon tooltip='Whether to show inflight counter in route diagram' />}
           >
             <Checkbox
               id='camel-show-inflight-counter-input'
@@ -76,7 +76,7 @@ export const CamelPreferences: React.FunctionComponent = () => {
             hasNoPaddingTop
             label='Include streams'
             fieldId='camel-form-include-streams'
-            labelIcon={
+            labelHelp={
               <TooltipHelpIcon tooltip='Whether to include stream based message body when using the tracer and debugger' />
             }
           >
@@ -90,7 +90,7 @@ export const CamelPreferences: React.FunctionComponent = () => {
             hasNoPaddingTop
             label='Maximum body length'
             fieldId='camel-form-maximum-body-length'
-            labelIcon={
+            labelHelp={
               <TooltipHelpIcon tooltip='The maximum length of the body before its clipped when using the tracer and debugger' />
             }
           >

@@ -1,6 +1,7 @@
 import { connectService } from '@hawtiosrc/plugins/shared'
 import { humanizeSeconds } from '@hawtiosrc/util/dates'
-import { Alert, Button, Form, FormAlert, FormGroup, Modal, TextInput } from '@patternfly/react-core'
+import { Alert, Button, Form, FormAlert, FormGroup, TextInput } from '@patternfly/react-core'
+import { Modal } from '@patternfly/react-core/deprecated'
 import React, { useState } from 'react'
 
 export const ConnectLogin: React.FunctionComponent = () => {

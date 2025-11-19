@@ -6,10 +6,8 @@ import {
   NavList,
   PageGroup,
   PageSection,
-  PageSectionVariants,
   Popover,
-  Text,
-  TextContent,
+  Content,
   Title,
 } from '@patternfly/react-core'
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons/dist/esm/icons/outlined-question-circle-icon'
@@ -32,7 +30,7 @@ export const Connect: React.FunctionComponent = () => {
   ]
 
   const nav = (
-    <Nav aria-label='Connect Nav' variant='tertiary'>
+    <Nav aria-label='Connect Nav' variant='horizontal-subnav'>
       <NavList>
         {navItems.map(({ id, title }) => (
           <NavItem key={id} isActive={pathname === `${pluginPath}/${id}`}>
@@ -52,7 +50,7 @@ export const Connect: React.FunctionComponent = () => {
   return (
     <ConnectContext.Provider value={{ connections, dispatch }}>
       <PageGroup>
-        <PageSection id='connect-header' variant='light'>
+        <PageSection hasBodyWrapper={false} id='connect-header'>
           <Title id='connect-header-title' headingLevel='h1'>
             Connect <ConnectHint />
           </Title>
@@ -85,12 +83,12 @@ export const Connect: React.FunctionComponent = () => {
           )}
         </PageSection>
         <Divider />
-        <PageSection type='tabs' variant={PageSectionVariants.light} hasShadowBottom>
+        <PageSection hasBodyWrapper={false} type='tabs' hasShadowBottom>
           {nav}
         </PageSection>
         <Divider />
       </PageGroup>
-      <PageSection id='connect-main' variant={PageSectionVariants.light}>
+      <PageSection hasBodyWrapper={false} id='connect-main'>
         <Routes>
           {routes}
           {/* connect/login should be hidden to nav */}
@@ -104,8 +102,8 @@ export const Connect: React.FunctionComponent = () => {
 
 const ConnectHint: React.FunctionComponent = () => {
   const content = (
-    <TextContent>
-      <Text component='p'>
+    <Content>
+      <Content component='p'>
         This page allows you to connect to remote processes which{' '}
         <strong>
           already have a{' '}
@@ -115,15 +113,15 @@ const ConnectHint: React.FunctionComponent = () => {
           running inside them
         </strong>
         . You will need to know the host name, port and path of the Jolokia agent to be able to connect.
-      </Text>
-      <Text component='p'>
+      </Content>
+      <Content component='p'>
         If the process you wish to connect to does not have a Jolokia agent inside, please refer to the{' '}
         <a href='https://jolokia.org/agent.html' target='_blank' rel='noreferrer'>
           Jolokia documentation
         </a>{' '}
         for how to add a JVM, servlet, or OSGi based agent inside it.
-      </Text>
-      <Text component='p'>
+      </Content>
+      <Content component='p'>
         Some Java applications such as{' '}
         <a href='https://activemq.apache.org/components/artemis/' target='_blank' rel='noreferrer'>
           Apache ActiveMQ Artemis
@@ -131,8 +129,8 @@ const ConnectHint: React.FunctionComponent = () => {
         include a Jolokia agent by default (use context path of Jolokia agent, usually <code>jolokia</code>). Or you can
         always just deploy Hawtio inside the process, which includes the Jolokia servlet agent (use Jolokia servlet
         mapping inside Hawtio context path, usually <code>hawtio/jolokia</code>).
-      </Text>
-    </TextContent>
+      </Content>
+    </Content>
   )
 
   return (
