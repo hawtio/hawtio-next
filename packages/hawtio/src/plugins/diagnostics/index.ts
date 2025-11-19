@@ -3,7 +3,6 @@ import { helpRegistry } from '@hawtiosrc/help/registry'
 import { pluginId, pluginPath } from './globals'
 import help from './help.md'
 import { flightRecorderService } from './flight-recorder-service'
-import { jolokiaService } from '../shared'
 
 const order = 19
 
@@ -17,13 +16,7 @@ export const diagnostics: HawtioPlugin = () => {
         order,
         component: m.Diagnostics,
         isActive: async () => {
-          const jolokiaUrl = await jolokiaService.getFullJolokiaUrl()
-
-          return (
-            (await flightRecorderService.hasFlightRecorderMBean()) &&
-            ['localhost', '127.0.0.1', '::1', '192.168.', '10.0'].filter(localUrl => jolokiaUrl.includes(localUrl))
-              .length != 0
-          )
+          return await flightRecorderService.hasFlightRecorderMBean()
         },
       }
     })
