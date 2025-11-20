@@ -83,7 +83,7 @@
  * PatternFly var that does change when the theme is updated.
  */
 .react-flow__attribution {
-  background-color: var(--pf-v5-c-page__main-section--BackgroundColor) !important;
+  background-color: var(--pf-v6-c-page__main-section--BackgroundColor) !important;
 }
 
 /*
@@ -91,7 +91,7 @@
  * update so change it to a subtle dark colour when the theme is updated
  */
 :where(.pf-v5-theme-dark) .react-flow__attribution a {
-  color: var(--pf-v5-global--BackgroundColor--dark-200) !important;
+  color: var(--pf-t--global--dark--background--color--200) !important;
 }
 
 .node-tooltip {
@@ -108,19 +108,19 @@
 }
 
 .node-tooltip-odd-row {
-  background-color: var(--pf-v5-global--BackgroundColor--100);
+  background-color: var(--pf-t--global--background--color--100);
 }
 
 .node-tooltip-odd-row td {
-  color: var(--pf-v5-global--Color--100);
+  color: var(--pf-t--global--text--color--100);
 }
 
 .node-tooltip-even-row {
-  background-color: var(--pf-v5-global--BackgroundColor--200);
+  background-color: var(--pf-t--global--background--color--200);
 }
 
 .node-tooltip-even-row td {
-  color: var(--pf-v5-global--Color--200);
+  color: var(--pf-t--global--text--color--200);
 }
 
 .node-tooltip-value {
@@ -141,9 +141,9 @@
 }
 
 .highlighted {
-  border-color: var(--pf-v5-global--primary-color--100) !important;
+  border-color: var(--pf-t--global--background--color--100) !important;
 }
 
 .disabled {
-  background-color: var(--pf-v5-global--disabled-color--200) !important;
+  background-color: var(--pf-t--color--disabled--200) !important;
 }

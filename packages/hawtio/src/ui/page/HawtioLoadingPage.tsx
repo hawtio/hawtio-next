@@ -9,7 +9,7 @@ export const HawtioLoadingPage: React.FunctionComponent = () => (
 
         <Content>
           <Content
-            className={'--pf-t--temp--dev--tbd' /* CODEMODS: original v5 color was --pf-v5-global--Color--200 */}
+            className={'--pf-t--global--background--color--200'}
             component={ContentVariants.h3}
           >
             Loading ...

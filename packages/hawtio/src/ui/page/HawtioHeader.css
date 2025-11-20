@@ -3,15 +3,15 @@
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  color: var(--pf-v5-global--Color--light-200);
+  color: var(--pf-t--global--background--color--200);
 }
 
-#hawtio-header-brand .pf-v5-c-brand {
+#hawtio-header-brand .pf-v6-c-brand {
   max-height: 50px;
   margin-right: 1em;
 }
 
-#hawtio-header-toolbar .pf-v5-c-toolbar__content-section {
+#hawtio-header-toolbar .pf-v6-c-toolbar__content-section {
   justify-content: end;
 }
 
@@ -19,11 +19,11 @@
   display: flex;
 }
 
-#hawtio-header-user-dropdown-toggle .pf-v5-c-dropdown__toggle-text {
+#hawtio-header-user-dropdown-toggle .pf-v6-c-dropdown__toggle-text {
   margin-left: 5px;
 }
 
-.pf-v5-c-menu__item a {
+.pf-v6-c-menu__item a {
   text-decoration: none;
   color: unset;
 }

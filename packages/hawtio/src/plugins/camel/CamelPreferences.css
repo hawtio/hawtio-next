@@ -1,13 +1,13 @@
-.pf-v5-c-form__group {
+.pf-v6-c-form__group {
   grid-template-columns: 1fr 4fr !important;
 }
 
-.pf-v5-c-form__group-label {
+.pf-v6-c-form__group-label {
   padding-top: 0px !important;
   display: flex;
   align-items: center;
 }
 
-.pf-v5-c-form__group-label > label {
+.pf-v6-c-form__group-label > label {
   padding-right: 0.5em;
 }
