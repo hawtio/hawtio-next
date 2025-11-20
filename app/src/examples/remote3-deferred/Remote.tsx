@@ -1,8 +1,8 @@
-import { PageSection, Content,  } from '@patternfly/react-core'
+import { PageSection, Content } from '@patternfly/react-core'
 import React from 'react'
 
 export const RemotePlugin: React.FunctionComponent = () => (
-  <PageSection hasBodyWrapper={false} >
+  <PageSection hasBodyWrapper={false}>
     <Content>
       <Content component='h1'>Remote Plugin 3 (deferred)</Content>
       <Content component='p'>

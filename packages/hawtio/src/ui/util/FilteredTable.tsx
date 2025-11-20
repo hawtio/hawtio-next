@@ -112,17 +112,17 @@ export function FilteredTable<T>({
   useEffect(() => {
     let filtered: T[] = [...rows]
 
-      //add current searchTerm and filter
-      ;[...filters, searchTerm].forEach(filter => {
-        const key = filter.key
-        if (!key) {
-          return
-        }
-        const searchTerm = filter.value
-        filtered = filtered.filter(value => {
-          return String(value[key]).toLowerCase().includes(searchTerm.toLowerCase())
-        })
+    //add current searchTerm and filter
+    ;[...filters, searchTerm].forEach(filter => {
+      const key = filter.key
+      if (!key) {
+        return
+      }
+      const searchTerm = filter.value
+      filtered = filtered.filter(value => {
+        return String(value[key]).toLowerCase().includes(searchTerm.toLowerCase())
       })
+    })
 
     //If user is filtering - refreshing the threads themselves would reset the page count
     if (filtered.length != rows.length) {

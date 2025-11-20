@@ -1,8 +1,8 @@
-import { CodeBlock, CodeBlockCode, PageSection, Content,  } from '@patternfly/react-core'
+import { CodeBlock, CodeBlockCode, PageSection, Content } from '@patternfly/react-core'
 import React from 'react'
 
 export const RemotePlugin: React.FunctionComponent = () => (
-  <PageSection hasBodyWrapper={false} >
+  <PageSection hasBodyWrapper={false}>
     <Content>
       <Content component='h1'>Remote Plugin 1</Content>
       <Content component='p'>

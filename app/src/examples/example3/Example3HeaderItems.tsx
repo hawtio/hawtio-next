@@ -1,15 +1,13 @@
 import {
-	Button,
-	Divider,
-	Dropdown,
-	DropdownItem,
-	DropdownList,
-	MenuToggle,
-	MenuToggleElement
-} from '@patternfly/react-core';
-import {
-	Modal
-} from '@patternfly/react-core/deprecated';
+  Button,
+  Divider,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  MenuToggle,
+  MenuToggleElement,
+} from '@patternfly/react-core'
+import { Modal } from '@patternfly/react-core/deprecated'
 import React from 'react'
 
 export const Example3HeaderItem1: React.FunctionComponent = () => {

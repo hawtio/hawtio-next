@@ -292,7 +292,7 @@ export const ExpandableText: React.FunctionComponent<{ children: React.ReactNode
       <ExpandableSection
         onClick={e => {
           // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-          ; (e.target as HTMLElement)?.classList.contains('pf-v5-c-expandable-section__toggle-text') &&
+          ;(e.target as HTMLElement)?.classList.contains('pf-v5-c-expandable-section__toggle-text') &&
             e.stopPropagation()
         }}
         truncateMaxLines={3}
