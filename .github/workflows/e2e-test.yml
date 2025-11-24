@@ -46,12 +46,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         if: ${{ github.event_name == 'pull_request_target' }}
         with:
           ref: 'refs/pull/${{ github.event.number }}/merge'
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         if: ${{ github.event_name == 'push' }}
       - name: Docker Setup QEMU
         uses: docker/setup-qemu-action@v3.7.0
@@ -105,7 +105,7 @@ jobs:
           fi
       - name: Checkout Hawtio
         if: ${{ steps.get-images.outputs.repo != ''}}
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: ${{ steps.get-images.outputs.repo }}
           ref: ${{ steps.get-images.outputs.branch }}
