@@ -57,6 +57,8 @@ export function isMBeanInfoError(value: unknown): value is MBeanInfoError {
 
 export interface OptimisedMBeanAttribute extends MBeanAttribute {
   canInvoke?: boolean
+  canRead?: boolean
+  canWrite?: boolean
 }
 
 export type OptimisedMBeanOperations = Record<string, OptimisedMBeanOperation | OptimisedMBeanOperation[]>
