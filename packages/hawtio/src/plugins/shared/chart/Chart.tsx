@@ -184,7 +184,7 @@ export const Chart: React.FunctionComponent = () => {
       .filter(value => isNumber(value[1]))
       .forEach(([attrName, value]) => {
         attributesEntry[attrName] = {
-          time: time!,
+          time: time ?? Date.now()/1000,
           value: value as number,
         }
       })
