@@ -1,3 +1,18 @@
+#jmx-tree-view.pf-v5-c-tree-view {
+  --pf-v5-c-tree-view__node--indent--base: 1.5rem;
+  --pf-v5-c-tree-view__node--nested-indent--base: 1rem;
+  --pf-v5-c-tree-view--m-guides__node--before--Width: 0.5rem;
+  --pf-v5-c-tree-view--m-guides__node--before--Height: 1px;
+  --pf-v5-c-tree-view--m-guides__node--before--Top: 0.75rem;
+  --pf-v5-c-tree-view--m-guides__node--before--BackgroundColor: #aaa;
+  --pf-v5-c-tree-view--m-guides__list-item--before--Width: 1px;
+  --pf-v5-c-tree-view--m-guides__list-item--before--Height: 100%;
+  --pf-v5-c-tree-view--m-guides__list-item--before--BackgroundColor: #aaa;
+  --pf-v5-c-tree-view--m-guides__list-item--last-child--before--Height: 0.75rem;
+  --pf-v5-c-tree-view--m-guides__list-node--guide-width--base: 0.5rem;
+  --pf-v5-c-tree-view--m-guides--guide-left--base--offset: 1.5rem;
+  --pf-v5-global--LineHeight--md: normal;
+}
 #jmx-tree-view .pf-v5-c-tree-view__list {
   height: 100%;
 }
@@ -8,23 +23,22 @@
 }
 
 #jmx-tree-view .pf-v5-c-tree-view__node {
-  padding-top: 1px;
-  padding-bottom: 1px;
+  padding-top: 0;
+  padding-bottom: 0;
+  align-items: center;
 }
 
 #jmx-tree-view .pf-v5-c-tree-view__node-toggle {
-  padding-top: 0px;
-  padding-bottom: 0px;
-  padding-left: 6px;
-  padding-right: 6px;
+  padding: 0;
 }
 
 #jmx-tree-view .pf-v5-c-tree-view__node-text {
-  padding-top: 2px;
+  padding: 0 4px;
   font-size: smaller;
 }
 
 #jmx-tree-view .pf-v5-c-tree-view__node-icon {
+  padding: 0 4px;
   flex-shrink: 0;
 }
 
