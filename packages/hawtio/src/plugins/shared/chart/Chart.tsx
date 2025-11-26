@@ -116,51 +116,53 @@ export const Chart: React.FunctionComponent = () => {
   }
 
   function updateNode(mbeanObjectName: string, data: AttributesEntry): void {
-    if (!chartData[mbeanObjectName]) {
-      chartData[mbeanObjectName] = {
-        attributes: {},
-      }
-    }
-
-    const objectChartData = chartData[mbeanObjectName]!
-    //for every attribute
-    Object.entries(data).forEach(([attributeName, data]) => {
-      if (!objectChartData.attributes[attributeName]) {
-        objectChartData.attributes[attributeName] = {
-          data: [],
-          min: Number.MAX_SAFE_INTEGER,
-          hasConstantValue: true,
+    setChartData(chartData => {
+      if (!chartData[mbeanObjectName]) {
+        chartData[mbeanObjectName] = {
+          attributes: {},
         }
       }
 
-      const attributeChartData = objectChartData.attributes[attributeName]!
-      // Don't add repeated responses to avoid duplicate points
-      if (!attributeChartData.data.find(entry => entry.time === data.time)) {
-        attributeChartData.data.push(data)
-
-        //track the min value for setting the min domain
-        if (data.value < attributeChartData.min) {
-          attributeChartData.min = data.value
+      const objectChartData = chartData[mbeanObjectName]!
+      //for every attribute
+      Object.entries(data).forEach(([attributeName, data]) => {
+        if (!objectChartData.attributes[attributeName]) {
+          objectChartData.attributes[attributeName] = {
+            data: [],
+            min: Number.MAX_SAFE_INTEGER,
+            hasConstantValue: true,
+          }
         }
 
-        if (
-          attributeChartData.data.length > 1 &&
-          attributeChartData.data[0]!.value !== data.value &&
-          attributeChartData.hasConstantValue
-        ) {
-          attributeChartData.hasConstantValue = false
+        const attributeChartData = objectChartData.attributes[attributeName]!
+        // Don't add repeated responses to avoid duplicate points
+        if (!attributeChartData.data.find(entry => entry.time === data.time)) {
+          attributeChartData.data.push(data)
+
+          //track the min value for setting the min domain
+          if (data.value < attributeChartData.min) {
+            attributeChartData.min = data.value
+          }
+
+          if (
+            attributeChartData.data.length > 1 &&
+            attributeChartData.data[0]!.value !== data.value &&
+            attributeChartData.hasConstantValue
+          ) {
+            attributeChartData.hasConstantValue = false
+          }
         }
+      })
+
+      if (!attributesToWatch.current[mbeanObjectName]) {
+        attributesToWatch.current[mbeanObjectName] = {}
       }
+
+      const current = attributesToWatch.current[mbeanObjectName] ?? {}
+      updateNumericAttributesToWatch(current, data)
+
+      return { ...chartData }
     })
-
-    if (!attributesToWatch.current[mbeanObjectName]) {
-      attributesToWatch.current[mbeanObjectName] = {}
-    }
-
-    const current = attributesToWatch.current[mbeanObjectName] ?? {}
-    updateNumericAttributesToWatch(current, data)
-
-    setChartData({ ...chartData })
     attributesToWatch.current = { ...attributesToWatch.current }
   }
 
@@ -222,7 +224,9 @@ export const Chart: React.FunctionComponent = () => {
       if (!name) {
         name = req.mbean.match(/type="([^"]+)"/)
       }
-      if (name && name.length > 1) extractChartDataFromResponse(resp, name![1] as string)
+      if (name && name.length > 1) {
+        extractChartDataFromResponse(resp, name![1] as string)
+      }
     })
   }
 
