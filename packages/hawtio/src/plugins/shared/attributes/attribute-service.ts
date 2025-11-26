@@ -8,6 +8,8 @@ import { jmxPreferencesService } from '../jmx-preferences-service'
 
 class AttributeService {
   private handles: number[] = []
+  private pendingRegistrations: Set<Promise<number>> = new Set()
+  private unregistrationPromise: Promise<void> = Promise.resolve()
 
   private requestOptions(): RequestOptions {
     const { serializeLong } = jmxPreferencesService.loadOptions()
@@ -38,15 +40,24 @@ class AttributeService {
   }
 
   async register(request: JolokiaRequest, callback: (response: JolokiaSuccessResponse | JolokiaErrorResponse) => void) {
-    const handle = await jolokiaService.register(this.setupConfig(request), callback)
-    log.debug('Register handle:', handle)
-    this.handles.push(handle)
+    const p = jolokiaService.register(this.setupConfig(request), callback)
+    this.pendingRegistrations.add(p)
+    this.unregistrationPromise.then(async () => {
+      return p.then(handle => {
+        this.handles.push(handle)
+        this.pendingRegistrations.delete(p)
+      }).catch(_e => null)
+    })
   }
 
   unregisterAll() {
-    log.debug('Unregister all handles:', this.handles)
-    this.handles.forEach(handle => jolokiaService.unregister(handle))
-    this.handles = []
+    this.unregistrationPromise = Promise.all([...this.pendingRegistrations]).then(() => {
+      this.pendingRegistrations.clear()
+      this.handles.forEach(handle => {
+        jolokiaService.unregister(handle)
+      })
+      this.handles = []
+    })
   }
 
   async buildUrl(mbean: string, attribute: string): Promise<string> {
