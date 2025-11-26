@@ -1491,11 +1491,11 @@ __metadata:
   linkType: hard
 
 "@jolokia.js/simple@npm:^2.4.0":
-  version: 2.4.0
-  resolution: "@jolokia.js/simple@npm:2.4.0"
+  version: 2.4.1
+  resolution: "@jolokia.js/simple@npm:2.4.1"
   dependencies:
-    jolokia.js: "npm:2.4.0"
-  checksum: 10/976a5448700b81ff86b18c9c2707bb9fd694a07e12011993282f9379219f06e8d226c945862a5669e7af17f94b389976e88b52093a7c2007fd04ff77725c2b07
+    jolokia.js: "npm:2.4.1"
+  checksum: 10/1dc8937526730bd4ee0f0411491f044d7ebfecde5442011746bfa6e9c6d0fa9c6476547bfd18371886b2f5ada032ad76c5b6db8aa22df9aa8b1264bc3a2a8168
   languageName: node
   linkType: hard
 
@@ -9345,10 +9345,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jolokia.js@npm:2.4.0, jolokia.js@npm:^2.4.0":
-  version: 2.4.0
-  resolution: "jolokia.js@npm:2.4.0"
-  checksum: 10/970d89d194304d194f3c68e89f260542719f12dd5b289d86784b4fe98f16f7a3fe16f81ca16eb3e8f13a8321f2ea107518f2186fd577256e905c15b412beb1f5
+"jolokia.js@npm:2.4.1, jolokia.js@npm:^2.4.0":
+  version: 2.4.1
+  resolution: "jolokia.js@npm:2.4.1"
+  checksum: 10/e142810f6b6a69be2a76661cbd6619bce85196f2f3b95d29e75f04a82eb65153e5de13339f958749643aa32e107eb033471a73191cf6009da9dc11fe529c6864
   languageName: node
   linkType: hard
 
