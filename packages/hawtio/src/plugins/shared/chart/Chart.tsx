@@ -183,6 +183,15 @@ export const Chart: React.FunctionComponent = () => {
 
     const attributesEntry: AttributesEntry = {}
     Object.entries(attr)
+      .flatMap(value => {
+        if (isNumber(value[1])) {
+          return [value]
+        }
+        if (!Array.isArray(value[1]) && value[1] && typeof value[1] === 'object') {
+          return Object.entries(value[1]).map(([k, v]) => [`${value[0]}/${k}`, v])
+        }
+        return [value]
+      })
       .filter(value => isNumber(value[1]))
       .forEach(([attrName, value]) => {
         attributesEntry[attrName] = {
