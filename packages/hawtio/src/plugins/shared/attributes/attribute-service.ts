@@ -3,7 +3,6 @@ import { rbacService } from '@hawtiosrc/plugins/rbac/rbac-service'
 import { AttributeValues, jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { escapeMBean } from '@hawtiosrc/util/jolokia'
 import { JolokiaRequest, JolokiaErrorResponse, JolokiaSuccessResponse, RequestOptions } from 'jolokia.js'
-import { log } from '../globals'
 import { jmxPreferencesService } from '../jmx-preferences-service'
 
 class AttributeService {
@@ -43,10 +42,12 @@ class AttributeService {
     const p = jolokiaService.register(this.setupConfig(request), callback)
     this.pendingRegistrations.add(p)
     this.unregistrationPromise.then(async () => {
-      return p.then(handle => {
-        this.handles.push(handle)
-        this.pendingRegistrations.delete(p)
-      }).catch(_e => null)
+      return p
+        .then(handle => {
+          this.handles.push(handle)
+          this.pendingRegistrations.delete(p)
+        })
+        .catch(_e => null)
     })
   }
 
