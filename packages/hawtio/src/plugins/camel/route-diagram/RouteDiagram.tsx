@@ -1,7 +1,10 @@
+import { eventService } from '@hawtiosrc/core'
+import { MBeanNode } from '@hawtiosrc/plugins/shared'
+import { Switch, Title, EmptyState, EmptyStateBody, EmptyStateHeader, EmptyStateIcon } from '@patternfly/react-core'
 import { Table, Tbody, Td, Tr } from '@patternfly/react-table'
+import { ExclamationCircleIcon } from '@patternfly/react-icons'
 import React, { RefObject, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import {
-  ReactFlow,
   Connection,
   ConnectionLineType,
   Handle,
@@ -9,22 +12,30 @@ import {
   NodeProps,
   NodeToolbar,
   Position,
+  ReactFlow,
+  ReactFlowProvider,
   addEdge,
   useEdgesState,
-  useNodesState,
-  ReactFlowProvider,
   useNodesInitialized,
+  useNodesState,
   useReactFlow,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 import { camelPreferencesService } from '../camel-preferences-service'
+import {
+  canEnableDisableProcessor,
+  disableProcessor,
+  enableProcessor,
+  isCamelVersionEQGT,
+  isRoutesFolder,
+} from '../camel-service'
 import { CamelContext } from '../context'
-import { routesService } from '../routes-service'
 import { log } from '../globals'
+import { Annotation, RouteDiagramContext } from '../route-diagram-context'
+import { routeStatsService } from '../route-stats-service'
+import { routesService } from '../routes/routes-service'
 import './RouteDiagram.css'
-import { Annotation, RouteDiagramContext } from './context'
 import { CamelNodeData, visualizationService } from './visualization-service'
-import { MBeanNode } from '@hawtiosrc/plugins/shared'
 
 export const RouteDiagram: React.FunctionComponent = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
@@ -38,15 +49,14 @@ export const RouteDiagram: React.FunctionComponent = () => {
   )
 }
 
-type ReactFlowRouteDiagramProps = {
+const ReactFlowRouteDiagram: React.FunctionComponent<{
   parent: RefObject<HTMLDivElement>
-}
-
-const ReactFlowRouteDiagram: React.FunctionComponent<ReactFlowRouteDiagramProps> = props => {
+}> = ({ parent }) => {
   const { selectedNode } = useContext(CamelContext)
   const { setGraphNodeData, graphSelection, setGraphSelection } = useContext(RouteDiagramContext)
   const previousSelectedNodeRef = useRef<MBeanNode | null>(null)
 
+  const [error, setError] = useState<Error | null>(null)
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const nodesInitialized = useNodesInitialized({ includeHiddenNodes: false })
@@ -66,11 +76,11 @@ const ReactFlowRouteDiagram: React.FunctionComponent<ReactFlowRouteDiagramProps>
    * width and height to state for use with fitView useEffect
    */
   useEffect(() => {
-    if (props.parent.current) {
-      const { width, height } = props.parent.current.getBoundingClientRect()
+    if (parent.current) {
+      const { width, height } = parent.current.getBoundingClientRect()
       setWrapperDimensions({ width, height })
     }
-  }, [props.parent])
+  }, [parent])
 
   /*
    * Only when we are sure the nodes have properly initialized
@@ -106,10 +116,16 @@ const ReactFlowRouteDiagram: React.FunctionComponent<ReactFlowRouteDiagramProps>
     }
     previousSelectedNodeRef.current = selectedNode // Update ref for next render
 
+    setError(null)
+
     const xml = selectedNode?.getMetadata('xml')
     if (!selectedNode || !xml) {
       setNodes([])
       setEdges([])
+
+      if (!xml) {
+        setError(new Error('Could not locate any XML for route.'))
+      }
       return
     }
 
@@ -128,9 +144,16 @@ const ReactFlowRouteDiagram: React.FunctionComponent<ReactFlowRouteDiagramProps>
         setNodes(layoutedNodes)
       })
       .catch(error => {
-        log.error(`Error loading the diagram route for ${selectedNode}:`, error)
+        log.error(`Error loading the diagram route for`, selectedNode, error)
         setNodes([])
         setEdges([])
+
+        if (error instanceof Error) {
+          setError(error)
+        } else {
+          // If it's not an Error, create a new one from its string representation
+          setError(new Error(String(error)))
+        }
       })
   }, [selectedNode, setEdges, setNodes, setGraphNodeData, graphSelection])
 
@@ -140,7 +163,7 @@ const ReactFlowRouteDiagram: React.FunctionComponent<ReactFlowRouteDiagramProps>
 
     const fetchStats = async () => {
       try {
-        const xml = await routesService.dumpRoutesStatsXML(selectedNode)
+        const xml = await routeStatsService.dumpRoutesStatsXML(selectedNode)
         if (xml) {
           setStatsXml(xml)
         }
@@ -163,8 +186,36 @@ const ReactFlowRouteDiagram: React.FunctionComponent<ReactFlowRouteDiagramProps>
     }
   }, [statsXml, setNodes, nodes.length])
 
+  const unwrap = (error: Error): string => {
+    if (!error) return 'unknown error'
+
+    if (error.cause instanceof Error) {
+      return error.message + '\n\t' + unwrap(error.cause)
+    }
+
+    return error.message
+  }
+
+  if (error) {
+    eventService.notify({
+      type: 'danger',
+      message: unwrap(error),
+    })
+
+    return (
+      <EmptyState>
+        <EmptyStateHeader
+          titleText='Error Occurred'
+          headingLevel='h4'
+          icon={<EmptyStateIcon icon={ExclamationCircleIcon} />}
+        />
+        <EmptyStateBody>An error occurred during drawing of the diagram.</EmptyStateBody>
+      </EmptyState>
+    )
+  }
+
   if (!selectedNode) {
-    return null
+    setError(new Error('No route has been selected.'))
   }
 
   const onNodeClick = (_event: React.MouseEvent, node: Node) => {
@@ -211,10 +262,8 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
     setAnnotation(ann)
   }, [annotations, data.cid])
 
-  const handleDoubleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!doubleClickAction) return
-
-    doubleClickAction(data)
+  const handleDoubleClick = (_e: React.MouseEvent<HTMLDivElement>) => {
+    doubleClickAction?.(data)
   }
 
   const truncate = (label: string) => {
@@ -225,20 +274,21 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
     return newLabel.substring(0, 17) + '...'
   }
 
-  const totalExchanges: number =
+  const totalExchanges =
     parseInt(data.stats?.exchangesCompleted ?? '0') + parseInt(data.stats?.exchangesInflight ?? '0')
 
   return (
     <div
-      className={'camel-node-content' + (selected ? ' highlighted' : '')}
-      onMouseEnter={() => {
-        if (showStatistics) setVisible(true)
-      }}
-      onMouseLeave={() => {
-        if (showStatistics) setVisible(false)
-      }}
+      className={
+        'camel-node-content' +
+        (selected ? ' highlighted' : '') +
+        (data.routeStopped || data.disabled ? ' disabled' : '')
+      }
+      onMouseEnter={() => showStatistics && setVisible(true)}
+      onMouseLeave={() => showStatistics && setVisible(false)}
       onDoubleClick={handleDoubleClick}
     >
+      <CamelNodeActions data={data} />
       <Handle type='target' position={targetPosition ?? Position.Top} />
       <Handle type='source' position={sourcePosition ?? Position.Bottom} id='a' />
       <div className='annotation'>{annotation?.element}</div>
@@ -249,42 +299,42 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
       {data.cid && <div className='camel-node-id'> (ID: {data.cid})</div>}
       {showStatistics && (
         <NodeToolbar isVisible={isVisible} position={Position.Bottom} style={{ marginTop: '-30px' }}>
-          <div className={'node-tooltip'}>
+          <div className='node-tooltip'>
             {!data.stats && data.label}
             {data.stats && !showFull && (
-              <Table variant={'compact'}>
+              <Table variant='compact'>
                 <Tbody style={{ fontSize: 'xx-small' }}>
-                  <Tr className={'node-tooltip-odd-row'}>
+                  <Tr className='node-tooltip-odd-row'>
                     <Td>ID</Td>
-                    <Td className={'node-tooltip-value'}>{data.stats.id}</Td>
+                    <Td className='node-tooltip-value'>{data.stats.id}</Td>
                   </Tr>
-                  <Tr className={'node-tooltip-even-row'}>
+                  <Tr className='node-tooltip-even-row'>
                     <Td>Total</Td>
-                    <Td className={'node-tooltip-value'}>{totalExchanges}</Td>
+                    <Td className='node-tooltip-value'>{totalExchanges}</Td>
                   </Tr>
-                  <Tr className={'node-tooltip-odd-row'}>
+                  <Tr className='node-tooltip-odd-row'>
                     <Td>Completed</Td>
-                    <Td className={'node-tooltip-value'}>{data.stats?.exchangesCompleted}</Td>
+                    <Td className='node-tooltip-value'>{data.stats?.exchangesCompleted}</Td>
                   </Tr>
-                  <Tr className={'node-tooltip-even-row'}>
+                  <Tr className='node-tooltip-even-row'>
                     <Td>Inflight</Td>
-                    <Td className={'node-tooltip-value'}>{data.stats?.exchangesInflight}</Td>
+                    <Td className='node-tooltip-value'>{data.stats?.exchangesInflight}</Td>
                   </Tr>
-                  <Tr className={'node-tooltip-odd-row'}>
+                  <Tr className='node-tooltip-odd-row'>
                     <Td>Last</Td>
-                    <Td className={'node-tooltip-value'}>{data.stats?.lastProcessingTime} (ms)</Td>
+                    <Td className='node-tooltip-value'>{data.stats?.lastProcessingTime} (ms)</Td>
                   </Tr>
-                  <Tr className={'node-tooltip-even-row'}>
+                  <Tr className='node-tooltip-even-row'>
                     <Td>Mean</Td>
-                    <Td className={'node-tooltip-value'}>{data.stats?.meanProcessingTime} (ms)</Td>
+                    <Td className='node-tooltip-value'>{data.stats?.meanProcessingTime} (ms)</Td>
                   </Tr>
-                  <Tr className={'node-tooltip-odd-row'}>
+                  <Tr className='node-tooltip-odd-row'>
                     <Td>Min</Td>
-                    <Td className={'node-tooltip-value'}>{data.stats?.minProcessingTime} (ms)</Td>
+                    <Td className='node-tooltip-value'>{data.stats?.minProcessingTime} (ms)</Td>
                   </Tr>
-                  <Tr className={'node-tooltip-even-row'}>
+                  <Tr className='node-tooltip-even-row'>
                     <Td>Max</Td>
-                    <Td className={'node-tooltip-value'}>{data.stats?.maxProcessingTime} (ms)</Td>
+                    <Td className='node-tooltip-value'>{data.stats?.maxProcessingTime} (ms)</Td>
                   </Tr>
                 </Tbody>
               </Table>
@@ -292,7 +342,7 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
 
             {data.stats && showFull && (
               //TODO finish full statistics
-              <Table variant={'compact'}>
+              <Table variant='compact'>
                 <Tbody style={{ fontSize: 'xx-small' }}>
                   {Object.entries(data.stats).map(s => {
                     return (
@@ -309,5 +359,87 @@ const CamelNode: React.FunctionComponent<NodeProps<CamelNodeData>> = ({
         </NodeToolbar>
       )}
     </div>
+  )
+}
+
+const CamelNodeActions: React.FunctionComponent<{ data: CamelNodeData }> = ({ data }) => {
+  const { selectedNode } = useContext(CamelContext)
+  const [routeStopped, setRouteStopped] = useState(false)
+  const [disabled, setDisabled] = useState(false)
+
+  useEffect(() => {
+    setRouteStopped(data.routeStopped)
+    setDisabled(data.disabled)
+  }, [data])
+
+  if (!selectedNode) {
+    return null
+  }
+
+  const routeNode = isRoutesFolder(selectedNode) ? selectedNode.find(n => n.name === data.routeId) : selectedNode
+  if (!routeNode) {
+    eventService.notify({ type: 'warning', message: `No route found for route ID '${data.routeId}'` })
+    return null
+  }
+
+  const updateRoute = (started: boolean) => {
+    if (data.type !== 'from' || started === !data.routeStopped) {
+      return
+    }
+    setRouteStopped(!started)
+
+    if (started) {
+      routesService.startRoute(routeNode)
+    } else {
+      routesService.stopRoute(routeNode)
+    }
+  }
+
+  const updateProcessor = (enabled: boolean) => {
+    if (enabled === !data.disabled) {
+      return
+    }
+    setDisabled(!enabled)
+
+    const { cid } = data
+    if (!cid) {
+      eventService.notify({ type: 'warning', message: 'No processor ID found for the node' })
+      return
+    }
+
+    if (enabled) {
+      enableProcessor(routeNode, cid)
+    } else {
+      disableProcessor(routeNode, cid)
+    }
+  }
+
+  // EIP enable/disable is only supported in Camel 4.14+
+  const isCamel4_14 = isCamelVersionEQGT(selectedNode, 4, 14)
+
+  return (
+    <NodeToolbar position={Position.Right}>
+      <Title headingLevel='h4'>Node actions</Title>
+      {data.type === 'from' && (
+        <Switch
+          id='camel-route-diagram-camel-node-start-stop-route'
+          label='Route started'
+          labelOff='Route stopped'
+          isChecked={!routeStopped}
+          isDisabled={!routesService.canStartRoute(routeNode) || !routesService.canStopRoute(routeNode)}
+          onChange={(_event, checked) => updateRoute(checked)}
+        />
+      )}
+      {data.type !== 'from' && isCamel4_14 && (
+        <Switch
+          id='camel-route-diagram-camel-node-action-enable-disable-eip'
+          label='EIP enabled'
+          labelOff='EIP disabled'
+          isChecked={!disabled}
+          isDisabled={!canEnableDisableProcessor(routeNode, data.cid)}
+          onChange={(_event, checked) => updateProcessor(checked)}
+        />
+      )}
+    </NodeToolbar>
   )
 }

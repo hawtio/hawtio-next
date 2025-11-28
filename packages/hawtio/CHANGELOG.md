@@ -2,6 +2,68 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.11.2](https://github.com/hawtio/hawtio-next/compare/v1.11.1...v1.11.2) (2025-11-03)
+
+
+### Features
+
+* **jolokia:** new `readSpecifiedAttributes()` method to fetch selected attributes for an MBean ([4be24e72](https://github.com/hawtio/hawtio-next/commit/4be24e7238f368a79b046d937ad0d842c4bc47f4))
+
+
+### Bug Fixes
+
+* **auth:** call keycloak.logout() passing configurable redirect URL (for Spring Security) (hawtio/hawtio[#4120](https://github.com/hawtio/hawtio-next/issues/4120)) ([acb8cfd](https://github.com/hawtio/hawtio-next/commit/acb8cfd41e73fca5a79ef838fc46afcfa7e43ce9))
+
+## [1.11.1](https://github.com/hawtio/hawtio-next/compare/v1.11.0...v1.11.1) (2025-10-30)
+
+
+### Bug Fixes
+
+* **auth:** Handle Keycloak and OIDC login methods without /auth/config/login endpoint (fixes [#1774](https://github.com/hawtio/hawtio-next/issues/1774)) ([9ea7cca](https://github.com/hawtio/hawtio-next/commit/9ea7cca3fc9a9efe292f38481eac5a357886106a))
+* **auth:** Send proper id_token_hint with OIDC logout ([#1774](https://github.com/hawtio/hawtio-next/issues/1774)) ([9bb89a8](https://github.com/hawtio/hawtio-next/commit/9bb89a81716f70e067e161a30eae9ca8220c4ce3))
+
+## [1.11.0](https://github.com/hawtio/hawtio-next/compare/v1.11.0-pre.1...v1.11.0) (2025-10-29)
+
+
+### Features
+
+* **camel:** add debug step over/skip over functions for Camel 4.14+ ([b8d657f](https://github.com/hawtio/hawtio-next/commit/b8d657f11e06e33a39bbf9b48e531091f31ddae0)), closes [#1645](https://github.com/hawtio/hawtio-next/issues/1645)
+* **diagnostics:** Flight Recorder plugin ([#643](https://github.com/hawtio/hawtio-next/issues/643)) ([a8cf897](https://github.com/hawtio/hawtio-next/commit/a8cf897d45a5f2523ccb7e423103b8584b2ae383))
+
+
+### Bug Fixes
+
+* **plugins:** Skip /plugin endpoint if not available (fixes hawtio/hawtio[#4014](https://github.com/hawtio/hawtio-next/issues/4014)) ([0295702](https://github.com/hawtio/hawtio-next/commit/029570239b535690b7399f694d25ff800986143e))
+
+## [1.11.0-pre.1](https://github.com/hawtio/hawtio-next/compare/v1.11.0-pre.0...v1.11.0-pre.1) (2025-10-17)
+
+
+### Features
+
+* **camel:** allow start/stop routes in the Route Diagram ([e55a24a](https://github.com/hawtio/hawtio-next/commit/e55a24ac876d8b789225f5ffc6783d50f9da3706)), closes [#1754](https://github.com/hawtio/hawtio-next/issues/1754)
+
+## [1.11.0-pre.0](https://github.com/hawtio/hawtio-next/compare/v1.10.2...v1.11.0-pre.0) (2025-10-17)
+
+
+### Features
+
+* **camel:** make it possible to quickly enable/disable EIPs for Camel 4.14+ ([4ef96fd](https://github.com/hawtio/hawtio-next/commit/4ef96fdc1254ecb95386cbabbc93eb7c7e6a9d93)), closes [#1644](https://github.com/hawtio/hawtio-next/issues/1644)
+* **camel:** support Camel model 4.14 and drop 4.8 ([214c0bf](https://github.com/hawtio/hawtio-next/commit/214c0bfba813e64ed9e3826bb3aa7c898e51c00a)), closes [#1691](https://github.com/hawtio/hawtio-next/issues/1691)
+* **ui:** Configurable <HawtioInitialization/> verbosity (fixes [#1722](https://github.com/hawtio/hawtio-next/issues/1722)) ([aa6b6d2](https://github.com/hawtio/hawtio-next/commit/aa6b6d2da8d4443db938191433224f20c1c7f23c))
+
+
+### Bug Fixes
+
+* **api:** export rbac-service from rbac plugin ([279cf03](https://github.com/hawtio/hawtio-next/commit/279cf034086a1c34a69839f92457c011dfcf003e))
+* **auth:** Introduce "external" login methods which doesn't add login option (finally fixes [#1556](https://github.com/hawtio/hawtio-next/issues/1556)) ([88b53c6](https://github.com/hawtio/hawtio-next/commit/88b53c6f95d09d385d932d43b32d817adcff7ded))
+* **backend-middleware:** Handle streamed request when sending over @hawtio/backend-middleware proxy (fixes [#1724](https://github.com/hawtio/hawtio-next/issues/1724)) ([0bede16](https://github.com/hawtio/hawtio-next/commit/0bede162dfb7362e8aef4b018ce187e32450aa4b))
+* **camel:** update camel models to 4.10.7 and 4.14.1 ([feea096](https://github.com/hawtio/hawtio-next/commit/feea096eda635f00954a270a1d669e84870ea503))
+* **deps:** remove unnecessary lints ([1171c06](https://github.com/hawtio/hawtio-next/commit/1171c0609b2f54f14b165f437854a8a837932924))
+* **oidc:** Use proper "this" for stored window.fetch (fixes [#1726](https://github.com/hawtio/hawtio-next/issues/1726)) ([a4b5441](https://github.com/hawtio/hawtio-next/commit/a4b5441b81c13ccfc6d8bf1d040838ac68abfbff))
+* **rbac:** check canInvoke within the execute() of an operation ([13487a6](https://github.com/hawtio/hawtio-next/commit/13487a66dd370c98a119904736c0b007160bdbaf))
+* **ui:** Correct handling of child logger level (fixes [#1727](https://github.com/hawtio/hawtio-next/issues/1727)) ([de26383](https://github.com/hawtio/hawtio-next/commit/de2638336bf17fbccbf3b3ec7c92bff448b8a9cc))
+* **ui:** HawtioInitialization CSS is part of @hawtio/react package ([4ddbc35](https://github.com/hawtio/hawtio-next/commit/4ddbc355be0a3beeb052746fca62425a30eae12c))
+
 ## [1.10.2](https://github.com/hawtio/hawtio-next/compare/v1.10.1...v1.10.2) (2025-08-06)
 
 ## [1.10.1](https://github.com/hawtio/hawtio-next/compare/v1.10.0...v1.10.1) (2025-07-30)

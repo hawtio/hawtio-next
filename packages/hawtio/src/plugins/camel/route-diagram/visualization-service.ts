@@ -1,11 +1,11 @@
-import { routesService, RouteStats, Statistics } from '@hawtiosrc/plugins/camel/routes-service'
-import { schemaService } from '@hawtiosrc/plugins/camel/schema-service'
 import { MBeanNode } from '@hawtiosrc/plugins/shared'
 import { parseXML } from '@hawtiosrc/util/xml'
 import dagre from 'dagre'
 import { ReactNode } from 'react'
 import { Edge, MarkerType, Node, Position } from 'reactflow'
 import { camelPreferencesService } from '../camel-preferences-service'
+import { routeStatsService, RouteStats, Statistics } from '../route-stats-service'
+import { schemaService } from '../schema-service'
 
 export type CamelNodeData = {
   id: string
@@ -14,6 +14,8 @@ export type CamelNodeData = {
   label: string
   labelSummary: string
   group: 1
+  disabled: boolean
+  routeStopped: boolean
 
   elementId: string | null
   imageUrl: ReactNode
@@ -133,16 +135,22 @@ class VisualizationService {
   }
 
   updateStats(statsXml: string, nodes: Node<CamelNodeData>[]): Node<CamelNodeData>[] {
-    const stats: RouteStats[] = routesService.processRoutesStats(statsXml)
+    const stats: RouteStats[] = routeStatsService.processRoutesStats(statsXml)
 
     return nodes.map(node => {
       const routeStat = stats.find(s => s.id === node.data.routeId)
+      const routeStopped = routeStat?.state === 'Stopped'
       if (node.data.type === 'from') {
-        const newData = { ...node.data, stats: routeStat }
+        const newData = { ...node.data, routeStopped, stats: routeStat }
         return { ...node, data: newData }
       }
       const pStats = routeStat?.processorStats.find(p => node.data.cid === p.id)
-      const newData = { ...node.data, stats: pStats }
+      const newData = {
+        ...node.data,
+        disabled: pStats?.disabled === 'true',
+        routeStopped,
+        stats: pStats,
+      }
       return { ...node, data: newData }
     })
   }
@@ -186,14 +194,14 @@ class VisualizationService {
           tooltip += ' ' + uri
         }
         const { ignoreIdForLabel, maximumLabelWidth } = camelPreferencesService.loadOptions()
-        const elementID = routeElement.getAttribute('id')
+        const elementId = routeElement.getAttribute('id')
         let labelSummary = label
-        if (elementID) {
+        if (elementId) {
           const customId = routeElement.getAttribute('customId')
           if (ignoreIdForLabel || !customId || customId === 'false') {
-            labelSummary = 'id: ' + elementID
+            labelSummary = 'id: ' + elementId
           } else {
-            label = elementID
+            label = elementId
           }
         }
         // lets check if we need to trim the label
@@ -202,7 +210,7 @@ class VisualizationService {
           labelSummary = label + '\n\n' + labelSummary
           label = label.substring(0, maximumLabelWidth) + '..'
         }
-        const imageUrl = await routesService.getIcon(node, nodeSettings)
+        const imageUrl = await routeStatsService.getIcon(node, nodeSettings)
 
         if ((nodeId === 'from' || nodeId === 'to') && uri) {
           const uriIdx = uri.indexOf(':')
@@ -220,19 +228,21 @@ class VisualizationService {
         let cid = routeElement.getAttribute('_cid') || routeElement.getAttribute('id')
         const parallelProcessing: boolean = routeElement.getAttribute('parallelProcessing')?.toLowerCase() === 'true'
         nodeData = {
-          id: id,
-          routeIdx: routeIdx,
+          id,
+          routeIdx,
           name: nodeId,
-          label: label,
-          labelSummary: labelSummary,
+          label,
+          labelSummary,
           group: 1,
-          elementId: elementID,
-          imageUrl: imageUrl,
+          disabled: false,
+          routeStopped: false,
+          elementId,
+          imageUrl,
           cid: cid ?? id,
-          tooltip: tooltip,
+          tooltip,
           type: nodeId,
           uri: uri ?? '',
-          routeId: routeId,
+          routeId,
           isParallel: parallelProcessing,
         }
 

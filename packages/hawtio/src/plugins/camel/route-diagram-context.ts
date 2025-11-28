@@ -1,7 +1,7 @@
 import { createContext, useState } from 'react'
-import { CamelNodeData } from './visualization-service'
+import { CamelNodeData } from './route-diagram/visualization-service'
 
-const noOpAction = (nodeData: CamelNodeData) => {
+const noOpAction = (_nodeData: CamelNodeData) => {
   /* no-op */
 }
 

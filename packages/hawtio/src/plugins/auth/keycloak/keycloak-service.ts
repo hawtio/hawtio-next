@@ -38,6 +38,11 @@ export type HawtioKeycloakConfig = KeycloakConfig & {
    * - "S256" - The SHA256 based PKCE method
    */
   pkceMethod?: KeycloakPkceMethod
+
+  /**
+   * URI to be sent by keycloak.js with `post_logout_redirect_uri` parameter - important for Spring Boot
+   */
+  logoutUri?: string
 }
 
 export const KEYCLOAK_TOKEN_MINIMUM_VALIDITY = 5 // 5 sec.
@@ -80,6 +85,7 @@ class KeycloakService implements IKeycloakService {
     this.userProfile = this.loadUserProfile()
 
     this.originalFetch = fetch
+    this.originalFetch = this.originalFetch.bind(window)
   }
 
   /**
@@ -267,10 +273,18 @@ class KeycloakService implements IKeycloakService {
       if (!keycloak) {
         return false
       }
+      const config = await this.config
+      let logoutUri = config?.logoutUri
+      if (logoutUri) {
+        if (!URL.canParse(logoutUri)) {
+          // assume it's relative URL
+          logoutUri = new URL(logoutUri, document.baseURI).href
+        }
+      }
 
       log.info('Log out Keycloak')
       try {
-        await keycloak.logout()
+        await keycloak.logout({ redirectUri: logoutUri })
       } catch (error) {
         log.error('Error logging out Keycloak:', error)
       }

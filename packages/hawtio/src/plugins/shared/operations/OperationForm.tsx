@@ -306,6 +306,9 @@ const OperationExecuteForm: React.FunctionComponent<{
   }
 
   const execute = async () => {
+    if (!operation.canInvoke) {
+      return
+    }
     setIsExecuting(true)
     try {
       const result = await operationService.execute(objectName, name, argValues)

@@ -12,6 +12,7 @@
 // styles won't be predictable - base.css is only a set of basic styles. Styles for particular components
 // are imported from these components and these are loaded asynchronously (because of the dynamic `import()`)
 
+import '@hawtio/react/dist/init.css'
 import '@hawtio/react/dist/index.css'
 import '@patternfly/react-core/dist/styles/base.css'
 import './index.css'

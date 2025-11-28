@@ -58,7 +58,7 @@ export type OidcConfig = OidcAuthenticationMethod & {
   prompt: 'none' | 'login' | 'consent' | 'select_account' | null
 
   /**
-   * OpenID Connnect configuration obtained from [/.well-known/openid-configuration](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfigurationRequest)
+   * OpenID Connect configuration obtained from [/.well-known/openid-configuration](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfigurationRequest)
    * endpoint.
    * See https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml#authorization-server-metadata
    *
@@ -120,7 +120,16 @@ class OidcService implements IOidcService {
   constructor() {
     configManager.initItem('OIDC Configuration', TaskState.started, 'config')
     this.config = fetch('auth/config/oidc')
-      .then(response => (response.ok && response.status == 200 ? response.json() : null))
+      .then(response => {
+        if (response.ok && response.status == 200) {
+          return response.json()
+        } else if (response.status == 404) {
+          // just one more try with different URI
+          return fetch('auth/config').then(response => (response.ok && response.status == 200 ? response.json() : null))
+        } else {
+          return false
+        }
+      })
       .then(json => {
         return json as OidcConfig
       })
@@ -146,6 +155,7 @@ class OidcService implements IOidcService {
     this.userInfo = this.initialize()
 
     this.originalFetch = fetch
+    this.originalFetch = this.originalFetch.bind(window)
   }
 
   /**
@@ -600,11 +610,18 @@ class OidcService implements IOidcService {
         // window.location.assign(`${md?.end_session_endpoint}?post_logout_redirect_uri=${document.baseURI}&id_token_hint=${user!.id_token}`)
         // for Keycloak, with client_id passed here, we're logged out automatically and get redirected to Hawtio
         const c = await this.config
+        const userInfo = await this.userInfo
         // here we can't verify connection to IdP - we'll simply get browser error. Nothing we can do at this stage
         // use "location.assign" to let user browse back
-        window.location.assign(
-          `${md?.end_session_endpoint}?post_logout_redirect_uri=${document.baseURI}&client_id=${c!.client_id}`,
-        )
+        if (userInfo && userInfo.id_token) {
+          window.location.assign(
+            `${md?.end_session_endpoint}?post_logout_redirect_uri=${document.baseURI}&client_id=${c!.client_id}&id_token_hint=${userInfo.id_token}`,
+          )
+        } else {
+          window.location.assign(
+            `${md?.end_session_endpoint}?post_logout_redirect_uri=${document.baseURI}&client_id=${c!.client_id}`,
+          )
+        }
         return true
       }
       return false

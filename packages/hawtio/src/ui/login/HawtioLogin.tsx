@@ -104,6 +104,9 @@ export const HawtioLogin: React.FunctionComponent = () => {
         // here we don't have to change UI to another button which starts Authorization Flow.
         // we can do it already
         return oidcComponent
+      } else if (method.method === 'external') {
+        // skip, as this "method" is supported by redirects before reaching Hawtio's index.html
+        return null
       } else {
         // a button with onClick that only selects given method
         return (
@@ -129,6 +132,7 @@ export const HawtioLogin: React.FunctionComponent = () => {
         // will handle login using loginService
         return <HawtioLoginForm method={method as FormAuthenticationMethod} />
       case 'oidc':
+      case 'keycloak':
         // already prepared Button with plugin-specific onClick
         return oidcComponent
       case 'basic':
@@ -136,7 +140,7 @@ export const HawtioLogin: React.FunctionComponent = () => {
       case 'clientcert':
       case 'oauth2':
       default:
-        return <div>({method.method}: TODO)</div>
+        return <div>(Unsupported "{method.method}" authentication)</div>
     }
   }
 

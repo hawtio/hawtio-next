@@ -36,19 +36,19 @@
     "publish:backend-middleware": "yarn workspace @hawtio/backend-middleware npm publish --tolerate-republish"
   },
   "devDependencies": {
-    "@eslint/compat": "^1.4.0",
-    "@types/node": "^24.5.2",
+    "@eslint/compat": "^1.4.1",
+    "@types/node": "^24.10.0",
     "concurrently": "^9.2.1",
     "cz-conventional-changelog": "3.3.0",
     "eslint": "^9.31.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-testing-library": "^7.6.4",
+    "eslint-plugin-react-hooks": "^6.1.1",
+    "eslint-plugin-testing-library": "^7.13.3",
     "prettier": "^3.6.2",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.44.1"
+    "typescript-eslint": "^8.46.3"
   },
   "resolutions": {
     "@types/react": "^17.0.37",
@@ -62,7 +62,7 @@
       "maxLineWidth": 80
     }
   },
-  "packageManager": "yarn@4.9.2",
+  "packageManager": "yarn@4.10.3",
   "engines": {
     "yarn": ">=4"
   }

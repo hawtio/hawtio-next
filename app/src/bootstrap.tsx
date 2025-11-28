@@ -12,14 +12,14 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import { configManager, hawtio, HawtioInitialization, TaskState } from '@hawtio/react/init'
+import { configManager, hawtio, HawtioInitialization, TaskState, Logger } from '@hawtio/react/init'
 
 // Hawtio itself creates and tracks initialization tasks, but we can add our own.
 configManager.initItem('Loading UI', TaskState.started, 'config')
 
 // Basic UI that shows initialization progress without depending on PatternFly.
 // It is imported and rendered in fully synchronous way.
-ReactDOM.render(<HawtioInitialization verbose={true} />, document.getElementById('root'))
+ReactDOM.render(<HawtioInitialization verbose={configManager.globalLogLevel() < Logger.INFO.value} />, document.getElementById('root'))
 
 // Configure the console
 configManager.addProductInfo('Test App', '1.0.0')

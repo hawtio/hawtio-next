@@ -161,6 +161,11 @@ class ConnectService implements IConnectService {
         log.debug('Failed to load preset connections:', res.status, res.statusText)
         return
       }
+      if (res.headers.get('Content-Type') != 'application/json') {
+        configManager.initItem('Checking preset connections', TaskState.skipped, 'config')
+        log.debug('Preset connections not configured')
+        return
+      }
 
       const preset: Partial<Connection>[] = await res.json()
       log.debug('Preset connections:', preset)
@@ -388,9 +393,7 @@ class ConnectService implements IConnectService {
         }
         fetch(this.getJolokiaUrl(connection), {
           method: 'post',
-          // with application/json, I'm getting "CanceledError: Request stream has been aborted" when running
-          // via hawtioMiddleware...
-          headers: { ...headers, 'Content-Type': 'text/json' },
+          headers: { ...headers, 'Content-Type': 'application/json' },
           credentials: 'same-origin',
           body: JSON.stringify({ type: 'version' }),
         })
@@ -625,8 +628,6 @@ class ConnectService implements IConnectService {
     link.href = url
     link.download = `hawtio-connections-${Date.now()}.json`
     document.body.appendChild(link)
-    // weird... it's a DOM method, not Node.js
-    // eslint-disable-next-line testing-library/no-node-access
     link.click()
     document.body.removeChild(link)
     URL.revokeObjectURL(url)

@@ -4,9 +4,12 @@
 // not all public methods are available
 // For full access, applications should import "@hawtio/react" package instead of "@hawtio/react/init"
 
+import './ui/init/HawtioInitialization.css'
+
 import { configManager as configManagerService, type IConfigManager, TaskState } from './core/config-manager'
 import { hawtio as hawtioService, type IHawtio } from './core/core'
 
+export { Logger } from './core/logging'
 export const configManager: IConfigManager = configManagerService
 export const hawtio: IHawtio = hawtioService
 export { TaskState }
