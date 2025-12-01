@@ -307,6 +307,8 @@ module.exports = (_, args) => {
             // configuration suitable for Keycloak run from https://github.com/hawtio/hawtio
             // repository using examples/keycloak-integration/run-keycloak.sh
             method: 'oidc',
+            // position is not mandatory and will be calculated when absent
+            position: 0,
             provider: 'http://127.0.0.1:18080/realms/hawtio-demo',
             client_id: 'hawtio-client',
             response_mode: 'fragment',
@@ -318,10 +320,28 @@ module.exports = (_, args) => {
             // with Hawtio Java it may already be part of this response
             'openid-configuration': null,
           }
+          const springSecurityOidcConfig = {
+            // configuration suitable for Keycloak run from https://github.com/hawtio/hawtio
+            // repository using examples/keycloak-integration/run-keycloak.sh
+            method: 'oidc',
+            position: 1,
+            provider: 'http://127.0.0.1:9000/',
+            client_id: 'oidc-client',
+            response_mode: 'query',
+            scope: 'openid profile',
+            redirect_uri: `http://localhost:${port}/hawtio/`,
+            code_challenge_method: 'S256',
+            prompt: null,
+            // Hawtio (oidc plugin) will fetch this configuration from .well-known/openid-configuration
+            // with Hawtio Java it may already be part of this response
+            'openid-configuration': null,
+          }
           devServer.app.get(`${publicPath}/auth/config/oidc`, (_, res) => {
             res.type('application/json')
             if (oidcEnabled) {
-              res.send(JSON.stringify(keycloakOidcConfig))
+              // res.send(JSON.stringify(keycloakOidcConfig))
+              // res.send(JSON.stringify(springSecurityOidcConfig))
+              res.send(JSON.stringify([keycloakOidcConfig, springSecurityOidcConfig]))
             } else {
               res.send('{}')
             }
@@ -372,9 +392,17 @@ module.exports = (_, args) => {
             authLoginConfig.push({
               // Actual configuration of OIDC provider will be added from
               // /auth/config/oidc endpoint
-              // TODO: support more OIDC methods - like Keycloak, Azure and Spring Authorization Server at the same time
               method: 'oidc',
+              // position can be calculated if in the matching order with /auth/config/oidc endpoint
+              // position: 0,
               name: 'OpenID Connect (Keycloak)',
+            })
+            authLoginConfig.push({
+              // Actual configuration of OIDC provider will be added from
+              // /auth/config/oidc endpoint
+              method: 'oidc',
+              // position: 1,
+              name: 'OpenID Connect (Spring Authorization Server)',
             })
           }
 

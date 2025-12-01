@@ -233,8 +233,10 @@ export enum AuthenticationResult {
  * Base type for authentication methods supported by Hawtio
  */
 export type AuthenticationMethod = {
-  /** One of the supported methods. If a plugin augments given method, we should have one such method only */
+  /** One of the supported methods. If a plugin augments given method, we should have one such method only or matching `position` */
   method: AuthenticationKind
+  /** If there are more methods of the same kind, we need a position field to distinguish them */
+  position?: number
   /** Name to be presented at login page for login method selection */
   name?: string
   /** Plugin specific method for performing login. For now it's for OAuth2/OIDC/Keycloak. This field is set up by auth plugin */
@@ -420,6 +422,17 @@ export class ConfigManager implements IConfigManager {
         log.debug('Problem fetching authentication providers', e)
         return [defaultConfiguration]
       })
+    const indexMap = new Map()
+    this.authenticationConfig.forEach(m => {
+      if (!m.position) {
+        if (!indexMap.has(m.method)) {
+          indexMap.set(m.method, 0)
+        }
+        const idx = indexMap.get(m.method)
+        m.position = idx
+        indexMap.set(m.method, idx + 1)
+      }
+    })
 
     // configuration is ready - resolve the promise. But plugins may still call
     // configureAuthenticationMethod() to alter the generic list of methods
@@ -441,7 +454,10 @@ export class ConfigManager implements IConfigManager {
     return this.authenticationConfigPromise.then(() => {
       // search generic login configurations and alter the one which matches passed `config` by `method` field
       for (const idx in this.authenticationConfig) {
-        if (this.authenticationConfig[idx]?.method === config.method) {
+        if (
+          this.authenticationConfig[idx]?.method === config.method &&
+          this.authenticationConfig[idx]?.position === config.position
+        ) {
           // a plugin provides the remaining part of given authentication method (except the name)
           const name = this.authenticationConfig[idx].name
           this.authenticationConfig[idx] = {
@@ -491,9 +507,10 @@ export class ConfigManager implements IConfigManager {
   /**
    * Returns selected authentication method by name
    * @param method
+   * @param idx
    */
-  getAuthenticationMethod(method: string): AuthenticationMethod | undefined {
-    return this.authenticationConfig.find(am => am.method === method)
+  getAuthenticationMethod(method: string, idx: number): AuthenticationMethod | undefined {
+    return this.authenticationConfig.find(am => am.method === method && am.position === idx)
   }
 
   /**
