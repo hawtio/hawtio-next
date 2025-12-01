@@ -68,7 +68,7 @@ export const HawtioLogin: React.FunctionComponent = () => {
           isBlock
           className='idp'
           onClick={async () => {
-            const loginMethod = configManager.getAuthenticationMethod(method.method)?.login
+            const loginMethod = configManager.getAuthenticationMethod(method.method, method.position ?? 0)?.login
             let ok
             let result
             if (!loginMethod) {
@@ -159,8 +159,8 @@ export const HawtioLogin: React.FunctionComponent = () => {
       // there's only one option - present method specific UI
       loginForm = configureLoginFragment(authenticationMethods[0]!, false, 0)
     } else {
-      // multiple selection of login methods. user/password forms should use single pair of inputs, but
-      // the behaviour should be dependent on the method of choice
+      // Multiple selection of login methods. user/password forms should use single pair of inputs, but
+      // the behaviour should be dependent on the method of choice.
       // OAuth2/OIDC methods should be shown as buttons
       loginForm = (
         <ul>
