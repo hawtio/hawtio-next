@@ -99,13 +99,18 @@ type AuthData = {
 
 class OidcService implements IOidcService {
   // promises created during construction
-  // configuration from Hawtio backend - should include provider URL
-  private readonly config: Promise<OidcConfig | null>
-  // OIDC plugin is enabled when there's provider URL in the config - may not be reachable though
+
+  // OIDC plugin is enabled when there's any configuration with a provider URL in the config - may not be reachable though
   private readonly enabled: Promise<boolean>
-  // OIDC metadata may come with config. When not provided we have to get it from .well-known/openid-configuration
+
+  // configuration from Hawtio backend - should include provider URL
+  // we keep an array (usually 1-elem) for all OIDC providers - one promise for all configs (fetched from a single endpoint)
+  private readonly config: Promise<OidcConfig[]>
+
+  // OIDC metadata may come with its config. When not provided we have to get it from .well-known/openid-configuration
   // if we can't access it during initialization, we have to try on login
-  private oidcMetadata: Promise<AuthorizationServer | null>
+  // this is an array of promises, because each OidcConfig has own metadata which may be fetched at different time
+  private oidcMetadata: Promise<AuthorizationServer | null>[] = []
 
   // promise related to logged-in user. contains user name and tokens. This promise is resolved
   // after completing OAuth2 authorization flow or retrieving existing user using OIDC session
@@ -113,12 +118,17 @@ class OidcService implements IOidcService {
   // don't start Authorization Flow - it's started only on user request
   private userInfo: Promise<UserInfo | null>
 
+  // we have to know which particular provider was used for OIDC login
+  private selectedProvider: number = -1
+
   // when user is logged in, the credentials are represented by the token (usually JWT), which has to
   // be sent with every HTTP request using built-in fetch, which we wrap
   private readonly originalFetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
 
   constructor() {
     configManager.initItem('OIDC Configuration', TaskState.started, 'config')
+    // this.config will never be null. it's an array (possibly empty) with elements that may be null
+    // null elements are only because of misconfiguration, but we still handle this
     this.config = fetch('auth/config/oidc')
       .then(response => {
         if (response.ok && response.status == 200) {
@@ -127,26 +137,40 @@ class OidcService implements IOidcService {
           // just one more try with different URI
           return fetch('auth/config').then(response => (response.ok && response.status == 200 ? response.json() : null))
         } else {
-          return false
+          return null
         }
       })
       .then(json => {
-        return json as OidcConfig
+        return !json ? ([] as OidcConfig[]) : Array.isArray(json) ? json : ([json] as OidcConfig[])
       })
       .catch(() => {
         configManager.initItem('OIDC Configuration', TaskState.skipped, 'config')
-        return null
+        return [] as OidcConfig[]
       })
 
     this.enabled = this.isOidcEnabled()
-    this.oidcMetadata = this.enabled.then(enabled => {
+
+    // same with this.oidcMetadata - never null, always an array possibly with null elements
+    Promise.all([this.enabled, this.config]).then(([enabled, config]) => {
       if (enabled) {
-        return this.fetchOidcMetadata().then(md => {
-          return this.processOidcMetadata(md, true)
+        this.oidcMetadata = []
+        config.forEach((c, idx) => {
+          const mdPromise = this.fetchOidcMetadata(c)
+            .then(md => {
+              return this.processOidcMetadata(c, md, idx, true)
+            })
+            .catch(_e => {
+              // ignore, because IdP may not be available at this time - we'll be trying on each login
+              return null
+            })
+          this.oidcMetadata.push(mdPromise)
+        })
+        Promise.all(this.oidcMetadata).then(() => {
+          configManager.initItem('OIDC Configuration', TaskState.finished, 'config')
         })
       } else {
         configManager.initItem('OIDC Configuration', TaskState.skipped, 'config')
-        return null
+        this.oidcMetadata = []
       }
     })
 
@@ -161,29 +185,31 @@ class OidcService implements IOidcService {
   /**
    * This should happen during initialization, but when OIDC is enabled and we can't fetch OIDC metadata initially,
    * we'll be trying to do it during login until we get the metadata.
+   * @param c
    * @param md
+   * @param idx
    * @param initial
    * @private
    */
   private async processOidcMetadata(
+    c: OidcConfig,
     md: AuthorizationServer | null,
+    idx: number,
     initial: boolean = false,
   ): Promise<AuthorizationServer | null> {
-    const c = await this.config
-    // if OIDC is enabled we'll have all the config except maybe "openid-configuration"
-    // prepare login function to be used by HawtioLogin UI
     if (md) {
       // assign IDP details - noop if the details where fetched initially
-      c!['openid-configuration'] = md!
+      c['openid-configuration'] = md
     }
     if (initial) {
-      c!.login = this.oidcLogin
       // add the information to augment template configuration in configManager
       // we don't need "openid-configuration" here
       // and we have to finish the "OIDC Configuration" init item
-      configManager.configureAuthenticationMethod(c!).then(() => {
-        configManager.initItem('OIDC Configuration', TaskState.finished, 'config')
-      })
+      if (!c.position) {
+        c.position = idx
+      }
+      c.login = this.oidcLoginFunction(idx)
+      configManager.configureAuthenticationMethod(c)
     }
 
     return md
@@ -195,20 +221,22 @@ class OidcService implements IOidcService {
    */
   private async isOidcEnabled(): Promise<boolean> {
     const cfg = await this.config
-    return cfg?.method === AUTH_METHOD && cfg?.provider != null
+    if (cfg?.length == 0) {
+      return false
+    }
+    return cfg!.find(c => c?.method === AUTH_METHOD && c?.provider != null) != undefined
   }
 
   /**
    * Returns information about target IDP - either from initial configuration (prepared at server side by
    * `/auth/config/oidc` endpoint) or from OIDC metadata using additional request. Called only when OIDC
    * method is enabled
+   * @param cfg
    * @private
    */
-  private async fetchOidcMetadata(): Promise<AuthorizationServer | null> {
+  private async fetchOidcMetadata(cfg: OidcConfig): Promise<AuthorizationServer | null> {
     let res = null
-    const cfg = await this.config
     if (!cfg) {
-      log.debug('OpenID authorization is disabled')
       return null
     }
 
@@ -229,8 +257,7 @@ class OidcService implements IOidcService {
       if (!res || !res.ok) {
         return null
       }
-
-      return await oidc.processDiscoveryResponse(cfgUrl, res)
+      return oidc.processDiscoveryResponse(cfgUrl, res)
     }
   }
 
@@ -241,10 +268,30 @@ class OidcService implements IOidcService {
    */
   private async initialize(): Promise<UserInfo | null> {
     const enabled = await this.enabled
+
     // never null if enabled
-    const config = await this.config
-    const as = await this.oidcMetadata
-    if (!config || !enabled || !as) {
+    const configArray = await this.config
+    if (configArray.length == 0 || !enabled) {
+      return null
+    }
+
+    // don't remove this item after getting it from localStorage to not break refreshes
+    const selectedIdx = localStorage.getItem('hawtio-oidc-login-idx')
+    if (!selectedIdx) {
+      return null
+    }
+    const idx = parseInt(selectedIdx)
+    if (idx < 0 || idx >= configArray.length) {
+      return null
+    }
+    if (idx >= configArray.length || idx >= this.oidcMetadata.length) {
+      throw new Error(`Invalid OIDC authentication configuration with idx=${idx}`)
+    }
+    this.selectedProvider = idx
+    const config = configArray[idx]
+
+    const as = await this.oidcMetadata[idx]
+    if (!as || !config) {
       return null
     }
 
@@ -307,7 +354,7 @@ class OidcService implements IOidcService {
           // we're still before access_token expiration time, so we can do the silent login
           // to not show <HawtioInitialization> twice, we'll set another flag
           localStorage.setItem('core.auth.silentLogin', '1')
-          this.oidcLogin(true)
+          this.oidcLogin(idx, true)
         }
       }
 
@@ -425,26 +472,45 @@ class OidcService implements IOidcService {
     }
   }
 
+  private oidcLoginFunction = (oidcIndex: number): (() => Promise<AuthenticationResult>) => {
+    return () => {
+      return this.oidcLogin(oidcIndex, false)
+    }
+  }
+
   /**
    * This is a method made available to `<HawtioLogin>` UI when user clicks "Login with OIDC" button.
    *
-   * @param silent whether to start _silen_ (`prompt=none`) Authorization Flow
+   * @param idx index of the OIDC configuration used
+   * @param silent whether to start _silent_ (`prompt=none`) Authorization Flow
    * @return `false` (a promise resolving to `false`) if the login process can't proceed - login screen should
    * display generic error
    */
-  private oidcLogin = async (silent = false): Promise<AuthenticationResult> => {
-    const config = await this.config
+  private oidcLogin = async (idx: number, silent = false): Promise<AuthenticationResult> => {
+    const cfg = await this.config
+    if (!cfg || cfg.length == 0) {
+      return AuthenticationResult.configuration_error
+    }
+    if (idx >= cfg.length) {
+      throw new Error(`Invalid OIDC authentication configuration with idx=${idx}`)
+    }
+
+    const config = cfg[idx]
     if (!config) {
       return AuthenticationResult.configuration_error
     }
 
-    let as = await this.oidcMetadata
+    if (idx >= this.oidcMetadata.length) {
+      throw new Error(`Invalid OIDC authentication configuration with idx=${idx}`)
+    }
+    this.selectedProvider = idx
+    let as = await this.oidcMetadata[idx]
     if (!as) {
       // we have the config, OIDC is enabled, but somehow we didn't get the metadata - let's try it now
-      this.oidcMetadata = this.fetchOidcMetadata().then(md => {
-        return this.processOidcMetadata(md, false)
+      this.oidcMetadata[idx] = this.fetchOidcMetadata(config).then(md => {
+        return this.processOidcMetadata(config, md, idx, false)
       })
-      as = await this.oidcMetadata
+      as = await this.oidcMetadata[idx]
       if (!as) {
         // we tried, but we still don't have the metadata - we can only show user login error
         return AuthenticationResult.configuration_error
@@ -453,7 +519,7 @@ class OidcService implements IOidcService {
 
     // at this stage we can log in, but still - IdP may be down, so it'd be nice to check its reachable with
     // fetch() instead of getting "Unable to connect" displayed by browser after window.location.assign/replace
-    const available = await this.checkAvailability()
+    const available = await this.checkAvailability(idx)
     if (!available) {
       return AuthenticationResult.connect_error
     }
@@ -475,6 +541,7 @@ class OidcService implements IOidcService {
     // put some data to localStorage, so we can verify the OAuth2 response after redirect
     const verifyData = JSON.stringify({ st: state, cv: code_verifier, n: nonce, h: window.location.href })
     localStorage.setItem('hawtio-oidc-login', verifyData)
+    localStorage.setItem('hawtio-oidc-login-idx', JSON.stringify(idx))
 
     log.info('Added to local storage', verifyData)
 
@@ -523,18 +590,27 @@ class OidcService implements IOidcService {
   }
 
   /**
-   * Attempt to communicate with IdP before login/logout using window.location.assign/replace
+   * Attempt to communicate with IdP before login/logout without redirection. Actual login/logout
+   * will redirect (or fail with blank browser page), so it'll be too late to handle situation where IdP is
+   * simply not responding.
+   * @param idx
    * @private
    */
-  private async checkAvailability(): Promise<boolean> {
+  private async checkAvailability(idx: number): Promise<boolean> {
     try {
-      const cfg = await this.config
+      const cfg = (await this.config)[idx]
       if (cfg) {
-        const provider = cfg!.provider
+        let provider = cfg!.provider
+        if (provider && !provider.toString().endsWith('/')) provider = provider + '/'
+        // we need to check something better than just the base provider URL
+        // Spring Authorization Server returns 404 without CORS headers...
+        const url = new URL('.well-known/openid-configuration', provider)
         return this.originalFetch
-          .bind(window)(provider)
+          .bind(window)(url)
           .then(_r => true)
-          .catch(_e => false)
+          .catch(_e => {
+            return false
+          })
       }
       return false
     } catch {
@@ -597,9 +673,12 @@ class OidcService implements IOidcService {
     // logout hook which implements
     // https://openid.net/specs/openid-connect-rpinitiated-1_0.html
     const logout = async () => {
-      const md = await this.oidcMetadata
+      if (this.selectedProvider == -1) {
+        return false
+      }
+      const md = await this.oidcMetadata[this.selectedProvider]
       if (md?.end_session_endpoint) {
-        const available = await this.checkAvailability()
+        const available = await this.checkAvailability(this.selectedProvider)
         if (!available) {
           return false
         }
@@ -609,7 +688,7 @@ class OidcService implements IOidcService {
         // const user = await this.userInfo
         // window.location.assign(`${md?.end_session_endpoint}?post_logout_redirect_uri=${document.baseURI}&id_token_hint=${user!.id_token}`)
         // for Keycloak, with client_id passed here, we're logged out automatically and get redirected to Hawtio
-        const c = await this.config
+        const c = (await this.config)[this.selectedProvider]
         const userInfo = await this.userInfo
         // here we can't verify connection to IdP - we'll simply get browser error. Nothing we can do at this stage
         // use "location.assign" to let user browse back
@@ -631,13 +710,13 @@ class OidcService implements IOidcService {
 
   private async updateToken(success: (userInfo: UserInfo) => void, failure?: () => void) {
     const userInfo = await this.userInfo
-    if (!userInfo) {
+    if (!userInfo || this.selectedProvider == -1) {
       return
     }
     if (userInfo.refresh_token) {
-      const config = await this.config
+      const config = (await this.config)[this.selectedProvider]
       const enabled = await this.enabled
-      const as = await this.oidcMetadata
+      const as = await this.oidcMetadata[this.selectedProvider]
       if (!config || !enabled || !as) {
         return
       }
