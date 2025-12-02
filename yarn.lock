@@ -1012,7 +1012,7 @@ __metadata:
   dependencies:
     "@hawtio/camel-model-v4_10": "npm:@hawtio/camel-model@~4.10.7"
     "@hawtio/camel-model-v4_14": "npm:@hawtio/camel-model@~4.14.1"
-    "@jolokia.js/simple": "npm:^2.4.0"
+    "@jolokia.js/simple": "npm:^2.4.2"
     "@module-federation/utilities": "npm:^3.1.77"
     "@monaco-editor/react": "npm:^4.6.0"
     "@patternfly/react-charts": "npm:^7.4.9"
@@ -1040,7 +1040,7 @@ __metadata:
     jest: "npm:^30.2.0"
     jest-environment-jsdom: "npm:^30.2.0"
     jest-fetch-mock: "npm:^3.0.3"
-    jolokia.js: "npm:^2.4.0"
+    jolokia.js: "npm:^2.4.2"
     js-logger: "npm:^1.6.1"
     jwt-decode: "npm:^4.0.0"
     keycloak-js: "npm:^26.2.1"
@@ -1490,12 +1490,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jolokia.js/simple@npm:^2.4.0":
-  version: 2.4.1
-  resolution: "@jolokia.js/simple@npm:2.4.1"
+"@jolokia.js/simple@npm:^2.4.2":
+  version: 2.4.2
+  resolution: "@jolokia.js/simple@npm:2.4.2"
   dependencies:
-    jolokia.js: "npm:2.4.1"
-  checksum: 10/1dc8937526730bd4ee0f0411491f044d7ebfecde5442011746bfa6e9c6d0fa9c6476547bfd18371886b2f5ada032ad76c5b6db8aa22df9aa8b1264bc3a2a8168
+    jolokia.js: "npm:2.4.2"
+  checksum: 10/ed20a02f96935b171e0d6bcd8dcc171b829bb8245e18a9ff64c60a419f3e1bd85abfdbe060319b428806306b8b82eeab06872fcf6667428350277d2cb5df5df9
   languageName: node
   linkType: hard
 
@@ -9356,10 +9356,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jolokia.js@npm:2.4.1, jolokia.js@npm:^2.4.0":
-  version: 2.4.1
-  resolution: "jolokia.js@npm:2.4.1"
-  checksum: 10/e142810f6b6a69be2a76661cbd6619bce85196f2f3b95d29e75f04a82eb65153e5de13339f958749643aa32e107eb033471a73191cf6009da9dc11fe529c6864
+"jolokia.js@npm:2.4.2, jolokia.js@npm:^2.4.2":
+  version: 2.4.2
+  resolution: "jolokia.js@npm:2.4.2"
+  checksum: 10/7a266d855bf9e1c8e5da34aee5a9fc9c1398832e23bbf90f7334f30d1f917a02d5f94cf72a706f8e59bea3e0818b9b16bf5f002022fb2014f9176bc13b31942d
   languageName: node
   linkType: hard
 
