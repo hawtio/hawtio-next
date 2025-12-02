@@ -26,7 +26,7 @@ import { PlusCircleIcon } from '@patternfly/react-icons/dist/esm/icons/plus-circ
 import { PlusIcon } from '@patternfly/react-icons/dist/esm/icons/plus-icon'
 import { TimesCircleIcon } from '@patternfly/react-icons/dist/esm/icons/times-circle-icon'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
-import Jolokia, { JolokiaErrorResponse, JolokiaSuccessResponse } from 'jolokia.js'
+import Jolokia, { JolokiaErrorResponse, JolokiaFetchErrorResponse, JolokiaSuccessResponse } from 'jolokia.js'
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import * as camelService from '../camel-service'
 import { CamelContext } from '../context'
@@ -225,9 +225,13 @@ export const Debug: React.FunctionComponent = () => {
             mbean: debugMBean.objectName,
             operation: 'getDebugCounter',
           },
-          (response: JolokiaSuccessResponse | JolokiaErrorResponse) => {
+          (response: JolokiaSuccessResponse | JolokiaErrorResponse | JolokiaFetchErrorResponse) => {
+            if (Jolokia.isResponseFetchError(response)) {
+              log.warn('Scheduler - Debug (fetch error):', response)
+              return
+            }
             if (Jolokia.isError(response)) {
-              log.warn('Scheduler - Debug (error):', response.error)
+              log.warn('Scheduler - Debug (Jolokia error):', response.error)
               return
             }
             log.debug('Scheduler - Debug:', response.value)

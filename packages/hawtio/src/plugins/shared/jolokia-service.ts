@@ -21,6 +21,7 @@ import {
   JobCallback,
   JobRegistrationConfig,
   JolokiaErrorResponse,
+  JolokiaFetchErrorResponse,
   JolokiaRequest,
   JolokiaResponse,
   JolokiaResponseValue,
@@ -146,7 +147,7 @@ export interface IJolokiaService {
 
   register(
     request: JolokiaRequest,
-    callback: (response: JolokiaSuccessResponse | JolokiaErrorResponse) => void,
+    callback: (response: JolokiaSuccessResponse | JolokiaErrorResponse | JolokiaFetchErrorResponse) => void,
   ): Promise<number>
   unregister(handle: number): void
 
@@ -791,11 +792,13 @@ class JolokiaService implements IJolokiaService {
    * in case of Jolokia/HTTP error
    * @param options
    * @param reject
+   * @param context additional information when there's an unknown error
    * @private
    */
   private configureFetchErrorCallback(
     options: RequestOptions | SimpleRequestOptions | undefined,
     reject: (reason?: unknown) => void,
+    context: string,
   ): BaseRequestOptions {
     if (!options) {
       options = {}
@@ -807,7 +810,16 @@ class JolokiaService implements IJolokiaService {
         callback?.(response, error)
       }
       // reject the relevant promise on any HTTP/communication error
-      reject()
+      if (response) {
+        log.error(`fetch error: ${response.status}: ${response.statusText})`)
+        reject(`${response.status}: ${response.statusText}`)
+      } else if (error) {
+        log.error(`fetch error: ${error})`)
+        reject(error)
+      } else {
+        log.error(`Error in ${context}`)
+        reject('Unknown error. Check logs for details.')
+      }
     }
     return options
   }
@@ -820,7 +832,7 @@ class JolokiaService implements IJolokiaService {
   async readAttributes(mbean: string, options?: RequestOptions): Promise<AttributeValues> {
     const jolokia = await this.getJolokia()
     return new Promise((resolve, reject) => {
-      options = this.configureFetchErrorCallback(options, reject)
+      options = this.configureFetchErrorCallback(options, reject, 'jolokiaService.readAttributes')
       jolokia.request(
         { type: 'read', mbean },
         onAttributeSuccessAndError(
@@ -851,7 +863,7 @@ class JolokiaService implements IJolokiaService {
   ): Promise<AttributeValues> {
     const jolokia = await this.getJolokia()
     return new Promise((resolve, reject) => {
-      options = this.configureFetchErrorCallback(options, reject)
+      options = this.configureFetchErrorCallback(options, reject, 'jolokiaService.readSpecifiedAttributes')
       jolokia.request(
         { type: 'read', mbean, attribute: attributes },
         onAttributeSuccessAndError(
@@ -877,7 +889,7 @@ class JolokiaService implements IJolokiaService {
   async readAttribute(mbean: string, attribute: string, options?: RequestOptions): Promise<unknown> {
     const jolokia = await this.getJolokia()
     return new Promise((resolve, reject) => {
-      options = this.configureFetchErrorCallback(options, reject)
+      options = this.configureFetchErrorCallback(options, reject, 'jolokiaService.readAttribute')
       jolokia.request(
         { type: 'read', mbean, attribute },
         onAttributeSuccessAndError(
@@ -904,7 +916,7 @@ class JolokiaService implements IJolokiaService {
   async writeAttribute(mbean: string, attribute: string, value: unknown, options?: RequestOptions): Promise<unknown> {
     const jolokia = await this.getJolokia()
     return new Promise((resolve, reject) => {
-      options = this.configureFetchErrorCallback(options, reject)
+      options = this.configureFetchErrorCallback(options, reject, 'jolokiaService.writeAttribute')
       jolokia.request(
         { type: 'write', mbean, attribute, value },
         onAttributeSuccessAndError(
@@ -936,7 +948,7 @@ class JolokiaService implements IJolokiaService {
   ): Promise<unknown> {
     const jolokia = await this.getJolokia()
     return new Promise((resolve, reject) => {
-      options = this.configureFetchErrorCallback(options, reject)
+      options = this.configureFetchErrorCallback(options, reject, 'jolokiaService.execute')
       jolokia.execute(
         mbean,
         operation,
@@ -957,7 +969,7 @@ class JolokiaService implements IJolokiaService {
   async search(mbeanPattern: string): Promise<string[]> {
     const jolokia = await this.getJolokia()
     return new Promise((resolve, reject) => {
-      const options: SimpleRequestOptions = this.configureFetchErrorCallback({}, reject)
+      const options: SimpleRequestOptions = this.configureFetchErrorCallback({}, reject, 'jolokiaService.search')
       jolokia.search(
         mbeanPattern,
         onSearchSuccessAndError(
@@ -984,7 +996,7 @@ class JolokiaService implements IJolokiaService {
     const jolokia = await this.getJolokia()
     return new Promise((resolve, reject) => {
       const bulkResponse: (JolokiaSuccessResponse | JolokiaErrorResponse)[] = []
-      options = this.configureFetchErrorCallback(options, reject)
+      options = this.configureFetchErrorCallback(options, reject, 'jolokiaService.bulkRequest')
       jolokia.request(
         requests,
         onBulkSuccessAndError(
@@ -1017,9 +1029,16 @@ class JolokiaService implements IJolokiaService {
    */
   async register(
     request: JolokiaRequest,
-    callback: (response: JolokiaSuccessResponse | JolokiaErrorResponse) => void,
+    callback: (response: JolokiaSuccessResponse | JolokiaErrorResponse | JolokiaFetchErrorResponse) => void,
   ): Promise<number> {
     const jolokia = await this.getJolokia()
+    // be aware that there's a trick here - first argument of jolokia.register() is either a function or a job
+    // configuration object.
+    // here we pass a function and Jolokia:
+    //  - assumes a function which accepts an array with a spread syntax ("...responses:")
+    //  - calls the callback with a spread array of bulk request
+    // we trick Jolokia by passing a function that accepts a single parameter which will get the first
+    // element of the spread array. This is fine as long as there's only one request.
     return jolokia.register(callback, request)
   }
 
@@ -1063,12 +1082,19 @@ class JolokiaService implements IJolokiaService {
   }
 
   errorMessage(error: unknown): string | null {
-    const e = error as JolokiaErrorResponse
-    if (e.error) {
-      return e.status ? `${e.status}: ${e.error}` : e.error
-    } else {
-      return JSON.stringify(e)
+    if (!error) {
+      return 'Unknown error'
     }
+    if (typeof error === 'string') {
+      return error
+    }
+    if (error instanceof Error) {
+      return error.message
+    }
+    if (typeof error === 'object' && Jolokia.isResponseError(error)) {
+      return error.status ? `${error.status}: ${error.error}` : error.error
+    }
+    return JSON.stringify(error)
   }
 }
 

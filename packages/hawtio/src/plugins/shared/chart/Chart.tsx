@@ -18,7 +18,7 @@ import {
   Title,
 } from '@patternfly/react-core'
 import { Table, Tbody, Td, Tr } from '@patternfly/react-table'
-import { JolokiaErrorResponse, JolokiaSuccessResponse, ReadRequest } from 'jolokia.js'
+import Jolokia, { JolokiaErrorResponse, JolokiaFetchErrorResponse, JolokiaSuccessResponse, ReadRequest } from 'jolokia.js'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { attributeService } from '../attributes/attribute-service'
 import { WatchableAttributesForm } from './WatchableAttributesForm'
@@ -171,11 +171,20 @@ export const Chart: React.FunctionComponent = () => {
     else updateNode(mbeanObjectName, data)
   }
 
-  function extractChartDataFromResponse(response: JolokiaSuccessResponse | JolokiaErrorResponse, nodeName: string) {
-    const time = response.timestamp
+  function extractChartDataFromResponse(
+    response: JolokiaSuccessResponse | JolokiaErrorResponse | JolokiaFetchErrorResponse,
+    nodeName: string,
+  ) {
+    if (!response || Jolokia.isResponseFetchError(response)) {
+      return
+    }
+    if (typeof response !== 'object') {
+      return
+    }
     if ('error' in response) {
       return
     }
+    const time = response.timestamp ?? Date.now() / 1000
     const attr = response.value as AttributeValues
 
     const attributesEntry: AttributesEntry = {}
@@ -192,7 +201,7 @@ export const Chart: React.FunctionComponent = () => {
       .filter(value => isNumber(value[1]))
       .forEach(([attrName, value]) => {
         attributesEntry[attrName] = {
-          time: time ?? Date.now() / 1000,
+          time: time,
           value: value as number,
         }
       })
@@ -208,7 +217,7 @@ export const Chart: React.FunctionComponent = () => {
       .forEach(node => {
         attributeService.register(
           { type: 'read', mbean: node.objectName! },
-          (response: JolokiaSuccessResponse | JolokiaErrorResponse) =>
+          (response: JolokiaSuccessResponse | JolokiaErrorResponse | JolokiaFetchErrorResponse) =>
             extractChartDataFromResponse(response, node.name),
         )
       })

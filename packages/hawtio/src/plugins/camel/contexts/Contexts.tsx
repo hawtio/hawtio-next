@@ -5,7 +5,7 @@ import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { Card, CardBody, Content } from '@patternfly/react-core'
 import { InfoCircleIcon } from '@patternfly/react-icons/dist/esm/icons/info-circle-icon'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
-import Jolokia, { JolokiaSuccessResponse, JolokiaErrorResponse } from 'jolokia.js'
+import Jolokia, { JolokiaSuccessResponse, JolokiaErrorResponse, JolokiaFetchErrorResponse } from 'jolokia.js'
 import React, { useContext, useEffect, useState } from 'react'
 import { log } from '../globals'
 import { ContextToolbar } from './ContextToolbar'
@@ -62,9 +62,13 @@ export const Contexts: React.FunctionComponent = () => {
       }
       contextsService.register(
         { type: 'read', mbean: objectName },
-        (r: JolokiaSuccessResponse | JolokiaErrorResponse) => {
+        (r: JolokiaSuccessResponse | JolokiaErrorResponse | JolokiaFetchErrorResponse) => {
+          if (Jolokia.isResponseFetchError(r)) {
+            log.warn('Scheduler - Contexts (fetch error):', r)
+            return
+          }
           if (Jolokia.isError(r)) {
-            log.warn('Scheduler - Contexts (error):', r.error)
+            log.warn('Scheduler - Contexts (Jolokia error):', r.error)
             return
           }
           log.debug('Scheduler - Contexts:', r.value)

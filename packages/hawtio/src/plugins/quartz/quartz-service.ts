@@ -133,8 +133,12 @@ class QuartzService {
 
   registerTriggersLoad(schedulerMBean: string, callback: (triggers: Trigger[]) => void) {
     attributeService.register({ type: 'read', mbean: schedulerMBean }, async response => {
+      if (Jolokia.isResponseFetchError(response)) {
+        log.warn('Scheduler - Attributes (fetch error):', response)
+        return
+      }
       if (Jolokia.isError(response)) {
-        log.warn('Scheduler - Attributes (error):', response.error)
+        log.warn('Scheduler - Attributes (Jolokia error):', response.error)
         return
       }
       const attrs = response.value as AttributeValues
@@ -149,8 +153,12 @@ class QuartzService {
 
   registerJobsLoad(schedulerMBean: string, callback: (jobs: Job[]) => void) {
     attributeService.register({ type: 'read', mbean: schedulerMBean }, async response => {
+      if (Jolokia.isResponseFetchError(response)) {
+        log.warn('Scheduler - Attributes (fetch error):', response)
+        return
+      }
       if (Jolokia.isError(response)) {
-        log.warn('Scheduler - Attributes (error):', response.error)
+        log.warn('Scheduler - Attributes (Jolokia error):', response.error)
         return
       }
       const attrs = response.value as AttributeValues

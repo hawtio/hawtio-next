@@ -17,7 +17,7 @@ import {
 } from '@patternfly/react-core'
 
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table'
-import Jolokia, { JolokiaSuccessResponse, JolokiaErrorResponse } from 'jolokia.js'
+import Jolokia, { JolokiaSuccessResponse, JolokiaErrorResponse, JolokiaFetchErrorResponse } from 'jolokia.js'
 import React, { ChangeEvent, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { CamelContext } from '../context'
 import { log } from '../globals'
@@ -75,7 +75,11 @@ export const RestServices: React.FunctionComponent = () => {
         mbean: selectedNode.objectName as string,
         operation: 'listRestServices()',
       },
-      (response: JolokiaSuccessResponse | JolokiaErrorResponse) => {
+      (response: JolokiaSuccessResponse | JolokiaErrorResponse | JolokiaFetchErrorResponse) => {
+        if (Jolokia.isResponseFetchError(response)) {
+          log.warn('Scheduler - RestService:', response)
+          return
+        }
         if (Jolokia.isError(response)) {
           log.warn('Scheduler - RestService:', response.error)
           return
