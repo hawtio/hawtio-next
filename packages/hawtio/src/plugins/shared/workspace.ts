@@ -1,7 +1,7 @@
 import { userService } from '@hawtiosrc/auth'
 import { configManager, eventService, JmxConfig, Logger } from '@hawtiosrc/core'
 import { jolokiaService } from '@hawtiosrc/plugins/shared/jolokia-service'
-import { JolokiaErrorResponse, JolokiaSuccessResponse } from 'jolokia.js'
+import Jolokia, { JolokiaErrorResponse, JolokiaFetchErrorResponse, JolokiaSuccessResponse } from 'jolokia.js'
 import { pluginName } from './globals'
 import { MBeanNode, MBeanTree } from './tree'
 import { SimpleRequestOptions } from '@jolokia.js/simple'
@@ -133,7 +133,8 @@ class Workspace implements IWorkspace {
             mbean: HAWTIO_REGISTRY_MBEAN,
             attribute: 'UpdateCounter',
           },
-          (response: JolokiaSuccessResponse | JolokiaErrorResponse) => this.maybeUpdatePlugins(response),
+          (response: JolokiaSuccessResponse | JolokiaErrorResponse | JolokiaFetchErrorResponse) =>
+            this.maybeUpdatePlugins(response),
         )
       }
     } else {
@@ -162,7 +163,8 @@ class Workspace implements IWorkspace {
             mbean: HAWTIO_TREE_WATCHER_MBEAN,
             attribute: 'Counter',
           },
-          (response: JolokiaSuccessResponse | JolokiaErrorResponse) => this.maybeReloadTree(response),
+          (response: JolokiaSuccessResponse | JolokiaErrorResponse | JolokiaFetchErrorResponse) =>
+            this.maybeReloadTree(response),
         )
       }
     } else {
@@ -175,8 +177,11 @@ class Workspace implements IWorkspace {
     }
   }
 
-  private maybeUpdatePlugins(response: JolokiaSuccessResponse | JolokiaErrorResponse) {
-    const counter = 'value' in response ? (response.value as number) : 0
+  private maybeUpdatePlugins(response: JolokiaSuccessResponse | JolokiaErrorResponse | JolokiaFetchErrorResponse) {
+    if (Jolokia.isResponseFetchError(response)) {
+      return
+    }
+    const counter = typeof response === 'object' && 'value' in response ? (response.value as number) : 0
     if (!this.pluginUpdateCounter) {
       // Initial counter setting
       this.pluginUpdateCounter = counter
@@ -194,8 +199,11 @@ class Workspace implements IWorkspace {
     }
   }
 
-  private maybeReloadTree(response: JolokiaSuccessResponse | JolokiaErrorResponse) {
-    const counter = 'value' in response ? (response.value as number) : 0
+  private maybeReloadTree(response: JolokiaSuccessResponse | JolokiaErrorResponse | JolokiaFetchErrorResponse) {
+    if (Jolokia.isResponseFetchError(response)) {
+      return
+    }
+    const counter = typeof response === 'object' && 'value' in response ? (response.value as number) : 0
     if (!this.treeWatcherCounter) {
       // Initial counter setting
       this.treeWatcherCounter = counter
