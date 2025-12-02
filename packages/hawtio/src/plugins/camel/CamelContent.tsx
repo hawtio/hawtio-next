@@ -16,7 +16,7 @@ import {
   Title,
 } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons/dist/esm/icons/cubes-icon'
-import Jolokia, { JolokiaErrorResponse, JolokiaSuccessResponse } from 'jolokia.js'
+import Jolokia, { JolokiaErrorResponse, JolokiaFetchErrorResponse, JolokiaSuccessResponse } from 'jolokia.js'
 import React, { useContext, useEffect, useState } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import './CamelContent.css'
@@ -211,9 +211,13 @@ const CamelContentContextToolbar: React.FunctionComponent = () => {
 
       contextsService.register(
         { type: 'read', mbean: objectName },
-        (response: JolokiaSuccessResponse | JolokiaErrorResponse) => {
+        (response: JolokiaSuccessResponse | JolokiaErrorResponse | JolokiaFetchErrorResponse) => {
+          if (Jolokia.isResponseFetchError(response)) {
+            log.debug('Scheduler - Contexts (fetch error):', response)
+            return
+          }
           if (Jolokia.isError(response)) {
-            log.debug('Scheduler - Contexts (error):', response.error)
+            log.debug('Scheduler - Contexts (Jolokia error):', response.error)
             return
           }
           log.debug('Scheduler - Contexts:', response.value)

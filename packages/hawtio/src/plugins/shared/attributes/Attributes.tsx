@@ -33,7 +33,7 @@ export const Attributes: React.FunctionComponent = () => {
     })
 
     attributeService.register({ type: 'read', mbean: objectName }, response => {
-      if (!Jolokia.isError(response)) {
+      if (!Jolokia.isResponseFetchError(response) && !Jolokia.isError(response)) {
         log.debug('Scheduler - Attributes:', response.value)
         setAttributes(response.value as AttributeValues)
       }

@@ -2,7 +2,7 @@ import { eventService } from '@hawtiosrc/core'
 import { MBeanNode, jolokiaService } from '@hawtiosrc/plugins/shared'
 import { isBlank } from '@hawtiosrc/util/strings'
 import { childText, xmlText } from '@hawtiosrc/util/xml'
-import { JolokiaErrorResponse, JolokiaRequest, JolokiaSuccessResponse } from 'jolokia.js'
+import { JolokiaErrorResponse, JolokiaFetchErrorResponse, JolokiaRequest, JolokiaSuccessResponse } from 'jolokia.js'
 import { camelPreferencesService } from '../camel-preferences-service'
 import * as camelService from '../camel-service'
 import { log } from '../globals'
@@ -34,7 +34,10 @@ export interface MessageData {
 class DebugService {
   private handles: number[] = []
 
-  async register(request: JolokiaRequest, callback: (response: JolokiaSuccessResponse | JolokiaErrorResponse) => void) {
+  async register(
+    request: JolokiaRequest,
+    callback: (response: JolokiaSuccessResponse | JolokiaErrorResponse | JolokiaFetchErrorResponse) => void,
+  ) {
     const handle = await jolokiaService.register(request, callback)
     log.debug('Register handle:', handle)
     this.handles.push(handle)

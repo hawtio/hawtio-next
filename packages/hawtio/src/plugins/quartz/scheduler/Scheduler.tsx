@@ -41,8 +41,12 @@ export const Scheduler: React.FunctionComponent = () => {
     })
 
     attributeService.register({ type: 'read', mbean: objectName }, response => {
+      if (Jolokia.isResponseFetchError(response)) {
+        log.warn('Scheduler - Attributes (fetch error):', response)
+        return
+      }
       if (Jolokia.isError(response)) {
-        log.warn('Scheduler - Attributes (error):', response.error)
+        log.warn('Scheduler - Attributes (Jolokia error):', response.error)
         return
       }
       log.debug('Scheduler - Attributes:', response.value)

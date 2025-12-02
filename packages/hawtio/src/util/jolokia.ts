@@ -116,6 +116,7 @@ export function onGenericSuccessAndError<S, E, O extends BaseRequestOptions>(suc
     // the default (unsorted) order is important for Karaf runtime
     canonicalNaming: false,
   }
+  // options object may contain "fetchError" callback
   return Object.assign({}, defaultOptions, options, {
     success: successFn,
     error: errorFn,

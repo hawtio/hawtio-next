@@ -36,7 +36,7 @@ class RuntimeService {
         arguments: [true, true],
       },
       resp => {
-        if (!Jolokia.isError(resp)) {
+        if (!Jolokia.isResponseFetchError(resp) && !Jolokia.isError(resp)) {
           const threads = resp.value as unknown as Thread[]
           callback(threads)
         }
@@ -200,7 +200,7 @@ class RuntimeService {
   async registerMetrics(callback: (metrics: Metric) => void) {
     for (const request of this.getJolokiaRequests()) {
       const handler = await jolokiaService.register(request, resp => {
-        if (!Jolokia.isError(resp)) {
+        if (!Jolokia.isResponseFetchError(resp) && !Jolokia.isError(resp)) {
           this.responseCallback(resp, callback)
         }
       })
