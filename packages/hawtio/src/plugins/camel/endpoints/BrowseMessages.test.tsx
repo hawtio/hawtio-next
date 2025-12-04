@@ -128,7 +128,7 @@ describe('BrowseMessages.tsx', () => {
     renderWithContext()
     let element
     await waitFor(() => {
-      element = screen.getByText('Forward')
+      element = screen.getByTestId('forward-button')
     })
     expect(element).toBeInTheDocument()
     expect(element).toBeDisabled()

@@ -48,7 +48,7 @@
     "build:watch": "tsup --watch",
     "generate:camel-icons": "node ./scripts/generate-camel-svg-index.js",
     "test": "jest",
-    "test:watch": "jest --watch",
+    "test:watch": "jest --watch --silent=false",
     "test:coverage": "jest --coverage",
     "replace-version": "replace __PACKAGE_VERSION_PLACEHOLDER__ $npm_package_version ./dist/index.js",
     "release": "commit-and-tag-version --path .",

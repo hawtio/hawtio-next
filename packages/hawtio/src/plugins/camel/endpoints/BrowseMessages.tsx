@@ -313,16 +313,16 @@ const ForwardMessagesModal: React.FunctionComponent<{
 
   return (
     <React.Fragment>
-      <Button isDisabled={!enabled} onClick={handleModalToggle}>
+      <Button isDisabled={!enabled} onClick={handleModalToggle} data-testid='forward-button'>
         Forward
       </Button>
       <Modal
         bodyAriaLabel='forward-message-modal'
         aria-label='forward-message-modal'
-        position={Position.Top}
+        position='top'
         tabIndex={0}
-        variant={ModalVariant.small}
-        title={'Forward Messages'}
+        variant='small'
+        title='Forward Messages'
         isOpen={isModalOpen}
         onClose={handleModalToggle}
         style={{ overflow: 'visible' }}
