@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.12.0](https://github.com/hawtio/hawtio-next/compare/v1.11.3...v1.12.0) (2025-12-04)
+
+
+### Features
+
+* **auth:** Support multiple OIDC login methods (fixes [#1581](https://github.com/hawtio/hawtio-next/issues/1581)) ([8a6df61](https://github.com/hawtio/hawtio-next/commit/8a6df61a391d039007277e4fa28e8742a20a1537))
+
+
+### Bug Fixes
+
+* **charts:** Add timestamp to jolokia attribute response if not available ([#1804](https://github.com/hawtio/hawtio-next/issues/1804)) ([959b7d4](https://github.com/hawtio/hawtio-next/commit/959b7d4c261b528308375e67485db082112e21c5))
+* **charts:** Avoid duplicate registration of Jolokia jobs for attributes/charts ([#1804](https://github.com/hawtio/hawtio-next/issues/1804)) ([7baee98](https://github.com/hawtio/hawtio-next/commit/7baee98b625aa0acad4c17b4e73cfd57b1383ed5))
+* **charts:** Drill into java.lang:type=Memory attributes to get real numbers (fixes [#1819](https://github.com/hawtio/hawtio-next/issues/1819)) ([3dafd2b](https://github.com/hawtio/hawtio-next/commit/3dafd2bacd5870f1c591f8bc9bbf80f49fa113be))
+* **charts:** Update state using setChartData(old => new) (fixes [#1804](https://github.com/hawtio/hawtio-next/issues/1804)) ([e52fd60](https://github.com/hawtio/hawtio-next/commit/e52fd60392751adf1d732ba85c4ff88b72df77b6))
+* **jolokia:** Add canRead/canWrite to OptimisedMBeanAttribute type (fixes [#1805](https://github.com/hawtio/hawtio-next/issues/1805)) ([46b92a8](https://github.com/hawtio/hawtio-next/commit/46b92a896774eb309101d738d683d1988ee2c0ad))
+* **jolokia:** handle all the rejected calls to readAttribute/writeAttribute ([#1791](https://github.com/hawtio/hawtio-next/issues/1791)) ([7f8618a](https://github.com/hawtio/hawtio-next/commit/7f8618a25edf21da188fad7dda53328e234cc020))
+* **jolokia:** Handling more Jolokia errors (including background jobs) (fixes [#1825](https://github.com/hawtio/hawtio-next/issues/1825)) ([aec5b9b](https://github.com/hawtio/hawtio-next/commit/aec5b9bf30e24beeeb15d1e7954f063c09dc586b))
+
 ## [1.11.3](https://github.com/hawtio/hawtio-next/compare/v1.11.2...v1.11.3) (2025-11-13)
 
 
