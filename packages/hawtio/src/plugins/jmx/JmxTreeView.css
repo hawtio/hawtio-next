@@ -1,7 +1,7 @@
 #jmx-tree-view.pf-v5-c-tree-view {
   --pf-v5-c-tree-view__node--indent--base: 1.5rem;
   --pf-v5-c-tree-view__node--nested-indent--base: 1rem;
-  --pf-v5-c-tree-view--m-guides__node--before--Width: 0.5rem;
+  --pf-v5-c-tree-view--m-guides__node--before--Width: 1.5rem;
   --pf-v5-c-tree-view--m-guides__node--before--Height: 1px;
   --pf-v5-c-tree-view--m-guides__node--before--Top: 0.75rem;
   --pf-v5-c-tree-view--m-guides__node--before--BackgroundColor: #aaa;
@@ -12,6 +12,9 @@
   --pf-v5-c-tree-view--m-guides__list-node--guide-width--base: 0.5rem;
   --pf-v5-c-tree-view--m-guides--guide-left--base--offset: 1.5rem;
   --pf-v5-global--LineHeight--md: normal;
+}
+#jmx-tree-view.pf-v5-c-tree-view .pf-m-selectable {
+  --pf-v5-c-tree-view--m-guides__node--before--Width: 0.5rem;
 }
 #jmx-tree-view .pf-v5-c-tree-view__list {
   height: 100%;
