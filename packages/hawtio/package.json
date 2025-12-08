@@ -62,7 +62,7 @@
     "@monaco-editor/react": "^4.6.0",
     "@thumbmarkjs/thumbmarkjs": "^1.5.1",
     "dagre": "^0.8.5",
-    "dompurify": "^3.3.0",
+    "dompurify": "^3.3.1",
     "eventemitter3": "^5.0.1",
     "jolokia.js": "^2.4.2",
     "js-logger": "^1.6.1",
