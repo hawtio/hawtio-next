@@ -55,7 +55,7 @@ export const InflightExchanges: React.FunctionComponent = () => {
   }
 
   return (
-    <Card>
+    <Card isPlain>
       <CardTitle>
         <Title headingLevel='h3'> Inflight Exchanges</Title>
       </CardTitle>

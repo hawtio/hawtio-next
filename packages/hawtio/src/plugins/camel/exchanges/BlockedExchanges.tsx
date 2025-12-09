@@ -92,12 +92,12 @@ export const BlockedExchanges: React.FunctionComponent = () => {
   )
 
   return (
-    <Card>
+    <Card isPlain>
       <CardTitle>
         <Title headingLevel='h3'>Blocked Exchanges</Title>
       </CardTitle>
       <CardBody>
-        <Table variant={'compact'} data-testid='exchange-table' aria-label='Blocked Exchanges'>
+        <Table variant='compact' data-testid='exchange-table' aria-label='Blocked Exchanges'>
           <Thead>
             <Tr>
               <Th modifier='wrap'>Exchange ID</Th>

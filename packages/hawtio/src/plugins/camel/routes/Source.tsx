@@ -1,15 +1,15 @@
+import { eventService } from '@hawtiosrc/core'
+import { isRouteNode, isRoutesFolder } from '@hawtiosrc/plugins/camel/camel-service'
 import { CamelContext } from '@hawtiosrc/plugins/camel/context'
 import { CodeEditor, CodeEditorControl, Language } from '@patternfly/react-code-editor'
+import { Alert } from '@patternfly/react-core'
+import { SaveIcon } from '@patternfly/react-icons/dist/esm/icons/save-icon'
 import React, { useContext, useEffect, useState } from 'react'
 import { log } from '../globals'
-import { SaveIcon } from '@patternfly/react-icons/dist/esm/icons/save-icon'
-import { isRouteNode, isRoutesFolder } from '@hawtiosrc/plugins/camel/camel-service'
 import { routesService } from './routes-service'
-import { eventService } from '@hawtiosrc/core'
-import { Alert, AlertActionCloseButton, AlertVariant } from '@patternfly/react-core'
 
-import * as monaco from 'monaco-editor'
 import { loader } from '@monaco-editor/react'
+import * as monaco from 'monaco-editor'
 
 loader.config({ monaco })
 
@@ -77,14 +77,9 @@ export const Source: React.FunctionComponent = () => {
   )
 
   return (
-    <div style={{ height: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', margin: '1rem' }}>
       {isUpdateEnabled && isWarningVisible && (
-        <Alert
-          isInline
-          variant={AlertVariant['warning']}
-          title={'The source update of the route is enabled'}
-          actionClose={<AlertActionCloseButton title={'Close warning'} onClose={() => setIsWarningVisible(false)} />}
-        />
+        <Alert isInline isPlain variant='warning' title='The source update of the route is enabled' />
       )}
 
       <CodeEditor
@@ -92,7 +87,8 @@ export const Source: React.FunctionComponent = () => {
         customControls={saveButton}
         code={xmlSource}
         language={Language.xml}
-        height={'75vh'}
+        isLanguageLabelVisible
+        height='75vh'
         onCodeChange={onCodeChange}
       />
     </div>
