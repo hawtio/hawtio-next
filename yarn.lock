@@ -1043,7 +1043,7 @@ __metadata:
     "@types/dagre": "npm:^0.7.53"
     "@types/jest": "npm:^30.0.0"
     "@types/node": "npm:^24.10.2"
-    "@types/react": "npm:^18.3.27"
+    "@types/react": "npm:^19.2.7"
     "@types/react-dom": "npm:^18.3.7"
     "@types/react-router-dom": "npm:^5.3.3"
     commit-and-tag-version: "npm:^12.6.1"
@@ -1059,7 +1059,7 @@ __metadata:
     keycloak-js: "npm:^26.2.1"
     monaco-editor: "npm:^0.52.2"
     oauth4webapi: "npm:^3.8.3"
-    react: "npm:^18.3.1"
+    react: "npm:^19.2.1"
     react-dom: "npm:^18.3.1"
     react-markdown: "npm:^10.1.0"
     react-router-dom: "npm:^6.30.2"
@@ -2992,13 +2992,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prop-types@npm:*":
-  version: 15.7.15
-  resolution: "@types/prop-types@npm:15.7.15"
-  checksum: 10/31aa2f59b28f24da6fb4f1d70807dae2aedfce090ec63eaf9ea01727a9533ef6eaf017de5bff99fbccad7d1c9e644f52c6c2ba30869465dd22b1a7221c29f356
-  languageName: node
-  linkType: hard
-
 "@types/qs@npm:*":
   version: 6.14.0
   resolution: "@types/qs@npm:6.14.0"
@@ -3052,13 +3045,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^18.3.27":
-  version: 18.3.27
-  resolution: "@types/react@npm:18.3.27"
+"@types/react@npm:^19.2.7":
+  version: 19.2.7
+  resolution: "@types/react@npm:19.2.7"
   dependencies:
-    "@types/prop-types": "npm:*"
     csstype: "npm:^3.2.2"
-  checksum: 10/90155820a2af315cad1ff47df695f3f2f568c12ad641a7805746a6a9a9aa6c40b1374e819e50d39afe0e375a6b9160a73176cbdb4e09807262bc6fcdc06e67db
+  checksum: 10/dc0b756eee2c9782d282ae47eaa8d537b2a569eb889a6808c4b172d70fb690b2b1d8fe6239db451aa1c90d2a947cc21c9b537ce177ba9e6121468e403e4079c5
   languageName: node
   linkType: hard
 
@@ -3981,7 +3973,7 @@ __metadata:
     html-webpack-plugin: "npm:^5.6.5"
     monaco-editor: "npm:~0.52.2"
     monaco-editor-webpack-plugin: "npm:^7.1.1"
-    react: "npm:^18.3.1"
+    react: "npm:^19.2.1"
     react-dom: "npm:^18.3.1"
     react-router-dom: "npm:^6.30.2"
     source-map-loader: "npm:^5.0.0"
@@ -11812,12 +11804,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^18.3.1":
-  version: 18.3.1
-  resolution: "react@npm:18.3.1"
-  dependencies:
-    loose-envify: "npm:^1.1.0"
-  checksum: 10/261137d3f3993eaa2368a83110466fc0e558bc2c7f7ae7ca52d94f03aac945f45146bd85e5f481044db1758a1dbb57879e2fcdd33924e2dde1bdc550ce73f7bf
+"react@npm:^19.2.1":
+  version: 19.2.1
+  resolution: "react@npm:19.2.1"
+  checksum: 10/7c7ab0f40b98e87e1466bea8c28564c5f3c384506cbda93d24788d32b40bf6059c991687c7e90a396b11f09223a779a81b1188af9acd839aaa0a672987c13107
   languageName: node
   linkType: hard
 
