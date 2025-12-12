@@ -6,12 +6,10 @@ import { useAbout } from './context'
 import { log } from './globals'
 import './HawtioAbout.css'
 
-type HawtioAboutProps = {
+export const HawtioAbout: React.FunctionComponent<{
   isOpen: boolean
   onClose: () => void
-}
-
-export const HawtioAbout: React.FunctionComponent<HawtioAboutProps> = props => {
+}> = ({ isOpen, onClose }) => {
   const { about, aboutLoaded } = useAbout()
 
   if (!aboutLoaded) {
@@ -41,10 +39,10 @@ export const HawtioAbout: React.FunctionComponent<HawtioAboutProps> = props => {
     <Content id='hawtio-about-product-info'>
       <Content component='h3'>Component versions</Content>
       <Content component='dl'>
-        {productInfo.map((info, index) => (
+        {productInfo.map(({ name, value }, index) => (
           <React.Fragment key={`product-info-${index}`}>
-            <Content component='dt'>{info.name}</Content>
-            <Content component='dd'>{info.value}</Content>
+            <Content component='dt'>{name}</Content>
+            <Content component='dd'>{value}</Content>
           </React.Fragment>
         ))}
       </Content>
@@ -53,8 +51,8 @@ export const HawtioAbout: React.FunctionComponent<HawtioAboutProps> = props => {
 
   return (
     <AboutModal
-      isOpen={props.isOpen}
-      onClose={props.onClose}
+      isOpen={isOpen}
+      onClose={onClose}
       productName={title}
       brandImageSrc={imgSrc}
       backgroundImageSrc={backgroundImgSrc}
