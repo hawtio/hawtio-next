@@ -30,7 +30,7 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core'
-import { HelpIcon } from '@patternfly/react-icons/dist/esm/icons/help-icon'
+import { QuestionCircleIcon } from '@patternfly/react-icons/dist/esm/icons/question-circle-icon'
 import React, { useContext, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import './HawtioHeader.css'
@@ -51,24 +51,22 @@ export const HawtioHeader: React.FunctionComponent<{ loginMethod: string }> = ({
   const isBrandShown = hawtconfig.appearance?.showBrand ?? true
 
   return (
-    <Masthead id='hawtio-header' display={{ default: 'inline' }}>
-      {sideBarShown && (
-        <MastheadToggle>
-          <PageToggleButton
-            isHamburgerButton
-            variant='plain'
-            aria-label='Global navigation'
-            isSidebarOpen={navOpen}
-            onSidebarToggle={onNavToggle}
-            id='vertical-nav-toggle'
-          ></PageToggleButton>
-        </MastheadToggle>
-      )}
-      {isBrandShown && (
-        <MastheadMain>
-          <HawtioBrand hawtconfig={hawtconfig} />
-        </MastheadMain>
-      )}
+    <Masthead id='hawtio-header'>
+      <MastheadMain>
+        {sideBarShown && (
+          <MastheadToggle>
+            <PageToggleButton
+              isHamburgerButton
+              variant='plain'
+              aria-label='Global navigation'
+              isSidebarOpen={navOpen}
+              onSidebarToggle={onNavToggle}
+              id='vertical-nav-toggle'
+            />
+          </MastheadToggle>
+        )}
+        {isBrandShown && <HawtioBrand hawtconfig={hawtconfig} />}
+      </MastheadMain>
       <MastheadContent>
         <HawtioHeaderToolbar hawtconfig={hawtconfig} loginMethod={loginMethod} />
       </MastheadContent>
@@ -86,7 +84,7 @@ const HawtioBrand: React.FunctionComponent<HawtioBrandProps> = props => {
   const showAppName = props.hawtconfig.branding?.showAppName ?? false
 
   return (
-    <MastheadLogo data-codemods id='hawtio-header-brand' component={props => <Link to='/' {...props} />}>
+    <MastheadLogo id='hawtio-header-brand' component={props => <Link to='/' {...props} />}>
       <Brand src={appLogo} alt={appName} />
       {showAppName && (
         <Title headingLevel='h1' size='xl'>
@@ -97,12 +95,10 @@ const HawtioBrand: React.FunctionComponent<HawtioBrandProps> = props => {
   )
 }
 
-type HawtioHeaderToolbarProps = {
+const HawtioHeaderToolbar: React.FunctionComponent<{
   hawtconfig: Hawtconfig
   loginMethod: string
-}
-
-const HawtioHeaderToolbar: React.FunctionComponent<HawtioHeaderToolbarProps> = props => {
+}> = ({ hawtconfig }) => {
   const { username, plugins } = useContext(PageContext)
   const location = useLocation()
 
@@ -130,7 +126,7 @@ const HawtioHeaderToolbar: React.FunctionComponent<HawtioHeaderToolbarProps> = p
   }
 
   // If not defined then assume the default of shown
-  const userHeaderShown = props.hawtconfig.appearance?.showUserHeader ?? true
+  const userHeaderShown = hawtconfig.appearance?.showUserHeader ?? true
 
   const helpItems = [
     <DropdownItem key='help'>
@@ -211,7 +207,7 @@ const HawtioHeaderToolbar: React.FunctionComponent<HawtioHeaderToolbarProps> = p
                   ref={toggleRef}
                   onClick={() => setHelpOpen(!helpOpen)}
                   isExpanded={helpOpen}
-                  icon={<HelpIcon />}
+                  icon={<QuestionCircleIcon />}
                 />
               )}
               isOpen={helpOpen}
@@ -232,9 +228,8 @@ const HawtioHeaderToolbar: React.FunctionComponent<HawtioHeaderToolbarProps> = p
                     ref={toggleRef}
                     id='hawtio-header-user-dropdown-toggle'
                     onClick={() => setUserOpen(!userOpen)}
-                    icon={<Avatar src={userAvatar} alt='user' />}
+                    icon={<Avatar src={userAvatar} alt='user' size='sm' />}
                     isExpanded={userOpen}
-                    isFullHeight
                   >
                     {isPublic ? '' : username}
                   </MenuToggle>

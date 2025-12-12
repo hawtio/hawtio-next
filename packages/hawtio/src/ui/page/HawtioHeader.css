@@ -1,7 +1,10 @@
+#hawtio-header {
+  display: grid;
+}
+
 #hawtio-header-brand {
   display: flex;
   align-items: center;
-  justify-content: center;
   text-decoration: none;
   color: var(--pf-t--global--background--color--200);
 }

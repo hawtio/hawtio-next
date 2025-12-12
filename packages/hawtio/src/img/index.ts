@@ -1,5 +1,6 @@
-import hawtioLogo from './hawtio-logo.svg'
-import userAvatar from './img_avatar.svg'
+import userAvatar from './avatarImg.svg'
 import background from './background.svg'
+import hawtioLogo from './hawtio-logo.svg'
 
-export { hawtioLogo, userAvatar, background }
+export { background, hawtioLogo, userAvatar }
+

@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from 'react'
 import { connectService, ConnectStatus } from '@hawtiosrc/plugins/shared/connect-service'
-import { PluggedIcon } from '@patternfly/react-icons/dist/esm/icons/plugged-icon'
-import { UnpluggedIcon } from '@patternfly/react-icons/dist/esm/icons/unplugged-icon'
-import { Icon } from '@patternfly/react-core'
+import { Label, Tooltip } from '@patternfly/react-core'
+import React, { useEffect, useState } from 'react'
 
 /**
  * Component to be displayed in HawtioHeaderToolbar for remote connection tabs
- * @constructor
  */
 export const ConnectionStatus: React.FunctionComponent = () => {
   const [reachable, setReachable] = useState<ConnectStatus>('not-reachable')
@@ -34,36 +31,26 @@ export const ConnectionStatus: React.FunctionComponent = () => {
     return () => clearInterval(timer)
   }, [connectionId])
 
-  let icon = null
+  const name = [connectionName, username].filter(Boolean).join(' ')
+
   switch (reachable) {
     case 'reachable':
-      icon = (
-        <Icon status='success'>
-          <PluggedIcon />
-        </Icon>
+      return (
+        <Tooltip content={`Connected successfully`} position='bottom'>
+          <Label status='success'>{name}</Label>
+        </Tooltip>
       )
-      break
     case 'not-reachable':
-      icon = (
-        <Icon status='danger'>
-          <UnpluggedIcon />
-        </Icon>
+      return (
+        <Tooltip content={`Connection is not reachable`} position='bottom'>
+          <Label status='danger'>{name}</Label>
+        </Tooltip>
       )
-      break
     case 'not-reachable-securely':
-      icon = (
-        <Icon status='warning'>
-          <PluggedIcon />
-        </Icon>
+      return (
+        <Tooltip content={`Connection is reachable but not securely`} position='bottom'>
+          <Label status='warning'>{name}</Label>
+        </Tooltip>
       )
-      break
   }
-
-  return (
-    <>
-      {icon}
-      <span>&nbsp;{connectionName ? connectionName : ''}</span>
-      <span>&nbsp;{username ? `(${username})` : ''}</span>
-    </>
-  )
 }
