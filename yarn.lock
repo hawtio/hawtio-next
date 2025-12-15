@@ -972,7 +972,7 @@ __metadata:
   dependencies:
     "@types/express": "npm:^5"
     "@types/jest": "npm:^30.0.0"
-    "@types/node": "npm:^24.10.2"
+    "@types/node": "npm:^25.0.2"
     axios: "npm:^1.13.2"
     commit-and-tag-version: "npm:^12.6.1"
     concurrently: "npm:^9.2.1"
@@ -1004,7 +1004,7 @@ __metadata:
   resolution: "@hawtio/next-root@workspace:."
   dependencies:
     "@eslint/compat": "npm:^2.0.0"
-    "@types/node": "npm:^24.10.2"
+    "@types/node": "npm:^25.0.2"
     concurrently: "npm:^9.2.1"
     cz-conventional-changelog: "npm:3.3.0"
     eslint: "npm:^9.39.1"
@@ -1042,7 +1042,7 @@ __metadata:
     "@thumbmarkjs/thumbmarkjs": "npm:^1.5.1"
     "@types/dagre": "npm:^0.7.53"
     "@types/jest": "npm:^30.0.0"
-    "@types/node": "npm:^24.10.2"
+    "@types/node": "npm:^25.0.2"
     "@types/react": "npm:^18.3.27"
     "@types/react-dom": "npm:^18.3.7"
     "@types/react-router-dom": "npm:^5.3.3"
@@ -2976,12 +2976,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^24.10.2":
-  version: 24.10.2
-  resolution: "@types/node@npm:24.10.2"
+"@types/node@npm:^25.0.2":
+  version: 25.0.2
+  resolution: "@types/node@npm:25.0.2"
   dependencies:
     undici-types: "npm:~7.16.0"
-  checksum: 10/75b34e33087dc707aa76723f7269cd66acd2fae4272d127544ad20f295e7537dbd1e4a4405717b3093aeae2ff8ae35283fdec826a4f593273e326bb3deae588d
+  checksum: 10/8d37061ed51c273551cca3fe36913a448cc5992b687d7c077a5e99eeb3d0f15a8aca81e53ad3f557dc16f4f4b11877832bb4fbb45f3e162066806da969015251
   languageName: node
   linkType: hard
 
