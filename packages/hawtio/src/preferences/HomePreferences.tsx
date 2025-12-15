@@ -1,3 +1,5 @@
+import { useHawtconfig } from '@hawtiosrc/core'
+import { HawtioLoadingPage } from '@hawtiosrc/ui'
 import {
   Alert,
   Button,
@@ -14,8 +16,6 @@ import { Modal, ModalVariant } from '@patternfly/react-core/deprecated'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { preferencesService } from './preferences-service'
-import { useHawtconfig } from '@hawtiosrc/core'
-import { HawtioLoadingPage } from '@hawtiosrc/ui'
 
 export const HomePreferences: React.FunctionComponent = () => {
   const { hawtconfig, hawtconfigLoaded } = useHawtconfig()

@@ -68,6 +68,7 @@ export const HawtioPage: React.FunctionComponent = () => {
       <BackgroundImage src={background} />
       <Page
         id='hawtio-main-page'
+        mainContainerId='hawtio-main-container'
         masthead={headerShown && <HawtioHeader loginMethod={loginMethod} />}
         sidebar={sideBarShown && <HawtioSidebar />}
         isManagedSidebar={sideBarShown}

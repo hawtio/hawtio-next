@@ -1,5 +1,5 @@
 import { helpRegistry } from '@hawtiosrc/help/registry'
-import { Divider, Nav, NavItem, NavList, PageSection, Title } from '@patternfly/react-core'
+import { Nav, NavItem, NavList, PageSection, Title } from '@patternfly/react-core'
 import React from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import help from './help.md'
@@ -18,25 +18,23 @@ export const HawtioPreferences: React.FunctionComponent = () => {
       <PageSection hasBodyWrapper={false}>
         <Title headingLevel='h1'>Preferences</Title>
       </PageSection>
-      <Divider />
-      <PageSection hasBodyWrapper={false} type='tabs' hasShadowBottom>
-        <Nav aria-label='Nav' variant='horizontal-subnav'>
+      <PageSection type='tabs' hasBodyWrapper={false}>
+        <Nav aria-label='Preferences Nav' variant='horizontal-subnav'>
           <NavList>
-            {preferencesRegistry.getPreferences().map(prefs => (
-              <NavItem key={prefs.id} isActive={location.pathname === `/preferences/${prefs.id}`}>
-                <NavLink to={prefs.id}>{prefs.title}</NavLink>
+            {preferencesRegistry.getPreferences().map(({ id, title }) => (
+              <NavItem key={id} isActive={location.pathname === `/preferences/${id}`}>
+                <NavLink to={id}>{title}</NavLink>
               </NavItem>
             ))}
           </NavList>
         </Nav>
       </PageSection>
-      <Divider />
       <PageSection hasBodyWrapper={false}>
         <Routes>
-          {preferencesRegistry.getPreferences().map(prefs => (
-            <Route key={prefs.id} path={prefs.id} element={React.createElement(prefs.component)} />
+          {preferencesRegistry.getPreferences().map(({ id, component }) => (
+            <Route key={id} path={id} element={React.createElement(component)} />
           ))}
-          <Route path='/' element={<Navigate to={'home'} />} />
+          <Route path='/' element={<Navigate to='home' />} />
         </Routes>
       </PageSection>
     </React.Fragment>
