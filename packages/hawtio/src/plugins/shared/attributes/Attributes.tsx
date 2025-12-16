@@ -1,22 +1,21 @@
 import { PluginNodeSelectionContext } from '@hawtiosrc/plugins/context'
+import { HawtioEmptyCard, HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
 import { AttributeValues } from '@hawtiosrc/plugins/shared/jolokia-service'
 import { isObject, objectSorter } from '@hawtiosrc/util/objects'
 import { Drawer, DrawerContent, DrawerContentBody, Panel } from '@patternfly/react-core'
 import { Table, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
-import React, { useContext, useEffect, useState } from 'react'
-import { HawtioEmptyCard, HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
-import { log } from '../globals'
-import { AttributeModal } from './AttributeModal'
-import { attributeService } from './attribute-service'
-import './AttributeTable.css'
 import Jolokia from 'jolokia.js'
+import React, { useContext, useEffect, useState } from 'react'
+import { log } from '../globals'
+import { attributeService } from './attribute-service'
+import { AttributeModal } from './AttributeModal'
 
 export const Attributes: React.FunctionComponent = () => {
   const { selectedNode } = useContext(PluginNodeSelectionContext)
   const [attributes, setAttributes] = useState<AttributeValues>({})
   const [isReading, setIsReading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('asc')
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
   const [selected, setSelected] = useState({ name: '', value: '' })
   const [reload, setReload] = useState(false)
 
@@ -131,9 +130,9 @@ export const Attributes: React.FunctionComponent = () => {
   )
   return (
     <Panel>
-      <Drawer isExpanded={isModalOpen} className={'pf-m-inline-on-2xl'}>
+      <Drawer isExpanded={isModalOpen} className='pf-m-inline-on-2xl'>
         <DrawerContent panelContent={panelContent}>
-          <DrawerContentBody hasPadding> {attributesTable}</DrawerContentBody>
+          <DrawerContentBody>{attributesTable}</DrawerContentBody>
         </DrawerContent>
       </Drawer>
     </Panel>

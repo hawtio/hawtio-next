@@ -1,6 +1,7 @@
+import { pluginPath } from '@hawtiosrc/plugins/jmx/globals'
 import { AttributeTable, Attributes, Chart, JmxContentMBeans, MBeanNode, Operations } from '@hawtiosrc/plugins/shared'
 import {
-  Divider,
+  Content,
   EmptyState,
   EmptyStateVariant,
   Nav,
@@ -8,7 +9,6 @@ import {
   NavList,
   PageGroup,
   PageSection,
-  Content,
   Title,
 } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons/dist/esm/icons/cubes-icon'
@@ -16,7 +16,6 @@ import React, { useContext } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import './JmxContent.css'
 import { MBeanTreeContext } from './context'
-import { pluginPath } from '@hawtiosrc/plugins/jmx/globals'
 
 export const JmxContent: React.FunctionComponent = () => {
   const { selectedNode } = useContext(MBeanTreeContext)
@@ -39,10 +38,9 @@ export const JmxContent: React.FunctionComponent = () => {
   const mBeanCollectionApplicable = (node: MBeanNode) => Boolean(node.children?.every(child => child.objectName))
   const hasAnyApplicableMBean = (node: MBeanNode) =>
     Boolean(node.objectName) || Boolean(node.children?.some(child => child.objectName))
-  const ALWAYS = (node: MBeanNode) => true
 
-  const tableSelector: (node: MBeanNode) => React.FunctionComponent = (node: MBeanNode) => {
-    const tablePriorityList: { condition: (node: MBeanNode) => boolean; element: React.FunctionComponent }[] = [
+  const tableSelector = (node: MBeanNode) => {
+    const tablePriorityList = [
       { condition: mBeanApplicable, element: Attributes },
       { condition: mBeanCollectionApplicable, element: AttributeTable },
     ]
@@ -51,7 +49,7 @@ export const JmxContent: React.FunctionComponent = () => {
   }
 
   const allNavItems = [
-    { id: 'attributes', title: 'Attributes', component: tableSelector(selectedNode), isApplicable: ALWAYS },
+    { id: 'attributes', title: 'Attributes', component: tableSelector(selectedNode), isApplicable: () => true },
     { id: 'operations', title: 'Operations', component: Operations, isApplicable: mBeanApplicable },
     { id: 'chart', title: 'Chart', component: Chart, isApplicable: hasAnyApplicableMBean },
   ]
@@ -77,21 +75,19 @@ export const JmxContent: React.FunctionComponent = () => {
 
   return (
     <PageGroup id='jmx-content'>
-      <PageSection hasBodyWrapper={false} id='jmx-content-header'>
+      <PageSection id='jmx-content-header' hasBodyWrapper={false}>
         <Title headingLevel='h1'>{selectedNode.name}</Title>
         <Content component='small'>{selectedNode.objectName}</Content>
       </PageSection>
-      <Divider />
-      <PageSection hasBodyWrapper={false} type='tabs' hasShadowBottom>
+      <PageSection type='tabs' hasBodyWrapper={false}>
         {mbeanNav}
       </PageSection>
-      <Divider />
       <PageSection
-        hasBodyWrapper={false}
         id='jmx-content-main'
         padding={{ default: 'noPadding' }}
         hasOverflowScroll
         aria-label='jmx-content-main'
+        hasBodyWrapper={false}
       >
         <Routes>
           {mbeanRoutes}

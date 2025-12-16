@@ -9,7 +9,6 @@ import { HawtioEmptyCard } from '../HawtioEmptyCard'
 import { HawtioLoadingCard } from '../HawtioLoadingCard'
 import { JmxContentMBeans } from '../JmxContentMBeans'
 import { MBeanNode } from '../tree'
-import './AttributeTable.css'
 import { attributeService } from './attribute-service'
 
 export const AttributeTable: React.FunctionComponent = () => {

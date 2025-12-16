@@ -1,11 +1,11 @@
 import { Card, CardBody, Skeleton } from '@patternfly/react-core'
 import React from 'react'
 
-export const HawtioLoadingCard: React.FunctionComponent<{ message?: string; testid?: string }> = ({
-  message = 'Loading...',
-  testid = 'loading',
-}) => (
-  <Card>
+export const HawtioLoadingCard: React.FunctionComponent<{
+  message?: string
+  testid?: string
+}> = ({ message = 'Loading...', testid = 'loading' }) => (
+  <Card isPlain>
     <CardBody>
       <Skeleton data-testid={testid} screenreaderText={message} />
     </CardBody>
