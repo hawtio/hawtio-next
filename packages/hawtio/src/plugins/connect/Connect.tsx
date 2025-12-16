@@ -1,15 +1,4 @@
-import {
-  Alert,
-  Divider,
-  Nav,
-  NavItem,
-  NavList,
-  PageGroup,
-  PageSection,
-  Popover,
-  Content,
-  Title,
-} from '@patternfly/react-core'
+import { Alert, Content, Nav, NavItem, NavList, PageGroup, PageSection, Popover, Title } from '@patternfly/react-core'
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons/dist/esm/icons/outlined-question-circle-icon'
 import React from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
@@ -47,48 +36,45 @@ export const Connect: React.FunctionComponent = () => {
 
   const secure = window.isSecureContext
 
+  const insecureAlert = (
+    <Alert variant='danger' isInline title='Insecure browsing context'>
+      <Content component='p'>
+        Remote connections may require authentication. In{' '}
+        <a
+          href='https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts'
+          target='_blank'
+          rel='noreferrer'
+        >
+          secure browsing contexts
+        </a>{' '}
+        it is possible to store credentials in secure manner using{' '}
+        <a href='https://developer.mozilla.org/en-US/docs/Web/API/Crypto' target='_blank' rel='noreferrer'>
+          Crypto API
+        </a>{' '}
+        and send them securely.
+      </Content>
+      <Content component='p'>
+        Hawtio is not running in secure browsing context, thus connection to remote Jolokia agents with security enabled
+        is not possible.
+      </Content>
+    </Alert>
+  )
+
   return (
     <ConnectContext.Provider value={{ connections, dispatch }}>
       <PageGroup>
-        <PageSection hasBodyWrapper={false} id='connect-header'>
+        <PageSection id='connect-header' hasBodyWrapper={false}>
           <Title id='connect-header-title' headingLevel='h1'>
-            Connect <ConnectHint />
+            Connect
+            <ConnectHint />
           </Title>
-          {!secure ? (
-            <>
-              <Alert variant='danger' isInline title='Insecure browsing context'>
-                <p>
-                  Remote connections may require authentication. In{' '}
-                  <a
-                    href='https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts'
-                    target='_blank'
-                    rel='noreferrer'
-                  >
-                    secure browsing contexts
-                  </a>{' '}
-                  it is possible to store credentials in secure manner using{' '}
-                  <a href='https://developer.mozilla.org/en-US/docs/Web/API/Crypto' target='_blank' rel='noreferrer'>
-                    Crypto API
-                  </a>{' '}
-                  and send them securely.
-                </p>
-                <p>
-                  Hawtio is not running in secure browsing context, thus connection to remote Jolokia agents with
-                  security enabled is not possible.
-                </p>
-              </Alert>
-            </>
-          ) : (
-            ''
-          )}
+          {!secure && insecureAlert}
         </PageSection>
-        <Divider />
-        <PageSection hasBodyWrapper={false} type='tabs' hasShadowBottom>
+        <PageSection type='tabs' hasBodyWrapper={false}>
           {nav}
         </PageSection>
-        <Divider />
       </PageGroup>
-      <PageSection hasBodyWrapper={false} id='connect-main'>
+      <PageSection id='connect-main' hasBodyWrapper={false}>
         <Routes>
           {routes}
           {/* connect/login should be hidden to nav */}

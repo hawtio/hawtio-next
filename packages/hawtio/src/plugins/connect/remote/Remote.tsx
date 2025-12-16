@@ -6,7 +6,6 @@ import {
 } from '@hawtiosrc/plugins/shared/connect-service'
 import {
   Button,
-  ButtonVariant,
   DataList,
   DataListAction,
   DataListCell,
@@ -43,7 +42,7 @@ export const Remote: React.FunctionComponent = () => {
   return (
     <React.Fragment>
       <RemoteToolbar />
-      <DataList id='connection-list' aria-label='connection list' isCompact>
+      <DataList id='connect-connection-list' aria-label='connection list' isCompact>
         {Object.entries(connections).map(([id, connection]) => (
           <ConnectionItem key={id} id={id} connection={connection} />
         ))}
@@ -76,7 +75,7 @@ const RemoteToolbar: React.FunctionComponent = () => {
     <Toolbar id='connect-toolbar'>
       <ToolbarContent>
         <ToolbarItem>
-          <Button icon={<PlusIcon />} variant={ButtonVariant.secondary} onClick={handleAddToggle}>
+          <Button icon={<PlusIcon />} variant='secondary' onClick={handleAddToggle}>
             Add connection
           </Button>
         </ToolbarItem>
