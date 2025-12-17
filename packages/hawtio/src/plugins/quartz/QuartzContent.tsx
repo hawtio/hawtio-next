@@ -1,16 +1,15 @@
 import { Attributes, Operations } from '@hawtiosrc/plugins/shared'
 import {
-  Divider,
+  Content,
   EmptyState,
   EmptyStateBody,
+  EmptyStateFooter,
   Nav,
   NavItem,
   NavList,
   PageGroup,
   PageSection,
-  Content,
   Title,
-  EmptyStateFooter,
 } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons/dist/esm/icons/cubes-icon'
 import React, { useContext } from 'react'
@@ -29,12 +28,7 @@ export const QuartzContent: React.FunctionComponent = () => {
   if (tree.isEmpty()) {
     return (
       <PageSection hasBodyWrapper={false}>
-        <EmptyState
-          headingLevel='h1'
-          icon={CubesIcon}
-          titleText='No Quartz schedulers found'
-          variant='full'
-        ></EmptyState>
+        <EmptyState headingLevel='h1' icon={CubesIcon} titleText='No Quartz schedulers found' variant='full' />
       </PageSection>
     )
   }
@@ -79,22 +73,20 @@ export const QuartzContent: React.FunctionComponent = () => {
 
   return (
     <PageGroup id='quartz-content'>
-      <PageSection hasBodyWrapper={false} id='quartz-content-header'>
+      <PageSection id='quartz-content-header' hasBodyWrapper={false}>
         <Title headingLevel='h1'>{selectedNode.name}</Title>
         <Content component='small'>{selectedNode.objectName}</Content>
       </PageSection>
-      <Divider />
-      <PageSection hasBodyWrapper={false} type='tabs' hasShadowBottom>
+      <PageSection hasBodyWrapper={false} type='tabs'>
         {nav}
       </PageSection>
-      <Divider />
 
       <PageSection
-        hasBodyWrapper={false}
         id='quartz-content-main'
         padding={{ default: 'noPadding' }}
         hasOverflowScroll
         aria-label='quartz-content-main'
+        hasBodyWrapper={false}
       >
         <Routes>
           {routes}

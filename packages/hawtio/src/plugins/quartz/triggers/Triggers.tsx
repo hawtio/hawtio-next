@@ -1,5 +1,6 @@
 import { HawtioLoadingCard } from '@hawtiosrc/plugins/shared'
-import { Button, Panel, PanelMain, PanelMainBody, Icon } from '@patternfly/react-core'
+import { FilteredTable } from '@hawtiosrc/ui'
+import { Button, Icon } from '@patternfly/react-core'
 import { CheckCircleIcon } from '@patternfly/react-icons/dist/esm/icons/check-circle-icon'
 import { PauseCircleIcon } from '@patternfly/react-icons/dist/esm/icons/pause-circle-icon'
 import { ActionsColumn } from '@patternfly/react-table'
@@ -10,12 +11,11 @@ import {
   QUARTZ_FACADE_OPERATIONS,
   QUARTZ_OPERATIONS,
   Trigger,
-  quartzService,
   misfireInstructions,
+  quartzService,
 } from '../quartz-service'
-import { FilteredTable } from '@hawtiosrc/ui'
-import { TriggersUpdateModal } from './TriggersUpdateModal'
 import { TriggersManualModal } from './TriggersManualModal'
+import { TriggersUpdateModal } from './TriggersUpdateModal'
 
 export const Triggers: React.FunctionComponent = () => {
   const { selectedNode } = useContext(QuartzContext)
@@ -121,148 +121,132 @@ export const Triggers: React.FunctionComponent = () => {
   }
 
   return (
-    <Panel>
-      <PanelMain>
-        <PanelMainBody>
-          <FilteredTable
-            rows={triggers}
-            highlightSearch={true}
-            tableColumns={[
-              {
-                name: 'State',
-                key: 'state',
-                percentageWidth: 10,
-                renderer: ({ state }) =>
-                  state?.toLowerCase() === 'normal' ? (
-                    <Icon status='success'>
-                      <CheckCircleIcon />
-                    </Icon>
-                  ) : (
-                    <Icon>
-                      <PauseCircleIcon />
-                    </Icon>
-                  ),
-              },
-              {
-                name: 'Group',
-                key: 'group',
-                percentageWidth: 10,
-              },
-              {
-                name: 'Name',
-                key: 'name',
-                percentageWidth: 10,
-              },
-              {
-                name: 'Type',
-                key: 'type',
-                percentageWidth: 10,
-              },
-              {
-                name: 'Expression',
-                key: 'expression',
-                percentageWidth: 20,
-              },
-              {
-                name: 'Misfire Instruction',
-                key: 'misfireInstruction',
-                percentageWidth: 15,
-                renderer: ({ misfireInstruction }) => toMisfireText(misfireInstruction),
-              },
-              {
-                name: 'Previous Execution',
-                key: 'previousFireTime',
-                percentageWidth: 15,
-              },
-              {
-                name: 'Next Execution',
-                key: 'nextFireTime',
-                percentageWidth: 15,
-              },
-              {
-                name: 'Final execution',
-                key: 'finalFireTime',
-                percentageWidth: 10,
-                hideValues: ['null'],
-              },
-              {
-                name: 'Action',
-                percentageWidth: 10,
-                renderer: row =>
-                  row.state?.toLowerCase() === 'normal' ? (
-                    <Button
-                      variant='danger'
-                      size='sm'
-                      onClick={() => pauseTrigger(row)}
-                      isDisabled={!canPauseTrigger()}
-                    >
-                      Pause
-                    </Button>
-                  ) : (
-                    <Button
-                      variant='primary'
-                      size='sm'
-                      onClick={() => resumeTrigger(row)}
-                      isDisabled={!canResumeTrigger()}
-                    >
-                      Resume
-                    </Button>
-                  ),
-              },
-              {
-                isAction: true,
-                percentageWidth: 10,
-                renderer: row => (
-                  <>
-                    <ActionsColumn
-                      items={[
-                        {
-                          title: 'Update Trigger',
-                          isDisabled: !canUpdateTrigger(),
-                          onClick: handleUpdateToggle,
-                        },
-                        {
-                          title: 'Trigger Manually',
-                          isDisabled: !canTriggerJob(),
-                          onClick: handleManualToggle,
-                        },
-                      ]}
-                    />
-                    <TriggersUpdateModal
-                      isOpen={isUpdateOpen}
-                      onClose={handleUpdateToggle}
-                      input={row}
-                      reload={triggerReload}
-                    />
-                    <TriggersManualModal isOpen={isManualOpen} onClose={handleManualToggle} input={row} />
-                  </>
-                ),
-              },
-            ]}
-            fixedSearchCategories={[
-              {
-                name: 'State',
-                key: 'state',
-                values: triggerStates,
-              },
-            ]}
-            searchCategories={[
-              {
-                name: 'Group',
-                key: 'group',
-              },
-              {
-                name: 'Name',
-                key: 'name',
-              },
-              {
-                name: 'Type',
-                key: 'type',
-              },
-            ]}
-          />
-        </PanelMainBody>
-      </PanelMain>
-    </Panel>
+    <FilteredTable
+      rows={triggers}
+      highlightSearch={true}
+      tableColumns={[
+        {
+          name: 'State',
+          key: 'state',
+          percentageWidth: 10,
+          renderer: ({ state }) =>
+            state?.toLowerCase() === 'normal' ? (
+              <Icon status='success'>
+                <CheckCircleIcon />
+              </Icon>
+            ) : (
+              <Icon>
+                <PauseCircleIcon />
+              </Icon>
+            ),
+        },
+        {
+          name: 'Group',
+          key: 'group',
+          percentageWidth: 10,
+        },
+        {
+          name: 'Name',
+          key: 'name',
+          percentageWidth: 10,
+        },
+        {
+          name: 'Type',
+          key: 'type',
+          percentageWidth: 10,
+        },
+        {
+          name: 'Expression',
+          key: 'expression',
+          percentageWidth: 20,
+        },
+        {
+          name: 'Misfire Instruction',
+          key: 'misfireInstruction',
+          percentageWidth: 15,
+          renderer: ({ misfireInstruction }) => toMisfireText(misfireInstruction),
+        },
+        {
+          name: 'Previous Execution',
+          key: 'previousFireTime',
+          percentageWidth: 15,
+        },
+        {
+          name: 'Next Execution',
+          key: 'nextFireTime',
+          percentageWidth: 15,
+        },
+        {
+          name: 'Final execution',
+          key: 'finalFireTime',
+          percentageWidth: 10,
+          hideValues: ['null'],
+        },
+        {
+          name: 'Action',
+          percentageWidth: 10,
+          renderer: row =>
+            row.state?.toLowerCase() === 'normal' ? (
+              <Button variant='danger' size='sm' onClick={() => pauseTrigger(row)} isDisabled={!canPauseTrigger()}>
+                Pause
+              </Button>
+            ) : (
+              <Button variant='primary' size='sm' onClick={() => resumeTrigger(row)} isDisabled={!canResumeTrigger()}>
+                Resume
+              </Button>
+            ),
+        },
+        {
+          isAction: true,
+          percentageWidth: 10,
+          renderer: row => (
+            <>
+              <ActionsColumn
+                items={[
+                  {
+                    title: 'Update Trigger',
+                    isDisabled: !canUpdateTrigger(),
+                    onClick: handleUpdateToggle,
+                  },
+                  {
+                    title: 'Trigger Manually',
+                    isDisabled: !canTriggerJob(),
+                    onClick: handleManualToggle,
+                  },
+                ]}
+              />
+              <TriggersUpdateModal
+                isOpen={isUpdateOpen}
+                onClose={handleUpdateToggle}
+                input={row}
+                reload={triggerReload}
+              />
+              <TriggersManualModal isOpen={isManualOpen} onClose={handleManualToggle} input={row} />
+            </>
+          ),
+        },
+      ]}
+      fixedSearchCategories={[
+        {
+          name: 'State',
+          key: 'state',
+          values: triggerStates,
+        },
+      ]}
+      searchCategories={[
+        {
+          name: 'Group',
+          key: 'group',
+        },
+        {
+          name: 'Name',
+          key: 'name',
+        },
+        {
+          name: 'Type',
+          key: 'type',
+        },
+      ]}
+    />
   )
 }

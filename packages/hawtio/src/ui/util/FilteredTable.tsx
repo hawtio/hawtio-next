@@ -28,6 +28,7 @@ import { SearchIcon } from '@patternfly/react-icons/dist/esm/icons/search-icon'
 import { Table, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { ExpandableText } from './ExpandableText'
+import './FilteredTable.css'
 
 interface Props<T> {
   extraToolbarLeft?: React.ReactNode
@@ -112,8 +113,9 @@ export function FilteredTable<T>({
   useEffect(() => {
     let filtered: T[] = [...rows]
 
-    //add current searchTerm and filter
-    ;[...filters, searchTerm].forEach(filter => {
+    // add current searchTerm and filter
+    const fs = [...filters, searchTerm]
+    fs.forEach(filter => {
       const key = filter.key
       if (!key) {
         return
@@ -124,7 +126,7 @@ export function FilteredTable<T>({
       })
     })
 
-    //If user is filtering - refreshing the threads themselves would reset the page count
+    // If user is filtering - refreshing the threads themselves would reset the page count
     if (filtered.length != rows.length) {
       setPage(1)
     }

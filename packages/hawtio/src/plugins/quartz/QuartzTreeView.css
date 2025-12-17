@@ -8,12 +8,7 @@
 }
 
 #quartz-tree-view .pf-v6-c-tree-view__node {
-  padding-top: 1px;
-  padding-bottom: 1px;
-}
-
-#quartz-tree-view .pf-v6-c-tree-view__node.pf-m-current {
-  padding-left: 10px;
+  padding-left: 0.5rem;
 }
 
 #quartz-tree-view .pf-v6-c-tree-view__node-toggle {
@@ -24,8 +19,7 @@
 }
 
 #quartz-tree-view .pf-v6-c-tree-view__node-text {
-  padding-top: 2px;
-  font-size: smaller;
+  padding-left: 0;
 }
 
 #quartz-tree-view .pf-v6-c-tree-view__node-icon {

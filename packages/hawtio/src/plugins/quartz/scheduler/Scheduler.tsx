@@ -9,18 +9,19 @@ import {
   DescriptionListDescription,
   DescriptionListGroup,
   DescriptionListTerm,
+  Divider,
   Icon,
   Stack,
   Switch,
 } from '@patternfly/react-core'
 import { CheckCircleIcon } from '@patternfly/react-icons/dist/esm/icons/check-circle-icon'
 import { PauseCircleIcon } from '@patternfly/react-icons/dist/esm/icons/pause-circle-icon'
+import Jolokia from 'jolokia.js'
 import React, { useContext, useEffect, useState } from 'react'
 import { QuartzContext } from '../context'
 import { log } from '../globals'
 import { QUARTZ_OPERATIONS, quartzService } from '../quartz-service'
 import './Scheduler.css'
-import Jolokia from 'jolokia.js'
 
 export const Scheduler: React.FunctionComponent = () => {
   const { selectedNode } = useContext(QuartzContext)
@@ -117,36 +118,32 @@ export const Scheduler: React.FunctionComponent = () => {
 
   return (
     <Stack id='quartz-scheduler' hasGutter>
-      <Card id='quartz-scheduler-main'>
+      <Card id='quartz-scheduler-main' isPlain>
         <CardHeader
           actions={{
             actions: (
-              <>
-                <Switch
-                  id='quartz-scheduler-main-switch'
-                  label='Started'
-                  isChecked={scheduler.started}
-                  isDisabled={!canStartPauseScheduler()}
-                  onChange={(_event, start: boolean) => handleSchedulerSwitchChange(start)}
-                  isReversed
-                />
-              </>
+              <Switch
+                id='quartz-scheduler-main-switch'
+                label='Started'
+                isChecked={scheduler.started}
+                isDisabled={!canStartPauseScheduler()}
+                onChange={(_event, start) => handleSchedulerSwitchChange(start)}
+                isReversed
+              />
             ),
             hasNoOffset: false,
           }}
         >
           <CardTitle>
-            <>
-              {scheduler.started ? (
-                <Icon status='success'>
-                  <CheckCircleIcon />
-                </Icon>
-              ) : (
-                <Icon>
-                  <PauseCircleIcon />
-                </Icon>
-              )}
-            </>
+            {scheduler.started ? (
+              <Icon status='success'>
+                <CheckCircleIcon />
+              </Icon>
+            ) : (
+              <Icon>
+                <PauseCircleIcon />
+              </Icon>
+            )}
             Scheduler
           </CardTitle>
         </CardHeader>
@@ -179,37 +176,34 @@ export const Scheduler: React.FunctionComponent = () => {
           </DescriptionList>
         </CardBody>
       </Card>
-      <Card id='quartz-scheduler-statistics'>
+      <Divider />
+      <Card id='quartz-scheduler-statistics' isPlain>
         <CardHeader
           actions={{
             actions: (
-              <>
-                <Switch
-                  id='quartz-scheduler-statistics-switch'
-                  label='Enabled'
-                  isChecked={scheduler.sampledStatisticsEnabled}
-                  isDisabled={!canUpdateSampleStatisticsEnabled()}
-                  onChange={(_event, value: boolean) => handleSampledStatisticsSwitchChange(value)}
-                  isReversed
-                />
-              </>
+              <Switch
+                id='quartz-scheduler-statistics-switch'
+                label='Enabled'
+                isChecked={scheduler.sampledStatisticsEnabled}
+                isDisabled={!canUpdateSampleStatisticsEnabled()}
+                onChange={(_event, value) => handleSampledStatisticsSwitchChange(value)}
+                isReversed
+              />
             ),
             hasNoOffset: false,
             className: undefined,
           }}
         >
           <CardTitle>
-            <>
-              {scheduler.sampledStatisticsEnabled ? (
-                <Icon status='success'>
-                  <CheckCircleIcon />
-                </Icon>
-              ) : (
-                <Icon>
-                  <PauseCircleIcon />
-                </Icon>
-              )}
-            </>
+            {scheduler.sampledStatisticsEnabled ? (
+              <Icon status='success'>
+                <CheckCircleIcon />
+              </Icon>
+            ) : (
+              <Icon>
+                <PauseCircleIcon />
+              </Icon>
+            )}
             Sampled Statistics (Most Recent Samples)
           </CardTitle>
         </CardHeader>

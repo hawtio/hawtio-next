@@ -1,0 +1,11 @@
+.pf-v6-c-panel__header {
+  padding: 0.5rem !important;
+}
+
+.pf-v6-c-panel__main-body {
+  padding: 0.5rem !important;
+}
+
+.pf-v6-c-form__group {
+  max-width: 100%;
+}

@@ -1,7 +1,11 @@
-#quartz-content-main > article {
-  overflow: auto;
-}
-
 #quartz-content {
   height: 100%;
+}
+
+section#quartz-content-header.pf-v6-c-page__main-section {
+  display: block;
+}
+
+#quartz-content-main > article {
+  overflow: auto;
 }
