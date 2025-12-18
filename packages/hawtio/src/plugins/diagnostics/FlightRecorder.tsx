@@ -23,7 +23,7 @@ import {
   Spinner,
   Stack,
   TextInput,
-  Title
+  Title,
 } from '@patternfly/react-core'
 import { Modal } from '@patternfly/react-core/deprecated'
 import { CogIcon, CubesIcon, DownloadIcon, RecordVinylIcon, StopIcon } from '@patternfly/react-icons'
@@ -87,7 +87,7 @@ export const FlightRecorder: React.FunctionComponent = () => {
       initialized &&
       jolokiaUrl &&
       ['localhost', '127.0.0.1', '::1', '192.168.', '10.0'].filter(localUrl => jolokiaUrl.includes(localUrl)).length >=
-      1
+        1
     )
   )
     return (
@@ -242,9 +242,7 @@ export const FlightRecorder: React.FunctionComponent = () => {
           id='dump-on-exit-checkbox'
           label='Dump on exit'
           isChecked={userJfrSettings?.dumpOnExit}
-          onChange={(_event, value) =>
-            setUserJfrSettings({ ...userJfrSettings, dumpOnExit: value } as UserJfrSettings)
-          }
+          onChange={(_event, value) => setUserJfrSettings({ ...userJfrSettings, dumpOnExit: value } as UserJfrSettings)}
         />
       </Form>
     </Modal>
@@ -328,7 +326,7 @@ export const FlightRecorder: React.FunctionComponent = () => {
                     <Td>{file}</Td>
                     <Td>{size}</Td>
                     <Td>{new Date(time).toUTCString()}</Td>
-                    <Td modifier="fitContent" hasAction>
+                    <Td modifier='fitContent' hasAction>
                       <Button
                         icon={<DownloadIcon />}
                         variant='secondary'
