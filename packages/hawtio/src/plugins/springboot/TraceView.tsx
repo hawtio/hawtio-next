@@ -1,28 +1,33 @@
-import React, { useEffect, useState } from 'react'
-import { Button, CodeBlock, CodeBlockCode, Flex, Label, Icon } from '@patternfly/react-core'
+import { FilteredTable } from '@hawtiosrc/ui'
+import { Button, CodeBlock, CodeBlockCode, Flex, Icon, Label } from '@patternfly/react-core'
 import { Modal } from '@patternfly/react-core/deprecated'
 import { CheckCircleIcon } from '@patternfly/react-icons/dist/esm/icons/check-circle-icon'
 import { ExclamationCircleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon'
-import { Trace } from './types'
+import React, { useEffect, useState } from 'react'
 import { springbootService } from './springboot-service'
-import { FilteredTable } from '@hawtiosrc/ui'
+import { Trace } from './types'
 
-const HttpStatusIcon: React.FunctionComponent<{ code: number }> = ({ code }) => {
-  if (code < 400)
-    return (
-      <Icon status='success'>
-        <CheckCircleIcon />
-      </Icon>
-    )
-  else
+const HttpStatusIcon: React.FunctionComponent<{
+  code: number
+}> = ({ code }) => {
+  if (code >= 400) {
     return (
       <Icon status='danger'>
         <ExclamationCircleIcon />
       </Icon>
     )
+  }
+
+  return (
+    <Icon status='success'>
+      <CheckCircleIcon />
+    </Icon>
+  )
 }
 
-const HttpMethodLabel: React.FunctionComponent<{ method: string }> = ({ method }) => {
+const HttpMethodLabel: React.FunctionComponent<{
+  method: string
+}> = ({ method }) => {
   switch (method) {
     case 'GET':
     case 'HEAD':
@@ -59,6 +64,7 @@ const TraceDetails: React.FunctionComponent<{
     </Modal>
   )
 }
+
 export const TraceView: React.FunctionComponent = () => {
   const [traces, setTraces] = useState<Trace[]>([])
   const [isTraceDetailsOpen, setIsTraceDetailsOpen] = useState(false)

@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from 'react'
-import { Card, CardBody, CardHeader, Flex, FlexItem, Grid, GridItem, Icon, Title } from '@patternfly/react-core'
-import { springbootService } from './springboot-service'
-import { HealthComponentDetail, HealthData } from './types'
-import { Table, Tbody, Td, Tr } from '@patternfly/react-table'
 import { humanizeLabels } from '@hawtiosrc/util/strings'
 import { ChartDonutUtilization } from '@patternfly/react-charts/victory'
+import { Card, CardBody, CardHeader, Flex, FlexItem, Grid, GridItem, Icon, Title } from '@patternfly/react-core'
 import { CheckCircleIcon } from '@patternfly/react-icons/dist/esm/icons/check-circle-icon'
 import { ExclamationCircleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon'
 import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon'
 import { InfoCircleIcon } from '@patternfly/react-icons/dist/esm/icons/info-circle-icon'
 import { QuestionCircleIcon } from '@patternfly/react-icons/dist/esm/icons/question-circle-icon'
+import { Table, Tbody, Td, Tr } from '@patternfly/react-table'
+import React, { useEffect, useState } from 'react'
 import './Health.css'
+import { springbootService } from './springboot-service'
+import { HealthComponent, HealthComponentDetail, HealthData } from './types'
 
 const SPAN_6_COMPONENTS = ['diskSpace', 'camelHealth', 'camel']
 
-const ComponentDetails: React.FunctionComponent<{ componentDetails: HealthComponentDetail[] }> = ({
-  componentDetails,
-}) => {
+const ComponentDetails: React.FunctionComponent<{
+  componentDetails: HealthComponentDetail[]
+}> = ({ componentDetails }) => {
   return (
     <Table variant='compact' borders={false}>
       <Tbody style={{ fontSize: 'xx-small' }}>
@@ -34,7 +34,10 @@ const ComponentDetails: React.FunctionComponent<{ componentDetails: HealthCompon
     </Table>
   )
 }
-const HealthStatusIcon: React.FunctionComponent<{ status: string }> = ({ status }) => {
+
+const HealthStatusIcon: React.FunctionComponent<{
+  status: string
+}> = ({ status }) => {
   switch (status) {
     case 'UP':
       return (
@@ -69,15 +72,15 @@ const HealthStatusIcon: React.FunctionComponent<{ status: string }> = ({ status 
   }
 }
 
-const DiskComponentDetails: React.FunctionComponent<{ componentDetails: HealthComponentDetail[] }> = ({
-  componentDetails,
-}) => {
+const DiskComponentDetails: React.FunctionComponent<{
+  componentDetails: HealthComponentDetail[]
+}> = ({ componentDetails }) => {
   const total = Number.parseInt(componentDetails.find(k => k.key === 'total')!.value as string)
   const free = Number.parseInt(componentDetails.find(k => k.key === 'free')!.value as string)
   const usedPercentage = Math.round(((total - free) * 100) / total)
 
   return (
-    <Grid height={'100%'}>
+    <Grid height='100%'>
       <GridItem span={6}>
         <ComponentDetails componentDetails={componentDetails} />
       </GridItem>
@@ -110,10 +113,16 @@ export const Health: React.FunctionComponent = () => {
     return null
   }
 
+  const healthSorter = (a: HealthComponent, b: HealthComponent) => {
+    if (SPAN_6_COMPONENTS.includes(a.name)) return -1
+    else if (SPAN_6_COMPONENTS.includes(b.name)) return 1
+    else return a.name.localeCompare(b.name)
+  }
+
   return (
     <Grid hasGutter span={4}>
       <GridItem span={12}>
-        <Card>
+        <Card isPlain isCompact>
           <CardHeader>
             <Flex>
               <HealthStatusIcon status={healthData?.status} />
@@ -124,38 +133,28 @@ export const Health: React.FunctionComponent = () => {
           </CardHeader>
         </Card>
       </GridItem>
-      {healthData?.components
-        .sort((a, b) => {
-          if (SPAN_6_COMPONENTS.includes(a.name)) return -1
-          else if (SPAN_6_COMPONENTS.includes(b.name)) return 1
-          else return a.name.localeCompare(b.name)
-        })
-        .map(component => {
-          const span = SPAN_6_COMPONENTS.includes(component.name) ? 6 : 4
-          return (
-            <GridItem span={span} key={component.name}>
-              <Card isFullHeight>
-                <CardHeader>
-                  <Title headingLevel='h3'>{humanizeLabels(component.name!)}</Title>
-                </CardHeader>
-                <CardBody style={{ overflow: 'auto' }}>
-                  <Flex>
-                    <FlexItem>
-                      <HealthStatusIcon status={component.status} />
-                    </FlexItem>
-                    <FlexItem>Status: {component.status}</FlexItem>
-                    {component.details &&
-                      (component.name === 'diskSpace' ? (
-                        <DiskComponentDetails componentDetails={component.details} />
-                      ) : (
-                        <ComponentDetails componentDetails={component.details} />
-                      ))}
-                  </Flex>
-                </CardBody>
-              </Card>
-            </GridItem>
-          )
-        })}
+      {healthData?.components.sort(healthSorter).map(({ name, status, details }) => {
+        const span = SPAN_6_COMPONENTS.includes(name) ? 6 : 4
+        return (
+          <GridItem span={span} key={name}>
+            <Card isFullHeight isCompact>
+              <CardHeader>
+                <Title headingLevel='h3'>{humanizeLabels(name)}</Title>
+              </CardHeader>
+              <CardBody style={{ overflow: 'auto' }}>
+                <Flex>
+                  <FlexItem>
+                    <HealthStatusIcon status={status} />
+                  </FlexItem>
+                  <FlexItem>Status: {status}</FlexItem>
+                  {details && name === 'diskSpace' && <DiskComponentDetails componentDetails={details} />}
+                  {details && name !== 'diskSpace' && <ComponentDetails componentDetails={details} />}
+                </Flex>
+              </CardBody>
+            </Card>
+          </GridItem>
+        )
+      })}
     </Grid>
   )
 }

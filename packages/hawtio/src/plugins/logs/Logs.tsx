@@ -28,7 +28,7 @@ export const Logs: React.FunctionComponent = () => {
       <PageSection id='logs-header' hasBodyWrapper={false}>
         <Title headingLevel='h1'>Logs</Title>
       </PageSection>
-      <PageSection id='logs-table' isFilled hasBodyWrapper={false}>
+      <PageSection id='logs-table' padding={{ default: 'noPadding' }} isFilled hasBodyWrapper={false}>
         <LogsTable />
       </PageSection>
     </React.Fragment>

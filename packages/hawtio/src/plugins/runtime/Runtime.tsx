@@ -39,7 +39,7 @@ export const Runtime: React.FunctionComponent = () => {
           </Nav>
         </PageSection>
       </PageGroup>
-      <PageSection hasBodyWrapper={false}>
+      <PageSection padding={{ default: 'noPadding' }} hasBodyWrapper={false}>
         <Routes>
           {navItems.map(({ id, component }) => (
             <Route key={id} path={id} element={component} />

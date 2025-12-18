@@ -1,8 +1,8 @@
+import { FilteredTable } from '@hawtiosrc/ui'
+import { Dropdown, DropdownItem, DropdownList, Label, MenuToggle, MenuToggleElement } from '@patternfly/react-core'
 import React, { useEffect, useState } from 'react'
-import { Label, DropdownItem, Dropdown, MenuToggleElement, MenuToggle, DropdownList } from '@patternfly/react-core'
 import { springbootService } from './springboot-service'
 import { Logger } from './types'
-import { FilteredTable } from '@hawtiosrc/ui'
 
 const SetLogDropdown: React.FunctionComponent<{
   currentLevel: string
@@ -14,7 +14,7 @@ const SetLogDropdown: React.FunctionComponent<{
 }> = ({ currentLevel, loggerName, logLevels, setIsDropdownOpen, isDropdownOpen, reloadLoggers }) => {
   const items = logLevels.map(level => (
     <DropdownItem
-      key={loggerName + '' + level}
+      key={loggerName + '-' + level}
       onClick={() => {
         springbootService.configureLogLevel(loggerName, level)
         reloadLoggers()
@@ -44,7 +44,9 @@ const SetLogDropdown: React.FunctionComponent<{
     </Dropdown>
   )
 }
-const LogLevel: React.FunctionComponent<{ level: string }> = ({ level }) => {
+const LogLevel: React.FunctionComponent<{
+  level: string
+}> = ({ level }) => {
   switch (level) {
     case 'TRACE':
     case 'OFF':
@@ -79,45 +81,43 @@ export const Loggers: React.FunctionComponent = () => {
   }, [reloadLoggers])
 
   return (
-    <React.Fragment>
-      <FilteredTable
-        rows={loggers}
-        highlightSearch={true}
-        tableColumns={[
-          {
-            name: 'Log Level',
-            key: 'configuredLevel',
-            percentageWidth: 20,
-            renderer: logger => (
-              <SetLogDropdown
-                loggerName={logger.name}
-                currentLevel={logger.configuredLevel}
-                logLevels={logLevels}
-                setIsDropdownOpen={setIsDropdownOpen}
-                isDropdownOpen={isDropdownOpen}
-                reloadLoggers={() => {
-                  setReloadLoggers(!reloadLoggers)
-                }}
-              />
-            ),
-          },
-          {
-            name: 'Logger Name',
-            key: 'name',
-            percentageWidth: 80,
-          },
-        ]}
-        searchCategories={[{ key: 'name', name: 'Logger Name' }]}
-        fixedSearchCategories={[
-          {
-            name: 'Log Level',
-            key: 'configuredLevel',
-            ariaLabel: 'Log Level',
-            values: logLevels,
-            renderer: val => <LogLevel level={val} />,
-          },
-        ]}
-      />
-    </React.Fragment>
+    <FilteredTable
+      rows={loggers}
+      highlightSearch={true}
+      tableColumns={[
+        {
+          name: 'Log Level',
+          key: 'configuredLevel',
+          percentageWidth: 20,
+          renderer: logger => (
+            <SetLogDropdown
+              loggerName={logger.name}
+              currentLevel={logger.configuredLevel}
+              logLevels={logLevels}
+              setIsDropdownOpen={setIsDropdownOpen}
+              isDropdownOpen={isDropdownOpen}
+              reloadLoggers={() => {
+                setReloadLoggers(!reloadLoggers)
+              }}
+            />
+          ),
+        },
+        {
+          name: 'Logger Name',
+          key: 'name',
+          percentageWidth: 80,
+        },
+      ]}
+      searchCategories={[{ key: 'name', name: 'Logger Name' }]}
+      fixedSearchCategories={[
+        {
+          name: 'Log Level',
+          key: 'configuredLevel',
+          ariaLabel: 'Log Level',
+          values: logLevels,
+          renderer: val => <LogLevel level={val} />,
+        },
+      ]}
+    />
   )
 }

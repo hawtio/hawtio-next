@@ -1,6 +1,5 @@
-import { Divider, Nav, NavItem, NavList, PageSection, Title } from '@patternfly/react-core'
+import { Nav, NavItem, NavList, PageSection, Title } from '@patternfly/react-core'
 import React, { useEffect, useState } from 'react'
-
 import { Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import { Health } from './Health'
 import { Info } from './Info'
@@ -13,6 +12,7 @@ type NavItem = {
   title: string
   component: JSX.Element
 }
+
 export const SpringBoot: React.FunctionComponent = () => {
   const location = useLocation()
   const [navItems, setNavItems] = useState<NavItem[]>([])
@@ -32,11 +32,13 @@ export const SpringBoot: React.FunctionComponent = () => {
         nav.push({ id: 'loggers', title: 'Loggers', component: <Loggers /> })
       }
 
+      // Spring Boot 2.x
       if (await springbootService.hasEndpoint('Httptrace')) {
         springbootService.setIsSpringBoot3(false)
         nav.push({ id: 'trace', title: 'Trace', component: <TraceView /> })
       }
 
+      // Spring Boot 3.x
       if (await springbootService.hasEndpoint('Httpexchanges')) {
         springbootService.setIsSpringBoot3(true)
         nav.push({ id: 'trace', title: 'Trace', component: <TraceView /> })
@@ -52,23 +54,21 @@ export const SpringBoot: React.FunctionComponent = () => {
       <PageSection hasBodyWrapper={false}>
         <Title headingLevel='h1'>Spring Boot</Title>
       </PageSection>
-      <Divider />
-      <PageSection hasBodyWrapper={false} type='tabs' hasShadowBottom>
-        <Nav aria-label='Spring-boot Nav' variant='horizontal-subnav'>
+      <PageSection type='tabs' hasBodyWrapper={false}>
+        <Nav aria-label='Spring Boot Nav' variant='horizontal-subnav'>
           <NavList>
-            {navItems.map(navItem => (
-              <NavItem key={navItem.id} isActive={location.pathname === `/springboot/${navItem.id}`}>
-                <NavLink to={navItem.id}>{navItem.title}</NavLink>
+            {navItems.map(({ id, title }) => (
+              <NavItem key={id} isActive={location.pathname === `/springboot/${id}`}>
+                <NavLink to={id}>{title}</NavLink>
               </NavItem>
             ))}
           </NavList>
         </Nav>
       </PageSection>
-      <Divider />
-      <PageSection hasBodyWrapper={false} aria-label='Spring-boot Content' padding={{ default: 'noPadding' }}>
+      <PageSection aria-label='Spring Boot Content' padding={{ default: 'noPadding' }} hasBodyWrapper={false}>
         <Routes>
-          {navItems.map(navItem => (
-            <Route key={navItem.id} path={navItem.id} element={navItem.component} />
+          {navItems.map(({ id, component }) => (
+            <Route key={id} path={id} element={component} />
           ))}
           <Route path='/' element={<Navigate to='health' />} />
         </Routes>
