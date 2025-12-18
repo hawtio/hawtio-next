@@ -1,11 +1,10 @@
+import { FilteredTable } from '@hawtiosrc/ui'
 import { Button, CodeBlock, CodeBlockCode, ToolbarGroup, ToolbarItem } from '@patternfly/react-core'
 import { Modal } from '@patternfly/react-core/deprecated'
 import React, { useEffect, useState } from 'react'
-
-import { Thread } from './types'
 import { runtimeService } from './runtime-service'
 import { ThreadInfoModal } from './ThreadInfoModal'
-import { FilteredTable } from '@hawtiosrc/ui'
+import { Thread } from './types'
 
 const ThreadsDumpModal: React.FunctionComponent<{
   isOpen: boolean
@@ -14,13 +13,15 @@ const ThreadsDumpModal: React.FunctionComponent<{
   const [threadsDump, setThreadsDump] = useState('')
 
   useEffect(() => {
+    if (!isOpen) {
+      return
+    }
+
     const readThreadDump = async () => {
       const threadsDump = await runtimeService.dumpThreads()
       setThreadsDump(threadsDump)
     }
-    if (isOpen) {
-      readThreadDump()
-    }
+    readThreadDump()
   }, [isOpen])
 
   return (
@@ -51,8 +52,8 @@ export const Threads: React.FunctionComponent = () => {
       const threads = await runtimeService.loadThreads()
       setThreads(threads)
       setThreadConnectionMonitoring(await runtimeService.isThreadContentionMonitoringEnabled())
-      runtimeService.registerLoadThreadsRequest(threads => {
-        setThreads(threads)
+      runtimeService.registerLoadThreadsRequest(newThreads => {
+        setThreads(newThreads)
       })
     }
     readThreads()
@@ -97,7 +98,7 @@ export const Threads: React.FunctionComponent = () => {
   )
 
   return (
-    <>
+    <React.Fragment>
       <ThreadsDumpModal isOpen={isThreadsDumpModalOpen} setIsOpen={setIsThreadsDumpModalOpen} />
       <ThreadInfoModal isOpen={isThreadDetailsOpen} thread={currentThread} setIsOpen={setIsThreadDetailsOpen} />
 
@@ -125,6 +126,6 @@ export const Threads: React.FunctionComponent = () => {
         rows={threads}
         extraToolbarRight={<ExtraToolBar />}
       />
-    </>
+    </React.Fragment>
   )
 }

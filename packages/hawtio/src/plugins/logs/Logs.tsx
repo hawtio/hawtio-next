@@ -20,6 +20,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { log } from './globals'
 import { LogEntry } from './log-entry'
 import { LOGS_UPDATE_INTERVAL, logsService } from './logs-service'
+import './Logs.css'
 
 export const Logs: React.FunctionComponent = () => {
   return (
