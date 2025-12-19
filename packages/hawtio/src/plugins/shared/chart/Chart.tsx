@@ -18,7 +18,12 @@ import {
   Title,
 } from '@patternfly/react-core'
 import { Table, Tbody, Td, Tr } from '@patternfly/react-table'
-import Jolokia, { JolokiaErrorResponse, JolokiaFetchErrorResponse, JolokiaSuccessResponse, ReadRequest } from 'jolokia.js'
+import Jolokia, {
+  JolokiaErrorResponse,
+  JolokiaFetchErrorResponse,
+  JolokiaSuccessResponse,
+  ReadRequest,
+} from 'jolokia.js'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { attributeService } from '../attributes/attribute-service'
 import { WatchableAttributesForm } from './WatchableAttributesForm'
