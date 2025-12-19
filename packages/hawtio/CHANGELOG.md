@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.0.0-dev.0](https://github.com/hawtio/hawtio-next/compare/v1.11.3...v2.0.0-dev.0) (2025-12-19)
+
+
+### Features
+
+* **auth:** Support multiple OIDC login methods (fixes [#1581](https://github.com/hawtio/hawtio-next/issues/1581)) ([e96d7ba](https://github.com/hawtio/hawtio-next/commit/e96d7bacceaf181c343afe5727023976c5a688b4))
+* upgrading to PatternFly v6 [#1554](https://github.com/hawtio/hawtio-next/issues/1554) ([b363173](https://github.com/hawtio/hawtio-next/commit/b3631734ad9ea64e74018c7573dd087a619d71b8))
+
+
+### Bug Fixes
+
+* **camel:** adjust PF v6 styles for CamelContent ([845d78c](https://github.com/hawtio/hawtio-next/commit/845d78c466c7660a786c62c0dfb0ab70bf673db8))
+* **camel:** fix test failures ([571f5b2](https://github.com/hawtio/hawtio-next/commit/571f5b2b683ba5c27f2b7572d9a2a5ddb53b6c05))
+* **charts:** Add timestamp to jolokia attribute response if not available ([#1804](https://github.com/hawtio/hawtio-next/issues/1804)) ([06eabef](https://github.com/hawtio/hawtio-next/commit/06eabef8ac170013cf312d023022529b2e99f57c))
+* **charts:** Avoid duplicate registration of Jolokia jobs for attributes/charts ([#1804](https://github.com/hawtio/hawtio-next/issues/1804)) ([52e1b56](https://github.com/hawtio/hawtio-next/commit/52e1b565a143f9dbdb3afe3c6b12609487957939))
+* **charts:** Drill into java.lang:type=Memory attributes to get real numbers (fixes [#1819](https://github.com/hawtio/hawtio-next/issues/1819)) ([d524dbb](https://github.com/hawtio/hawtio-next/commit/d524dbbfec92f67afc82b2d40dc5f652027fa06e))
+* **charts:** Update state using setChartData(old => new) (fixes [#1804](https://github.com/hawtio/hawtio-next/issues/1804)) ([07f1200](https://github.com/hawtio/hawtio-next/commit/07f1200bc2fe7cc237d58bead1052e843c6411ed))
+* **connect:** adjust PF v6 styles for Connect plugin ([9b077a0](https://github.com/hawtio/hawtio-next/commit/9b077a01ad7d27caf8a6b93d5ca9d7a925928a5d))
+* **diagnostics:** adjust PF v6 styles for Diagnostics plugin ([fcd8077](https://github.com/hawtio/hawtio-next/commit/fcd8077a6d63ecc1977dbf7736fdca59d4327c24))
+* **help:** adjust PF v6 styles for Hawtio Help ([cbc1716](https://github.com/hawtio/hawtio-next/commit/cbc17165e9f4e4dfd36c2e878b60aaf9c71c1b42))
+* **jmx:** adjust PF v6 styles for JMX plugin ([44e8eca](https://github.com/hawtio/hawtio-next/commit/44e8eca8f97a66f95ebfc6d749bec113ff06d0dc))
+* **jolokia:** Add canRead/canWrite to OptimisedMBeanAttribute type (fixes [#1805](https://github.com/hawtio/hawtio-next/issues/1805)) ([e5c48f3](https://github.com/hawtio/hawtio-next/commit/e5c48f388e6b10b33284755fe3b77121eeacfed4))
+* **jolokia:** handle all the rejected calls to readAttribute/writeAttribute ([#1791](https://github.com/hawtio/hawtio-next/issues/1791)) ([7f8618a](https://github.com/hawtio/hawtio-next/commit/7f8618a25edf21da188fad7dda53328e234cc020))
+* **jolokia:** Handling more Jolokia errors (including background jobs) (fixes [#1825](https://github.com/hawtio/hawtio-next/issues/1825)) ([2a085d6](https://github.com/hawtio/hawtio-next/commit/2a085d6a9071629ede2656efd7940c7e72ae90e5))
+* **logs:** adjust PF v6 styles for Logs plugin ([a64cb7b](https://github.com/hawtio/hawtio-next/commit/a64cb7bb72bd844b5be3947c0dfa85fb636b6e98))
+* migrate styles for PatternFly v6 ([c905f64](https://github.com/hawtio/hawtio-next/commit/c905f64d2774c22db0b58b89beac097f0852fd1a))
+* **preferences:** adjust PF v6 styles for Hawtio Preferences ([17a716b](https://github.com/hawtio/hawtio-next/commit/17a716ba09512187dded588af3c167225079673d))
+* **quartz:** adjust PF v6 styles for Quartz plugin ([e33fe5f](https://github.com/hawtio/hawtio-next/commit/e33fe5f31407a277babbfbdb6597d0adf6b1f33d))
+* **runtime:** adjust PF v6 styles for Runtime plugin ([82de71e](https://github.com/hawtio/hawtio-next/commit/82de71ec8d174a37491be2b8297e18a3fc594aaf))
+* **springboot:** adjust PF v6 styles for Spring Boot plugin ([c54b748](https://github.com/hawtio/hawtio-next/commit/c54b748518507e4b834b272edd6288f0e8772e89))
+* **ui:** adjust PF v6 styles for Hawtio About modal ([a5b100e](https://github.com/hawtio/hawtio-next/commit/a5b100e27ea765e911fa3719afcc7ad3a85d6717))
+* **ui:** adjust PF v6 styles for main Hawtio header ([031b7ab](https://github.com/hawtio/hawtio-next/commit/031b7ab7c73d352fc5f4d47751f9d23ac03d9f85))
+
 ## [1.11.3](https://github.com/hawtio/hawtio-next/compare/v1.11.2...v1.11.3) (2025-11-13)
 
 
