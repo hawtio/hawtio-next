@@ -1,16 +1,6 @@
 import { eventService } from '@hawtiosrc/core'
 import { AttributeValues, Attributes, Chart, JmxContentMBeans, MBeanNode, Operations } from '@hawtiosrc/plugins/shared'
-import {
-  Content,
-  EmptyState,
-  EmptyStateVariant,
-  Nav,
-  NavItem,
-  NavList,
-  PageGroup,
-  PageSection,
-  Title,
-} from '@patternfly/react-core'
+import { Content, EmptyState, Nav, NavItem, NavList, PageGroup, PageSection, Title } from '@patternfly/react-core'
 import { CubesIcon } from '@patternfly/react-icons/dist/esm/icons/cubes-icon'
 import Jolokia, { JolokiaErrorResponse, JolokiaFetchErrorResponse, JolokiaSuccessResponse } from 'jolokia.js'
 import React, { useContext, useEffect, useState } from 'react'
@@ -53,25 +43,8 @@ export const CamelContent: React.FunctionComponent = () => {
   if (!selectedNode) {
     return (
       <PageSection hasBodyWrapper={false} isFilled>
-        <EmptyState
-          headingLevel='h1'
-          icon={CubesIcon}
-          titleText='Select Camel Node'
-          variant={EmptyStateVariant.full}
-        ></EmptyState>
+        <EmptyState headingLevel='h1' icon={CubesIcon} titleText='Select Camel Node' variant='full' />
       </PageSection>
-    )
-  }
-
-  /*
-   * Test if nav should contain general mbean tabs
-   */
-  const isDefaultApplicable = (node: MBeanNode) => {
-    return (
-      camelService.hasMBean(node) &&
-      !camelService.isContextsFolder(node) &&
-      !camelService.isRoutesFolder(node) &&
-      !camelService.isRouteXmlNode(node)
     )
   }
 
@@ -88,8 +61,8 @@ export const CamelContent: React.FunctionComponent = () => {
       ),
       isApplicable: camelService.canViewRouteDiagram,
     },
-    { id: 'attributes', title: 'Attributes', component: <Attributes />, isApplicable: isDefaultApplicable },
-    { id: 'operations', title: 'Operations', component: <Operations />, isApplicable: isDefaultApplicable },
+    { id: 'attributes', title: 'Attributes', component: <Attributes />, isApplicable: camelService.isBasicMBeanNode },
+    { id: 'operations', title: 'Operations', component: <Operations />, isApplicable: camelService.isBasicMBeanNode },
     { id: 'contexts', title: 'Contexts', component: <Contexts />, isApplicable: camelService.isContextsFolder },
     { id: 'routes', title: 'Routes', component: <CamelRoutes />, isApplicable: camelService.isRoutesFolder },
     { id: 'endpoints', title: 'Endpoints', component: <Endpoints />, isApplicable: camelService.isEndpointsFolder },
@@ -131,7 +104,7 @@ export const CamelContent: React.FunctionComponent = () => {
       component: <TypeConverters />,
       isApplicable: camelService.hasTypeConverter,
     },
-    { id: 'chart', title: 'Chart', component: <Chart />, isApplicable: isDefaultApplicable },
+    { id: 'chart', title: 'Chart', component: <Chart />, isApplicable: camelService.isBasicMBeanNode },
     // Applicable for same criteria as trace
     { id: 'profile', title: 'Profile', component: <Profile />, isApplicable: camelService.canTrace },
     { id: 'trace', title: 'Trace', component: <Trace />, isApplicable: camelService.canTrace },

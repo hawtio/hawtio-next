@@ -153,6 +153,10 @@ export function isComponentNode(node: MBeanNode): boolean {
   return hasDomain(node) && node.getType() === componentNodeType
 }
 
+export function isBasicMBeanNode(node: MBeanNode): boolean {
+  return hasMBean(node) && !isContextsFolder(node) && !isRoutesFolder(node) && !isRouteXmlNode(node)
+}
+
 function findMBean(node: MBeanNode, folder: string, id: string): MBeanNode | null {
   if (!node) return null
 
