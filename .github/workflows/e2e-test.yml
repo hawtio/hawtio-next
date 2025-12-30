@@ -25,9 +25,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
-env:
-  HAWTIO_BRANCH: 4.x
-
 jobs:
   test:
     permissions:
@@ -73,6 +70,21 @@ jobs:
         run: yarn install
       - name: Build
         run: yarn build:all
+      - name: Determine Hawtio branch
+        id: determine-hawtio-branch
+        run: |
+          # Map hawtio-next branch to corresponding hawtio/hawtio branch
+          current_branch="${{ github.base_ref || github.ref_name }}"
+          case "$current_branch" in
+            2.x)
+              hawtio_branch="5.x"
+              ;;
+            *)
+              hawtio_branch="4.x"
+              ;;
+          esac
+          echo "HAWTIO_BRANCH=$hawtio_branch" >> $GITHUB_ENV
+          echo "Using hawtio branch: $hawtio_branch and for hawtio-next branch: $current_branch"
       - name: Start server
         run: |
           DISABLE_WS=true yarn start:app --no-color --no-hot --no-live-reload --no-client-overlay 2>&1 > log &
@@ -180,6 +192,21 @@ jobs:
       actions: read
       pull-requests: write
     steps:
+      - name: Determine Hawtio branch
+        id: determine-hawtio-branch
+        run: |
+          # Map hawtio-next branch to corresponding hawtio/hawtio branch
+          current_branch="${{ github.base_ref || github.ref_name }}"
+          case "$current_branch" in
+            2.x)
+              hawtio_branch="5.x"
+              ;;
+            *)
+              hawtio_branch="4.x"
+              ;;
+          esac
+          echo "HAWTIO_BRANCH=$hawtio_branch" >> $GITHUB_ENV
+          echo "Using hawtio branch: $hawtio_branch for hawtio-next branch: $current_branch"
       - name: Archive failed test reports
         uses: actions/upload-artifact/merge@v4
         if: always()
