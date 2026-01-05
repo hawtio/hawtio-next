@@ -1,6 +1,6 @@
 ## Camel
 
-Click [Camel](camel) in the top navigation bar to view the running Camel Context in the current JVM. (The selection will not appear on the navigation bar if there is no Camel running).
+Click [Camel](camel) in the top navigation bar to view the running Camel Context in the current JVM. (The selection will not appear on the navigation bar if there is no Camel running.)
 
 The Camel plugin allows you to view all the running Camel applications in the current JVM.
 You can among others see the following details:
@@ -13,3 +13,20 @@ You can among others see the following details:
 - Live tracing and debugging of running routes
 - Profile the running routes with real time runtime statics; detailed specified per processor
 - Browsing and sending messages to Camel endpoint
+
+### Exchanges
+
+To enable browsing of inflight exchanges in the **Exchanges** tab, the following Camel Main option needs to be enabled:
+
+```java
+camel.main.inflight-repository-browse-enabled = true
+```
+
+### Endpoints (in/out)
+
+To activate the **Endpoints (in/out)** tab, either or both of the following Camel Main options need to be enabled:
+
+```java
+camel.main.endpoint-runtime-statistics-enabled = true
+camel.main.jmx-management-statistics-level = Extended
+```
