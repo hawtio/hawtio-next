@@ -181,8 +181,20 @@ class RouteStatsService {
    */
   processRouteXml(xml: string, routeNode: MBeanNode): Element {
     const doc = parseXML(xml)
-    const routeXml = doc.getElementById(routeNode.name)
-    if (!routeXml || routeXml.tagName?.toLowerCase() !== 'route') {
+
+    /*
+     * Fetches route elements and then checks the tag id property
+     * This is superior to fetching an element by id as it is possible
+     * that other types of elements have the same id, which camel allows.
+     */
+
+    // Get all elements that are <route> tags
+    const routes = doc.getElementsByTagName('route')
+
+    // Find any single route than specifically matches the node id
+    const routeXml = Array.from(routes).find(r => r.id === routeNode.name)
+
+    if (!routeXml) {
       throw new Error(`No routes named '${routeNode.name}' found in the routes xml`)
     }
     return routeXml
