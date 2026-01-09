@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.12.1](https://github.com/hawtio/hawtio-next/compare/v1.12.0...v1.12.1) (2026-01-09)
+
+
+### Bug Fixes
+
+* **camel:** add instructions for enabling Endpoints (in/out) / Exchanges tabs to help ([8bc07cf](https://github.com/hawtio/hawtio-next/commit/8bc07cf1bb006884c4e8db78cdffc7d3ed80d2c2)), closes [#1824](https://github.com/hawtio/hawtio-next/issues/1824)
+* Enable for hawtio-online ([7e68511](https://github.com/hawtio/hawtio-next/commit/7e68511553fe0f532ceffd76a16d51059281b3df))
+
 ## [1.12.0](https://github.com/hawtio/hawtio-next/compare/v1.11.3...v1.12.0) (2025-12-04)
 
 
