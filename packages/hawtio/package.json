@@ -63,7 +63,7 @@
     "@thumbmarkjs/thumbmarkjs": "^1.6.1",
     "dagre": "^0.8.5",
     "dompurify": "^3.3.1",
-    "eventemitter3": "^5.0.1",
+    "eventemitter3": "^5.0.4",
     "jolokia.js": "^2.4.2",
     "js-logger": "^1.6.1",
     "jwt-decode": "^4.0.0",
