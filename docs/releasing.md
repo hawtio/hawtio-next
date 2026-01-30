@@ -1,6 +1,6 @@
-# Releasing Hawtio.next packages
+# Releasing Hawtio React packages
 
-This document describes the release procedure for each package in Hawtio.next.
+This document describes the release procedure for each package in Hawtio React.
 
 ## Preliminary check
 
