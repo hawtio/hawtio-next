@@ -27,7 +27,7 @@ describe('MBeanTree', () => {
   })
 
   test('createFromDomains should process domains', async () => {
-    // Test data taken from https://github.com/hawtio/hawtio-next/issues/377
+    // Test data taken from https://github.com/hawtio/hawtio-react/issues/377
     const domains = {
       'org.xnio': {
         'type=Xnio,provider="nio"': { desc: '' },
@@ -302,7 +302,7 @@ describe('MBeanTree', () => {
 function createNode(name: string, objectName: string): MBeanNode {
   const node = new MBeanNode(null, name, false)
   node.objectName = objectName
-  // Ids will be revisited. Check PR #378 (https://github.com/hawtio/hawtio-next/pull/378)
+  // Ids will be revisited. Check PR #378 (https://github.com/hawtio/hawtio-react/pull/378)
   node.initId(false)
   return node
 }
@@ -310,7 +310,7 @@ function createNode(name: string, objectName: string): MBeanNode {
 function createFolder(name: string, children: MBeanNode[]): MBeanNode {
   const folder = new MBeanNode(null, name, true)
   children.forEach(child => folder.adopt(child))
-  // Ids will be revisited. Check PR #378 (https://github.com/hawtio/hawtio-next/pull/378)
+  // Ids will be revisited. Check PR #378 (https://github.com/hawtio/hawtio-react/pull/378)
   folder.initId(true)
   return folder
 }

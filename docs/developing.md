@@ -56,8 +56,8 @@ The current implementation guidelines are as follows:
 
 Refer to the following issues:
 
-- [E2E testing strategy #16](https://github.com/hawtio/hawtio-next/issues/16)
-- [E2E - Run the E2E suite from Hawtio standalone project directly with hawtio-next #322](https://github.com/hawtio/hawtio-next/issues/322)
+- [E2E testing strategy #16](https://github.com/hawtio/hawtio-react/issues/16)
+- [E2E - Run the E2E suite from Hawtio standalone project directly with hawtio-next #322](https://github.com/hawtio/hawtio-react/issues/322)
 
 ## Supporting projects
 
@@ -79,7 +79,7 @@ The Express middleware that is used in the Webpack dev server and serves as a de
 
 Let's use GitHub Issues for communications including questions, discussing features, and bug reports.
 
-<https://github.com/hawtio/hawtio-next/issues>
+<https://github.com/hawtio/hawtio-react/issues>
 
 ## Developer's references
 

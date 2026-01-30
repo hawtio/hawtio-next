@@ -461,7 +461,7 @@ class JolokiaService implements IJolokiaService {
    */
   protected async checkListOptimisation(jolokia: IJolokiaSimple): Promise<void> {
     log.debug('Check if we can call optimised jolokia.list() operation')
-    // hawtio/hawtio-next#635: we pass an executor which accepts only resolve cb - we never call reject cb even
+    // hawtio/hawtio-react#635: we pass an executor which accepts only resolve cb - we never call reject cb even
     // on error, but we ensure that resolve cb is called
 
     const path = escapeMBeanPath(this.config.mbean)
@@ -589,7 +589,7 @@ class JolokiaService implements IJolokiaService {
         reject(error)
       }
       // Overwrite max depth as listing MBeans requires some constant depth to work
-      // See: https://github.com/hawtio/hawtio-next/issues/670
+      // See: https://github.com/hawtio/hawtio-react/issues/670
       const { maxDepth } = this.loadJolokiaStoredOptions()
       if (maxDepth < JOLOKIA_LIST_MAX_DEPTH) {
         options.maxDepth = JOLOKIA_LIST_MAX_DEPTH
