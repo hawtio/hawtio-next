@@ -1006,9 +1006,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hawtio/next-root@workspace:.":
+"@hawtio/react-root@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@hawtio/next-root@workspace:."
+  resolution: "@hawtio/react-root@workspace:."
   dependencies:
     "@eslint/compat": "npm:^2.0.1"
     "@types/node": "npm:^25.0.10"

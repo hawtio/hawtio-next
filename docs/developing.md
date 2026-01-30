@@ -1,6 +1,6 @@
-# Developing Hawtio.next
+# Developing Hawtio React
 
-This document introduces the coding styles and guidelines, development tips, and resources for new contributors to Hawtio.next.
+This document introduces the coding styles and guidelines, development tips, and resources for new contributors to Hawtio React.
 
 Feedback and suggestions for improvements are always welcome.
 
@@ -22,21 +22,21 @@ The main task of this project is to migrate legacy Hawtio v2 TypeScript code to 
 
 The basic logic can be used as is, but the legacy Hawtio contains unnecessary code from years of development and it is not desirable to inherit them as they are. Therefore, we need to scrutinise them and migrate only what are really necessary.
 
-### Mapping between legacy Hawtio and Hawtio.next
+### Mapping between legacy Hawtio and Hawtio React
 
 The legacy Hawtio follows this [AngularJS style guide](https://github.com/toddmotto/angularjs-styleguide/tree/master/typescript).
 Each component is structured based on MVC, with the model being plain TypeScript code, the controller being an AngularJS controller and the view corresponding to HTML. The parts that communicate with the server side are implemented as AngularJS services.
 
-In Hawtio.next, controllers and views are implemented as React components. Models and services are implemented in plain TypeScript. The services are guaranteed to be singleton through the ES Modules import mechanism.
+In Hawtio React, controllers and views are implemented as React components. Models and services are implemented in plain TypeScript. The services are guaranteed to be singleton through the ES Modules import mechanism.
 
-Therefore, the migration from legacy Hawtio to Hawtio.next is basically a process of rewriting the AngularJS controllers and HTML to React components and AngularJS services to plain-TypeScript service classes.
+Therefore, the migration from legacy Hawtio to Hawtio React is basically a process of rewriting the AngularJS controllers and HTML to React components and AngularJS services to plain-TypeScript service classes.
 
 #### Mapping example
 
 To give one example, the Attributes feature of the JMX plugin is mapped as follows.
 
 <!-- prettier-ignore-start -->
-| MVC | Legacy Hawtio | Hawtio.next |
+| MVC | Legacy Hawtio | Hawtio React |
 | --- | ------------- | ----------- |
 | Controller & view | [attributes.controller.ts](https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/ts/attributes/attributes.controller.ts) <br/> [attributes.html](https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/html/attributes/attributes.html) | [Attributes.tsx](../packages/hawtio/src/plugins/shared/attributes/Attributes.tsx) |
 | Service | [attributes.service.ts](https://github.com/hawtio/hawtio-integration/blob/main/plugins/jmx/ts/attributes/attributes.service.ts) | [attribute-service.ts](../packages/hawtio/src/plugins/shared/attributes/attribute-service.ts) |
@@ -61,7 +61,7 @@ Refer to the following issues:
 
 ## Supporting projects
 
-There are a few supporting projects that Hawtio.next is based on. Although not so frequent, we will still occasionally need to update the projects.
+There are a few supporting projects that Hawtio React is based on. Although not so frequent, we will still occasionally need to update the projects.
 
 ### jolokia.js
 
@@ -73,7 +73,7 @@ The official Jolokia JavaScript client library that also provides type definitio
 
 <https://github.com/hawtio/hawtio-backend-middleware>
 
-The Express middleware that is used in the Webpack dev server and serves as a development-time mock for the Hawtio backend, which enables local development with `yarn start` for Hawtio.next.
+The Express middleware that is used in the Webpack dev server and serves as a development-time mock for the Hawtio backend, which enables local development with `yarn start` for Hawtio React.
 
 ## Communication and planning
 

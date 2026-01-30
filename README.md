@@ -20,7 +20,7 @@ This project reimplements the following Hawtio JS components in one project:
 
 This project uses [tsup](https://tsup.egoist.dev/) and [Webpack](https://webpack.js.org/) for building packages.
 
-See also [Developing Hawtio.next](./docs/developing.md) for the project styling, guidelines, and more details on development.
+See also [Developing Hawtio React](./docs/developing.md) for the project styling, guidelines, and more details on development.
 
 ### Prerequisites
 
@@ -40,7 +40,7 @@ You need to have installed the following tools before developing the project.
 > $ /usr/bin/yarn install
 > yarn install v1.22.19
 > [1/5] Validating package.json...
-> error @hawtio/next-root@0.0.0: The engine "yarn" is incompatible with this module. Expected version ">=4". Got "1.22.19"
+> error @hawtio/react-root@0.0.0: The engine "yarn" is incompatible with this module. Expected version ">=4". Got "1.22.19"
 > error Found incompatible module.
 > ```
 >
