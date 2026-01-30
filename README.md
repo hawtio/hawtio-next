@@ -1,9 +1,9 @@
 > [!IMPORTANT]
-> In January 2026, we will rename the repository from `hawtio-next` to `hawtio-react`. If you have a local clone or external references, please update the URL. Note that NPM package names such as `@hawtio/react` will remain unchanged.
+> In January 2026, we renamed the repository from `hawtio-next` to `hawtio-react`. If you have an old local clone or external references, please update the URL. Note that NPM package names such as `@hawtio/react` will remain unchanged.
 
 ---
 
-# Hawtio.next
+# Hawtio React
 
 [![Test](https://github.com/hawtio/hawtio-next/actions/workflows/test.yml/badge.svg)](https://github.com/hawtio/hawtio-next/actions/workflows/test.yml)
 [![E2E Test](https://github.com/hawtio/hawtio-next/actions/workflows/e2e-test.yml/badge.svg)](https://github.com/hawtio/hawtio-next/actions/workflows/e2e-test.yml)
