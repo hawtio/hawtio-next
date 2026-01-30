@@ -134,7 +134,7 @@ export type JmxConfig = {
    * Note that disabling workspace should also deactivate all the plugins that
    * depend on MBeans provided by workspace.
    *
-   * @see https://github.com/hawtio/hawtio-next/issues/421
+   * @see https://github.com/hawtio/hawtio-react/issues/421
    */
   workspace?: boolean | string[]
 }

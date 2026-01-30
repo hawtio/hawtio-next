@@ -49,7 +49,7 @@ export const CamelContent: React.FunctionComponent = () => {
   }
 
   // The order of the items in the following list is the order in will the tabs will be visualized.
-  // For more info check: https://github.com/hawtio/hawtio-next/issues/237
+  // For more info check: https://github.com/hawtio/hawtio-react/issues/237
   const allNavItems: NavItem[] = [
     {
       id: 'routeDiagram',

@@ -5,9 +5,9 @@
 
 # Hawtio React
 
-[![Test](https://github.com/hawtio/hawtio-next/actions/workflows/test.yml/badge.svg)](https://github.com/hawtio/hawtio-next/actions/workflows/test.yml)
-[![E2E Test](https://github.com/hawtio/hawtio-next/actions/workflows/e2e-test.yml/badge.svg)](https://github.com/hawtio/hawtio-next/actions/workflows/e2e-test.yml)
-[![Lint](https://github.com/hawtio/hawtio-next/actions/workflows/lint.yml/badge.svg)](https://github.com/hawtio/hawtio-next/actions/workflows/lint.yml)
+[![Test](https://github.com/hawtio/hawtio-react/actions/workflows/test.yml/badge.svg)](https://github.com/hawtio/hawtio-react/actions/workflows/test.yml)
+[![E2E Test](https://github.com/hawtio/hawtio-react/actions/workflows/e2e-test.yml/badge.svg)](https://github.com/hawtio/hawtio-react/actions/workflows/e2e-test.yml)
+[![Lint](https://github.com/hawtio/hawtio-react/actions/workflows/lint.yml/badge.svg)](https://github.com/hawtio/hawtio-react/actions/workflows/lint.yml)
 
 A Hawtio reimplementation based on TypeScript + React.
 This project reimplements the following Hawtio JS components in one project:
@@ -120,7 +120,7 @@ Read [Running E2E tests locally](./docs/e2e.md).
 ### Debugging with Source-Maps
 
 When `yarn start` is run, the test application located in
-[app](https://github.com/hawtio/hawtio-next/tree/main/app) is the project actually
+[app](https://github.com/hawtio/hawtio-react/tree/main/app) is the project actually
 executed. This uses [webpack](https://webpack.js.org) for the bundling of project
 compiled source and assets. By default, webpack has been configured to not generate any
 [source-maps](https://webpack.js.org/guides/development/#using-source-maps) since these
@@ -129,9 +129,9 @@ are often unnecessary for development and can make the application memory-intens
 However, there maybe an occasion when the developer needs to debug an issue during
 runtime in the browser and as such source-maps can be vital. Therefore, in this use-case,
 the developer should update the webpack
-[configuration file](https://github.com/hawtio/hawtio-next/blob/main/app/webpack.config.cjs) and
+[configuration file](https://github.com/hawtio/hawtio-react/blob/main/app/webpack.config.cjs) and
 specifically change the `devtool`
-[property](https://github.com/hawtio/hawtio-next/blob/main/app/webpack.config.cjs#L25) in
+[property](https://github.com/hawtio/hawtio-react/blob/main/app/webpack.config.cjs#L25) in
 order to generate source-maps. The property should be modified to a value consistent with
 the information provided by the
 [webpack documentation](https://webpack.js.org/configuration/devtool#devtool), eg.

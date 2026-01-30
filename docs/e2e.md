@@ -1,6 +1,6 @@
 # Running E2E tests locally
 
-This document briefly describes how to run the [E2E test suite](https://github.com/hawtio/hawtio/tree/4.x/tests/hawtio-test-suite) from the Hawtio main project on the hawtio-next during development.
+This document briefly describes how to run the [E2E test suite](https://github.com/hawtio/hawtio/tree/4.x/tests/hawtio-test-suite) from the Hawtio main project on the hawtio-react during development.
 
 ## Run `@hawtio/react` app
 

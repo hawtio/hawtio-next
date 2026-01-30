@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hawtio/hawtio-next.git"
+    "url": "https://github.com/hawtio/hawtio-react.git"
   },
   "workspaces": [
     "packages/*",

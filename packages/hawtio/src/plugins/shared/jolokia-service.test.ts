@@ -608,7 +608,7 @@ describe('JolokiaService', () => {
     expect(mbean).not.toBeUndefined()
   })
 
-  test('problematic JSON response from case hawtio/hawtio-next#902', () => {
+  test('problematic JSON response from case hawtio/hawtio-react#902', () => {
     const response = {
       value: {
         'java.util.logging': {
@@ -627,7 +627,7 @@ describe('JolokiaService', () => {
     expect(() => jolokiaService.unwindListResponse(response.value)).not.toThrow()
   })
 
-  test('problematic JSON response with null desc from case hawtio/hawtio-next#1349', () => {
+  test('problematic JSON response with null desc from case hawtio/hawtio-react#1349', () => {
     const response = {
       value: {
         Tomcat: {
